@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.comm.mapif.PGCMFIRM0010Mapper">
+	<resultMap type="hashmap" id="DeptResult">
+		<result property="deptCd" 		column="deptCd" />
+		<result property="deptNm" 		column="deptNm" />
+		<result property="deptLevel"	column="deptLevel" />
+		<result property="udeptCd" 		column="udeptCd" />
+		<result property="udeptNm" 		column="udeptNm" />
+		<result property="useAt" 		column="useAt" />
+		<result property="register" 	column="register" />
+		<result property="rgsDe" 		column="rgsDe" />
+		<result property="updUsr" 		column="updUsr" />
+		<result property="updDe" 		column="updDe" />
+	</resultMap>
+
+	<resultMap type="hashmap" id="findDeptCdNmListResult">
+		<result property="deptCd" 	column="deptCd" />
+		<result property="deptNm" 	column="deptNm" />
+	</resultMap>
+
+	<!-- 부서 -->
+	<select id="findDeptList" resultMap="DeptResult">
+		SELECT						/* ProgramID=com.comm.mapif.PGCMFIRM0010Mapper.findDeptList */
+			*
+		FROM (
+			SELECT
+				D.DEPT_CD  														as deptCd,
+				D.DEPT_NM  														as deptNm,
+				D.DEPT_LEVEL 													as deptLevel,
+				D.UDEPT_CD 														as udeptCd,
+				(SELECT DEPT_NM FROM TB_DEPT A WHERE A.DEPT_CD = D.UDEPT_CD) 	as udeptNm,
+				D.USE_AT														as useAt,
+				D.RGSDE    														as rgsDe,
+				D.UPDDE    														as updDe,
+				ROWNUM 															as num
+			FROM
+				TB_DEPT D
+			WHERE
+				1=1
+				<if test="searchDeptCd != null and searchDeptCd != ''">AND DEPT_CD = #{searchDeptCd}</if>
+				<if test="searchDeptLevel != null and searchDeptLevel != ''">AND DEPT_LEVEL = #{searchDeptLevel}</if>
+				<if test="searchUdeptCd != null and searchUdeptCd != ''">AND UDEPT_CD = #{searchUdeptCd}</if>
+				<if test="searchUseAt != null and searchUseAt != ''">AND USE_AT = #{searchUseAt}</if>
+		)
+		WHERE num BETWEEN (1+#{limitFrom}) AND (#{limitFrom} + #{limitTo})
+	</select>
+
+	<!-- 부서 개수 -->
+	<select id="findDeptListCnt" resultType="int">
+		SELECT								/* ProgramID=com.comm.mapif.PGCMFIRM0010Mapper.findDeptListCnt */
+			COUNT(*)
+		FROM
+			TB_DEPT
+		WHERE
+			1=1
+			<if test="searchDeptCd != null and searchDeptCd != ''">AND DEPT_CD = #{searchDeptCd}</if>
+			<if test="searchDeptLevel != null and searchDeptLevel != ''">AND DEPT_LEVEL = #{searchDeptLevel}</if>
+			<if test="searchUdeptCd != null and searchUdeptCd != ''">AND UDEPT_CD = #{searchUdeptCd}</if>
+			<if test="searchUseAt != null and searchUseAt != ''">AND USE_AT = #{searchUseAt}</if>
+	</select>
+
+	<!-- 부서 코드 & 부서 이름의 리스트 가져오기 -->
+	<select id="findDeptCdNmList" resultMap="findDeptCdNmListResult">
+		SELECT								/* ProgramID=com.comm.mapif.PGCMFIRM0010Mapper.findDeptCdNmList */
+			DEPT_CD as deptCd,
+			DEPT_NM as deptNm
+		FROM
+			TB_DEPT
+	</select>
+
+	<!-- 1개의 부서 정보 가져오기 -->
+	<select id="findDeptInfo" resultMap="DeptResult">
+		SELECT									/* ProgramID=com.comm.mapif.PGCMFIRM0010Mapper.findDeptInfo */
+			D.DEPT_CD		as deptCd,
+			D.DEPT_NM		as deptNm,
+			D.DEPT_LEVEL	as deptLevel,
+			D.UDEPT_CD		as udeptCd,
+			(SELECT DEPT_NM FROM TB_DEPT A WHERE A.DEPT_CD = D.UDEPT_CD) as udeptNm,
+			D.USE_AT		as useAt,
+			D.REGISTER		as register,
+			D.RGSDE			as rgsDe,
+			D.UPDUSR		as updUsr,
+			D.UPDDE			as updDe
+		FROM
+			TB_DEPT D
+		WHERE
+			D.DEPT_CD = #{deptCd}
+	</select>
+
+	<!-- 부서 정보 등록하기 -->
+	<insert id="insertDeptInfo">
+		INSERT					/* ProgramID=com.comm.mapif.PGCMFIRM0010Mapper.insertDeptInfo */
+		INTO
+			TB_DEPT (
+				DEPT_CD,
+				DEPT_NM,
+				DEPT_LEVEL,
+				UDEPT_CD,
+				USE_AT,
+				REGISTER,
+				RGSDE
+			)
+		VALUES (
+				#{deptCd},
+				#{deptNm},
+				#{deptLevel},
+				#{udeptCd},
+				#{useAt},
+				#{register},
+				SYSDATE
+		)
+	</insert>
+
+	<!-- 부서 정보 갱신하기 -->
+	<update id="updateDeptInfo">
+		UPDATE					/* ProgramID=com.comm.mapif.PGCMFIRM0010Mapper.updateDeptInfo */
+			TB_DEPT
+		SET
+			DEPT_CD = #{deptCd},
+			DEPT_NM = #{deptNm},
+			DEPT_LEVEL = #{deptLevel},
+			UDEPT_CD = #{udeptCd},
+			USE_AT = #{useAt},
+			UPDUSR = #{updUsr},
+			UPDDE = SYSDATE
+		WHERE
+			DEPT_CD = #{originDeptCd}
+	</update>
+
+	<!-- 부서 코드가 바뀌면 상위부서코드의 정보도 같이 바꿔주기 -->
+	<update id="updateUDeptCd">
+		UPDATE					/* ProgramID=com.comm.mapif.PGCMFIRM0010Mapper.updateUDeptCd */
+			TB_DEPT
+		SET
+			UDEPT_CD = #{deptCd},
+			UPDUSR = #{updUsr},
+			UPDDE = SYSDATE
+		WHERE
+			UDEPT_CD = #{originDeptCd}
+	</update>
+
+	<!-- 엑셀 다운로드 전용 부서 리스트 가져오기 -->
+	<select id="findDeptListExcel" resultMap="DeptResult">
+		SELECT							/* ProgramID=com.comm.mapif.PGCMFIRM0010Mapper.findDeptListExcel */
+			D.DEPT_CD  														as deptCd,
+			D.DEPT_NM  														as deptNm,
+			D.DEPT_LEVEL 													as deptLevel,
+			D.UDEPT_CD 														as udeptCd,
+			(SELECT DEPT_NM FROM TB_DEPT A WHERE A.DEPT_CD = D.UDEPT_CD) 	as udeptNm,
+			D.USE_AT														as useAt,
+			SUBSTR(D.RGSDE,1,10)											as rgsDe,
+			SUBSTR(D.UPDDE,1,10)    										as updDe
+		FROM
+			TB_DEPT D
+		WHERE
+			1=1
+			<if test="searchDeptCd != null and searchDeptCd != ''">AND D.DEPT_CD = #{searchDeptCd}</if>
+			<if test="searchDeptLevel != null and searchDeptLevel != ''">AND D.DEPT_LEVEL = #{searchDeptLevel}</if>
+			<if test="searchUdeptCd != null and searchUdeptCd != ''">AND D.UDEPT_CD = #{searchUdeptCd}</if>
+			<if test="searchUseAt != null and searchUseAt != ''">AND D.USE_AT = #{searchUseAt}</if>
+	</select>
+
+</mapper>

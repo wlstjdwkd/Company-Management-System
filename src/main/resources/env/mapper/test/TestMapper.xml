@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="biz.tech.mapif.test.TestMapper">
+
+	<!-- 총 사용자 메뉴 개수 조회-->
+	<select id="findTotalUserMenuRowCnt" resultType="int">
+	SELECT 	/* ProgramID=biz.tech.mapif.test.TestMapper.findTotalUserMenuRowCnt */
+           COUNT(*)
+	  FROM tb_menuinfo	
+	</select>	
+	
+	<!-- 사용자 메뉴 조회(페이징)-->
+	<select id="findUserMenuWithPaging" resultType="Map">
+	SELECT 	/* ProgramID=biz.tech.mapif.test.TestMapper.findUserMenuWithPaging */
+		menu_no
+		,progrm_id
+		,menu_nm
+		,menu_level
+		,parnts_menu_no
+		,outpt_ordr
+		,outpt_ty
+		,use_at
+		,last_node_at
+		,site_se
+		,url
+	FROM tb_menuinfo
+	ORDER BY menu_no
+	LIMIT #{limitFrom}, #{limitTo}
+	</select>
+	
+</mapper>

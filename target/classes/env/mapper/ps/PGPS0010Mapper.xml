@@ -1,0 +1,1372 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="biz.tech.mapif.ps.PGPS0010Mapper">
+
+	<!-- 기준년도 목록 조회 -->
+	<select id="selectStdyyList" resultType="egovMap">
+	SELECT		/* ProgramID=biz.tech.mapif.ps.PGPS0010Mapper.selectStdyyList */
+	DISTINCT	STDYY
+	FROM		TB_STATS_OPERT
+	<if test="stdyy != null and stdyy != '' ">
+	WHERE		STDYY <![CDATA[<=]]> #{stdyy}
+	</if>
+	ORDER BY	STDYY DESC
+	</select>
+
+	<!-- 
+	기업군
+	EA1 : 전체중견
+	EA2 : 일반중견
+	EA3 : 관계기업
+	EA4 : 후보기업
+	EA5 : 가젤형기업	
+	 -->
+		
+	<sql id="fromDynamic">
+	FROM
+		<choose>
+			<when test="searchCondition == 'EA1'">
+				VW_HPE_ALL_FNNR FN, TB_HPE_JDGMNT_RESN RE
+				WHERE FN.HPE_CD = RE.HPE_CD AND RE.JDGMNT_MBY = 'M'
+				AND FN.STDYY = RE.STDYY
+				<if test="reason1 != null and reason1 != '' ">
+				AND RE.SCALE_STDR = 'Y'																				/* 규모 */
+				</if>
+				<if test="reason2 != null and reason2 != '' ">
+				AND ( RE.UPLMT_1000 = 'Y' OR RE.UPLMT_ASSETS = 'Y' OR RE.UPLMT_CAPL = 'Y' ) 						/* 상한 */
+				</if>
+				<if test="reason3 != null and reason3 != '' ">
+				AND ( RE.INDPNDNCY_DIRECT_30 = 'Y' OR RE.INDPNDNCY_INDRT_30 = 'Y' OR RE.INDPNDNCY_RCPY = 'Y' )   	/* 독립성 */
+				</if>
+			</when>
+			<when test="searchCondition == 'EA2'">
+				VW_HPE_NORCPY_FNNR FN, TB_HPE_JDGMNT_RESN RE
+				WHERE FN.HPE_CD = RE.HPE_CD AND RE.JDGMNT_MBY = 'M'
+				AND FN.STDYY = RE.STDYY
+				<if test="reason1 != null and reason1 != '' ">
+				AND RE.SCALE_STDR = 'Y'  																			/* 규모 */
+				</if>
+				<if test="reason2 != null and reason2 != '' ">
+				AND ( RE.UPLMT_1000 = 'Y' OR RE.UPLMT_ASSETS = 'Y' OR RE.UPLMT_CAPL = 'Y' ) 						/* 상한 */
+				</if>
+				<if test="reason3 != null and reason3 != '' ">
+				AND ( RE.INDPNDNCY_DIRECT_30 = 'Y' OR RE.INDPNDNCY_INDRT_30 = 'Y'  ) 								/* 독립성 */
+				</if>
+			</when>
+			<when test="searchCondition == 'EA3'">
+				VW_HPE_RCPY_FNNR FN
+				WHERE 1=1
+			</when>
+			<when test="searchCondition == 'EA4'">
+				VW_HPEC_FNNR FN
+				<where> 
+					<trim prefix="(" prefixOverrides="OR" suffix=")">
+					<if test="reason1 != null and reason1 != '' ">
+					OR SELNG_HPEC_AT = 'Y'		/* 매출 */
+					</if>
+					<if test="reason2 != null and reason2 != '' ">
+					OR RND_HPEC_AT  = 'Y'		/* 알엔디 */
+					</if>
+					<if test="reason3 != null and reason3 != '' ">
+					OR POSTPNE_HPEC_AT  = 'Y'	/* 유예 */
+					</if>
+					</trim>
+					AND 1=1
+				</where>	
+			</when>
+			<when test="searchCondition == 'EA5'">
+				VW_HPE_GZLC_FNNR FN
+				<where>
+					<trim prefix="(" prefixOverrides="OR" suffix=")">
+					<if test="reason1 != null and reason1 != '' ">
+					OR SELNG_GZLC_AT = 'Y'		/* 매출 */
+					</if>
+					<if test="reason2 != null and reason2 != '' ">
+					OR EMPLYM_GZLC_AT  = 'Y'	/* 고용 */
+					</if>
+					</trim>
+					AND 1=1
+				</where>	
+			</when>
+			<otherwise>
+				VW_FULL_ENTPRS_FNNR FN
+				WHERE 1=1
+			</otherwise>
+		</choose>
+	</sql>
+	
+	<sql id="searchDynamic">
+		<trim>
+			<if test="sel_target_year != null and sel_target_year != '' ">
+				AND FN.STDYY=#{sel_target_year}
+			</if>
+			<if test="capl1 != null and capl1 != '' and capl2 != null and capl2 != ''">
+				AND (CAPL >= #{capl1} * 100000 and CAPL <![CDATA[<=]]> #{capl2} * 100000)
+			</if>
+			<if test="assets_sm1 != null and assets_sm1 != '' and assets_sm2 != null and assets_sm2 != ''">
+				AND (ASSETS_SM >= #{assets_sm1} * 100000 and ASSETS_SM <![CDATA[<=]]> #{assets_sm2} * 100000)
+			</if>
+			<if test="selng_am1 != null and selng_am1 != '' and selng_am2 != null and selng_am2 != ''">
+				AND (SELNG_AM >= #{selng_am1} * 100000 and SELNG_AM <![CDATA[<=]]> #{selng_am2} * 100000)
+			</if>
+			<if test="xport_am_kr1 != null and xport_am_kr1 != '' and xport_am_kr2 != null and xport_am_kr2 != ''">
+				AND (XPORT_AM_WON >= #{xport_am_kr1} * 100000 and XPORT_AM_WON <![CDATA[<=]]> #{xport_am_kr2} * 100000)
+			</if>
+			<if test="bsn_profit1 != null and bsn_profit1 != '' and bsn_profit2 != null and bsn_profit2 != ''">
+				AND (BSN_PROFIT >= #{bsn_profit1} * 100000 and BSN_PROFIT <![CDATA[<=]]> #{bsn_profit2} * 100000)
+			</if>
+			<if test="thstrm_ntpf1 != null and thstrm_ntpf1 != '' and thstrm_ntpf2 != null and thstrm_ntpf2 != ''">
+				AND (THSTRM_NTPF >= #{thstrm_ntpf1} * 100000 and THSTRM_NTPF <![CDATA[<=]]> #{thstrm_ntpf2} * 100000)
+			</if>
+			<if test="rsrch_devlop_ct1 != null and rsrch_devlop_ct1 != '' and rsrch_devlop_ct2 != null and rsrch_devlop_ct2 != ''">
+				AND (RSRCH_DEVLOP_CT >= #{rsrch_devlop_ct1} * 100000 and RSRCH_DEVLOP_CT <![CDATA[<=]]> #{rsrch_devlop_ct2} * 100000)
+			</if>
+			<if test="ordtm_labrr_co1 != null and ordtm_labrr_co1 != '' and ordtm_labrr_co2 != null and ordtm_labrr_co2 != ''">
+				AND (ORDTM_LABRR_CO >= #{ordtm_labrr_co1} and ORDTM_LABRR_CO <![CDATA[<=]]> #{ordtm_labrr_co2})
+			</if>
+			<if test="b2bChk != null and b2bChk != '' ">
+				AND B2B_ENTRPRS_AT = 'Y'
+			</if>
+			<if test="b2cChk != null and b2cChk != '' ">
+				AND B2C_ENTRPRS_AT = 'Y'
+			</if>
+			<if test="b2gChk != null and b2gChk != '' ">
+				AND B2G_ENTRPRS_AT = 'Y'
+			</if>
+			<if test="frgnrChk != null and frgnrChk != '' ">
+				AND FNSY_AT = 'Y'
+			</if>			
+			<if test="induty_select == 'I'.toString()">					  		
+				and CASE WHEN FN.LCLAS_CD = 'C' THEN 'C' 
+			    WHEN FN.LCLAS_CD != 'C' THEN 'Z'
+			  	END IN
+				<foreach item="item" collection="indutyVal" open="(" separator="," close=")">
+					#{item}
+				</foreach>			
+		  	</if>
+		  	<if test="induty_select == 'T'.toString() and indutyVal != null and indutyVal != '' ">
+		  		AND FN.MLSFC_CD IN
+		  		<!-- CASE WHEN FN.LCLAS_CD = 'C' THEN CONCAT(FN.LCLAS_CD, FN.MLSFC_CD)
+		  		WHEN FN.LCLAS_CD != 'C' THEN FN.LCLAS_CD
+		  		END IN  -->
+				<foreach item="item" collection="indutyVal" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+		  	</if>
+		  	<if test="induty_select == 'D'.toString() and indutyVal != null and indutyVal != '' ">
+		  		AND 
+		  		CASE WHEN FN.LCLAS_CD = 'C' THEN CONCAT(FN.LCLAS_CD, FN.MLSFC_CD)
+		  		WHEN FN.LCLAS_CD != 'C' THEN FN.LCLAS_CD
+		  		END IN 
+				<foreach item="item" collection="indutyVal" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+		  	</if>
+	  	
+	  	    <if test="searchWrdSelect != null and searchWrdSelect != '' ">
+				<if test="searchWrdSelect == 'ENTRPRS_NM' ">
+					<if test="searchWrd != null and searchWrd != ''">
+					AND ENTRPRS_NM LIKE CONCAT ('%', #{searchWrd},'%')
+					</if>
+				</if>
+				<if test="searchWrdSelect == 'JURIRNO' ">AND JURIRNO = #{searchWrd}</if>
+				<if test="searchWrdSelect == 'BIZRNO' ">AND BIZRNO = #{searchWrd}</if>
+				<if test="searchWrdSelect == 'RPRSNTV_NM' ">
+					<if test="searchWrd != null and searchWrd != ''">
+					AND RPRSNTV_NM LIKE CONCAT ('%', #{searchWrd},'%')
+					</if>
+				</if>
+			</if>
+			<if test="ad_area1 != null and ad_area1 != '' ">
+				AND AREA1 = #{ad_area1}
+			</if>
+			<if test="ad_hedofc_adres != null and ad_hedofc_adres != '' ">
+				AND HEDOFC_ADRES LIKE CONCAT ('%', #{ad_hedofc_adres},'%')
+			</if>
+			<if test="ad_entrprs_othbc_stle != null and ad_entrprs_othbc_stle != '' ">
+				AND ENTRPRS_OTHBC_STLE = #{ad_entrprs_othbc_stle}
+			</if>
+			
+			<if test="ad_b2b_entrprs_at == 'Y'.toString() or ad_b2c_entrprs_at == 'Y'.toString() or ad_b2g_entrprs_at == 'Y'.toString() or ad_fnsy_at == 'Y'.toString()">
+				AND 
+				<trim prefix="(" prefixOverrides="OR" suffix=")">
+					<if test="ad_b2b_entrprs_at != null and ad_b2b_entrprs_at == 'Y'.toString() ">
+						OR B2B_ENTRPRS_AT = 'Y'
+					</if>			
+					<if test="ad_b2c_entrprs_at != null and ad_b2c_entrprs_at == 'Y'.toString() ">
+						OR B2C_ENTRPRS_AT = 'Y'
+					</if>
+					<if test="ad_b2g_entrprs_at != null and ad_b2g_entrprs_at == 'Y'.toString() ">
+						OR B2G_ENTRPRS_AT = 'Y'
+					</if>
+					<if test="ad_fnsy_at != null and ad_fnsy_at == 'Y'.toString() ">
+						OR FNSY_AT = 'Y'
+					</if>
+				</trim>
+			</if>				
+		</trim>
+	</sql>
+	
+	<!-- 기업정보 목록 개수 조회-->
+	<select id="findTotalEntprsInfoRowCnt" resultType="int">
+	SELECT 	/* ProgramID=biz.tech.mapif.ps.PGPS0010Mapper.findTotalEntprsInfoRowCnt */
+		COUNT(*) AS CNT
+	<include refid="fromDynamic"/>	
+	<include refid="searchDynamic"/>	
+	</select>
+	
+	<!-- 기업정보 목록 조회(ps)(페이징) -->
+	<select id="entprsList" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.ps.PGPS0010Mapper.entprsList */				
+		FN.STDYY
+		, FN.HPE_CD
+		, FN.JURIRNO
+		, FN.BIZRNO
+		, FN.ENTRPRS_NM
+		, FN.RPRSNTV_NM
+		, FN.AREA1
+		, CONCAT(FN.LCLAS_CD, FN.MLSFC_CD) AS INDUTY_CODE
+		, FN.FNSY_AT
+		, FN.B2B_ENTRPRS_AT
+		, FN.B2C_ENTRPRS_AT
+		, FN.B2G_ENTRPRS_AT
+		, FN.RSRCH_DEVLOP_CT
+		, FN.ORDTM_LABRR_CO
+		, FN.THSTRM_NTPF
+		, FN.ORDTM_LABRR_CO
+		, FN.XPORT_AM_WON
+		, (SELECT FN_INDCD2INDNM(FN.DTLDTLCLFC_CD, 5)) AS KOREAN_NM
+		, (SELECT FN_AREACD2NM(FN.AREA1, 2)) AS AREA_NM
+		<!-- , FN.SCALE_STDR
+		, FN.UPLMT_1000
+		, FN.UPLMT_ASSETS
+		, FN.UPLMT_CAPL
+		, FN.UPLMT_SELNG_3Y
+		, FN.INDPNDNCY_DIRECT_30
+		, FN.INDPNDNCY_INDRT_30
+		, FN.INDPNDNCY_RCPY -->
+	<include refid="fromDynamic"/>		
+	<include refid="searchDynamic"/>	
+	LIMIT #{limitFrom}, #{limitTo}
+	</select>
+	
+	
+	<!-- ####################### 엑셀다운로드 ################### -->
+	
+	<!-- 엑셀다운로드할 기업데이터 PK목록 조회 -->
+	<select id="selectEntrprsPKList" resultType="String">
+	SELECT		/* ProgramID=biz.tech.mapif.ps.PGPS0010Mapper.selectEntrprsPKList */	
+					FN.HPE_CD
+	<include refid="fromDynamic"/>
+	<include refid="searchDynamic"/>	
+	</select>
+
+	<!-- 기업코드 조건절 -->
+	<sql id="incWhereHpeCd">
+		<foreach collection="hpeCds" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</sql>
+
+	<!-- 개황, 사유, 재무항목 데이터 조회 -->
+	<select id="selectExcelBasicDataList" resultType="map">
+	SELECT		/* ProgramID=biz.tech.mapif.ps.PGPS0010Mapper.selectExcelDataList */
+					  tb.*
+		<foreach collection="years" item="item" index="idx">
+			<foreach collection="fnnrCols" item="colmn">
+					, fnnr${idx}.${colmn}	AS		y${idx}${colmn}
+			</foreach>
+			<foreach collection="ftntCols" item="colmn">
+					, ftnt${idx}.${colmn}		AS		y${idx}${colmn}
+			</foreach>
+		</foreach>
+	FROM
+			(
+				SELECT
+								  info.STDYY, info.HPE_CD, info.COLCT_DE, info.JURIRNO, info.BIZRNO, info.ENTRPRS_NM
+								, FN_CD2CDNM('58', info.ENTRPRS_OTHBC_STLE)	AS		ENTRPRS_OTHBC_STLE
+								, FN_CD2CDNM('59', info.SPCSS_AT)					AS		SPCSS_AT
+								, FN_CD2CDNM('44', info.MNGMT_STLE)				AS 	MNGMT_STLE
+								, FN_AREACD2NM(info.AREA1, '2')						AS		AREA1
+								, info.RPRSNTV_NM, info.FOND_DE, info.SPCSS_DE, info.PSACNT, info.LST_DE, info.PSITN_GROUP, info.PSITN_GROUP_JURIRNO, info.HEDOFC_ADRES
+								, info.REPRSNT_TLPHON, info.LCLAS_CD, info.JDGMNT_INDUTY_CODE, info.MAIN_PRODUCT
+								, resn.SCALE_STDR, resn.UPLMT_1000, resn.UPLMT_ASSETS, resn.UPLMT_CAPL, resn.UPLMT_SELNG_3Y, resn.INDPNDNCY_DIRECT_30, resn.INDPNDNCY_INDRT_30
+								, resn.INDPNDNCY_RCPY, resn.MTLTY_INVSTMNT_LMTT, resn.FNCBIZ_ISCS, resn.SMLPZ, resn.POSTPNE_ENTRPRS1, resn.POSTPNE_ENTRPRS2, resn.POSTPNE_ENTRPRS3
+								, resn.EXCL_CPR, resn.FRNTN_SM_LTRS, resn.ELAPSE_MANAGT, resn.POSTPNE_PRVONSH
+				FROM		TB_ENTPRS_INFO info, TB_HPE_JDGMNT_RESN resn
+				WHERE		info.STDYY = resn.STDYY
+					AND		info.HPE_CD = resn.HPE_CD
+					AND		info.STDYY = #{stdyy}
+					AND		resn.JDGMNT_MBY = #{jdgmntMby}
+					AND		info.HPE_CD	IN	<include refid="incWhereHpeCd"/>
+			)	tb			<!-- 개황, 사유 -->
+			
+		<foreach collection="years" item="item" index="yearIdx">
+	LEFT JOIN
+			(
+				SELECT		  HPE_CD
+			<foreach collection="fnnrCols" item="colmn">
+								, ${colmn}
+			</foreach>
+				FROM		TB_FNNR_DATA
+				WHERE		STDYY = #{item}
+					AND		HPE_CD		IN	<include refid="incWhereHpeCd"/>
+			)	fnnr${yearIdx}
+		ON		tb.HPE_CD = fnnr${yearIdx}	.HPE_CD			<!-- 재무 -->
+	LEFT JOIN
+			(
+				SELECT		HPE_CD
+			<foreach collection="ftntCols" item="colmn">
+								, ${colmn}
+			</foreach>
+				FROM		TB_PATENT_DATA
+				WHERE		STDYY = #{item}
+					AND		HPE_CD		IN	<include refid="incWhereHpeCd"/>
+			)	ftnt${yearIdx}
+		ON		tb.HPE_CD = ftnt${yearIdx}.HPE_CD			<!-- 특허및수출액 -->
+		</foreach>
+	ORDER BY		HPE_CD
+	</select>
+	
+	<!-- 출자피출자기업 데이터 조회 -->
+	<select id="selectExcelInvstDataList" resultType="map">
+	SELECT			/* ProgramID=biz.tech.mapif.ps.PGPS0010Mapper.selectExcelDataList */
+						STDYY, HPE_CD
+						, IF(INVSTMNT_SE = '1', '출자', '피출자')	AS INVSTMNT_SE_NM
+						, SN, ENTRPRS_NM, JURIRNO, BIZRNO, QOTA_RT
+	FROM			TB_INVSTMNT
+	WHERE			STDYY = #{stdyy}
+		AND			HPE_CD		IN	<include refid="incWhereHpeCd"/>
+	ORDER BY		HPE_CD, INVSTMNT_SE, SN
+	</select>
+
+
+
+
+
+<!-- ======================================================================================================================= -->	
+	
+	
+	<sql id="dynamicWhere">
+     <trim>
+        <if test="sel_target_year != null and sel_target_year != '' ">
+			AND A.STDYY=#{sel_target_year}
+		</if>
+		<if test="searchCondition != null and searchCondition != '' ">
+			<if test="searchCondition == 'EA1' "></if>
+			<if test="searchCondition == 'EA2' ">and DCSN_HPE_AT='Y' OR SYS_HPE_AT='Y'</if>
+			<if test="searchCondition == 'EA3' ">AND DCSN_RCPY_AT='Y'</if>
+			<if test="searchCondition == 'EA4' ">AND (SELNG_HPEC_AT='Y' OR RND_HPEC_AT='Y'OR POSTPNE_HPEC_AT='Y')</if>
+			<if test="searchCondition == 'EA5' ">AND (SELNG_GZLC_AT='Y' OR EMPLYM_GZLC_AT='Y')</if>
+		</if>
+		<if test="searchWrdSelect != null and searchWrdSelect != '' ">
+			<if test="searchWrdSelect == 'ENTRPRS_NM' ">
+				<if test="searchWrd != null and searchWrd != ''">
+				AND ENTRPRS_NM LIKE CONCAT ('%', #{searchWrd},'%')
+				</if>
+			</if>
+			<if test="searchWrdSelect == 'JURIRNO' ">AND JURIRNO = #{searchWrd}</if>
+			<if test="searchWrdSelect == 'BIZRNO' ">AND BIZRNO = #{searchWrd}</if>
+			<if test="searchWrdSelect == 'RPRSNTV_NM' ">
+				<if test="searchWrd != null and searchWrd != ''">
+				AND RPRSNTV_NM LIKE CONCAT ('%', #{searchWrd},'%')
+				</if>
+			</if>
+		</if>
+     </trim>
+     </sql>
+     
+     <sql id="dynamicWhere2">
+     <trim>
+		<if test="capl1 != null and capl1 != 0 and capl2 != null and capl2 != 0">
+			AND (CAPL >= #{capl1} and CAPL <![CDATA[<=]]> #{capl2})
+		</if>
+		<if test="assets_sm1 != null and assets_sm1 != 0 and assets_sm2 != null and assets_sm2 != 0">
+			AND (ASSETS_SM >= #{assets_sm1} and ASSETS_SM <![CDATA[<=]]> #{assets_sm2})
+		</if>
+		<if test="selng_am1 != null and selng_am1 != 0 and selng_am2 != null and selng_am2 != 0">
+			AND (SELNG_AM >= #{selng_am1} and SELNG_AM <![CDATA[<=]]> #{selng_am2})
+		</if>
+		<if test="xport_am_kr1 != null and selng_am1 != 0 and xport_am_kr2 != null and xport_am_kr2 != 0">
+			AND (XPORT_AM_KR >= #{xport_am_kr1} and XPORT_AM_KR <![CDATA[<=]]> #{xport_am_kr2})
+		</if>
+		<if test="bsn_profit1 != null and bsn_profit1 != 0 and bsn_profit2 != null and bsn_profit2 != 0">
+			AND (BSN_PROFIT >= #{bsn_profit1} and BSN_PROFIT <![CDATA[<=]]> #{bsn_profit2})
+		</if>
+		<if test="thstrm_ntpf1 != null and thstrm_ntpf1 != 0 and thstrm_ntpf2 != null and thstrm_ntpf2 != 0">
+			AND (THSTRM_NTPF >= #{thstrm_ntpf1} and THSTRM_NTPF <![CDATA[<=]]> #{thstrm_ntpf2})
+		</if>
+		<if test="rsrch_devlop_ct1 != null and rsrch_devlop_ct1 != 0 and rsrch_devlop_ct2 != null and rsrch_devlop_ct2 != 0">
+			AND (RSRCH_DEVLOP_CT >= #{rsrch_devlop_ct1} and RSRCH_DEVLOP_CT <![CDATA[<=]]> #{rsrch_devlop_ct2})
+		</if>
+		<if test="ordtm_labrr_co1 != null and ordtm_labrr_co1 != 0 and ordtm_labrr_co2 != null and ordtm_labrr_co2 != 0">
+			AND (ORDTM_LABRR_CO >= #{ordtm_labrr_co1} and ORDTM_LABRR_CO <![CDATA[<=]]> #{ordtm_labrr_co2})
+		</if>
+		<if test="b2bChk != null and b2bChk != '' ">
+			AND B2B_ENTRPRS_AT = 'Y'
+		</if>
+		<if test="b2cChk != null and b2cChk != '' ">
+			AND B2C_ENTRPRS_AT = 'Y'
+		</if>
+		<if test="b2gChk != null and b2gChk != '' ">
+			AND B2G_ENTRPRS_AT = 'Y'
+		</if>
+		<if test="frgnrChk != null and frgnrChk != '' ">
+			AND FNSY_AT = 'Y'
+		</if>
+		<if test="reason1 != null and reason1 != '' ">
+			AND SCALE_STDR = 'Y'
+		</if>
+		<if test="reason2 != null and reason2 != '' ">
+			AND (UPLMT_1000='Y' OR UPLMT_ASSETS='Y' OR UPLMT_CAPL='Y' OR UPLMT_SELNG_3Y='Y')
+		</if>
+		<if test="reason3 != null and reason3 != '' ">
+			AND (INDPNDNCY_DIRECT_30='Y' OR INDPNDNCY_INDRT_30='Y' OR INDPNDNCY_RCPY='Y')
+		</if>
+		<if test="ad_ind_cd != null and ad_ind_cd != '' ">
+  		and INDUTY_CODE IN 
+		<foreach item="item" collection="ad_ind_cd" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+  	    </if>
+     </trim>
+     </sql>
+     
+	<!-- 지역(본사기준) - 구/군 -->
+	<select id="areaSelect" resultType="Map">
+	select /* ProgramID=biz.tech.mapif.ps.PGPS0010Mapper.areaSelect */
+		substr(HEDOFC_ADRES, 1, INSTR(HEDOFC_ADRES, " ")) AS AREA1
+	from TB_ENTPRS_INFO
+	where substr(HEDOFC_ADRES, 1, INSTR(HEDOFC_ADRES, " ")) is not null
+	group by substr(HEDOFC_ADRES, 1, INSTR(HEDOFC_ADRES, " "))
+	</select>
+
+	<!-- 기업정보 목록 개수 조회-->
+	<select id="findTotalEntprsInfoRowCnt_old" resultType="int">
+	SELECT 	/* ProgramID=biz.tech.mapif.ps.PGPS0010Mapper.findTotalEntprsInfoRowCnt */
+	COUNT(1) AS CNT
+	FROM (
+	  SELECT 
+	  A.STDYY
+	  , A.HPE_CD
+	  , A.JURIRNO   -- 법인번호
+	  , A.BIZRNO    -- 사업자번호
+	  , A.ENTRPRS_NM
+	  , A.RPRSNTV_NM    -- 대표자명
+	  , A.AREA1
+	  , CONCAT(A.LCLAS_CD, A.MLSFC_CD) AS INDUTY_CODE
+	  , A.FNSY_AT
+	  , A.B2B_ENTRPRS_AT
+	  , A.B2C_ENTRPRS_AT
+	  , A.B2G_ENTRPRS_AT
+	  FROM TB_ENTPRS_INFO A
+	  where 1=1
+	  <!-- 검색조건 시작 -->
+		<include refid="dynamicWhere"/>
+  	 <!-- 검색조건 끝 -->
+	 <!-- <if test="searchWrdSelect != null and searchWrdSelect != '' ">
+		<if test="searchWrdSelect == 'ENTRPRS_NM' ">AND ENTRPRS_NM LIKE CONCAT ('%', #{searchWrd},'%')</if>
+		<if test="searchWrdSelect == 'JURIRNO' ">AND JURIRNO = #{searchWrd}</if>
+		<if test="searchWrdSelect == 'BIZRNO' ">AND BIZRNO = #{searchWrd}</if>
+		<if test="searchWrdSelect == 'RPRSNTV_NM' ">AND RPRSNTV_NM LIKE CONCAT ('%', #{searchWrd},'%')</if>
+	 </if> -->
+	) A LEFT OUTER JOIN TB_FNNR_DATA B
+	ON A.STDYY = B.STDYY
+	AND A.HPE_CD = B.HPE_CD
+	LEFT OUTER JOIN TB_PATENT_DATA C
+	ON A.STDYY = C.STDYY
+	AND A.HPE_CD = C.HPE_CD
+	LEFT OUTER JOIN TB_HPE_JDGMNT_RESN D
+	ON A.STDYY = D.STDYY
+	AND A.HPE_CD = D.HPE_CD
+	<!-- 검색조건 시작 -->
+		<include refid="dynamicWhere2"/>
+  	 <!-- 검색조건 끝 -->
+	</select>	
+	
+	<!-- 기업정보 목록 조회(ps)(페이징) -->
+	<select id="entprsList_old" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.ps.PGPS0010Mapper.entprsList */
+	K.STDYY, K.HPE_CD, K.JURIRNO, K.BIZRNO, K.ENTRPRS_NM
+	, K.RPRSNTV_NM, K.AREA1, K.INDUTY_CODE, K.FNSY_AT, K.B2B_ENTRPRS_AT
+	, K.B2C_ENTRPRS_AT, K.B2G_ENTRPRS_AT, K.RSRCH_DEVLOP_CT, K.ORDTM_LABRR_CO, K.THSTRM_NTPF
+	, K.ORDTM_LABRR_CO, K.XPORT_AM_WON, K.SCALE_STDR, K.UPLMT_1000, K.UPLMT_ASSETS
+	, K.UPLMT_CAPL, K.UPLMT_SELNG_3Y, K.INDPNDNCY_DIRECT_30
+	, K.INDPNDNCY_INDRT_30, K.INDPNDNCY_RCPY
+	, L.IND_CODE
+	, L.KOREAN_NM
+	, M.UPPER_CODE
+	FROM (
+	  SELECT A.STDYY
+	  , A.HPE_CD
+	  , A.JURIRNO
+	  , A.BIZRNO
+	  , A.ENTRPRS_NM
+	  , A.RPRSNTV_NM
+	  , A.AREA1
+	  , A.INDUTY_CODE
+	  , A.FNSY_AT
+	  , A.B2B_ENTRPRS_AT
+	  , A.B2C_ENTRPRS_AT
+	  , A.B2G_ENTRPRS_AT
+	  , B.RSRCH_DEVLOP_CT
+	  , B.ORDTM_LABRR_CO
+	  , B.THSTRM_NTPF
+	  , C.XPORT_AM_WON
+	  , D.SCALE_STDR
+	  , D.UPLMT_1000
+	  , D.UPLMT_ASSETS
+	  , D.UPLMT_CAPL
+	  , D.UPLMT_SELNG_3Y
+	  , D.INDPNDNCY_DIRECT_30
+	  , D.INDPNDNCY_INDRT_30
+	  , D.INDPNDNCY_RCPY
+	  FROM (
+	    SELECT 
+	    A.STDYY
+	    , A.HPE_CD
+	    , A.JURIRNO
+	    , A.BIZRNO
+	    , A.ENTRPRS_NM
+	    , A.RPRSNTV_NM
+	    , A.AREA1
+	    , CONCAT(A.LCLAS_CD, A.MLSFC_CD) AS INDUTY_CODE
+	    , A.FNSY_AT
+	    , A.B2B_ENTRPRS_AT
+	    , A.B2C_ENTRPRS_AT
+	    , A.B2G_ENTRPRS_AT
+	    FROM TB_ENTPRS_INFO A
+	    where 1=1
+	    <!-- 검색조건 시작 -->
+	    <include refid="dynamicWhere"/>
+ 	    <!-- 검색조건 끝 -->
+		<!-- <if test="searchWrdSelect != null and searchWrdSelect != '' ">
+			<if test="searchWrdSelect == 'ENTRPRS_NM' ">AND ENTRPRS_NM LIKE CONCAT ('%', #{searchWrd},'%')</if>
+			<if test="searchWrdSelect == 'JURIRNO' ">AND JURIRNO = #{searchWrd}</if>
+			<if test="searchWrdSelect == 'BIZRNO' ">AND BIZRNO = #{searchWrd}</if>
+			<if test="searchWrdSelect == 'RPRSNTV_NM' ">AND RPRSNTV_NM LIKE CONCAT ('%', #{searchWrd},'%')</if>
+		</if> -->
+	  ) A LEFT OUTER JOIN TB_FNNR_DATA B
+	  ON A.STDYY = B.STDYY
+	  AND A.HPE_CD = B.HPE_CD
+	  AND B.STDYY = 2011
+	  LEFT OUTER JOIN TB_PATENT_DATA C
+	  ON A.STDYY = C.STDYY
+	  AND A.HPE_CD = C.HPE_CD
+	  LEFT OUTER JOIN TB_HPE_JDGMNT_RESN D
+	  ON A.STDYY = D.STDYY
+	  AND A.HPE_CD = D.HPE_CD
+	) K LEFT OUTER JOIN (
+	  SELECT IF( INDUTY_CODE = LCLAS_CD, LCLAS_CD,  CONCAT(LCLAS_CD, INDUTY_CODE)) IND_CODE, KOREAN_NM
+	  FROM TB_IND_CD 
+	) L
+	ON K.INDUTY_CODE = L.IND_CODE
+	LEFT OUTER JOIN (
+	  select a.AREA_CODE, a.UPPER_CODE, a.AREA_NM, a.ABRV
+	  from TB_AREA_DIV a
+	  where a.`DIV`=2
+	) M
+	ON K.AREA1 = M.AREA_CODE
+	<!-- 검색조건 시작 -->
+		<include refid="dynamicWhere2"/>
+  	 <!-- 검색조건 끝 -->
+	LIMIT #{limitFrom}, #{limitTo}
+	</select>
+	
+	<!-- 기업정보 목록 조회(ps)(엑셀저장용) : no paging -->
+	<select id="entprsListExcel" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.ps.PGPS0010Mapper.entprsListExcel */
+	K.STDYY, K.HPE_CD, K.JURIRNO, K.BIZRNO, K.ENTRPRS_NM
+	, K.RPRSNTV_NM, K.AREA1, K.INDUTY_CODE, K.FNSY_AT, K.B2B_ENTRPRS_AT
+	, K.B2C_ENTRPRS_AT, K.B2G_ENTRPRS_AT, K.RSRCH_DEVLOP_CT, K.ORDTM_LABRR_CO, K.THSTRM_NTPF
+	, K.ORDTM_LABRR_CO, K.XPORT_AM_WON, K.SCALE_STDR, K.UPLMT_1000, K.UPLMT_ASSETS
+	, K.UPLMT_CAPL, K.UPLMT_SELNG_3Y, K.INDPNDNCY_DIRECT_30
+	, K.INDPNDNCY_INDRT_30, K.INDPNDNCY_RCPY
+	, L.IND_CODE
+	, L.KOREAN_NM
+	, M.UPPER_CODE
+	FROM (
+	  SELECT A.STDYY
+	  , A.HPE_CD
+	  , A.JURIRNO
+	  , A.BIZRNO
+	  , A.ENTRPRS_NM
+	  , A.RPRSNTV_NM
+	  , A.AREA1
+	  , A.INDUTY_CODE
+	  , A.FNSY_AT
+	  , A.B2B_ENTRPRS_AT
+	  , A.B2C_ENTRPRS_AT
+	  , A.B2G_ENTRPRS_AT
+	  , B.RSRCH_DEVLOP_CT
+	  , B.ORDTM_LABRR_CO
+	  , B.THSTRM_NTPF
+	  , C.XPORT_AM_WON
+	  , D.SCALE_STDR
+	  , D.UPLMT_1000
+	  , D.UPLMT_ASSETS
+	  , D.UPLMT_CAPL
+	  , D.UPLMT_SELNG_3Y
+	  , D.INDPNDNCY_DIRECT_30
+	  , D.INDPNDNCY_INDRT_30
+	  , D.INDPNDNCY_RCPY
+	  FROM (
+	    SELECT 
+	    A.STDYY
+	    , A.HPE_CD
+	    , A.JURIRNO
+	    , A.BIZRNO
+	    , A.ENTRPRS_NM
+	    , A.RPRSNTV_NM
+	    , A.AREA1
+	    , CONCAT(A.LCLAS_CD, A.MLSFC_CD) AS INDUTY_CODE
+	    , A.FNSY_AT
+	    , A.B2B_ENTRPRS_AT
+	    , A.B2C_ENTRPRS_AT
+	    , A.B2G_ENTRPRS_AT
+	    FROM TB_ENTPRS_INFO A
+	    where 1=1
+	    <if test="sel_target_year != null and sel_target_year != '' ">
+			AND STDYY=#{sel_target_year}
+		</if>
+		<if test="searchWrdSelect != null and searchWrdSelect != '' ">
+			<if test="searchWrdSelect == 'ENTRPRS_NM' ">AND ENTRPRS_NM LIKE CONCAT ('%', #{searchWrd},'%')</if>
+			<if test="searchWrdSelect == 'JURIRNO' ">AND JURIRNO = #{searchWrd}</if>
+			<if test="searchWrdSelect == 'BIZRNO' ">AND BIZRNO = #{searchWrd}</if>
+			<if test="searchWrdSelect == 'RPRSNTV_NM' ">AND RPRSNTV_NM LIKE CONCAT ('%', #{searchWrd},'%')</if>
+		</if>
+	  ) A LEFT OUTER JOIN TB_FNNR_DATA B
+	  ON A.STDYY = B.STDYY
+	  AND A.HPE_CD = B.HPE_CD
+	  AND B.STDYY = 2011
+	  LEFT OUTER JOIN TB_PATENT_DATA C
+	  ON A.STDYY = C.STDYY
+	  AND A.HPE_CD = C.HPE_CD
+	  LEFT OUTER JOIN TB_HPE_JDGMNT_RESN D
+	  ON A.STDYY = D.STDYY
+	  AND A.HPE_CD = D.HPE_CD
+  	<!-- 검색조건 시작 -->
+	<include refid="dynamicWhere"/>
+ 	<!-- 검색조건 끝 -->
+	) K LEFT OUTER JOIN (
+	  SELECT IF( INDUTY_CODE = LCLAS_CD, LCLAS_CD,  CONCAT(LCLAS_CD, INDUTY_CODE)) IND_CODE, KOREAN_NM
+	  FROM TB_IND_CD 
+	) L
+	ON K.INDUTY_CODE = L.IND_CODE
+	LEFT OUTER JOIN (
+	  select a.AREA_CODE, a.UPPER_CODE, a.AREA_NM, a.ABRV
+	  from TB_AREA_DIV a
+	  where a.`DIV`=2
+	) M
+	ON K.AREA1 = M.AREA_CODE
+	</select>
+	
+	<!-- 기업정보 상세 조회 -->
+	<select id="selectEntrprsResult" resultType="Map">
+	SELECT	/* ProgramID=biz.tech.mapif.ps.PGPS0010Mapper.selectEntrprsResult */
+	A.STDYY
+	, A.HPE_CD
+	, A.LTRS_AT
+	, A.DCSN_HPE_AT
+	, A.SYS_HPE_AT 
+	, A.DCSN_RCPY_AT
+	, A.SELNG_GZLC_AT
+	, A.EMPLYM_GZLC_AT                      
+	,	A.SELNG_HPEC_AT 
+	,	A.RND_HPEC_AT
+	, A.POSTPNE_HPEC_AT
+	, CASE WHEN LTRS_AT='Y' THEN '대기업'
+       WHEN DCSN_HPE_AT='Y' OR SYS_HPE_AT THEN '기업'
+       WHEN DCSN_RCPY_AT='Y' THEN '관계기업'
+       WHEN SELNG_GZLC_AT='Y' OR EMPLYM_GZLC_AT='Y' THEN '가젤형기업'
+       WHEN SELNG_HPEC_AT='Y' OR RND_HPEC_AT='Y' OR POSTPNE_HPEC_AT='Y' THEN '기업후보'
+	  ELSE ''
+	  END MNGMT_STLE
+	, A.ENTRPRS_NM
+	, A.JURIRNO
+	, A.BIZRNO 
+	, A.HEDOFC_ADRES
+	, A.AREA1
+	, A.REPRSNT_TLPHON 
+	, A.ENTRPRS_STLE 
+	, A.RPRSNTV_NM
+	, DATE_FORMAT(A.FOND_DE, '%Y-%m-%d') AS FOND_DE
+	, A.SPCSS_AT
+	, A.SPCSS_DE
+	, A.PSACNT
+	, A.LCLAS_CD
+	, A.MLSFC_CD
+	, DATE_FORMAT(A.LST_DE, '%Y-%m-%d') AS LST_DE
+	, A.PSITN_GROUP
+	, CONCAT(A.LCLAS_CD, A.MLSFC_CD) AS INDUTY_CODE
+	, CASE WHEN A.LCLAS_CD='C' THEN CONCAT(A.LCLAS_CD, A.MLSFC_CD) ELSE A.LCLAS_CD END AS INDUTY_CD 
+	, CONCAT(CASE WHEN FNSY_AT='Y' THEN '외국인투자,' ELSE '' END,
+	        CASE WHEN B2B_ENTRPRS_AT='Y' THEN 'B2B,' ELSE '' END,
+	        CASE WHEN B2C_ENTRPRS_AT='Y' THEN 'B2C,' ELSE '' END,
+	        CASE WHEN B2G_ENTRPRS_AT='Y' THEN 'B2G' ELSE '' END
+	  ) AS ENTPRS_S
+	, A.MAIN_PRODUCT
+	, (SELECT FN_INDCD2INDNM(A.DTLDTLCLFC_CD, 5)) AS INDUTY_NM
+	, (SELECT FN_CD2CDNM(58, A.ENTRPRS_OTHBC_STLE)) AS ENTRPRS_OTHBC_STLE_NM
+	, A.ENTRPRS_OTHBC_STLE
+	, (SELECT FN_MAP_ENTRGROUP_CD(#{hpe_cd}, #{sel_target_year})) AS ENTRGROUP_CD
+	, (SELECT FN_MAP_ENTRGROUP_RESN(#{hpe_cd}, #{sel_target_year})) AS ENTRGROUP_RESN
+	FROM TB_ENTPRS_INFO A
+	WHERE 1=1
+	AND A.JURIRNO = #{jurirno}
+	AND A.STDYY = #{sel_target_year}
+	</select>
+	
+	<!-- 기업정보 재무정보 조회 -->
+	<select id="selectFnnrResult" resultType="Map">
+	SELECT	/* ProgramID=biz.tech.mapif.ps.PGPS0010Mapper.selectFnnrResult */
+	STDYY
+	, IFNULL(B.ORDTM_LABRR_CO, 0) ORDTM_LABRR_CO
+	, IFNULL(B.ASSETS_SM, 0) ASSETS_SM
+	, IFNULL(B.CAPL_SM, 0) CAPL_SM 
+	, IFNULL(B.SELNG_AM, 0) SELNG_AM 
+	, IFNULL(B.THSTRM_NTPF, 0) THSTRM_NTPF
+	, IFNULL(B.BSN_PROFIT, 0) BSN_PROFIT
+	, IFNULL(B.CAPL, 0) CAPL 
+	FROM TB_FNNR_DATA B
+	WHERE 1=1
+	AND HPE_CD = #{hpe_cd}
+	ORDER BY STDYY DESC
+	<if test="infoData != '' and infoData != null">
+	LIMIT 5
+	</if>
+	</select>
+	
+	<!-- 기업정보 수출정보 조회 -->
+	<select id="selectExportResult" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.ps.PGPS0010Mapper.selectExportResult */
+	STDYY
+	, HPE_CD
+	, IFNULL(XPORT_AM_WON, 0) XPORT_AM_WON
+	, IFNULL(XPORT_AM_DOLLAR, 0) XPORT_AM_DOLLAR
+	, (SELECT FN_GET_AVG_NATNL_EHGT(STDYY, 'USD')) AS EHGT_USD
+	FROM TB_PATENT_DATA
+	WHERE 1=1
+	AND HPE_CD = #{hpe_cd}
+	ORDER BY STDYY DESC
+	</select>
+	
+	<!-- 기업정보 특허정보 조회 -->
+	<select id="selectPatentResult" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.ps.PGPS0010Mapper.selectPatentResult */
+	STDYY
+	, HPE_CD
+	, IFNULL(SUM(DMSTC_PATENT_REGIST_VLM),0) AS DMSTC_PATENT_REGIST_VLM
+	, IFNULL(SUM(DMSTC_APLC_PATNTRT),0) AS DMSTC_APLC_PATNTRT
+	FROM TB_PATENT_DATA
+	WHERE 1=1
+	AND HPE_CD = #{hpe_cd}	
+	GROUP BY STDYY, HPE_CD
+	ORDER BY STDYY DESC
+	</select>
+	
+	<!-- 기업정보 출자 / 피출자 조회 -->
+	<select id="selectInvstmntResult" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.ps.PGPS0010Mapper.selectInvstmntResult */
+	STDYY
+	, INVSTMNT_SE
+	, CASE WHEN INVSTMNT_SE = 1 THEN '출자'
+	       WHEN INVSTMNT_SE = 2 THEN '피출자' 
+	  END AS INVSTMNT_NM
+	, ENTRPRS_NM 
+	, JURIRNO
+	, BIZRNO
+	, QOTA_RT 
+	FROM TB_INVSTMNT
+	WHERE 1=1
+	AND HPE_CD = #{hpe_cd}
+	ORDER BY STDYY DESC
+	</select>
+	
+	<!-- 기업정보 거래처정보 조회 -->
+	<select id="selectBcncResult" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.ps.PGPS0010Mapper.selectBcncResult */
+	STDYY
+	, DELNG_SE  
+	, CASE WHEN DELNG_SE = '1' THEN '판매처'
+	       WHEN DELNG_SE = '2' THEN '구매처' 
+	  END AS DELNG_NM
+	, SN    
+	, BIZRNO   
+	, ENTRPRS_NM 
+	, RPRSNTV_NM   
+	, DELNG_RELIMP  
+	, PSACNT  
+	, CAPL  
+	, ASSETS_SM   
+	, SELNG_AM 
+	, NTPF 
+	FROM TB_BCNC_DATA
+	WHERE 1=1
+	AND HPE_CD = #{hpe_cd}
+	ORDER BY STDYY DESC
+	</select>
+	
+	<!-- 기업정보 판정정보 조회 -->
+	<select id="selectJdgmntResult" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.ps.PGPS0010Mapper.selectJdgmntResult */
+	K.* 
+	, L.IND_CODE
+	, L.KOREAN_NM
+	FROM (
+	  SELECT 
+	  B.STDYY
+	  , B.HPE_CD
+	  , CONCAT(A.LCLAS_CD, A.MLSFC_CD) AS INDUTY_CODE
+	  , CASE WHEN A.LCLAS_CD='C' THEN CONCAT(A.LCLAS_CD, A.MLSFC_CD) ELSE A.LCLAS_CD END AS INDUTY_CD 
+	  , B.JDGMNT_MBY
+	  , CASE WHEN A.DCSN_HPE_AT = 'Y' AND A.ANALS_USE_AT='Y' THEN '기업'
+	  		WHEN B.POSTPNE_ENTRPRS1 = 'Y'	THEN '유예 1년'
+	  		WHEN B.POSTPNE_ENTRPRS2 = 'Y' 	THEN '유예 2년'
+	  		WHEN B.POSTPNE_ENTRPRS3 = 'Y' 	THEN '유예 3년'
+	  		WHEN B.SMLPZ = 'Y' THEN '중소기업'
+	  		WHEN B.FRNTN_SM_LTRS = 'Y' THEN '외국계대기업'
+	  		WHEN A.POSTPNE_HPEC_AT = 'Y' THEN '유예기업'
+	  		WHEN B.MTLTY_INVSTMNT_LMTT = 'Y' THEN '상호출자'
+			ELSE '-'
+	  	END JDGMNT_NM
+	  , IFNULL(B.SCALE_STDR, 'N') AS SCALE_STDR
+	  , IFNULL(B.UPLMT_1000, 'N') AS UPLMT_1000
+	  , IFNULL(B.UPLMT_ASSETS, 'N') AS UPLMT_ASSETS
+	  , IFNULL(B.UPLMT_CAPL, 'N') AS UPLMT_CAPL
+	  , IFNULL(B.UPLMT_SELNG_3Y, 'N') AS UPLMT_SELNG_3Y
+	  , IFNULL(B.INDPNDNCY_DIRECT_30, 'N') AS INDPNDNCY_DIRECT_30
+	  , IFNULL(B.INDPNDNCY_INDRT_30, 'N') AS INDPNDNCY_INDRT_30
+	  , IFNULL(B.INDPNDNCY_RCPY, 'N') AS INDPNDNCY_RCPY
+	  , IFNULL(B.MTLTY_INVSTMNT_LMTT, 'N') AS MTLTY_INVSTMNT_LMTT
+	  , IFNULL(B.FNCBIZ_ISCS, 'N') AS FNCBIZ_ISCS
+	  , IFNULL(B.SMLPZ, 'N') AS SMLPZ
+	  , IFNULL(B.POSTPNE_ENTRPRS1, 'N') AS POSTPNE_ENTRPRS1
+	  , IFNULL(B.POSTPNE_ENTRPRS2, 'N') AS POSTPNE_ENTRPRS2
+	  , IFNULL(B.POSTPNE_ENTRPRS3, 'N') AS POSTPNE_ENTRPRS3
+	  , IFNULL(B.EXCL_CPR, 'N') AS EXCL_CPR
+	  , IFNULL(B.FRNTN_SM_LTRS, 'N') AS FRNTN_SM_LTRS
+	  , IFNULL(B.ELAPSE_MANAGT, 'N') AS ELAPSE_MANAGT
+	  , IFNULL(B.POSTPNE_PRVONSH, 'N') ASPOSTPNE_PRVONSH
+	  FROM TB_ENTPRS_INFO A, TB_HPE_JDGMNT_RESN B
+	  WHERE A.STDYY = B.STDYY
+	  AND A.HPE_CD = B.HPE_CD
+	  AND A.HPE_CD = #{hpe_cd}	  
+	) K LEFT OUTER JOIN 
+	(
+	  SELECT IF( INDUTY_CODE = LCLAS_CD, LCLAS_CD,  CONCAT(LCLAS_CD, INDUTY_CODE)) IND_CODE, KOREAN_NM
+	  FROM TB_IND_CD
+	) L
+	ON K.INDUTY_CODE = L.IND_CODE
+	WHERE K.JDGMNT_MBY='M'
+	ORDER BY K.STDYY DESC
+	</select>
+	
+	
+	<!-- 주요지표-현황 목록 개수(페이징) -->
+	<select id="findTotalIdxSttusRowCnt" resultType="Map">
+	SELECT * FROM (
+	select /* ProgramID=biz.tech.mapif.ps.PGPS0010Mapper.findUserMenuWithPaging */
+	    STDYY
+			, ENTRPRS_NM
+			, JURIRNO
+			, BIZRNO
+			, '업종명' as INDUTY_NM
+			, RPRSNTV_NM
+			, rtrim(substr(HEDOFC_ADRES, 1, 3)) as HEDOFC_ADRES
+	    , 10 AS CAPL
+	    , 20 AS ASSETS_SM
+	    , 30 AS SELNG_AM
+	    , 40 AS XPORT_AM_KR
+	    , 50 AS BSN_PROFIT
+	    , 60 AS THSTRM_NTPF
+	    , 70 AS RSRCH_DEVLOP_CT
+	    , 80 AS ORDTM_LABRR_CO
+	from TB_ENTPRS_INFO
+	) A
+	where 1=1
+	<!-- 검색조건 시작 -->
+	<!-- 검색조건 끝 -->
+		LIMIT #{limitFrom}, #{limitTo}
+	</select>
+	
+	<!-- 주요지표-현황 목록 조회 -->
+	<select id="idxList" resultType="Map">
+	SELECT * FROM (
+	select /* ProgramID=biz.tech.mapif.ps.PGPS0010Mapper.idxList */
+	    STDYY
+			, rtrim(substr(HEDOFC_ADRES, 1, 3)) as HEDOFC_ADRES
+			, '업종명' as INDUTY_NM
+	    	, 10 AS CAPL
+		    , 20 AS ASSETS_SM
+		    , 30 AS SELNG_AM
+		    , 40 AS XPORT_AM_KR
+		    , 50 AS BSN_PROFIT
+	from TB_ENTPRS_INFO
+	) A
+	where 1=1
+	</select>
+	
+	<!-- 기업정보 목록 갯수 -->
+	<select id="findEntprsListCnt" resultType="int">
+	SELECT	/* ProgramID=biz.tech.mapif.ps.PGPS0010Mapper.findEntprsListCnt */
+			COUNT(*)
+	FROM
+	(SELECT COUNT(*)
+	FROM	  TB_REQST_RCPY_LIST a
+				, TB_RESN_MANAGE b
+				, TB_APPLY_MASTER c
+				, (SELECT ISSU_DE, RCEPT_NO, RPRSNTV_NM, ISSU_NO, VALID_PD_BEGIN_DE, VALID_PD_END_DE, HEDOFC_ADRES FROM TB_ISSU_BSIS_INFO WHERE ISSU_DE IS NOT NULL) d
+	WHERE
+		a.RCEPT_NO = b.RCEPT_NO
+		AND a.ENTRPRS_SE = 'O'  		<!-- 신청기업만 -->
+		AND b.RCEPT_NO = c.RCEPT_NO
+		AND c.RCEPT_NO = d.RCEPT_NO
+		AND b.resn_se = 'R' 
+		AND b.se_code = 'RC1' <!-- 확인서가  발급된 기업만 --> 
+		AND a.RCEPT_NO NOT IN (SELECT rcept_no
+                                  FROM TB_RESN_MANAGE
+                                 WHERE se_code = 'RC4')	<!-- 확인서가  발급된 기업 중 발급취소는 제외 -->
+			
+	<if test = "searchYear != '' and searchYear != null and searchYear != 0 ">
+		AND substring(d.ISSU_DE, 1, 4) = #{searchYear}  <!-- 발급년도 -->
+	</if>
+	<if test = "searchCategory != '' and searchCategory != null and searchCategory != '업종'">
+		<if test = "searchCategory == 'YY' ">
+		AND ( a.MN_INDUTY_CODE BETWEEN 10000 AND 34000 OR a.MN_INDUTY_CODE = 'C')
+		</if> 
+		<if test = "searchCategory == 'NN' ">
+		AND a.MN_INDUTY_CODE NOT IN ( SELECT MN_INDUTY_CODE 
+														  FROM TB_REQST_RCPY_LIST
+														  WHERE a.MN_INDUTY_CODE BETWEEN 10000 AND 34000 OR a.MN_INDUTY_CODE = 'C' )
+		</if>
+	</if>
+	
+	<if test = "searchZone != '' and searchZone != null and searchZone != '지역' ">
+		AND ( d.HEDOFC_ADRES LIKE CONCAT (#{searchZone}, '%')
+	 	<if test = "searchZone == '경남' or searchZone == '경북' or searchZone == '충남' or searchZone == '충북' or searchZone == '전북' or searchZone == '전남' ">
+				OR d.HEDOFC_ADRES LIKE CONCAT ( #{aSearchZone}, '%' , #{#bSearchZone} , '%') 
+		</if>
+		)
+	</if>
+		
+	<if test = "searchCp != '' and searchCp != null and searchInput != '' and searchInput != null and searchCp != '선택' ">
+		<if test = "searchCp == 'ENTRPRS_NM'" > AND a.ENTRPRS_NM LIKE CONCAT('%', #{searchInput} , '%') </if>
+		<if test = "searchCp == 'JURIRNO' "> AND a.JURIRNO LIKE CONCAT('%', #{searchInput} , '%') </if>
+	</if>		
+		<if test = "searchCp == 'VALID' "> AND  d.VALID_PD_BEGIN_DE > #{validPdBeginDe} AND #{validPdEndDe} > d.VALID_PD_END_DE </if>
+		GROUP BY ISSU_NO
+	) A
+</select>
+
+	<!-- 기업정보 목록 조회(발급기업)(페이징) -->
+	<select id = "selectEntprsList" resultType = "map">
+	SELECT   /* ProgramID=biz.tech.mapif.ps.PGPS0010Mapper.selectEntprsList */
+						  replace(B.ENTRPRS_NM, <![CDATA['&amp;']]>, <![CDATA['&']]>)					AS entrprsNm							/*	기업명				*/
+						, B.RPRSNTV_NM																	AS rprsntvNm							/*	대표자명			*/
+						, B.MN_INDUTY_NM																AS mnIndutyNm						/*	주업종명			*/
+						, B.MN_INDUTY_CODE															AS mnIndutyCode					/* 업종코드				*/
+						, FN_MAPPING_MN_INDCD_YY(B.MN_INDUTY_CODE, '2015')		AS indutyCode						/* 업종 코드			*/
+						, B.JURIRNO																		AS jurirno								/*	법인 등록 번호	*/
+						, B.ISSU_NO																		AS issuNo								/* 	발급 번호			*/
+						, B.VALID_PD_BEGIN_DE														AS validPdBeginDe					/*  유효기간 시작		*/
+						, B.VALID_PD_END_DE															AS validPdEndDe						/*  유효기간 종료		*/
+						, rtrim(substr(
+				          replace(
+				            replace(
+				              replace(
+				                replace(
+				                  replace(
+				                    replace(B.HEDOFC_ADRES, '충청남도', '충남')
+				                  , '충청북도', '충북')
+				                , '경상남도', '경남')
+				              , '경상북도', '경북')
+				            , '전라남도', '전남')
+				          , '전라북도', '전북')
+				        , 1, 2)) AS hedofcAdres     /* 본사 주소(지역명) */
+	FROM (
+		SELECT   /* ProgramID=biz.tech.mapif.ps.PGPS0010Mapper.selectEntprsList */
+							  a.ENTRPRS_NM 				AS ENTRPRS_NM
+							, d.RPRSNTV_NM				AS RPRSNTV_NM
+							, a.MN_INDUTY_NM			AS MN_INDUTY_NM
+							, a.MN_INDUTY_CODE			AS MN_INDUTY_CODE
+							, a.JURIRNO					AS JURIRNO
+							, d.ISSU_NO					AS ISSU_NO
+							, d.VALID_PD_BEGIN_DE		AS VALID_PD_BEGIN_DE
+							, d.VALID_PD_END_DE			AS VALID_PD_END_DE
+							, d.HEDOFC_ADRES  			AS HEDOFC_ADRES
+		FROM	  		 (SELECT MN_INDUTY_NM, MN_INDUTY_CODE, JURIRNO, ENTRPRS_NM, RCEPT_NO, ENTRPRS_SE FROM TB_REQST_RCPY_LIST) a
+							, (SELECT RCEPT_NO, RESN_SE, SE_CODE FROM TB_RESN_MANAGE) b
+							, (SELECT RCEPT_NO FROM TB_APPLY_MASTER) c
+							, (SELECT ISSU_DE, RCEPT_NO, RPRSNTV_NM, ISSU_NO, VALID_PD_BEGIN_DE, VALID_PD_END_DE, HEDOFC_ADRES FROM TB_ISSU_BSIS_INFO WHERE ISSU_DE IS NOT NULL) d
+		WHERE 
+							a.RCEPT_NO = b.RCEPT_NO
+							AND a.ENTRPRS_SE = 'O'  		<!-- 신청기업만 -->
+							AND b.RCEPT_NO = c.RCEPT_NO
+							AND c.RCEPT_NO = d.RCEPT_NO
+							AND b.resn_se = 'R' and b.se_code = 'RC1' <!-- 확인서가  발급된 기업만 -->
+							AND a.RCEPT_NO NOT IN (SELECT rcept_no
+	                                  FROM TB_RESN_MANAGE
+	                                 WHERE se_code = 'RC4')	<!-- 확인서가  발급된 기업 중 발급취소는 제외 -->
+	
+		<if test = "searchYear != '' and searchYear != null and searchYear != 0 ">
+			AND substring(d.ISSU_DE, 1, 4) = #{searchYear}  <!-- 발급년도 -->
+		</if>
+		<if test = "searchCategory != '' and searchCategory != null and searchCategory != '업종'">
+			<if test = "searchCategory == 'YY' ">
+			AND ( a.MN_INDUTY_CODE BETWEEN 10000 AND 34000 OR a.MN_INDUTY_CODE = 'C')
+			</if> 
+			<if test = "searchCategory == 'NN' ">
+			AND a.MN_INDUTY_CODE NOT IN ( SELECT MN_INDUTY_CODE 
+															  FROM TB_REQST_RCPY_LIST
+															  WHERE a.MN_INDUTY_CODE BETWEEN 10000 AND 34000 OR a.MN_INDUTY_CODE = 'C' )
+			</if>
+		</if>
+		
+		<if test = "searchZone != '' and searchZone != null and searchZone != '지역' ">
+			AND ( d.HEDOFC_ADRES LIKE CONCAT (#{searchZone}, '%')
+		 	<if test = "searchZone == '경남' or searchZone == '경북' or searchZone == '충남' or searchZone == '충북' or searchZone == '전북' or searchZone == '전남' ">
+				OR d.HEDOFC_ADRES LIKE CONCAT ( #{aSearchZone}, '%' , #{#bSearchZone} , '%') 
+			</if>
+			)
+		</if>
+			
+		<if test = "searchCp != '' and searchCp != null and (searchInput != '' and searchInput != null) and searchCp != '선택' ">
+			<if test = "searchCp == 'ENTRPRS_NM'" > AND a.ENTRPRS_NM LIKE CONCAT('%', #{searchInput} , '%') </if>
+			<if test = "searchCp == 'JURIRNO' "> AND a.JURIRNO LIKE CONCAT('%', #{searchInput} , '%') </if>
+		</if>		
+			<if test = "searchCp == 'VALID' "> AND  d.VALID_PD_BEGIN_DE > #{validPdBeginDe} AND #{validPdEndDe} > d.VALID_PD_END_DE </if>
+			GROUP BY ISSU_NO
+			ORDER BY ISSU_NO
+			LIMIT #{limitFrom} , #{limitTo}
+		) AS B
+	</select>
+	
+	<!-- 지역 약칭 검색 -->
+	<select id = "selectAbrvList" resultType = "map"> 
+	SELECT 	/* ProgramID=biz.tech.mapif.ps.PGPS0010Mapper.selectAbrvList */
+								ABRV							AS abrv							/* 약칭		*/
+	FROM   					TB_AREA_DIV
+	WHERE 					UPPER_CODE LIKE CONCAT('WC', '%')
+	</select>
+	
+	<!-- 기업정보 주가정보 조회 -->
+	<select id="selectStkData" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.ps.PGPS0010Mapper.selectStkData */
+							STK.STDYY					AS	stdYy			/*		기준년		*/
+							,STK.STDMT					AS	stdMt			/*		해당월		*/
+							,STK.STKPC					AS	stkPc			/*		주가			*/
+	FROM				TB_STKPC STK, TB_LST_ENTRPRS LST
+	WHERE	STK.STOCK_CD = LST.STOCK_CD
+		 AND	LST.JURIRNO = #{jurirno}
+     AND CONCAT(STK.STDYY, STK.STDMT)<![CDATA[>=]]> DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -2 YEAR), "%Y%m")
+     ORDER BY CONVERT(STK.STDYY, UNSIGNED), CONVERT(STK.STDMT,UNSIGNED) 
+	</select>
+	
+	<!-- 기업정보 주요재무정보 조회 -->
+	<select id="selectPointFnnrResult" resultType="Map">
+	SELECT	/* ProgramID=biz.tech.mapif.ps.PGPS0010Mapper.selectFnnrResult */
+	STDYY
+	, IFNULL(ROUND(B.ASSETS_SM/100000, 1), 0) ASSETS_SM
+	, IFNULL(ROUND(B.DEBT/100000,1), 0) DEBT
+	, IFNULL(ROUND(B.CAPL_SM/100000,1), 0) CAPL_SM 
+	, IFNULL(ROUND(B.SELNG_AM/100000,1), 0) SELNG_AM 
+	, IFNULL(ROUND(B.BSN_PROFIT/100000,1), 0) BSN_PROFIT
+	, IFNULL(ROUND(B.THSTRM_NTPF/100000,1), 0) THSTRM_NTPF
+	FROM TB_FNNR_DATA B
+	WHERE 1=1
+	AND HPE_CD = #{hpe_cd}
+	ORDER BY STDYY DESC
+	LIMIT 5
+	</select>
+	
+	<!-- 
+		기업군
+		EA1 : 전체중견
+		EA2 : 일반중견
+		EA3 : 관계기업
+		EA4 : 후보기업
+		EA5 : 가젤형기업	
+	-->
+	<sql id="fromDynamic2">
+		FROM
+		<choose>
+			<when test="searchCondition == 'EA1'">
+				TB_ENTPRS_INFO EN
+				LEFT JOIN TB_FNNR_DATA FN
+				  ON EN.STDYY = FN.STDYY
+				 AND EN.HPE_CD = FN.HPE_CD
+				LEFT JOIN TB_PATENT_DATA PA
+				  ON EN.STDYY = PA.STDYY
+				 AND EN.HPE_CD = PA.HPE_CD
+				LEFT JOIN TB_HPE_JDGMNT_RESN RE
+ 				  ON EN.STDYY = RE.STDYY
+   		 		 AND EN.HPE_CD = RE.HPE_CD
+			   WHERE EN.DCSN_HPE_AT = 'Y'
+				 AND EN.ANALS_USE_AT = 'Y'
+				 AND RE.JDGMNT_MBY = 'M'
+				<if test="reason1 != null and reason1 != '' ">
+					AND RE.SCALE_STDR = 'Y'																				/* 규모 */
+				</if>
+				<if test="reason2 != null and reason2 != '' ">
+					AND ( RE.UPLMT_1000 = 'Y' OR RE.UPLMT_ASSETS = 'Y' OR RE.UPLMT_CAPL = 'Y' ) 						/* 상한 */
+				</if>
+				<if test="reason3 != null and reason3 != '' ">
+					AND ( RE.INDPNDNCY_DIRECT_30 = 'Y' OR RE.INDPNDNCY_INDRT_30 = 'Y' OR RE.INDPNDNCY_RCPY = 'Y' )   	/* 독립성 */
+				</if>
+			</when>
+			<when test="searchCondition == 'EA2'">
+				TB_ENTPRS_INFO EN
+				LEFT JOIN TB_FNNR_DATA FN
+				  ON EN.STDYY = FN.STDYY
+				 AND EN.HPE_CD = FN.HPE_CD
+				LEFT JOIN TB_PATENT_DATA PA
+				  ON EN.STDYY = PA.STDYY
+				 AND EN.HPE_CD = PA.HPE_CD
+				LEFT JOIN TB_HPE_JDGMNT_RESN RE
+ 				  ON EN.STDYY = RE.STDYY
+   		 		 AND EN.HPE_CD = RE.HPE_CD
+			   WHERE EN.DCSN_HPE_AT = 'Y'
+				 AND EN.ANALS_USE_AT = 'Y'
+				 AND ifnull(EN.DCSN_RCPY_AT, 'N') <![CDATA[<>]]> 'Y'
+				 AND RE.JDGMNT_MBY = 'M'
+				<if test="reason1 != null and reason1 != '' ">
+					AND RE.SCALE_STDR = 'Y'  																			/* 규모 */
+				</if>
+				<if test="reason2 != null and reason2 != '' ">
+					AND ( RE.UPLMT_1000 = 'Y' OR RE.UPLMT_ASSETS = 'Y' OR RE.UPLMT_CAPL = 'Y' ) 						/* 상한 */
+				</if>
+				<if test="reason3 != null and reason3 != '' ">
+					AND ( RE.INDPNDNCY_DIRECT_30 = 'Y' OR RE.INDPNDNCY_INDRT_30 = 'Y'  ) 								/* 독립성 */
+				</if>
+			</when>
+			<when test="searchCondition == 'EA3'">
+				TB_ENTPRS_INFO EN
+				LEFT JOIN TB_FNNR_DATA FN
+				  ON EN.STDYY = FN.STDYY
+				 AND EN.HPE_CD = FN.HPE_CD
+				LEFT JOIN TB_PATENT_DATA PA
+				  ON EN.STDYY = PA.STDYY
+				 AND EN.HPE_CD = PA.HPE_CD
+			   WHERE EN.DCSN_HPE_AT = 'Y'
+				 AND EN.ANALS_USE_AT = 'Y'
+				 AND ifnull(EN.DCSN_RCPY_AT, 'N') = 'Y'
+			</when>
+			<when test="searchCondition == 'EA4'">
+				TB_ENTPRS_INFO EN
+				LEFT JOIN TB_FNNR_DATA FN
+				  ON EN.STDYY = FN.STDYY
+				 AND EN.HPE_CD = FN.HPE_CD
+				LEFT JOIN TB_PATENT_DATA PA
+		  		  ON EN.STDYY = PA.STDYY
+		 		 AND EN.HPE_CD = PA.HPE_CD
+ 			   WHERE (EN.SELNG_HPEC_AT = 'Y'
+				  OR EN.RND_HPEC_AT = 'Y'
+   	 		  	  OR EN.POSTPNE_HPEC_AT = 'Y')
+				<trim prefix="(" prefixOverrides="OR" suffix=")">
+					<if test="reason1 != null and reason1 != '' ">
+						OR EN.SELNG_HPEC_AT = 'Y'		/* 매출 */
+					</if>
+					<if test="reason2 != null and reason2 != '' ">
+						OR EN.RND_HPEC_AT  = 'Y'		/* 알엔디 */
+					</if>
+					<if test="reason3 != null and reason3 != '' ">
+						OR EN.POSTPNE_HPEC_AT  = 'Y'	/* 유예 */
+					</if>
+				</trim>	
+			</when>
+			<when test="searchCondition == 'EA5'">
+				TB_ENTPRS_INFO EN
+				LEFT JOIN TB_FNNR_DATA FN
+				  ON EN.STDYY = FN.STDYY
+		 		 AND EN.HPE_CD = FN.HPE_CD
+				LEFT JOIN TB_PATENT_DATA PA
+		  		  ON EN.STDYY = PA.STDYY
+		 		 AND EN.HPE_CD = PA.HPE_CD
+			   WHERE EN.DCSN_HPE_AT = 'Y'
+   				 AND EN.ANALS_USE_AT = 'Y'
+   				 AND (ifnull(EN.SELNG_GZLC_AT, 'N') = 'Y'
+				  OR ifnull(EN.EMPLYM_GZLC_AT, 'N') = 'Y')
+				<trim prefix="(" prefixOverrides="OR" suffix=")">
+					<if test="reason1 != null and reason1 != '' ">
+						OR EN.SELNG_GZLC_AT = 'Y'		/* 매출 */
+					</if>
+					<if test="reason2 != null and reason2 != '' ">
+						OR EN.EMPLYM_GZLC_AT  = 'Y'	/* 고용 */
+					</if>
+				</trim>	
+			</when>
+			<otherwise>
+				TB_ENTPRS_INFO EN
+				LEFT JOIN TB_FNNR_DATA FN
+				  ON EN.STDYY = FN.STDYY
+				 AND EN.HPE_CD = FN.HPE_CD
+				LEFT JOIN TB_PATENT_DATA PA
+		  		  ON EN.STDYY = PA.STDYY
+		 		 AND EN.HPE_CD = PA.HPE_CD
+			   WHERE 1=1
+			</otherwise>
+		</choose>
+	</sql>
+	
+	<sql id="searchDynamic2">
+		<trim>
+			<if test="sel_target_year != null and sel_target_year != '' ">
+				AND EN.STDYY = #{sel_target_year}
+			</if>
+			<if test="capl1 != null and capl1 != '' and capl2 != null and capl2 != ''">
+				AND (FN.CAPL >= #{capl1} * 100000 and CAPL <![CDATA[<=]]> #{capl2} * 100000)
+			</if>
+			<if test="assets_sm1 != null and assets_sm1 != '' and assets_sm2 != null and assets_sm2 != ''">
+				AND (FN.ASSETS_SM >= #{assets_sm1} * 100000 and FN.ASSETS_SM <![CDATA[<=]]> #{assets_sm2} * 100000)
+			</if>
+			<if test="selng_am1 != null and selng_am1 != '' and selng_am2 != null and selng_am2 != ''">
+				AND (FN.SELNG_AM >= #{selng_am1} * 100000 and FN.SELNG_AM <![CDATA[<=]]> #{selng_am2} * 100000)
+			</if>
+			<if test="selng_am1 != null and selng_am1 != '' and selng_am2 != null and selng_am2 != ''">
+				AND (FN.SELNG_AM >= #{selng_am1} * 100000 and FN.SELNG_AM <![CDATA[<=]]> #{selng_am2} * 100000)
+			</if>
+			<if test="xport_am_kr1 != null and xport_am_kr1 != '' and xport_am_kr2 != null and xport_am_kr2 != ''">
+				AND (PA.XPORT_AM_WON >= #{xport_am_kr1} * 100000 and PA.XPORT_AM_WON <![CDATA[<=]]> #{xport_am_kr2} * 100000)
+			</if>
+			<if test="bsn_profit1 != null and bsn_profit1 != '' and bsn_profit2 != null and bsn_profit2 != ''">
+				AND (FN.BSN_PROFIT >= #{bsn_profit1} * 100000 and FN.BSN_PROFIT <![CDATA[<=]]> #{bsn_profit2} * 100000)
+			</if>
+			<if test="thstrm_ntpf1 != null and thstrm_ntpf1 != '' and thstrm_ntpf2 != null and thstrm_ntpf2 != ''">
+				AND (FN.THSTRM_NTPF >= #{thstrm_ntpf1} * 100000 and FN.THSTRM_NTPF <![CDATA[<=]]> #{thstrm_ntpf2} * 100000)
+			</if>
+			<if test="rsrch_devlop_ct1 != null and rsrch_devlop_ct1 != '' and rsrch_devlop_ct2 != null and rsrch_devlop_ct2 != ''">
+				AND (FN.RSRCH_DEVLOP_CT >= #{rsrch_devlop_ct1} * 100000 and FN.RSRCH_DEVLOP_CT <![CDATA[<=]]> #{rsrch_devlop_ct2} * 100000)
+			</if>
+			<if test="ordtm_labrr_co1 != null and ordtm_labrr_co1 != '' and ordtm_labrr_co2 != null and ordtm_labrr_co2 != ''">
+				AND (FN.ORDTM_LABRR_CO >= #{ordtm_labrr_co1} and FN.ORDTM_LABRR_CO <![CDATA[<=]]> #{ordtm_labrr_co2})
+			</if>
+			<if test="b2bChk != null and b2bChk != '' ">
+				AND EN.B2B_ENTRPRS_AT = 'Y'
+			</if>
+			<if test="b2cChk != null and b2cChk != '' ">
+				AND EN.B2C_ENTRPRS_AT = 'Y'
+			</if>
+			<if test="b2gChk != null and b2gChk != '' ">
+				AND EN.B2G_ENTRPRS_AT = 'Y'
+			</if>
+			<if test="frgnrChk != null and frgnrChk != '' ">
+				AND EN.FNSY_AT = 'Y'
+			</if>			
+			<if test="induty_select == 'I'.toString()">					  		
+				AND CASE WHEN EN.LCLAS_CD = 'C' THEN 'C' 
+						 WHEN EN.LCLAS_CD != 'C' THEN 'Z'
+					 END IN
+				<foreach item="item" collection="indutyVal" open="(" separator="," close=")">
+					#{item}
+				</foreach>			
+			</if>
+			<if test="induty_select == 'T'.toString() and indutyVal != null and indutyVal != '' ">
+				AND EN.MLSFC_CD IN
+				<!-- CASE WHEN EN.LCLAS_CD = 'C' THEN CONCAT(EN.LCLAS_CD, EN.MLSFC_CD)
+						  WHEN EN.LCLAS_CD != 'C' THEN EN.LCLAS_CD
+					  END IN  -->
+				<foreach item="item" collection="indutyVal" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="induty_select == 'D'.toString() and indutyVal != null and indutyVal != '' ">
+				AND CASE WHEN EN.LCLAS_CD = 'C' THEN CONCAT(EN.LCLAS_CD, EN.MLSFC_CD)
+						 WHEN EN.LCLAS_CD != 'C' THEN EN.LCLAS_CD
+					 END IN 
+				<foreach item="item" collection="indutyVal" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="searchWrdSelect != null and searchWrdSelect != '' ">
+				<if test="searchWrdSelect == 'ENTRPRS_NM' ">
+					<if test="searchWrd != null and searchWrd != ''">
+						AND EN.ENTRPRS_NM LIKE CONCAT ('%', #{searchWrd},'%')
+					</if>
+				</if>
+				<if test="searchWrdSelect == 'JURIRNO' ">
+					AND EN.JURIRNO = #{searchWrd}
+				</if>
+				<if test="searchWrdSelect == 'BIZRNO' ">
+					AND EN.BIZRNO = #{searchWrd}
+				</if>
+				<if test="searchWrdSelect == 'RPRSNTV_NM' ">
+					<if test="searchWrd != null and searchWrd != ''">
+						AND EN.RPRSNTV_NM LIKE CONCAT ('%', #{searchWrd},'%')
+					</if>
+				</if>
+			</if>
+			<if test="ad_area1 != null and ad_area1 != '' ">
+				AND EN.AREA1 = #{ad_area1}
+			</if>
+			<if test="ad_hedofc_adres != null and ad_hedofc_adres != '' ">
+				AND EN.HEDOFC_ADRES LIKE CONCAT ('%', #{ad_hedofc_adres},'%')
+			</if>
+			<if test="ad_entrprs_othbc_stle != null and ad_entrprs_othbc_stle != '' ">
+				AND EN.ENTRPRS_OTHBC_STLE = #{ad_entrprs_othbc_stle}
+			</if>
+			<if test="ad_b2b_entrprs_at == 'Y'.toString() or ad_b2c_entrprs_at == 'Y'.toString() or ad_b2g_entrprs_at == 'Y'.toString() or ad_fnsy_at == 'Y'.toString()">
+				AND 
+				<trim prefix="(" prefixOverrides="OR" suffix=")">
+					<if test="ad_b2b_entrprs_at != null and ad_b2b_entrprs_at == 'Y'.toString() ">
+						OR EN.B2B_ENTRPRS_AT = 'Y'
+					</if>			
+					<if test="ad_b2c_entrprs_at != null and ad_b2c_entrprs_at == 'Y'.toString() ">
+						OR EN.B2C_ENTRPRS_AT = 'Y'
+					</if>
+					<if test="ad_b2g_entrprs_at != null and ad_b2g_entrprs_at == 'Y'.toString() ">
+						OR EN.B2G_ENTRPRS_AT = 'Y'
+					</if>
+					<if test="ad_fnsy_at != null and ad_fnsy_at == 'Y'.toString() ">
+						OR EN.FNSY_AT = 'Y'
+					</if>
+				</trim>
+			</if>				
+		</trim>
+	</sql>
+	
+	<!-- 기업정보 목록 개수 조회-->
+	<select id="findTotalEntprsInfoRowCnt2" resultType="int">
+		SELECT 	/* ProgramID=biz.tech.mapif.ps.PGPS0010Mapper.findTotalEntprsInfoRowCnt2 */
+			   COUNT(*) AS CNT
+		<include refid="fromDynamic2"/>	
+		<include refid="searchDynamic2"/>	
+	</select>
+	
+	<!-- 기업정보 목록 조회(ps)(페이징) -->
+	<select id="entprsList2" resultType="Map">
+		SELECT /* ProgramID=biz.tech.mapif.ps.PGPS0010Mapper.entprsList2 */				
+			   EN.STDYY
+			 , EN.HPE_CD
+			 , EN.JURIRNO
+			 , EN.BIZRNO
+			 , EN.ENTRPRS_NM
+			 , EN.RPRSNTV_NM
+			 , EN.AREA1
+			 , CONCAT(EN.LCLAS_CD, EN.MLSFC_CD) AS INDUTY_CODE
+			 , EN.FNSY_AT
+			 , EN.B2B_ENTRPRS_AT
+			 , EN.B2C_ENTRPRS_AT
+			 , EN.B2G_ENTRPRS_AT
+			 , FN.RSRCH_DEVLOP_CT
+			 , FN.ORDTM_LABRR_CO
+			 , FN.THSTRM_NTPF
+			 , FN.ORDTM_LABRR_CO
+			 , PA.XPORT_AM_WON
+			 , (SELECT FN_INDCD2INDNM(EN.DTLDTLCLFC_CD, 5)) AS KOREAN_NM
+			 , (SELECT FN_AREACD2NM(EN.AREA1, 2)) AS AREA_NM
+		<include refid="fromDynamic2"/>		
+		<include refid="searchDynamic2"/>	
+		 LIMIT #{limitFrom}, #{limitTo}
+	</select>
+	
+	<!-- ####################### 엑셀다운로드 ################### -->
+	
+	<!-- 엑셀다운로드할 기업데이터 PK목록 조회 -->
+	<select id="selectEntrprsPKList2" resultType="String">
+	SELECT		/* ProgramID=biz.tech.mapif.ps.PGPS0010Mapper.selectEntrprsPKList2 */	
+					EN.HPE_CD
+	<include refid="fromDynamic2"/>
+	<include refid="searchDynamic2"/>	
+	</select>
+</mapper>

@@ -1,0 +1,61 @@
+<!--conf
+<sample>
+              <product version="3.0" edition="std"/>
+                     <modifications>
+                            <modified date="100609"/>
+                     </modifications>
+               </sample>
+ -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<title>Presets</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+	
+	<script src="../common/testdata.js"></script>
+	<script type="text/javascript">
+    var chart;
+	window.onload = function(){
+        drawChart("plot");
+    };
+    function drawChart(preset){
+        chart =  new dhtmlXChart({
+            view:"line",
+            container:"chartContainer",
+            value:"#sales#",
+            yAxis:{
+                start:0,
+                step:10,
+                end:100,
+                template:function(value){
+                    return (value%20?"":value);
+                }
+            },
+            xAxis:{
+                template:"'#year#"
+            },
+            preset: preset
+        });
+        chart.parse(dataset,"json");
+    }
+    function applyPreset(){
+        var preset = document.getElementById("preset").value;
+        chart.destructor();
+        drawChart(preset);
+    }
+	</script>
+</head>
+<body>
+   <div style="padding: 5px;">
+        <b>Preset:</b>
+        <select id="preset" onchange="applyPreset()">
+            <option value="plot" selected>plot</option>
+            <option value="diamond">diamond</option>
+            <option value="simple">simple</option>
+        </select>
+    </div>
+	<div id="chartContainer" style="width:550px;height:250px;border:1px solid #A4BED4;"></div>
+</body>
+</html>

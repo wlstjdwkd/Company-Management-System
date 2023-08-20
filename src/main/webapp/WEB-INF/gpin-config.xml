@@ -1,0 +1,48 @@
+<ConfigureDescriptor entityID="HQSI2H4ION1Z" xmlns="idms-config" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" xmlns:xenc="http://www.w3.org/2001/04/xmlenc#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<SPSSODescriptor AuthnRequestsSigned="true" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol" WantAssertionsSigned="true">
+		<AssertionConsumerService isDefault="true" index="0" Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact" Location="NoUse"/>
+		<AssertionConsumerService index="1" Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="NoUse"/>
+		<AssertionConsumerService index="2" Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="NoUse"/>
+		<AttributeConsumingService index="1" isDefault="true"  AuthnRequestsSigned="true" WantAssertionsSigned="true">
+			<ServiceName xml:lang="en">Default Request Attributes</ServiceName>
+			<RequestedAttribute NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" Name="vidn">
+				<saml:AttributeValue>NoUse</saml:AttributeValue>
+			</RequestedAttribute>
+			<RequestedAttribute NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" Name="name">
+				<saml:AttributeValue>NoUse</saml:AttributeValue>
+			</RequestedAttribute>
+			<RequestedAttribute NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" Name="dupInfo">
+				<saml:AttributeValue>NoUse</saml:AttributeValue>
+			</RequestedAttribute>
+			<RequestedAttribute NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" Name="sex">
+				<saml:AttributeValue>NoUse</saml:AttributeValue>
+			</RequestedAttribute>
+			<RequestedAttribute NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" Name="birth">
+				<saml:AttributeValue>NoUse</saml:AttributeValue>
+			</RequestedAttribute>
+		</AttributeConsumingService>
+		<ArtifactResolutionService isDefault="true" index="0" Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="NoUse"/>
+	</SPSSODescriptor>
+	<Organization>
+		<OrganizationName xml:lang="en">NoUse</OrganizationName>
+		<OrganizationDisplayName xml:lang="en">NoUse</OrganizationDisplayName>
+		<OrganizationURL xml:lang="en">NoUse</OrganizationURL>
+	</Organization>
+	<AuthnContextComparisonType>exact</AuthnContextComparisonType>
+	<AuthnContextClassRefs>urn:oasis:names:tc:SAML:2.0:ac:classes:Password</AuthnContextClassRefs>
+	<AuthnContextClassRefs>urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport</AuthnContextClassRefs>
+	<AuthnContextClassRefs>urn:oasis:names:tc:SAML:2.0:ac:classes:SoftwarePKI</AuthnContextClassRefs>
+	<AssertionToleranceNotOnOrAfter>3600</AssertionToleranceNotOnOrAfter>
+	<SubjectConfirmationToleranceNotOnOrAfter>3600</SubjectConfirmationToleranceNotOnOrAfter>
+	<AssertionIssuerAddress>1.2.3.4</AssertionIssuerAddress>
+	<AuthPage isDefault="true" model="urn:oasis:names:tc:SAML:2.0:ac:classes:Password">NoUse</AuthPage>
+	<AuthPage model="urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport">NoUse</AuthPage>
+	<AuthPage model="urn:oasis:names:tc:SAML:2.0:ac:classes:SoftwarePKI">NoUse</AuthPage>
+	
+	<metadataLocation>/metadata/</metadataLocation>
+	<KeyManagement Use="Introduction" KeyStorePath="/keystore/SVRB553443001_env.jks" KeyPassword="ahpek2105!" KeyAlias="hpe" KeyStorePassword="ahpek2105!"/>
+	<KeyManagement Use="Encryption" KeyStorePath="/keystore/SVRB553443001_env.jks" KeyPassword="ahpek2105!" KeyAlias="hpe" KeyStorePassword="ahpek2105!"/>
+	<KeyManagement Use="Sign" KeyStorePath="/keystore/SVRB553443001_env.jks" KeyPassword="ahpek2105!" KeyAlias="hpe" KeyStorePassword="ahpek2105!"/>
+	<KeyManagement Use="SSL" KeyStorePath="/keystore/SVRB553443001_env.jks" KeyPassword="ahpek2105!" KeyAlias="hpe" KeyStorePassword="ahpek2105!"/>
+	
+</ConfigureDescriptor>

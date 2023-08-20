@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="biz.tech.mapif.dc.PGDC0040Mapper">
+
+	<!-- 환율수집 작업 목록조회 -->
+	<select id="findfxerMgrList" resultType="map">
+		SELECT	/* ProgramID=biz.tech.mapif.dc.PGDC0040Mapper.findfxerMgrList */
+						 STDYY									AS 	stdYy									/* 기준년(PK)  */
+						,RCDCNT									AS 	rcdCnt								/* 레코드건수 */
+						,REGIST_SUCCES_CO					AS 	successCnt							/* 등록성공건수 */		
+						,REGIST_FAILR_CO						AS 	failCnt							/* 등록실패건수 */		
+						,(
+							CASE PROCESS_STTUS	
+								WHEN 	'1'	 	THEN '시작'			
+								WHEN 	'2' 	THEN '오류'
+								WHEN 	'3'		THEN '성공'	
+								ELSE	'N/A'
+							END
+						)										AS    proSatus									/* 처리상태(1,2,3)*/				
+						,DATE_FORMAT(EXC_TIME , '%Y-%m-%d %H:%m')  AS 	runTm				/* 수행일시 */
+						,(CASE WHEN EXC_TIME IS NOT NULL 
+								THEN  ROUND(TIMESTAMPDIFF(SECOND, CREAT_DE, EXC_TIME ) / 60)
+							END
+						)										AS 	diffMin 	
+						,(CASE WHEN EXC_TIME IS NOT NULL 
+								THEN MOD( TIMESTAMPDIFF(SECOND, CREAT_DE, EXC_TIME ) ,60)
+							END
+						)										AS 	diffSec 									
+		FROM					TB_NATNL_EHGT_DTLS
+		<where>
+			<!-- 검색조건 -->
+			<if test="fromstdYy != null and fromstdYy != ''" >
+					AND 			STDYY  <![CDATA[>=]]>  #{fromstdYy}
+			</if>
+			<if test="tostdYy != null and tostdYy != ''" >
+					AND 			STDYY  <![CDATA[<=]]> #{tostdYy}
+			</if>
+		</where>
+		ORDER 		BY STDYY DESC 
+	</select>
+
+	<!-- 환율수집 작업 에러조회 -->
+	<select id="findErrMsg" resultType="String">
+		SELECT	/* ProgramID=biz.tech.mapif.dc.PGDC0040Mapper.findErrMsg */
+						 ERROR_MSSAGE									AS 	errMsg									/* 기준년(PK)  */
+		FROM					TB_NATNL_EHGT_DTLS
+		<where>
+			<!-- 검색조건 -->
+					STDYY  = #{stdYy} 	
+		</where>
+	</select>
+	
+	<!-- 환율 목록조회 -->
+	<select id="findfxerList" resultType="map">
+		SELECT	/* ProgramID=biz.tech.mapif.dc.PGDC0040Mapper.findfxerList */ 
+						STDYY		 						AS 	stdYy									/* 기준년(PK)  */
+						, CRNCY_CODE					AS 	crncyCd								/* 통화코드  */
+						, CRNCY_DESC					AS 	crncyDesc							/* 통화코드명  */
+						, WON_EHGT						AS 	woneHgt							/* 원환율  */
+						, DOLLAR_EHGT					AS 	dollereHgt							/* 달러환율  */
+						, WON_EHGT_CLSRC				AS 	woneHgtClsrc						/* 원환율  */
+						, DOLLAR_EHGT_CLSRC			AS 	dollereHgtClsrc					/* 달러환율  */
+		FROM		TB_NATNL_EHGT
+		<where>
+				<!-- 검색조건 -->
+				<if test="fromstdYy != null and fromstdYy != ''" >
+						AND 			STDYY  <![CDATA[>=]]> #{fromstdYy}
+				</if>
+				<if test="tostdYy != null and tostdYy != ''" >
+						AND 			STDYY  <![CDATA[<=]]> #{tostdYy}
+				</if>
+				<if test="crncyCd != null and crncyCd != '' and crncyCd != 'all'">
+						AND 			CRNCY_CODE  = #{crncyCd}
+				</if>
+			</where>
+		LIMIT			${limitFrom} , ${limitTo}
+	</select>
+
+		<!-- 환율 목록조회 -->
+	<select id="findfxerListCnt" resultType="int" >
+		SELECT	/* ProgramID=biz.tech.mapif.dc.PGDC0040Mapper.findfxerListCnt */
+								COUNT(*)	
+		FROM		TB_NATNL_EHGT
+		<where>
+				<!-- 검색조건 -->
+				<if test="fromstdYy != null and fromstdYy != ''" >
+						AND 			STDYY  <![CDATA[>=]]> #{fromstdYy}
+				</if>
+				<if test="tostdYy != null and tostdYy != ''" >
+						AND 			STDYY  <![CDATA[<=]]> #{tostdYy}
+				</if>
+				<if test="crncyCd != null and crncyCd != '' and crncyCd != 'all'">
+						AND 			CRNCY_CODE  = #{crncyCd}
+				</if>
+			</where>		
+	</select>
+		
+
+		<!-- 환율 목록조회 -->
+	<select id="findfxercrncyCdList" resultType="map" >
+		SELECT	DISTINCT		/* ProgramID=biz.tech.mapif.dc.PGDC0040Mapper.findfxercrncyCdList */
+					CRNCY_CODE					AS 	crncyCd									/* 통화코드(PK)  */
+					, CRNCY_DESC					AS 	crncyDesc									/* 통화코드명  */
+		 FROM TB_NATNL_EHGT
+ 		WHERE TB_NATNL_EHGT.`CRNCY_DESC` IS NOT NULL ORDER BY CRNCY_DESC ;
+	</select>		
+ 
+	<!-- 환율수집관리 삭제 -->
+	<delete id="deletfxerMgr">
+		DELETE	/* ProgramID=biz.tech.mapif.dc.PGDC0040Mapper.deletfxerMgr */
+			FROM					TB_NATNL_EHGT_DTLS
+		<where>
+			<!-- 검색조건 -->
+						STDYY  = #{stdYy} 	
+		</where>
+	</delete>
+
+		<!-- 환율정보 삭제 -->
+	<delete id="deletfxerList">
+		DELETE	/* ProgramID=biz.tech.mapif.dc.PGDC0040Mapper.deletStkpcPcList */
+			FROM	 TB_NATNL_EHGT
+		<where>
+			<!-- 검색조건 -->
+						STDYY  = #{stdYy} 	
+		</where>
+	</delete>
+	
+		<select id="findBatchJobbyBatchNm" resultType="map">
+		SELECT	/* ProgramID=biz.tech.mapif.dc.PGDC0040Mapper.findBatchJobbyBatchNm */
+						batch_opert_id  as batchOpertId
+						,batch_opert_nm  as  batchOpertNm
+						,batch_progrm  as batchProgrm
+		FROM		comtnbatchopert
+		WHERE		batch_opert_nm = #{batchNm}
+	</select>
+	
+	
+	
+</mapper>

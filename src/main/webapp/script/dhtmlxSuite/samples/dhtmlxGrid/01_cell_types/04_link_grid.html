@@ -1,0 +1,64 @@
+<!--conf
+<sample>
+               <product version="1.4" edition="std"/>
+                       <modifications>
+                               <modified date="070101"/>
+                       </modifications>
+               </sample>
+ --> 
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Link Button</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+
+</head>
+<body>
+	<h1>Link Button</h1>
+	<p>
+		Here is an example of implementation of html links in dhtmlxgrid. 
+		You can specify url or skip it. Also you can specify a target (_blank by default) 
+	</p>
+	<p>
+		All links except "Yanka Kupala" will be opened in new windows. <br />"Yanka Kupala" will be opened in iframe 
+	</p>
+
+
+	<table width="700">
+		<tr>
+			<td width="350">
+				<div id="gridbox" style="width:319px;height:250px;background-color:white;"></div>
+			</td>
+			<td valign="top">
+				<iframe name="iframe_a" style="width:330px;height:150px"></iframe><br>
+			</td>
+		</tr>
+	</table>
+<p>	
+<div><strong>The corresponding  cell value in XML should be a "^" delimited list of following values:</strong></div>
+<ul>
+<li>1st - Link Text</li>
+<li>2nd - URL (optional)</li>
+<li>3rd - target (optional, default is _blank)</li>
+</ul>
+</p>
+		
+<script>
+	mygrid = new dhtmlXGridObject('gridbox');
+	mygrid.setImagePath("../../../codebase/imgs/");
+	mygrid.setHeader("Author,Title");
+	mygrid.setInitWidths("150,150")
+	mygrid.setColAlign("left,left")
+	mygrid.setColTypes("ro,link");
+	mygrid.setColSorting("str,str")
+	mygrid.setSkin("dhx_skyblue")
+    mygrid.init();
+	mygrid.loadXML("../common/grid_links.xml");
+</script>
+
+</body>
+</html>

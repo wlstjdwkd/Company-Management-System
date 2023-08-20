@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<!--conf
+<sample>
+              <product version="4.0b1" edition="std"/>
+                     <modifications>
+                            <modified date="130911"/>
+                     </modifications>
+               </sample>
+-->
+<html>
+<head>
+	<title>Integration with dhtmlxDataView</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+	<script>
+		var myAcc;
+		var myDataView;
+		
+		function doOnLoad() {
+			
+			myAcc = new dhtmlXAccordion({
+				parent: "accObj",
+				items: [
+					{id: "a1", text: "dhtmlxDataView"},
+					{id: "a2", text: "b"},
+					{id: "a3", text: "c"}
+				]
+			});
+			
+			myDataView = myAcc.cells("a1").attachDataView({
+				type: {
+					template:"#Package# : #Version#<br/>#Maintainer#",
+					padding: 5,
+					height: 40,
+					width: 170
+				},
+				drag: true,
+				select: true
+			});
+			
+			myDataView.load("../common/dataview.xml");
+		}
+	</script>
+</head>
+<body onload="doOnLoad();">
+	<div id="accObj" style="position: relative; width: 390px; height: 400px;"></div>
+	
+</body>
+</html>

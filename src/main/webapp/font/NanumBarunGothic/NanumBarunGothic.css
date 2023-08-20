@@ -1,0 +1,35 @@
+/* 
+ * Nanum Gothic (Korean) http://www.google.com/fonts/earlyaccess
+ */
+@font-face {
+    font-family: 'NanumBarunGothic';
+    font-style: normal;
+    font-weight: 400;
+    src: url(./nanumbarungothicl.eot);
+    src: url(./nanumbarungothicl.eot?#iefix) format('embedded-opentype'), 
+	url(./nanumbarungothicl.woff2) format('woff2'), 
+	url(./nanumbarungothicl.woff) format('woff'), 
+	url(./nanumbarungothicl.ttf) format('truetype');
+}
+
+@font-face {
+    font-family: 'NanumBarunGothic';
+    font-style: normal;
+    font-weight: 500;
+    src: url(./nanumbarungothicr.eot);
+    src: url(./nanumbarungothicr.eot?#iefix) format('embedded-opentype'), 
+	url(./nanumbarungothicr.woff2) format('woff2'), 
+	url(./nanumbarungothicr.woff) format('woff'), 
+	url(./nanumbarungothicr.ttf) format('truetype');
+}
+
+@font-face {
+    font-family: 'NanumBarunGothic';
+    font-style: normal;
+    font-weight: 700;
+    src: url(./nanumbarungothicb.eot);
+    src: url(./nanumbarungothicb.eot?#iefix) format('embedded-opentype'), 
+	url(./nanumbarungothicb.woff2) format('woff2'), 
+	url(./nanumbarungothicb.woff) format('woff'), 
+	url(./nanumbarungothicb.ttf) format('truetype');
+}

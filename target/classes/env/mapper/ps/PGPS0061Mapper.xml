@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="biz.tech.mapif.ps.PGPS0061Mapper">
+
+	<sql id="dynamicWhere">
+     <trim>
+        <if test="sel_target_year != null and sel_target_year != '' ">
+			AND STDYY=#{sel_target_year}
+		</if>
+		<if test="searchCondition != null and searchCondition != '' ">
+			<if test="searchCondition == 'EA1' "></if>
+			<if test="searchCondition == 'EA2' ">AND A.MNGMT_STLE LIKE '%기업(일반)%'</if>
+			<if test="searchCondition == 'EA3' ">AND A.MNGMT_STLE LIKE '%관계기업%'</if>
+			<if test="searchCondition == 'EA4' ">AND A.MNGMT_STLE LIKE '%후보기업%'</if>
+			<if test="searchCondition == 'EA5' ">AND A.MNGMT_STLE LIKE '%가젤형%'</if>
+		</if>
+     </trim>
+     </sql>
+     
+    <!-- 테마별업종 조회(코드그룹별) -->
+	<select id="findCodesByGroupNo" resultType="MAP">
+	SELECT 	/* ProgramID=biz.tech.mapif.ps.PGPS0061Mapper.findCodesByGroupNo */
+				   code 			AS code			/* 코드 */
+				  ,code_dc			AS codeDc		/* 코드설명 */
+				  ,code_group_no	AS codeGroupNo	/* 코드그룹번호 */
+				  ,code_nm			AS codeNm		/* 코드명 */
+	  FROM		tb_cmmncode
+	 WHERE		code_group_no = #{param}
+	 	AND		use_at = 'Y'
+	 ORDER		BY outpt_ordr ASC	
+	</select>
+     
+	<!-- 주요지표-현황 목록 개수 조회-->
+	<select id="findTotalIdxInfoRowCnt" resultType="int">
+	SELECT 	/* ProgramID=biz.tech.mapif.ps.PGPS0061Mapper.findTotalIdxInfoRowCnt */
+	count(1) from (
+	  select 
+	  STDYY
+	  , CASE WHEN MNGMT_STLE = '기업(일반)' THEN '일반중견' ELSE '관계기업' END AS MNGMT_STLE
+	  , 10 AS COL1
+	  , 20 AS COL2
+	  , 30 AS COL3
+	  , 40 AS COL4
+	  , 50 AS COL5
+	  , 150 AS COL6
+	  from TB_ENTPRS_INFO
+	  where 1=1
+	  AND STDYY=#{sel_target_year}
+	  group by STDYY, MNGMT_STLE
+	) A
+	</select>
+	
+	<!-- 분류요인별분석 분류요인 조회 -->
+	<select id="selectClFctr" resultType="Map">
+	SELECT 
+	'A' AS GBN_AS 
+	, 'D' AS GBN_IS
+	, '합계' AS GUBUN
+	, INDUTY_CODE
+	<foreach item="item" collection="selectYear" open="" separator="" close="">
+		, SUM(CASE WHEN STDYY = #{item} THEN 1 ELSE 0 END) AS data${item}
+	</foreach>
+	FROM (
+	  SELECT STDYY, HPE_CD, ENTRPRS_NM, LTRS_AT, SCALE_STDR
+	  , UPLMT_1000, UPLMT_ASSETS, UPLMT_CAPL, INDPNDNCY_DIRECT_30, INDPNDNCY_INDRT_30
+	  , INDPNDNCY_RCPY
+	  , CASE WHEN SCALE_STDR = 'Y' THEN '규모기준'
+	       WHEN UPLMT_1000 = 'Y' OR UPLMT_ASSETS = 'Y' OR UPLMT_CAPL = 'Y' THEN '상한기준'
+	       WHEN INDPNDNCY_DIRECT_30 = 'Y' OR INDPNDNCY_INDRT_30 = 'Y' OR INDPNDNCY_RCPY = 'Y' THEN '독립성기준'
+	    END AS GUBUN
+	  , CASE WHEN LCLAS_CD = 'C' THEN '제조업'
+	         WHEN LCLAS_CD != 'C' THEN '비제조업'
+	    END AS INDUTY_CODE
+	  FROM (
+	    select A.STDYY, A.HPE_CD, A.JURIRNO, A.ENTRPRS_NM, A.LTRS_AT
+	        , A.DCSN_HPE_AT, A.DCSN_RCPY_AT, A.SYS_HPE_AT, A.SELNG_HPEC_AT, A.RND_HPEC_AT
+	        , A.LCLAS_CD, A.MLSFC_CD, B.UPLMT_1000, B.UPLMT_ASSETS, B.UPLMT_CAPL
+	        , B.SCALE_STDR, B.INDPNDNCY_DIRECT_30, B.INDPNDNCY_INDRT_30, B.INDPNDNCY_RCPY
+	    from TB_ENTPRS_INFO A, TB_HPE_JDGMNT_RESN B
+	    where A.STDYY = B.STDYY
+	    AND A.HPE_CD = B.HPE_CD
+	    and (A.LTRS_AT != 'Y' OR A.LTRS_AT IS NULL)
+	    AND (A.DCSN_RCPY_AT != 'Y' OR A.DCSN_RCPY_AT IS NULL)
+	  ) K
+	) L
+	WHERE GUBUN IS NOT NULL
+	AND INDUTY_CODE IS NOT NULL
+	GROUP BY INDUTY_CODE
+	UNION
+	SELECT /* ProgramID=biz.tech.mapif.ps.PGPS0061Mapper.selectClFctr */
+	'D' AS GBN_AS 
+	, 'D' AS GBN_IS 
+	, GUBUN
+	, INDUTY_CODE
+	<foreach item="item" collection="selectYear" open="" separator="" close="">
+		, SUM(CASE WHEN STDYY = #{item} THEN 1 ELSE 0 END) AS data${item}
+	</foreach>
+	FROM (
+	  SELECT STDYY, HPE_CD, ENTRPRS_NM, LTRS_AT, SCALE_STDR
+	  , UPLMT_1000, UPLMT_ASSETS, UPLMT_CAPL, INDPNDNCY_DIRECT_30, INDPNDNCY_INDRT_30
+	  , INDPNDNCY_RCPY
+	  , CASE WHEN SCALE_STDR = 'Y' THEN '규모기준'
+	       WHEN UPLMT_1000 = 'Y' OR UPLMT_ASSETS = 'Y' OR UPLMT_CAPL = 'Y' THEN '상한기준'
+	       WHEN INDPNDNCY_DIRECT_30 = 'Y' OR INDPNDNCY_INDRT_30 = 'Y' OR INDPNDNCY_RCPY = 'Y' THEN '독립성기준'
+	    END AS GUBUN
+	  , CASE WHEN LCLAS_CD = 'C' THEN '제조업'
+	         WHEN LCLAS_CD != 'C' THEN '비제조업'
+	    END AS INDUTY_CODE
+	  FROM (
+	    select A.STDYY, A.HPE_CD, A.JURIRNO, A.ENTRPRS_NM, A.LTRS_AT
+	        , A.DCSN_HPE_AT, A.DCSN_RCPY_AT, A.SYS_HPE_AT, A.SELNG_HPEC_AT, A.RND_HPEC_AT
+	        , A.LCLAS_CD, A.MLSFC_CD, B.UPLMT_1000, B.UPLMT_ASSETS, B.UPLMT_CAPL
+	        , B.SCALE_STDR, B.INDPNDNCY_DIRECT_30, B.INDPNDNCY_INDRT_30, B.INDPNDNCY_RCPY
+	    from TB_ENTPRS_INFO A, TB_HPE_JDGMNT_RESN B
+	    where A.STDYY = B.STDYY
+	    AND A.HPE_CD = B.HPE_CD
+	    and (A.LTRS_AT != 'Y' OR A.LTRS_AT IS NULL)
+	    AND (A.DCSN_RCPY_AT != 'Y' OR A.DCSN_RCPY_AT IS NULL)
+	  ) K
+	) L
+	WHERE GUBUN IS NOT NULL
+	AND INDUTY_CODE IS NOT NULL
+	GROUP BY GUBUN, INDUTY_CODE
+	order by GBN_AS, GUBUN, INDUTY_CODE desc
+	</select>
+	
+	<!-- 분류요인별분석 규모기준 조회 -->
+	<select id="selectClFctr2" resultType="Map">
+	SELECT	/* ProgramID=biz.tech.mapif.ps.PGPS0061Mapper.selectClFctr2 */
+	GUBUN
+	, GUBUN2
+	<foreach item="item" collection="selectYear" open="" separator="" close="">
+		, IFNULL(MAX(CASE WHEN STDYY_DO=#{item} THEN ITEM END), 0) AS #{item}
+	</foreach>
+	FROM (
+	  SELECT STDYY_DO, '기업수' AS GUBUN, '기업' AS GUBUN2, SUM(ENTRPRS_CO) AS ITEM FROM STS_HPE_JDGMNT_RESN GROUP BY STDYY_DO, GUBUN2
+	  UNION
+	  SELECT STDYY_DO, '기업수' AS GUBUN, '규모기준' AS GUBUN2, SUM(ENTRPRS_CO) FROM STS_HPE_JDGMNT_RESN WHERE JDGMNT_RESN = 'ST101' GROUP BY STDYY_DO, GUBUN2
+	  UNION
+	  SELECT STDYY_DO, '매출액' AS GUBUN, '기업' AS GUBUN2, ROUND(sum(SELNG_AM) / 1000000000, 0) FROM STS_HPE_JDGMNT_RESN GROUP BY STDYY_DO, GUBUN2
+	  UNION
+	  SELECT STDYY_DO, '매출액' AS GUBUN, '규모기준' AS GUBUN2, ROUND(sum(SELNG_AM) / 1000000000, 0) FROM STS_HPE_JDGMNT_RESN WHERE JDGMNT_RESN = 'ST101' GROUP BY STDYY_DO, GUBUN2
+	  UNION
+	  SELECT STDYY_DO, '상시근로자수' AS GUBUN, '기업' AS GUBUN2, sum(ORDTM_LABRR_CO) FROM STS_HPE_JDGMNT_RESN GROUP BY STDYY_DO, GUBUN2
+	  UNION
+	  SELECT STDYY_DO, '상시근로자수' AS GUBUN, '규모기준' AS GUBUN2, sum(ORDTM_LABRR_CO) FROM STS_HPE_JDGMNT_RESN WHERE JDGMNT_RESN = 'ST101' GROUP BY STDYY_DO, GUBUN2
+	  UNION 
+	  SELECT STDYY_DO, '수출액' AS GUBUN, '기업' AS GUBUN2, ROUND(sum(XPORT_AM_DOLLAR) / 100000,0) FROM STS_HPE_JDGMNT_RESN GROUP BY STDYY_DO, GUBUN2
+	  UNION 
+	  SELECT STDYY_DO, '수출액' AS GUBUN, '규모기준' AS GUBUN2, ROUND(sum(XPORT_AM_DOLLAR) / 100000,0) FROM STS_HPE_JDGMNT_RESN WHERE JDGMNT_RESN = 'ST101' GROUP BY STDYY_DO, GUBUN2
+	) K
+	GROUP BY GUBUN, GUBUN2
+	ORDER BY GUBUN, GUBUN2 DESC
+	</select>
+</mapper>
+

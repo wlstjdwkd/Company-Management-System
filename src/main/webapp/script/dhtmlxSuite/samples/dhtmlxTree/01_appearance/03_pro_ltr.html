@@ -1,0 +1,69 @@
+<!--conf
+<sample in_favorites="true">
+              <product version="1.5" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               <sampledescription><![CDATA[dhtmlxTree can work either with Left-to-Right text or with Right-to-Left text. Moreover, modes can be switched on the fly. This can be useful if you want to switch betwenn rtl and ltr languages without reloading complete page.]]></sampledescription></sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Text direction (LTR & RTL)</title>
+</head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+<body>
+	<h1>Text direction (LTR & RTL)</h1>
+	
+	<table>
+		<tr>
+			<td>
+				<div id="treeboxbox_tree" style="width:250px; height:218px;background-color:#f5f5f5;border :1px solid Silver;overflow:hidden;"/>
+			</td>
+			<td style="padding-left:25" valign="top">
+				<div id="treeboxbox_tree2" style=" width:250px; height:218px;background-color:#f5f5f5;border :1px solid Silver;overflow:hidden;"/>
+			</td>
+		</tr>
+		<tr>
+			<td>
+	<div><a href="#" onClick="tree.enableRTL(false)">Tree 1 - LTR</a></div>
+	<div><a href="#" onClick="tree.enableRTL(true)">Tree 1 - RTL</a></div>
+</td>
+<td style="padding-left:25">
+	<div><a href="#" onClick="tree2.enableRTL(false)">Tree 2 - LTR</a></div>
+	<div><a href="#" onClick="tree2.enableRTL(true)">Tree 2 - RTL</a></div>
+</td>
+		</tr>
+	</table>
+    <p>dhtmlxTree supports both LTR and RTL text directions. LTR is set in the tree by default. To set RTL you should set the tree.enableRTL() method to true, as it is mentioned below:</p>
+
+
+
+<script>
+		tree=new dhtmlXTreeObject("treeboxbox_tree","100%","100%",0);
+
+		tree.setSkin('dhx_skyblue');
+		tree.setImagePath("../../../codebase/imgs/dhxtree_skyblue/");
+		tree.enableDragAndDrop(true);			
+		tree.enableSmartXMLParsing(true);
+		tree.loadXML("../common/tree.xml")
+		
+		tree2=new dhtmlXTreeObject("treeboxbox_tree2","100%","100%",0);
+
+		
+		tree2.setSkin('dhx_skyblue');
+		tree2.setImagePath("../../../codebase/imgs/dhxtree_skyblue/");
+		tree2.enableSmartXMLParsing(true);
+		tree2.enableDragAndDrop(true);
+		tree2.setDragBehavior("sibling");
+        tree2.enableRTL(true);
+		tree2.loadXML("../common/tree.xml")
+		
+</script>
+<br><br>
+
+</body>
+</html>

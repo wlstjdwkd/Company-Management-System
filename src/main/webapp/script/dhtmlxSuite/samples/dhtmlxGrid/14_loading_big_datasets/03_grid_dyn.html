@@ -1,0 +1,58 @@
+<!--conf
+<sample in_favorites="false">
+              <product version="1.4" edition="std"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               </sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+   "http://www.w3.org/TR/html4/loose.dtd">
+
+<html>
+<head>
+	<title>Smart Rendering</title>
+	
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+</head>
+<body>
+	
+	<h1>Smart Rendering</h1>
+	 <p>
+		To increase grid performance working with very large amoung of data you can enable <strong>Smart Rendering</strong> mode with dynamical loading of rows from server (already loaded rows remain on client side).
+		<br>
+		To achieve this you should add the following javascript command:
+		<br>
+		<em>yourGrid.enableSmartRendering(mode,count);</em>
+		<br><br> 
+		- and make your server side output records based on incomming parameters: <br>
+		<div>posStart -the first row in portion</div>
+		<div>count - number of rows to return</div>
+	
+				<div id="gridbox" style="width:600px;height:250px;background-color:white;"></div>
+	
+<br>
+
+<script>
+
+
+	mygrid = new dhtmlXGridObject('gridbox');
+	mygrid.setImagePath("../../../codebase/imgs/");
+	mygrid.setHeader("Order,Index,Request info");
+	mygrid.setInitWidths("50,275,*")
+	mygrid.setColAlign("right,left,left")
+	mygrid.setColTypes("ed,ed,ed");
+	mygrid.setColSorting("na,na,na")
+	mygrid.init();
+	mygrid.setSkin("dhx_skyblue")
+    mygrid.enableSmartRendering(true,50);
+    mygrid.loadXML("php/dynload.php");
+
+
+</script>
+
+
+</body>
+</html>

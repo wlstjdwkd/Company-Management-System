@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jnlp spec="1.0+" codebase="" href="">
+    <information>
+        <title>CertIssuePrint</title>
+        <vendor>CertIssuePrint</vendor>
+    </information>
+    <resources>
+        <!-- Application Resources -->
+        <j2se version="1.7+"
+            href="http://java.sun.com/products/autodl/j2se" />
+    </resources>
+    <applet-desc 
+         name="CertIssuePrint"
+         main-class="EmbeddedViewerApplet"
+         width="980"
+         height="710">
+     </applet-desc>
+     <update check="background"/>
+</jnlp>                                   

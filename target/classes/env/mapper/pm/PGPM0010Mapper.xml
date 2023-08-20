@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="biz.tech.mapif.pm.PGPM0010Mapper">
+	<!-- 직원 조회의 갯수 -->
+	<select id="findUsermemberlist" resultType="int">
+	SELECT 	/* PK=biz.tech.mapif.pm.PGPM0010Mapper.findUsermemberlist */
+				COUNT(*)
+	FROM 		tb_member_info
+	</select>
+
+	<!-- 직원 조회 emp table -->
+	<select id="membersearch" resultType="hashmap">
+	SELECT /* EMP_NO=biz.tech.mapif.pm.PGPM0010Mapper.membersearch */
+				  EMP_NO					/* 직원번호 */
+				, EMP_NM					/* 이름 */
+				, WRK_TP					/* 근무형태 */
+				, POS_CD					/* 직급코드 */
+				, DEPT_CD					/* 부서코드 */
+				, CURR_YN					/* 재직여부 */
+				, CIZ_NO					/* 주민번호 */
+				, DEAL_BNK					/* 거래은행 */
+				, ACCT_NO					/* 계좌번호 */
+				, INCO_DT					/* 입사일자 */
+				, OUTCO_DT					/* 퇴사일자 */
+				, ADJ_YR					/* 조정년 */
+				, ADJ_MON					/* 조정월 */
+				, RMRK						/* 비고 */
+				, BDT						/* 생년월일 */
+				, MOB_TEL					/* 휴대전화번호 */
+				, HM_TEL					/* 집전화번호 */
+				, LSED						/* 최종학력 */
+				, DPT						/* 학과 */
+				, DGR						/* 인정학력 */
+				, GRA_YR					/* 졸업년 */
+				, GRA_MN					/* 졸업월 */
+				, PER_MAIL					/* 개인메일 */
+				, COM_MAIL					/* 회사메일 */
+				, ADDR						/* 주소 */
+				, MRG						/* 혼인여부 */
+				, MRG_DT					/* 결혼기념일 */
+				, PAY_IN_DAY				/* 급여지급일 */
+				, DC_RT						/* 공제세율 */
+				, MOD_DT					/* 수정일 */
+				, ENRT_DT					/* 등록일 */
+	
+				, b.CODE					/* 거래은행코드 */
+				, b.CODE_NM					/* 거래은행명 */
+	FROM		TB_PAY_EMP
+	LEFT OUTER JOIN (
+					SELECT
+						  CODE
+						, CODE_NM
+					FROM	tb_cmmncode
+					) b
+	ON			DEAL_BNK = CODE
+		<where>
+		<if test="ad_search_word !='' and ad_search_word !=null">
+			EMP_NM=#{ad_search_word}
+		</if>
+		</where>
+	ORDER BY EMP_NO ASC	
+		<if test="limitTo != '' and limitTo != null">LIMIT ${limitFrom} , ${limitTo}</if>
+	</select>
+	
+	<!-- 직원 조회의 갯수 emp -->
+	<select id="findmemberlist" resultType="int">
+	SELECT 	/* EMP_NO=biz.tech.mapif.pm.PGPM0010Mapper.findmemberlist */
+				COUNT(*)
+	FROM 		TB_PAY_EMP
+	</select>
+
+	<!-- 수정 페이지 정보 조회 emp -->
+	<select id="updatememberlist" resultType="hashmap">
+	SELECT /* EMP_NO=biz.tech.mapif.pm.PGPM0010Mapper.findUsermember */
+				  EMP_NO					/* 직원번호 */
+				, EMP_NM					/* 이름 */
+				, WRK_TP					/* 근무형태 */
+				, POS_CD					/* 직급코드 */
+				, DEPT_CD					/* 부서코드 */
+				, CURR_YN					/* 재직여부 */
+				, CIZ_NO					/* 주민번호 */
+				, DEAL_BNK					/* 거래은행 */
+				, ACCT_NO					/* 계좌번호 */
+				, INCO_DT					/* 입사일자 */
+				, OUTCO_DT					/* 퇴사일자 */
+				, ADJ_YR					/* 조정년 */
+				, ADJ_MON					/* 조정월 */
+				, RMRK						/* 비고 */
+				, BDT						/* 생년월일 */
+				, MOB_TEL					/* 휴대전화번호 */
+				, HM_TEL					/* 집전화번호 */
+				, LSED						/* 최종학력 */
+				, DPT						/* 학과 */
+				, DGR						/* 인정학력 */
+				, GRA_YR					/* 졸업년 */
+				, GRA_MN					/* 졸업월 */
+				, PER_MAIL					/* 개인메일 */
+				, COM_MAIL					/* 회사메일 */
+				, ADDR						/* 주소 */
+				, MRG						/* 혼인여부 */
+				, MRG_DT					/* 결혼기념일 */
+				, PAY_IN_DAY				/* 급여지급일 */
+				, DC_RT						/* 공제세율 */
+				, MOD_DT					/* 수정일 */
+				, ENRT_DT					/* 등록일 */
+	FROM		TB_PAY_EMP
+	WHERE		EMP_NO = #{adempno}
+	</select>
+
+	<!-- 공통코드 목록 조회 -->
+	<select id="findCmmnCodeList" resultType="map">
+	SELECT	/* ID=biz.tech.mapif.pm.PGPM0010Mapper.findCmmnCodeList */
+					  code									AS code
+					, code_nm								AS codeNm
+					, code_dc								AS codeDc
+					, outpt_ordr							AS outptOrdr
+					, use_at								AS useAt
+	FROM		tb_cmmncode
+	WHERE		code_group_no = #{codeGroupNo}
+	AND 		use_At = 'Y'
+	ORDER	BY	outpt_ordr ASC
+	</select>
+	
+	<!-- 공통코드 목록 조회 -->
+	<select id="findCmmnCode" resultType="map">
+	SELECT	/* ID=biz.tech.mapif.pm.PGPM0010Mapper.findCmmnCode */
+					  code									AS code
+					, code_nm								AS codeNm
+					, code_dc								AS codeDc
+					, outpt_ordr							AS outptOrdr
+					, use_at								AS useAt
+	FROM		tb_cmmncode
+	WHERE		code_group_no = #{codeGroupNo}
+	AND code = #{code}
+	AND 		use_At = 'Y'
+	ORDER	BY	outpt_ordr ASC
+	</select>
+
+	<!-- 직원 정보 등록 emp -->
+	<insert id="insertMemberemp">
+	INSERT /* EMP_NO=biz.tech.mapif.pm.PGPM0010Mapper.insertMemberemp */ 
+	INTO		TB_PAY_EMP ( 
+				  EMP_NO					/* 직원번호 */
+				, EMP_NM					/* 이름 */
+				, WRK_TP					/* 근무형태 */
+				, POS_CD					/* 직급코드 */
+				, DEPT_CD					/* 부서코드 */
+				, CURR_YN					/* 재직여부 */
+				, CIZ_NO					/* 주민번호 */
+				, DEAL_BNK					/* 거래은행 */
+				, ACCT_NO					/* 계좌번호 */
+				, INCO_DT					/* 입사일자 */
+				, OUTCO_DT					/* 퇴사일자 */
+				, ADJ_YR					/* 조정년 */
+				, ADJ_MON					/* 조정월 */
+				, RMRK						/* 비고 */
+				, BDT						/* 생년월일 */
+				, MOB_TEL					/* 휴대전화번호 */
+				, HM_TEL					/* 집전화번호 */
+				, LSED						/* 최종학력 */
+				, DPT						/* 학과 */
+				, DGR						/* 인정학력 */
+				, GRA_YR					/* 졸업년 */
+				, GRA_MN					/* 졸업월 */
+				, PER_MAIL					/* 개인메일 */
+				, COM_MAIL					/* 회사메일 */
+				, ADDR						/* 주소 */
+				, MRG						/* 혼인여부 */
+				, MRG_DT					/* 결혼기념일 */
+				, ENRT_DT					/* 등록일 */
+	)
+	VALUES ( 
+			  #{adempno}
+			, #{adempnm}
+			, #{adwrktp}
+			, #{adposcd}
+			, #{addeptcd}
+			, #{adcurryn}
+			, #{adcizno}
+			, #{addealbnk}
+			, #{adacctno}
+			, #{adincodt}
+			, #{adoutcodt}
+			, #{adadjyr}
+			, #{adadjmon}
+			, #{adrmrk}
+			, #{adbdt}
+			, #{admobtel}
+			, #{adhmtel}
+			, #{adlsed}
+			, #{addpt}
+			, #{addgr}
+			, #{adgrayr}
+			, #{adgramn}
+			, #{adpermail}
+			, #{adcommail}
+			, #{adaddr}
+			, #{admrg}
+			, #{admrgdt}
+		<choose>
+			<when test="_databaseId == 'mysql'">
+				, SYSDATE()
+			</when>
+			<when test="_databaseId == 'tibero'">
+				, SYSDATE
+			</when>
+			<otherwise>
+				, SYSDATE()
+			</otherwise>
+		</choose>
+	)
+	</insert>
+
+	<!-- 직원 정보 수정 -->
+	<update id="updatememberemp">
+	UPDATE /* EMP_NO=biz.tech.mapif.pm.PGPM0010Mapper.updatememberemp */
+			TB_PAY_EMP
+	SET
+				EMP_NO = #{adempno}					/* 직원번호 */
+				, EMP_NM = #{adempnm}				/* 이름 */
+				, WRK_TP = #{adwrktp}				/* 직급코드 */
+				, POS_CD = #{adposcd}				/* 직급코드 */
+				, DEPT_CD = #{addeptcd}				/* 직급코드 */
+				, CIZ_NO = #{adcizno}				/* 주민번호 */
+				, DEAL_BNK = #{addealbnk}			/* 거래은행 */
+				, ACCT_NO = #{adacctno}				/* 계좌번호 */
+				, INCO_DT = #{adincodt}				/* 입사일자 */
+				, OUTCO_DT = #{adoutcodt}			/* 퇴사일자 */
+				<!-- <if test="adoutcodt != null"> , OUTCO_DT = #{adoutcodt} </if>	/* 퇴사일자 */ -->
+				, ADJ_YR = #{adadjyr}				/* 조정년 */
+				, ADJ_MON = #{adadjmon}				/* 조정월 */
+				, RMRK = #{adrmrk}					/* 비고 */
+				, BDT = #{adbdt}					/* 생년월일 */
+				, MOB_TEL = #{admobtel}				/* 휴대전화번호 */
+				, HM_TEL= #{adhmtel}				/* 집전화번호 */
+				, LSED = #{adlsed}					/* 최종학력 */
+				, DPT = #{addpt}					/* 학과 */
+				, DGR = #{addgr}					/* 인정학력 */
+				, GRA_YR = #{adgrayr}				/* 졸업년 */
+				, GRA_MN = #{adgramn}				/* 졸업월 */
+				, PER_MAIL = #{adpermail}			/* 개인메일 */
+				, COM_MAIL = #{adcommail}			/* 회사메일 */
+				, ADDR = #{adaddr}					/* 주소 */
+				, MRG = #{admrg}					/* 혼인여부 */
+				, MRG_DT = #{admrgdt}				/* 결혼기념일 */
+		<choose>
+			<when test="_databaseId == 'mysql'">
+				, MOD_DT = SYSDATE()
+			</when>
+			<when test="_databaseId == 'tibero'">
+				, MOD_DT = SYSDATE
+			</when>
+			<otherwise>
+				, MOD_DT = SYSDATE()
+			</otherwise>
+		</choose>					
+	WHERE EMP_NO = #{adempno}
+	</update>
+
+	<!-- 직원 삭제(수정) -->
+	<!-- 해당 직원을 삭제한 경우 그날을 퇴사일로 지정 -->
+	<update id="updateResignedEmployee">
+	UPDATE /* EMP_NO=biz.tech.mapif.pm.PGPM0010Mapper.updateResignedEmployee */
+			TB_PAY_EMP
+	SET												
+				  CURR_YN = 'N'						/* 재직여부 */
+				  									/* 퇴사일자 */
+		<choose>									
+			<when test="_databaseId == 'mysql'">
+		  		, OUTCO_DT = SYSDATE()
+			</when>
+			<when test="_databaseId == 'tibero'">
+			  	, OUTCO_DT = SYSDATE
+			</when>
+			<otherwise>
+			  	, OUTCO_DT = SYSDATE()
+			</otherwise>
+		</choose>
+													/* 수정일 */
+		<choose>									
+			<when test="_databaseId == 'mysql'">
+				, MOD_DT = SYSDATE()
+			</when>
+			<when test="_databaseId == 'tibero'">
+				, MOD_DT = SYSDATE
+			</when>
+			<otherwise>
+				, MOD_DT = SYSDATE()
+			</otherwise>
+		</choose>
+	WHERE	EMP_NO = #{adempno}
+	</update>
+
+	<!-- 직원 정보 삭제 emp -->
+	<delete id="deletememberemp">
+	DELETE 	/* EMP_NO=biz.tech.mapif.pm.PGPM0010Mapper.deletememberemp*/
+	FROM	TB_PAY_EMP
+	WHERE	EMP_NO = #{adempno}
+	</delete>
+</mapper>

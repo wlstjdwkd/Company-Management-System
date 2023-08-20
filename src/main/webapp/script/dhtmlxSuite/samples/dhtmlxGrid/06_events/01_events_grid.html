@@ -1,0 +1,93 @@
+<!--conf
+<sample in_favorites="true">
+               <product version="1.4" edition="std"/>
+                       <modifications>
+                               <modified date="070101"/>
+                       </modifications>
+               <sampledescription><![CDATA[Possibility to control events on different stages of control lifecycle is a basis for successful programming. CUrrent sample demonstrates basic abilities. For complete list of possible events aply to API documentation]]></sampledescription></sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Attaching Event Handlers</title>
+	
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+</head>
+
+<body>
+	
+	<h1>Attaching Event Handlers</h1>
+	<p>Control grid processing and user behavior using Grid Event Handlers available through JavaScript Methods.</p>
+		<table width="600">
+		<tr>
+			<td>
+				<div id="gridbox" style="width:100%;height:250px;background-color:white;"></div>
+				<a href="javascript:void(0)" onClick="mygrid.deleteSelectedItem()">Remove Selected Row</a>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Protocol:<br>
+				<div id="protocol" style="width:600px;height:200px;overflow:auto;border:1px solid green;"></div>
+			</td>
+		</tr>
+	</table>
+
+
+<script>
+	function protocolIt(str){
+		var p = document.getElementById("protocol")
+		p.innerHTML = "<li style='height:auto;'>"+str+"</li>" + p.innerHTML 
+	}
+	function doOnRowSelected(id){
+		protocolIt("Rows with id: "+id+" was selected by user")
+	}
+	function doOnCellEdit(stage,rowId,cellInd){
+		if(stage==0){
+			protocolIt("User starting cell editing: row id is"+rowId+", cell index is "+cellInd)
+		}else if(stage==1){
+			protocolIt("Cell editor opened");
+		}else if(stage==2){
+			protocolIt("Cell editor closed");
+		}
+		return true;
+	}
+	function doOnCheck(rowId,cellInd,state){
+		protocolIt("User clicked on checkbox or radiobutton on row "+rowId+" and cell with index "+cellInd+".State changed to "+state);
+		return true;
+	}
+	function doOnEnter(rowId,cellInd){
+		protocolIt("User pressed Enter on row with id "+rowId+" and cell index "+cellInd);
+	}
+	function doBeforeRowDeleted(rowId){
+		if(confirm("Are you sure you want to delete row")){
+			protocolIt("Row deletion confirmed");
+			return true;
+		}else{
+			protocolIt("Row deletion canceled");
+			return false;
+		}
+	}
+	
+	mygrid = new dhtmlXGridObject('gridbox');
+	mygrid.setImagePath("../../../codebase/imgs/");
+	mygrid.setHeader("Column A, Column B, Column C, Column D");
+	mygrid.setInitWidths("100,250,80,*")
+	mygrid.setColAlign("right,left,center,right")
+	mygrid.setColTypes("ro,ed,ch,price");
+	mygrid.setColSorting("int,str,str,str")
+	mygrid.attachEvent("onRowSelect",doOnRowSelected);
+	mygrid.attachEvent("onEditCell",doOnCellEdit);
+	mygrid.attachEvent("onEnter",doOnEnter);
+	mygrid.attachEvent("onCheckbox",doOnCheck);
+	mygrid.attachEvent("onBeforeRowDeleted",doBeforeRowDeleted);
+	mygrid.init();
+	mygrid.setSkin("dhx_skyblue")
+	mygrid.loadXML("../common/grid.xml");
+</script>
+
+</body>
+</html>

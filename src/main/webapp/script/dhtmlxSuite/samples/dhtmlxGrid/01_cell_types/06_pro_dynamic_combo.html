@@ -1,0 +1,64 @@
+<!--conf
+<sample>
+              <product version="1.4" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               </sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Configuring  combo boxes on the fly</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+	<style>
+	.even{
+        background-color:#E6E6FA;
+    }
+    .uneven{
+        background-color:#F0F8FF;
+    }
+</style>
+</head>
+<body>
+	<h1>Configuring  combo boxes on the fly</h1>
+	<p>
+       The comboboxes have different values for even and uneven rows (the Shipping column). 
+	</p>
+	<div id="gridbox" style="width:600px;height:270px;background-color:white;"></div>			
+<script>
+    function doOnEditCell(stage,id,index){
+        var ind=mygrid.getRowIndex(id);
+        if ((index==5)&&(stage==0))//start edit Shipping column
+            {
+            var combo=mygrid.getCombo(5);
+            if (ind%2==1){                      //for even rows
+                combo.save();                   //save initial state
+                combo.remove(1);
+                combo.remove(2);
+                combo.remove(3);
+                }
+                else{
+                combo.save();                   //save initial state
+                combo.remove(4);
+                combo.remove(5);
+                combo.remove(6);
+                }
+            }
+
+        if ((index==5)&&(stage==2))             //for finishing edit
+           mygrid.getCombo(5).restore();        //restore combo state
+        return true;
+    }
+	mygrid = new dhtmlXGridObject('gridbox');
+	mygrid.setImagePath("../../../codebase/imgs/");
+	mygrid.attachEvent("onEditCell",doOnEditCell);
+	mygrid.setSkin("dhx_skyblue");
+	mygrid.loadXML("../common/gridH.xml");
+	mygrid.enableAlterCss("even","uneven");
+</script>
+</body>
+</html>

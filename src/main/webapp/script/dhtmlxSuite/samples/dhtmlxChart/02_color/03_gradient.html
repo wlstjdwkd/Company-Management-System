@@ -1,0 +1,51 @@
+<!--conf
+<sample>
+              <product version="2.6" edition="std"/>
+                     <modifications>
+                            <modified date="100609"/>
+                     </modifications>
+               </sample>
+ -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<title>Gradient</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+	
+    <script src="../common/testdata.js"></script>
+	<script>
+	window.onload = function(){
+        var barChart =  new dhtmlXChart({
+            view:"bar",
+            container:"chartDiv",
+            value:"#sales#",
+            gradient:function(gradient){
+                gradient.addColorStop(1.0,"#FF0000");
+                gradient.addColorStop(0.2,"#FFFF00");
+                gradient.addColorStop(0.0,"#00FF22");
+            },
+            alpha:0.8,
+            radius:2,
+            border:false,
+            xAxis:{
+                template:"'#year#"
+            },
+            yAxis:{
+                start:0,
+                end:100,
+                step:10,
+                template:function(obj){
+                    return (obj%20?"":obj)
+                }
+            }
+        })
+        barChart.parse(dataset,"json");
+	}
+	</script>
+</head>
+<body>
+    <div id="chartDiv" style="width:600px;height:250px;margin:20px;border:1px solid #A4BED4;"></div>
+</body>
+</html>

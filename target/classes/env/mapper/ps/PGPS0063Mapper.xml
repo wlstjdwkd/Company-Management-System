@@ -1,0 +1,1184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="biz.tech.mapif.ps.PGPS0063Mapper">
+
+	<sql id="dynamicWhere">
+     <trim>
+        <if test="sel_target_year != null and sel_target_year != '' ">
+			AND CONVERT(STDYY, signed)=#{sel_target_year}
+		</if>
+		<if test="searchCondition != null and searchCondition != '' ">
+			<if test="searchCondition == 'EA1' "></if>
+			<if test="searchCondition == 'EA2' ">AND MNGMT_STLE LIKE '%기업(일반)%'</if>
+			<if test="searchCondition == 'EA3' ">AND MNGMT_STLE LIKE '%관계기업%'</if>
+			<if test="searchCondition == 'EA4' ">AND MNGMT_STLE LIKE '%후보기업%'</if>
+			<if test="searchCondition == 'EA5' ">AND MNGMT_STLE LIKE '%가젤형%'</if>
+		</if>
+		<if test="multiSelectGrid1 != null and multiSelectGrid1 != '' ">
+			${multiSelectGrid1}
+		</if>
+     </trim>
+     </sql>
+     
+    <!-- 테마별업종 조회(코드그룹별) -->
+	<select id="findCodesByGroupNo" resultType="MAP">
+	SELECT 	/* ProgramID=biz.tech.mapif.ps.PGPS0063Mapper.findCodesByGroupNo */
+				   code 			AS code			/* 코드 */
+				  ,code_dc			AS codeDc		/* 코드설명 */
+				  ,code_group_no	AS codeGroupNo	/* 코드그룹번호 */
+				  ,code_nm			AS codeNm		/* 코드명 */
+	  FROM		tb_cmmncode
+	 WHERE		code_group_no = #{param}
+	 	AND		use_at = 'Y'
+	 ORDER		BY outpt_ordr ASC	
+	</select>
+     
+	<!-- 주요지표-현황 목록 개수 조회-->
+	<select id="findTotalIdxInfoRowCnt" resultType="int">
+	SELECT 	/* ProgramID=biz.tech.mapif.ps.PGPS0063Mapper.findTotalIdxInfoRowCnt */
+	count(1) from (
+		SELECT
+		'구분' COL0
+		,1234 COL1
+		,1234 COL2
+		,1234 COL3
+		,1234 COL4
+		,1234 COL5
+		,1234 COL6
+		from TB_ENTPRS_INFO
+		where 1=1
+		<!-- 검색조건 시작 -->
+			<include refid="dynamicWhere"/>
+	 	<!-- 검색조건 끝 -->
+		and rtrim(substr(HEDOFC_ADRES, 1, 3)) is not null
+	) A
+	</select>
+	
+	<!-- 진입시기별분석 > 현황 조회 -->
+	<select id="selectSttus" resultType="Map">
+	<if test="sel_area == 'A'.toString() or sel_area == 'C'.toString()  ">
+	select /* ProgramID=biz.tech.mapif.ps.PGPS0063Mapper.selectSttus */
+	'A' AS GBN_AS			<!-- 전체(지역)여부 -->
+	, 'D' AS GBN_IS			<!-- 소계(제조/비제조)여부 -->
+	, IFNULL(T4.STDYY_DO, #{sel_target_year}) STDYY_DO
+	, 'ALL' AS AREA_CODE
+ 	, '전체' as AREA_NM
+	, 'ALL' AS UPPER_CODE
+	, '전체' AS ABRV
+    <if test="sel_area == null or sel_area == '' ">
+	, '전체' as AREA1
+	</if>
+	<if test="sel_area == 'A'.toString() ">
+    , '전체' as AREA1
+    </if>
+    <if test="sel_area == 'C'.toString() ">
+    , '전체' as AREA1
+    </if>
+	, T1.IND_CODE
+	, T1.INDUTY_CODE
+	, T1.KOREAN_NM
+	<if test="induty_select == 'D'.toString() and multiSelectGrid3 != null and multiSelectGrid3 != '' and sel_area == '' ">
+	, T1.KOREAN_NM as COL1	
+	</if>
+	<if test="induty_select == 'D'.toString() and sel_area == 'A'.toString() ">
+    , T1.KOREAN_NM as COL1
+    </if>
+    <if test="induty_select == 'D'.toString() and sel_area == 'C'.toString() ">
+    , T1.KOREAN_NM as COL1
+    </if>
+	, T1.DTLCLFC_NO
+	, T1.DTLCLFC_NM
+	<if test="induty_select == 'T'.toString() and multiSelectGrid2 != null and multiSelectGrid2 != '' and sel_area == '' ">
+    , T1.DTLCLFC_NM as COL1
+    </if>
+    <if test="induty_select == 'T'.toString() and sel_area == 'A'.toString() ">
+    , T1.DTLCLFC_NM as COL1
+    </if>
+    <if test="induty_select == 'T'.toString() and sel_area == 'C'.toString() ">
+    , T1.DTLCLFC_NM as COL1
+    </if>
+    , T1.TEMA_CODE
+	, T1.INDUTY_GUBUN
+	<if test="induty_select == 'A'.toString() ">
+	, T1.INDUTY_GUBUN as COL1
+	</if>
+	<if test="induty_select == 'I'.toString() ">
+	, T1.INDUTY_GUBUN as COL1
+	</if>
+	, T1.INDUTY_GROUP
+	, IFNULL(T4.ENTRPRS_CO, 0) ENTRPRS_CO
+	, IFNULL(T4.SELNG_AM, 0) SELNG_AM
+	, IFNULL(T4.SELNG_RT, 0) SELNG_RT
+	, IFNULL(T4.ORDTM_LABRR_CO, 0) ORDTM_LABRR_CO
+	, IFNULL(T4.ORDTM_RT, 0) ORDTM_RT
+	, IFNULL(T4.XPORT_AM_WON, 0) XPORT_AM_WON
+	, IFNULL(T4.XPORT_AM_WON_RT, 0) XPORT_AM_WON_RT
+	, IFNULL(T4.RSRCH_DEVLOP_CT, 0) RSRCH_DEVLOP_CT
+	, IFNULL(T4.RSRCH_RT, 2) RSRCH_RT
+	from 
+	 (
+	  select 
+	  AREA_CODE, UPPER_CODE, AREA_NM, ABRV
+	  , LCLAS_CD, IND_CODE, aa.INDUTY_CODE, KOREAN_NM
+	  , MANAGE_SN, DTLCLFC_NO, DTLCLFC_NM, TEMA_CODE
+	  , CASE WHEN SUBSTRING(TEMA_CODE, 1, 1) = 'C' THEN '제조업' 
+	           WHEN SUBSTRING(TEMA_CODE, 1, 1) != 'C' THEN '비제조업'
+	    END AS INDUTY_GUBUN
+	  , INDUTY_GROUP
+	  from (
+	    select AREA_CODE
+	    , UPPER_CODE
+	    , code_nm as AREA_NM
+	    , ABRV
+	    , LCLAS_CD
+	    , IND_CODE
+	    , INDUTY_CODE 
+	    , KOREAN_NM
+	    from (
+	      select a.AREA_CODE, UPPER_CODE, AREA_NM, ABRV, LCLAS_CD
+	      , IF( INDUTY_CODE = LCLAS_CD, LCLAS_CD,  CONCAT(LCLAS_CD, INDUTY_CODE))	IND_CODE
+	      , case when b.LCLAS_CD = 'C' then concat(LCLAS_CD,INDUTY_CODE) else LCLAS_CD end as INDUTY_CODE 
+	      , KOREAN_NM
+	      from TB_AREA_DIV a, TB_IND_CD b
+	      where a.`DIV`=2 and b.SE in ( 1, 2 ) 
+	    ) ab left outer join tb_cmmncode c
+	    on ab.UPPER_CODE = c.CODE
+	    and c.code_group_no = 57
+	    AND	c.use_at = 'Y'
+	  ) aa left outer join (
+	    select b.MANAGE_SN, b.DTLCLFC_NO, b.DTLCLFC_NM, C.INDUTY_CODE as TEMA_CODE, GROUP_CONCAT(INDUTY_CODE) AS INDUTY_GROUP
+	    from TB_THEMA_DTLS b, TB_THEMA_INDUTY C
+	    where b.MANAGE_SN = C.MANAGE_SN
+	    and b.DTLCLFC_NO = C.DTLCLFC_NO
+	    AND b.MANAGE_SN=1
+	    GROUP BY b.MANAGE_SN, b.DTLCLFC_NO
+	  ) bb
+	  on bb.INDUTY_GROUP LIKE CONCAT('%',aa.INDUTY_CODE,'%')
+	  <if test="induty_select == 'A'.toString() and sel_area == '' ">
+	    	GROUP BY aa.AREA_CODE, INDUTY_GUBUN
+	  </if>
+	  <if test="induty_select == 'I'.toString() and multiSelectGrid1 != null and multiSelectGrid1 != '' and sel_area == '' ">
+	    	GROUP BY bb.INDUTY_GROUP
+	  </if>
+	  <if test="induty_select == 'T'.toString() and multiSelectGrid2 != null and multiSelectGrid2 != '' and sel_area == '' ">
+	    	GROUP BY bb.INDUTY_GROUP 
+	  </if>
+	  <if test="induty_select == 'D'.toString() and multiSelectGrid3 != null and multiSelectGrid3 != '' and sel_area == '' ">
+	    	GROUP BY aa.INDUTY_CODE
+	  </if>
+	  <if test="sel_area == 'A'.toString() and cmpn_area_depth1 != null and cmpn_area_depth1 != '' and induty_select == '' ">
+		  	GROUP by aa.UPPER_CODE
+	  </if>
+	  <if test="sel_area == 'C'.toString() and cmpn_area_depth2 != null and cmpn_area_depth2 != '' and induty_select == 'A'.toString() ">
+		  	GROUP by aa.AREA_CODE	
+	  </if>
+	  <if test="induty_select == 'I'.toString() and sel_area == 'A'.toString() ">
+		  	GROUP BY INDUTY_GUBUN
+	  </if>
+	  <if test="induty_select == 'I'.toString() and sel_area == 'C'.toString() ">
+		  	GROUP BY INDUTY_GUBUN
+	  </if>
+	  <if test="induty_select == 'T'.toString() and sel_area == 'A'.toString() ">
+		  	GROUP BY bb.INDUTY_GROUP
+	  </if>
+	  <if test="induty_select == 'T'.toString() and sel_area == 'C'.toString() ">
+		  	GROUP BY bb.INDUTY_GROUP
+	  </if>
+	  <if test="induty_select == 'D'.toString() and sel_area == 'A'.toString() ">
+		  	GROUP BY INDUTY_CODE
+      </if>
+      <if test="induty_select == 'D'.toString() and sel_area == 'C'.toString() ">
+		  	GROUP BY INDUTY_CODE
+      </if>
+	) T1 
+	LEFT OUTER JOIN
+	(
+	  SELECT T2.STDYY_DO
+	  , T2.ENTCLS
+	  , T2.INDUTY_CODE
+	  , T2.UPPER_CODE
+	  , T2.AREA_CODE
+	  , T2.INDUTY_GUBUN
+	  , T2.INDUTY_GROUP
+	  , SUM(T2.ENTRPRS_CO) AS ENTRPRS_CO
+	  , IFNULL(ROUND(T2.SELNG_AM, 0),0) AS SELNG_AM 
+	  , IFNULL(ROUND(power(T2.SELNG_AM / T3.SELNG_AM, (1/2))-1, 2),0) AS SELNG_RT
+	  , IFNULL(ROUND(T2.ORDTM_LABRR_CO, 0),0) AS ORDTM_LABRR_CO
+	  , IFNULL(ROUND(power(T2.ORDTM_LABRR_CO / T3.ORDTM_LABRR_CO, (1/2))-1, 2),0) AS ORDTM_RT
+	  , IFNULL(ROUND(T2.XPORT_AM_WON, 0),0) AS XPORT_AM_WON
+	  , IFNULL(ROUND(power(T2.XPORT_AM_WON / T3.XPORT_AM_WON, (1/2))-1, 2),0) AS XPORT_AM_WON_RT
+	  , IFNULL(ROUND(T2.RSRCH_DEVLOP_CT, 0),0) AS RSRCH_DEVLOP_CT
+	  , IFNULL(ROUND(T2.RSRCH_DEVLOP_CT_RT, 2),0) AS RSRCH_RT
+	  FROM
+	  (
+	    SELECT STDYY_DO
+	    , ENTCLS
+	    , AA.INDUTY_CODE
+	    , AREA_CODE
+	    , UPPER_CODE
+	    , INDUTY_GUBUN
+	    , INDUTY_GROUP
+	    , SUM(ENTRPRS_CO) AS ENTRPRS_CO 
+	    , ROUND(SUM(SELNG_AM) / SUM(ENTRPRS_CO) / 1000, 0) AS SELNG_AM
+	    , ROUND(SUM(ORDTM_LABRR_CO) / SUM(ENTRPRS_CO), 0) AS ORDTM_LABRR_CO
+	    , ROUND(SUM(XPORT_AM_WON) / SUM(ENTRPRS_CO) / 1000, 0) AS XPORT_AM_WON
+	    , ROUND(SUM(RSRCH_DEVLOP_CT) / SUM(ENTRPRS_CO) / 1000, 0) AS RSRCH_DEVLOP_CT
+	    , ROUND((SUM(RSRCH_DEVLOP_CT)/SUM(ENTRPRS_CO)) / (SUM(SELNG_AM) / SUM(ENTRPRS_CO)), 2) AS RSRCH_DEVLOP_CT_RT
+	    FROM (
+	      SELECT A.STDYY_DO
+	      , A.ENTCLS
+	      , A.INDUTY_CODE
+	      , A.AREA_CODE
+	      , ADIV.UPPER_CODE
+	      , CASE WHEN SUBSTRING(A.INDUTY_CODE, 1, 1) = 'C' THEN '제조업' 
+	             WHEN SUBSTRING(A.INDUTY_CODE, 1, 1) != 'C' THEN '비제조업'
+	        END AS INDUTY_GUBUN
+	      , ENTRPRS_CO
+	      , SELNG_AM
+	      , ORDTM_LABRR_CO
+	      , XPORT_AM_WON
+	      , RSRCH_DEVLOP_CT
+	      FROM STS_ENTCLS A, TB_AREA_DIV ADIV
+	      WHERE A.AREA_CODE = ADIV.AREA_CODE
+	      <if test="sel_target_year != null and sel_target_year != '' ">
+			AND STDYY_DO=#{sel_target_year}
+		  </if>
+		  <if test="searchCondition != null and searchCondition != '' ">
+			AND ENTCLS = #{searchCondition}
+		  </if>
+		  <if test="induty_select == 'I'.toString() ">
+			<if test="all_induty != 'Y'.toString() ">
+		  		and CASE WHEN SUBSTRING(A.INDUTY_CODE, 1, 1) = 'C' THEN '제조업' 
+				     WHEN SUBSTRING(A.INDUTY_CODE, 1, 1) != 'C' THEN '비제조업'
+				  END IN 
+				<foreach item="item" collection="multiSelectGrid1" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+	  	</if>
+	  	<if test="induty_select == 'T'.toString() and multiSelectGrid2 != null and multiSelectGrid2 != '' ">
+	  		and INDUTY_CODE IN 
+			<foreach item="item" collection="multiSelectGrid2" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	  	</if>
+	  	<if test="induty_select == 'D'.toString() and multiSelectGrid3 != null and multiSelectGrid3 != '' ">
+	  		and INDUTY_CODE IN 
+			<foreach item="item" collection="multiSelectGrid3" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	  	</if>
+	    ) AA LEFT OUTER JOIN (
+	      select C.DTLCLFC_NO, INDUTY_CODE, GROUP_CONCAT(INDUTY_CODE) AS INDUTY_GROUP
+	      from TB_THEMA_DTLS b, TB_THEMA_INDUTY C
+	      where b.MANAGE_SN = C.MANAGE_SN
+	      and b.DTLCLFC_NO = C.DTLCLFC_NO
+	      AND b.MANAGE_SN=1
+	      GROUP BY DTLCLFC_NO
+	    ) BB
+	    ON AA.INDUTY_CODE = BB.INDUTY_CODE
+	    <if test="induty_select == '' and sel_area == '' ">
+	    GROUP BY AREA_CODE, INDUTY_GUBUN
+	    </if>
+	    <if test="induty_select == 'A'.toString() and sel_area == '' ">
+	    	GROUP BY INDUTY_GUBUN
+	    </if>
+	    <if test="induty_select == 'I'.toString() and multiSelectGrid1 != null and multiSelectGrid1 != '' and sel_area == '' ">
+	    	GROUP BY INDUTY_GUBUN
+	    </if>
+	    <if test="induty_select == 'T'.toString() and multiSelectGrid2 != null and multiSelectGrid2 != '' and sel_area == '' ">
+	    	GROUP BY INDUTY_GROUP
+	    </if>
+	    <if test="induty_select == 'D'.toString() and multiSelectGrid3 != null and multiSelectGrid3 != '' and sel_area == '' ">
+	    	GROUP BY INDUTY_CODE
+	    </if>
+	    <if test="sel_area == 'A'.toString() and cmpn_area_depth1 != null and cmpn_area_depth1 != '' and induty_select == 'A'.toString() ">
+		  	GROUP BY UPPER_CODE
+	    </if>
+	    <if test="sel_area == 'C'.toString() and cmpn_area_depth2 != null and cmpn_area_depth2 != '' and induty_select == 'A'.toString() ">
+		  	GROUP by AREA_CODE
+	    </if>
+	    <if test="induty_select == 'I'.toString() and sel_area == 'A'.toString() ">
+		  	GROUP BY INDUTY_GUBUN
+		</if>
+		<if test="induty_select == 'I'.toString() and sel_area == 'C'.toString() ">
+		  	GROUP BY INDUTY_GUBUN
+	  	</if>
+	  	<if test="induty_select == 'T'.toString() and sel_area == 'A'.toString() ">
+		  	GROUP BY INDUTY_GROUP
+	    </if>
+	    <if test="induty_select == 'T'.toString() and sel_area == 'C'.toString() ">
+		  	GROUP BY INDUTY_GROUP
+		</if>
+		<if test="induty_select == 'D'.toString() and sel_area == 'A'.toString() ">
+		  	GROUP BY INDUTY_CODE
+        </if>
+        <if test="induty_select == 'D'.toString() and sel_area == 'C'.toString() ">
+		  	GROUP BY INDUTY_CODE
+        </if>
+	  ) T2 
+	  LEFT OUTER JOIN
+	  (
+	    SELECT STDYY_DO
+	    , ENTCLS
+	    , AA.INDUTY_CODE
+	    , AREA_CODE
+	    , UPPER_CODE
+	    , INDUTY_GUBUN
+	    , INDUTY_GROUP
+	    , SUM(ENTRPRS_CO) AS ENTRPRS_CO
+	    , ROUND(SUM(SELNG_AM) / SUM(ENTRPRS_CO) / 1000, 0) AS SELNG_AM 
+	    , ROUND(SUM(ORDTM_LABRR_CO) / SUM(ENTRPRS_CO), 0) AS ORDTM_LABRR_CO 
+	    , ROUND(SUM(XPORT_AM_WON) / SUM(ENTRPRS_CO) / 1000, 0) AS XPORT_AM_WON 
+	    , ROUND(SUM(RSRCH_DEVLOP_CT) / SUM(ENTRPRS_CO) / 1000, 0) AS RSRCH_DEVLOP_CT 
+	    , ROUND((SUM(RSRCH_DEVLOP_CT)/SUM(ENTRPRS_CO)) / (SUM(SELNG_AM) / SUM(ENTRPRS_CO)), 2) AS RSRCH_DEVLOP_CT_RT
+	    FROM (
+	      SELECT A.STDYY_DO
+	      , A.ENTCLS
+	      , A.INDUTY_CODE
+	      , A.AREA_CODE
+	      , ADIV.UPPER_CODE
+	      , CASE WHEN SUBSTRING(A.INDUTY_CODE, 1, 1) = 'C' THEN '제조업' 
+	             WHEN SUBSTRING(A.INDUTY_CODE, 1, 1) != 'C' THEN '비제조업'
+	        END AS INDUTY_GUBUN
+	      , ENTRPRS_CO
+	      , SELNG_AM
+	      , ORDTM_LABRR_CO
+	      , XPORT_AM_WON
+	      , RSRCH_DEVLOP_CT
+	      FROM STS_ENTCLS A, TB_AREA_DIV ADIV
+	      WHERE A.AREA_CODE = ADIV.AREA_CODE
+	      <if test="sel_target_year != null and sel_target_year != '' ">
+			AND STDYY_DO=#{sel_target_year}-1
+		  </if>
+		  <if test="searchCondition != null and searchCondition != '' ">
+			AND ENTCLS = #{searchCondition}
+		  </if>
+		  <if test="induty_select == 'I'.toString() ">
+			<if test="all_induty != 'Y'.toString() ">
+		  		and CASE WHEN SUBSTRING(A.INDUTY_CODE, 1, 1) = 'C' THEN '제조업' 
+					     WHEN SUBSTRING(A.INDUTY_CODE, 1, 1) != 'C' THEN '비제조업'
+					  END IN 
+				<foreach item="item" collection="multiSelectGrid1" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+	  	</if>
+	  	<if test="induty_select == 'T'.toString() and multiSelectGrid2 != null and multiSelectGrid2 != '' ">
+	  		and INDUTY_CODE IN 
+			<foreach item="item" collection="multiSelectGrid2" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	  	</if>
+	  	<if test="induty_select == 'D'.toString() and multiSelectGrid3 != null and multiSelectGrid3 != '' ">
+	  		and INDUTY_CODE IN 
+			<foreach item="item" collection="multiSelectGrid3" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	  	</if>
+	    ) AA LEFT OUTER JOIN (
+	      select C.DTLCLFC_NO, INDUTY_CODE, GROUP_CONCAT(INDUTY_CODE) AS INDUTY_GROUP
+	      from TB_THEMA_DTLS b, TB_THEMA_INDUTY C
+	      where b.MANAGE_SN = C.MANAGE_SN
+	      and b.DTLCLFC_NO = C.DTLCLFC_NO
+	      AND b.MANAGE_SN=1
+	      GROUP BY DTLCLFC_NO
+	    ) BB
+	    ON AA.INDUTY_CODE = BB.INDUTY_CODE
+	    <if test="induty_select == '' and sel_area == '' ">
+	    GROUP BY AREA_CODE, INDUTY_GUBUN 
+	    </if>
+	    <if test="induty_select == 'A'.toString() and sel_area == '' ">
+	    	GROUP BY AREA_CODE, INDUTY_GUBUN
+	    </if>
+	    <if test="induty_select == 'I'.toString() and multiSelectGrid1 != null and multiSelectGrid1 != '' and sel_area == '' ">
+	    	GROUP BY INDUTY_GUBUN
+	    </if>
+	    <if test="induty_select == 'T'.toString() and multiSelectGrid2 != null and multiSelectGrid2 != '' and sel_area == '' ">
+	    	GROUP BY INDUTY_GROUP
+	    </if>
+	    <if test="induty_select == 'D'.toString() and multiSelectGrid3 != null and multiSelectGrid3 != '' and sel_area == '' ">
+	    	GROUP BY INDUTY_CODE
+	    </if>
+	    <if test="sel_area == 'A'.toString() and cmpn_area_depth1 != null and cmpn_area_depth1 != '' and induty_select == 'A'.toString() ">
+		  	GROUP BY UPPER_CODE
+	    </if>
+	    <if test="sel_area == 'C'.toString() and cmpn_area_depth2 != null and cmpn_area_depth2 != '' and induty_select == 'A'.toString() ">
+		  	GROUP by AREA_CODE
+	    </if>
+	    <if test="induty_select == 'I'.toString() and sel_area == 'A'.toString() ">
+		  	GROUP BY INDUTY_GUBUN
+		</if>
+		<if test="induty_select == 'I'.toString() and sel_area == 'C'.toString() ">
+		  	GROUP BY INDUTY_GUBUN
+	  	</if>
+	  	<if test="induty_select == 'T'.toString() and sel_area == 'A'.toString() ">
+		  	GROUP BY INDUTY_GROUP
+	    </if>
+	    <if test="induty_select == 'T'.toString() and sel_area == 'C'.toString() ">
+		  	GROUP BY INDUTY_GROUP
+		</if>
+		<if test="induty_select == 'D'.toString() and sel_area == 'A'.toString() ">
+		  	GROUP BY INDUTY_CODE
+        </if>
+        <if test="induty_select == 'D'.toString() and sel_area == 'C'.toString() ">
+		  	GROUP BY INDUTY_CODE	
+        </if>
+	  ) T3
+	  <if test="induty_select == 'A'.toString() and sel_area == null ">
+	  ON T2.AREA_CODE = T3.AREA_CODE 
+	  and T2.INDUTY_CODE = T3.INDUTY_CODE
+	  </if>
+	  <if test="induty_select == '' and sel_area == '' ">
+   	  ON T2.AREA_CODE = T3.AREA_CODE 
+	  and T2.INDUTY_CODE = T3.INDUTY_CODE	
+      </if>
+	  <if test="induty_select == 'I'.toString() and sel_area == '' ">
+	  ON T2.INDUTY_GUBUN = T3.INDUTY_GUBUN
+	  </if>
+	  <if test="induty_select == 'T'.toString() and sel_area == '' ">
+	  ON T2.INDUTY_CODE = T3.INDUTY_CODE
+	  </if>
+	  <if test="induty_select == 'D'.toString() and sel_area == '' ">
+	  ON T2.INDUTY_CODE = T3.INDUTY_CODE
+	  </if>
+	  <if test="induty_select == '' and sel_area == 'A'.toString() ">
+	  ON T2.UPPER_CODE = T3.UPPER_CODE
+	  </if>
+	  <if test="induty_select == '' and sel_area == 'C'.toString() ">
+	  ON T2.AREA_CODE = T3.AREA_CODE
+	  </if>
+	  
+	  <if test="induty_select == 'I'.toString() and sel_area == 'A'.toString() ">
+	  ON T2.INDUTY_GUBUN = T3.INDUTY_GUBUN
+	  AND T2.UPPER_CODE = T3.UPPER_CODE
+	  </if>
+	  <if test="induty_select == 'I'.toString() and sel_area == 'C'.toString() ">
+	  ON T2.INDUTY_GUBUN = T3.INDUTY_GUBUN
+	  AND T2.AREA_CODE = T3.AREA_CODE
+	  </if>
+	  <if test="induty_select == 'T'.toString() and sel_area == 'A'.toString() ">
+	  ON T2.INDUTY_CODE = T3.INDUTY_CODE
+	  AND T2.UPPER_CODE = T3.UPPER_CODE
+	  </if>
+	  <if test="induty_select == 'T'.toString() and sel_area == 'C'.toString() ">
+	  ON T2.INDUTY_CODE = T3.INDUTY_CODE
+	  AND T2.AREA_CODE = T3.AREA_CODE
+	  </if>
+	  <if test="induty_select == 'D'.toString() and sel_area == 'A'.toString() ">
+	  ON T2.INDUTY_CODE = T3.INDUTY_CODE
+	  AND T2.UPPER_CODE = T3.UPPER_CODE
+	  </if>
+	  <if test="induty_select == 'D'.toString() and sel_area == 'C'.toString() ">
+	  ON T2.INDUTY_CODE = T3.INDUTY_CODE
+	  AND T2.AREA_CODE = T3.AREA_CODE
+	  </if>
+	  
+	  <if test="induty_select == '' and sel_area == 'A'.toString() ">
+	  GROUP BY UPPER_CODE
+	  </if>
+	  <if test="induty_select == '' and sel_area == 'C'.toString() ">
+	  GROUP BY AREA_CODE
+	  </if>
+	  <if test="induty_select == 'A'.toString() and sel_area == null ">
+	  GROUP by T2.AREA_CODE, T2.INDUTY_GUBUN  
+	  </if>
+	  <if test="induty_select == 'A'.toString() and sel_area == '' ">
+	    	GROUP by T2.AREA_CODE, T2.INDUTY_GUBUN 
+	  </if>
+	  <if test="induty_select == 'I'.toString() and multiSelectGrid1 != null and multiSelectGrid1 != '' and sel_area == '' ">
+	    	GROUP by  T2.INDUTY_GUBUN
+	  </if>
+	  <if test="induty_select == 'T'.toString() and multiSelectGrid2 != null and multiSelectGrid2 != '' and sel_area == '' ">
+	    	GROUP BY T2.INDUTY_GROUP 
+	  </if>
+	  <if test="induty_select == 'D'.toString() and multiSelectGrid3 != null and multiSelectGrid3 != '' and sel_area == '' ">
+	    	GROUP BY T2.INDUTY_CODE 
+	  </if>
+	  <if test="sel_area == 'A'.toString() and cmpn_area_depth1 != null and cmpn_area_depth1 != '' and induty_select == 'A'.toString() ">
+		  	GROUP BY T2.UPPER_CODE	
+	  </if>
+	  <if test="sel_area == 'C'.toString() and cmpn_area_depth2 != null and cmpn_area_depth2 != '' and induty_select == 'A'.toString() ">
+		  	GROUP by T2.AREA_CODE	
+	  </if>
+	  <if test="induty_select == 'I'.toString() and sel_area == 'A'.toString() ">
+		  	GROUP BY T2.UPPER_CODE, T2.INDUTY_GUBUN 
+	  </if>
+	  <if test="induty_select == 'I'.toString() and sel_area == 'C'.toString() ">
+		  	GROUP BY T2.AREA_CODE, T2.INDUTY_GUBUN
+  	  </if>
+  	  <if test="induty_select == 'T'.toString() and sel_area == 'A'.toString() ">
+		  	GROUP BY T2.UPPER_CODE, T2.INDUTY_GROUP
+	  </if>
+	  <if test="induty_select == 'T'.toString() and sel_area == 'C'.toString() ">
+		  	GROUP BY T2.AREA_CODE, T2.INDUTY_GROUP
+	  </if>
+	  <if test="induty_select == 'D'.toString() and sel_area == 'A'.toString() ">
+		  	GROUP BY T2.UPPER_CODE, T2.INDUTY_CODE	
+      </if>
+      <if test="induty_select == 'D'.toString() and sel_area == 'C'.toString() ">
+		  	GROUP BY T2.AREA_CODE, T2.INDUTY_CODE	
+      </if>
+	) T4
+	<if test="induty_select == '' and sel_area == 'A'.toString() ">
+	ON T1.UPPER_CODE = T4.UPPER_CODE
+	</if>
+	<if test="induty_select == '' and sel_area == 'C'.toString() ">
+	ON T1.AREA_CODE = T4.AREA_CODE
+	</if>
+	<if test="induty_select != 'A'.toString() and induty_select != 'I'.toString() ">
+		ON T1.AREA_CODE = T4.AREA_CODE
+		and T1.INDUTY_CODE = T4.INDUTY_CODE
+	</if>
+	<if test="induty_select == 'A'.toString() or induty_select == 'I'.toString() ">
+		ON T1.AREA_CODE = T4.AREA_CODE
+    	and T1.INDUTY_GUBUN = T4.INDUTY_GUBUN
+	</if>
+	<if test="induty_select == '' and sel_area == '' ">
+	group by GBN_AS
+	</if>
+    <if test="induty_select == 'A'.toString() and sel_area == '' ">
+    	GROUP by AREA_CODE, INDUTY_GUBUN  
+	</if>
+	<if test="induty_select == 'I'.toString() and multiSelectGrid1 != null and multiSelectGrid1 != '' and sel_area == '' ">
+	GROUP BY INDUTY_GUBUN
+	</if>
+	<if test="induty_select == 'T'.toString() and multiSelectGrid2 != null and multiSelectGrid2 != '' and sel_area == '' ">
+    	GROUP BY INDUTY_GROUP  
+    </if>
+    <if test="induty_select == 'D'.toString() and multiSelectGrid3 != null and multiSelectGrid3 != '' and sel_area == '' ">
+    	GROUP BY INDUTY_CODE  
+    </if>
+    <if test="sel_area == 'A'.toString() and cmpn_area_depth1 != null and cmpn_area_depth1 != '' and induty_select == 'A'.toString() ">
+	  	GROUP BY UPPER_CODE	
+    </if>
+    <if test="sel_area == 'C'.toString() and cmpn_area_depth2 != null and cmpn_area_depth2 != '' and induty_select == 'A'.toString() ">
+	  	GROUP BY AREA_CODE	
+    </if>
+    <if test="induty_select == 'I'.toString() and sel_area == 'A'.toString() ">
+	  	GROUP BY UPPER_CODE, INDUTY_GUBUN  
+	</if>
+	<if test="induty_select == 'I'.toString() and sel_area == 'C'.toString() ">
+	  	GROUP BY AREA_CODE, INDUTY_GUBUN	
+ 	</if>
+ 	<if test="induty_select == 'T'.toString() and sel_area == 'A'.toString() ">
+	  	GROUP BY UPPER_CODE, INDUTY_GROUP
+    </if>
+    <if test="induty_select == 'T'.toString() and sel_area == 'C'.toString() ">
+	  	GROUP BY AREA_CODE, INDUTY_GROUP	
+	</if>
+	<if test="induty_select == 'D'.toString() and sel_area == 'A'.toString() ">
+	  	GROUP BY UPPER_CODE, INDUTY_CODE
+    </if>
+    <if test="induty_select == 'D'.toString() and sel_area == 'C'.toString() ">
+	  	GROUP BY AREA_CODE, INDUTY_CODE	
+    </if>
+	HAVING 1=1
+	AND DTLCLFC_NO IS NOT NULL
+	<if test="induty_select == 'I'.toString() ">
+		<if test="all_induty != 'Y'.toString() ">
+	  		and INDUTY_GUBUN IN 
+			<foreach item="item" collection="multiSelectGrid1" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+  	</if>
+  	<if test="induty_select == 'T'.toString() and multiSelectGrid2 != null and multiSelectGrid2 != '' ">
+  		and TEMA_CODE IN 
+		<foreach item="item" collection="multiSelectGrid2" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+  	</if>
+  	<if test="induty_select == 'D'.toString() and multiSelectGrid3 != null and multiSelectGrid3 != '' ">
+	  		and INDUTY_CODE IN 
+			<foreach item="item" collection="multiSelectGrid3" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+  	</if>
+  	<if test="induty_select == 'A'.toString()  ">
+  	ORDER BY T1.AREA_CODE, T1.DTLCLFC_NO
+	</if>
+  	<if test="induty_select == 'I'.toString() and multiSelectGrid1 == null ">
+	ORDER BY T1.AREA_CODE, T1.DTLCLFC_NO
+	</if>
+	<if test="induty_select == 'D'.toString() and multiSelectGrid3 != null and multiSelectGrid3 != '' and sel_area == '' ">
+	ORDER BY T1.AREA_CODE, T1.INDUTY_CODE
+	</if>
+	UNION ALL
+	</if>
+	select /* ProgramID=biz.tech.mapif.ps.PGPS0063Mapper.selectSttus */
+	'D' AS GBN_AS			<!-- 전체(지역)여부 -->
+	, 'D' AS GBN_IS			<!-- 소계(제조/비제조)여부 -->
+	, IFNULL(T4.STDYY_DO, #{sel_target_year}) STDYY_DO
+	, T1.AREA_CODE
+ 	, T1.AREA_NM
+	, T1.UPPER_CODE
+	, T1.ABRV	
+    <if test="sel_area == null or sel_area == '' ">
+	, T1.ABRV as AREA1
+	</if>
+	<if test="sel_area == 'A'.toString() ">
+    , T1.AREA_NM as AREA1
+    </if>
+    <if test="sel_area == 'C'.toString() ">
+    , T1.ABRV as AREA1
+    </if>
+	, T1.IND_CODE
+	, T1.INDUTY_CODE
+	, T1.KOREAN_NM
+	<if test="induty_select == 'D'.toString() and multiSelectGrid3 != null and multiSelectGrid3 != '' and sel_area == '' ">
+	, T1.KOREAN_NM as COL1	
+	</if>
+	<if test="induty_select == 'D'.toString() and sel_area == 'A'.toString() ">
+    , T1.KOREAN_NM as COL1 
+    </if>
+    <if test="induty_select == 'D'.toString() and sel_area == 'C'.toString() ">
+    , T1.KOREAN_NM as COL1
+    </if>
+	, T1.DTLCLFC_NO
+	, T1.DTLCLFC_NM
+	<if test="induty_select == 'T'.toString() and multiSelectGrid2 != null and multiSelectGrid2 != '' and sel_area == '' ">
+    , T1.DTLCLFC_NM as COL1 
+    </if>
+    <if test="induty_select == 'T'.toString() and sel_area == 'A'.toString() ">
+    , T1.DTLCLFC_NM as COL1 
+    </if>
+    <if test="induty_select == 'T'.toString() and sel_area == 'C'.toString() ">
+    , T1.DTLCLFC_NM as COL1 
+    </if>
+    , T1.TEMA_CODE
+	, T1.INDUTY_GUBUN
+	<if test="induty_select == 'A'.toString() ">
+	, T1.INDUTY_GUBUN as COL1
+	</if>
+	<if test="induty_select == 'I'.toString() ">
+	, T1.INDUTY_GUBUN as COL1
+	</if>
+	, T1.INDUTY_GROUP
+	, IFNULL(T4.ENTRPRS_CO, 0) ENTRPRS_CO
+	, IFNULL(T4.SELNG_AM, 0) SELNG_AM
+	, IFNULL(T4.SELNG_RT, 0) SELNG_RT
+	, IFNULL(T4.ORDTM_LABRR_CO, 0) ORDTM_LABRR_CO
+	, IFNULL(T4.ORDTM_RT, 0) ORDTM_RT
+	, IFNULL(T4.XPORT_AM_WON, 0) XPORT_AM_WON
+	, IFNULL(T4.XPORT_AM_WON_RT, 0) XPORT_AM_WON_RT
+	, IFNULL(T4.RSRCH_DEVLOP_CT, 0) RSRCH_DEVLOP_CT
+	, IFNULL(T4.RSRCH_RT, 2) RSRCH_RT
+	from 
+	 (
+	  select 
+	  AREA_CODE, UPPER_CODE, AREA_NM, ABRV
+	  , LCLAS_CD, IND_CODE, aa.INDUTY_CODE, KOREAN_NM
+	  , MANAGE_SN, DTLCLFC_NO, DTLCLFC_NM, TEMA_CODE
+	  , CASE WHEN SUBSTRING(TEMA_CODE, 1, 1) = 'C' THEN '제조업' 
+	           WHEN SUBSTRING(TEMA_CODE, 1, 1) != 'C' THEN '비제조업'
+	    END AS INDUTY_GUBUN
+	  , INDUTY_GROUP
+	  from (
+	    select AREA_CODE
+	    , UPPER_CODE
+	    , code_nm as AREA_NM
+	    , ABRV
+	    , LCLAS_CD
+	    , IND_CODE
+	    , INDUTY_CODE 
+	    , KOREAN_NM
+	    from (
+	      select a.AREA_CODE, UPPER_CODE, AREA_NM, ABRV, LCLAS_CD
+	      , IF( INDUTY_CODE = LCLAS_CD, LCLAS_CD,  CONCAT(LCLAS_CD, INDUTY_CODE))	IND_CODE
+	      , case when b.LCLAS_CD = 'C' then concat(LCLAS_CD,INDUTY_CODE) else LCLAS_CD end as INDUTY_CODE 
+	      , KOREAN_NM
+	      from TB_AREA_DIV a, TB_IND_CD b
+	      where a.`DIV`=2 and b.SE in ( 1, 2 ) 
+	    ) ab left outer join tb_cmmncode c
+	    on ab.UPPER_CODE = c.CODE
+	    and c.code_group_no = 57
+	    AND	c.use_at = 'Y'
+	  ) aa left outer join (
+	    select b.MANAGE_SN, b.DTLCLFC_NO, b.DTLCLFC_NM, C.INDUTY_CODE as TEMA_CODE, GROUP_CONCAT(INDUTY_CODE) AS INDUTY_GROUP
+	    from TB_THEMA_DTLS b, TB_THEMA_INDUTY C
+	    where b.MANAGE_SN = C.MANAGE_SN
+	    and b.DTLCLFC_NO = C.DTLCLFC_NO
+	    AND b.MANAGE_SN=1
+	    GROUP BY b.MANAGE_SN, b.DTLCLFC_NO
+	  ) bb
+	  on bb.INDUTY_GROUP LIKE CONCAT('%',aa.INDUTY_CODE,'%')
+	  <if test="induty_select == '' and sel_area == '' ">
+	  GROUP BY aa.AREA_CODE, bb.INDUTY_GROUP	
+	  </if>
+	  <if test="induty_select == 'A'.toString() and sel_area == '' ">
+	    	GROUP BY aa.AREA_CODE, INDUTY_GUBUN  
+	  </if>
+	  <if test="induty_select == 'I'.toString() and multiSelectGrid1 != null and multiSelectGrid1 != '' and sel_area == '' ">
+	    	GROUP BY bb.INDUTY_GROUP	
+	  </if>
+	  <if test="induty_select == 'T'.toString() and multiSelectGrid2 != null and multiSelectGrid2 != '' and sel_area == '' ">
+	    	GROUP BY bb.INDUTY_GROUP  
+	  </if>
+	  <if test="induty_select == 'D'.toString() and multiSelectGrid3 != null and multiSelectGrid3 != '' and sel_area == '' ">
+	    	GROUP BY aa.INDUTY_CODE  
+	  </if>
+	  <if test="sel_area == 'A'.toString() and cmpn_area_depth1 != null and cmpn_area_depth1 != '' and induty_select == '' ">
+		  	GROUP by aa.UPPER_CODE	
+	  </if>
+	  <if test="sel_area == 'C'.toString() and cmpn_area_depth2 != null and cmpn_area_depth2 != '' and induty_select == 'A'.toString() ">
+		  	GROUP by aa.AREA_CODE	
+	  </if>
+	  <if test="induty_select == 'I'.toString() and sel_area == 'A'.toString() ">
+		  	GROUP BY aa.UPPER_CODE, INDUTY_GUBUN   
+	  </if>
+	  <if test="induty_select == 'I'.toString() and sel_area == 'C'.toString() ">
+		  	GROUP BY aa.AREA_CODE, INDUTY_GUBUN
+	  </if>
+	  <if test="induty_select == 'T'.toString() and sel_area == 'A'.toString() ">
+		  	GROUP BY aa.UPPER_CODE, bb.INDUTY_GROUP	
+	  </if>
+	  <if test="induty_select == 'T'.toString() and sel_area == 'C'.toString() ">
+		  	GROUP BY aa.AREA_CODE, bb.INDUTY_GROUP
+	  </if>
+	  <if test="induty_select == 'D'.toString() and sel_area == 'A'.toString() ">
+		  	GROUP BY aa.UPPER_CODE, INDUTY_CODE	
+      </if>
+      <if test="induty_select == 'D'.toString() and sel_area == 'C'.toString() ">
+		  	GROUP BY aa.AREA_CODE, INDUTY_CODE
+      </if>
+	) T1 
+	LEFT OUTER JOIN
+	(
+	  SELECT T2.STDYY_DO
+	  , T2.ENTCLS
+	  , T2.INDUTY_CODE
+	  , T2.UPPER_CODE
+	  , T2.AREA_CODE
+	  , T2.INDUTY_GUBUN
+	  , T2.INDUTY_GROUP
+	  , SUM(T2.ENTRPRS_CO) AS ENTRPRS_CO
+	  , IFNULL(ROUND(T2.SELNG_AM, 0),0) AS SELNG_AM 
+	  , IFNULL(ROUND(power(T2.SELNG_AM / T3.SELNG_AM, (1/2))-1, 2),0) AS SELNG_RT
+	  , IFNULL(ROUND(T2.ORDTM_LABRR_CO, 0),0) AS ORDTM_LABRR_CO
+	  , IFNULL(ROUND(power(T2.ORDTM_LABRR_CO / T3.ORDTM_LABRR_CO, (1/2))-1, 2),0) AS ORDTM_RT
+	  , IFNULL(ROUND(T2.XPORT_AM_WON, 0),0) AS XPORT_AM_WON
+	  , IFNULL(ROUND(power(T2.XPORT_AM_WON / T3.XPORT_AM_WON, (1/2))-1, 2),0) AS XPORT_AM_WON_RT
+	  , IFNULL(ROUND(T2.RSRCH_DEVLOP_CT, 0),0) AS RSRCH_DEVLOP_CT
+	  , IFNULL(ROUND(T2.RSRCH_DEVLOP_CT_RT, 2),0) AS RSRCH_RT
+	  FROM
+	  (
+	    SELECT STDYY_DO
+	    , ENTCLS
+	    , AA.INDUTY_CODE
+	    , AREA_CODE
+	    , UPPER_CODE
+	    , INDUTY_GUBUN
+	    , INDUTY_GROUP
+	    , SUM(ENTRPRS_CO) AS ENTRPRS_CO 
+	    , ROUND(SUM(SELNG_AM) / SUM(ENTRPRS_CO) / 1000, 0) AS SELNG_AM
+	    , ROUND(SUM(ORDTM_LABRR_CO) / SUM(ENTRPRS_CO), 0) AS ORDTM_LABRR_CO
+	    , ROUND(SUM(XPORT_AM_WON) / SUM(ENTRPRS_CO) / 1000, 0) AS XPORT_AM_WON
+	    , ROUND(SUM(RSRCH_DEVLOP_CT) / SUM(ENTRPRS_CO) / 1000, 0) AS RSRCH_DEVLOP_CT
+	    , ROUND((SUM(RSRCH_DEVLOP_CT)/SUM(ENTRPRS_CO)) / (SUM(SELNG_AM) / SUM(ENTRPRS_CO)), 2) AS RSRCH_DEVLOP_CT_RT
+	    FROM (
+	      SELECT A.STDYY_DO
+	      , A.ENTCLS
+	      , A.INDUTY_CODE
+	      , A.AREA_CODE
+	      , ADIV.UPPER_CODE
+	      , CASE WHEN SUBSTRING(A.INDUTY_CODE, 1, 1) = 'C' THEN '제조업' 
+	             WHEN SUBSTRING(A.INDUTY_CODE, 1, 1) != 'C' THEN '비제조업'
+	        END AS INDUTY_GUBUN
+	      , ENTRPRS_CO
+	      , SELNG_AM
+	      , ORDTM_LABRR_CO
+	      , XPORT_AM_WON
+	      , RSRCH_DEVLOP_CT
+	      FROM STS_ENTCLS A, TB_AREA_DIV ADIV
+	      WHERE A.AREA_CODE = ADIV.AREA_CODE
+	      <if test="sel_target_year != null and sel_target_year != '' ">
+			AND STDYY_DO=#{sel_target_year}
+		  </if>
+		  <if test="searchCondition != null and searchCondition != '' ">
+			AND ENTCLS = #{searchCondition}
+		  </if>
+		  <if test="induty_select == 'I'.toString() ">
+			<if test="all_induty != 'Y'.toString() ">
+		  		and CASE WHEN SUBSTRING(A.INDUTY_CODE, 1, 1) = 'C' THEN '제조업' 
+				     WHEN SUBSTRING(A.INDUTY_CODE, 1, 1) != 'C' THEN '비제조업'
+				  END IN 
+				<foreach item="item" collection="multiSelectGrid1" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+	  	</if>
+	  	<if test="induty_select == 'T'.toString() and multiSelectGrid2 != null and multiSelectGrid2 != '' ">
+	  		and INDUTY_CODE IN 
+			<foreach item="item" collection="multiSelectGrid2" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	  	</if>
+	  	<if test="induty_select == 'D'.toString() and multiSelectGrid3 != null and multiSelectGrid3 != '' ">
+	  		and INDUTY_CODE IN 
+			<foreach item="item" collection="multiSelectGrid3" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	  	</if>
+	  	<if test="sel_area == 'A'.toString() ">
+	  		and UPPER_CODE in 
+			<foreach item="item" collection="cmpn_area_depth1" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	  	</if>
+	  	<if test="sel_area == 'C'.toString() and cmpn_area_depth2 != null and cmpn_area_depth2 != '' ">
+	  		and A.AREA_CODE in 
+			<foreach item="item" collection="cmpn_area_depth2" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	  	</if>
+	    ) AA LEFT OUTER JOIN (
+	      select C.DTLCLFC_NO, INDUTY_CODE, GROUP_CONCAT(INDUTY_CODE) AS INDUTY_GROUP
+	      from TB_THEMA_DTLS b, TB_THEMA_INDUTY C
+	      where b.MANAGE_SN = C.MANAGE_SN
+	      and b.DTLCLFC_NO = C.DTLCLFC_NO
+	      AND b.MANAGE_SN=1
+	      GROUP BY DTLCLFC_NO
+	    ) BB
+	    ON AA.INDUTY_CODE = BB.INDUTY_CODE
+	    <if test="induty_select == 'A'.toString() and sel_area == '' ">
+	    	GROUP BY INDUTY_GUBUN 
+	    </if>
+	    <if test="induty_select == 'I'.toString() and multiSelectGrid1 != null and multiSelectGrid1 != '' and sel_area == '' ">
+	    	GROUP BY INDUTY_GUBUN
+	    </if>
+	    <if test="induty_select == 'T'.toString() and multiSelectGrid2 != null and multiSelectGrid2 != '' and sel_area == '' ">
+	    	GROUP BY INDUTY_GROUP 
+	    </if>
+	    <if test="induty_select == 'D'.toString() and multiSelectGrid3 != null and multiSelectGrid3 != '' and sel_area == '' ">
+	    	GROUP BY INDUTY_CODE 
+	    </if>
+	    <if test="sel_area == 'A'.toString() and cmpn_area_depth1 != null and cmpn_area_depth1 != '' and induty_select == '' ">
+		  	GROUP BY UPPER_CODE	
+	    </if>
+	    <if test="sel_area == 'C'.toString() and cmpn_area_depth2 != null and cmpn_area_depth2 != '' and induty_select == '' ">
+		  	GROUP by AREA_CODE
+	    </if>
+	    <if test="induty_select == 'I'.toString() and sel_area == 'A'.toString() ">
+		  	GROUP BY UPPER_CODE, INDUTY_GUBUN 
+		</if>
+		<if test="induty_select == 'I'.toString() and sel_area == 'C'.toString() ">
+		  	GROUP BY AREA_CODE, INDUTY_GUBUN
+	  	</if>
+	  	<if test="induty_select == 'T'.toString() and sel_area == 'A'.toString() ">
+		  	GROUP BY UPPER_CODE, INDUTY_GROUP	
+	    </if>
+	    <if test="induty_select == 'T'.toString() and sel_area == 'C'.toString() ">
+		  	GROUP BY AREA_CODE, INDUTY_GROUP
+		</if>
+		<if test="induty_select == 'D'.toString() and sel_area == 'A'.toString() ">
+		  	GROUP BY UPPER_CODE, INDUTY_CODE	
+        </if>
+        <if test="induty_select == 'D'.toString() and sel_area == 'C'.toString() ">
+		  	GROUP BY AREA_CODE, INDUTY_CODE	
+        </if>
+	  ) T2 
+	  LEFT OUTER JOIN
+	  (
+	    SELECT STDYY_DO
+	    , ENTCLS
+	    , AA.INDUTY_CODE
+	    , AREA_CODE
+	    , UPPER_CODE
+	    , INDUTY_GUBUN
+	    , INDUTY_GROUP
+	    , SUM(ENTRPRS_CO) AS ENTRPRS_CO
+	    , ROUND(SUM(SELNG_AM) / SUM(ENTRPRS_CO) / 1000, 0) AS SELNG_AM 
+	    , ROUND(SUM(ORDTM_LABRR_CO) / SUM(ENTRPRS_CO), 0) AS ORDTM_LABRR_CO 
+	    , ROUND(SUM(XPORT_AM_WON) / SUM(ENTRPRS_CO) / 1000, 0) AS XPORT_AM_WON 
+	    , ROUND(SUM(RSRCH_DEVLOP_CT) / SUM(ENTRPRS_CO) / 1000, 0) AS RSRCH_DEVLOP_CT 
+	    , ROUND((SUM(RSRCH_DEVLOP_CT)/SUM(ENTRPRS_CO)) / (SUM(SELNG_AM) / SUM(ENTRPRS_CO)), 2) AS RSRCH_DEVLOP_CT_RT
+	    FROM (
+	      SELECT A.STDYY_DO
+	      , A.ENTCLS
+	      , A.INDUTY_CODE
+	      , A.AREA_CODE
+	      , ADIV.UPPER_CODE
+	      , CASE WHEN SUBSTRING(A.INDUTY_CODE, 1, 1) = 'C' THEN '제조업' 
+	             WHEN SUBSTRING(A.INDUTY_CODE, 1, 1) != 'C' THEN '비제조업'
+	        END AS INDUTY_GUBUN
+	      , ENTRPRS_CO
+	      , SELNG_AM
+	      , ORDTM_LABRR_CO
+	      , XPORT_AM_WON
+	      , RSRCH_DEVLOP_CT
+	      FROM STS_ENTCLS A, TB_AREA_DIV ADIV
+	      WHERE A.AREA_CODE = ADIV.AREA_CODE
+	      <if test="sel_target_year != null and sel_target_year != '' ">
+			AND STDYY_DO=#{sel_target_year}-1
+		  </if>
+		  <if test="searchCondition != null and searchCondition != '' ">
+			AND ENTCLS = #{searchCondition}
+		  </if>
+		  <if test="induty_select == 'I'.toString() ">
+			<if test="all_induty != 'Y'.toString() ">
+		  		and CASE WHEN SUBSTRING(A.INDUTY_CODE, 1, 1) = 'C' THEN '제조업' 
+					     WHEN SUBSTRING(A.INDUTY_CODE, 1, 1) != 'C' THEN '비제조업'
+					  END IN 
+				<foreach item="item" collection="multiSelectGrid1" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+	  	</if>
+	  	<if test="induty_select == 'T'.toString() and multiSelectGrid2 != null and multiSelectGrid2 != '' ">
+	  		and INDUTY_CODE IN 
+			<foreach item="item" collection="multiSelectGrid2" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	  	</if>
+	  	<if test="induty_select == 'D'.toString() and multiSelectGrid3 != null and multiSelectGrid3 != '' ">
+	  		and INDUTY_CODE IN 
+			<foreach item="item" collection="multiSelectGrid3" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	  	</if>
+	  	<if test="sel_area == 'A'.toString() ">
+	  		and UPPER_CODE in 
+			<foreach item="item" collection="cmpn_area_depth1" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	  	</if>
+	  	<if test="sel_area == 'C'.toString() and cmpn_area_depth2 != null and cmpn_area_depth2 != '' ">
+	  		and A.AREA_CODE in 
+			<foreach item="item" collection="cmpn_area_depth2" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	  	</if>
+	    ) AA LEFT OUTER JOIN (
+	      select C.DTLCLFC_NO, INDUTY_CODE, GROUP_CONCAT(INDUTY_CODE) AS INDUTY_GROUP
+	      from TB_THEMA_DTLS b, TB_THEMA_INDUTY C
+	      where b.MANAGE_SN = C.MANAGE_SN
+	      and b.DTLCLFC_NO = C.DTLCLFC_NO
+	      AND b.MANAGE_SN=1
+	      GROUP BY DTLCLFC_NO
+	    ) BB
+	    ON AA.INDUTY_CODE = BB.INDUTY_CODE
+	    <if test="induty_select == 'A'.toString() and sel_area == '' ">
+	    	GROUP BY AREA_CODE, INDUTY_GUBUN
+	    </if>
+	    <if test="induty_select == 'I'.toString() and multiSelectGrid1 != null and multiSelectGrid1 != '' and sel_area == '' ">
+	    	GROUP BY INDUTY_GUBUN
+	    </if>
+	    <if test="induty_select == 'T'.toString() and multiSelectGrid2 != null and multiSelectGrid2 != '' and sel_area == '' ">
+	    	GROUP BY INDUTY_GROUP 
+	    </if>
+	    <if test="induty_select == 'D'.toString() and multiSelectGrid3 != null and multiSelectGrid3 != '' and sel_area == '' ">
+	    	GROUP BY INDUTY_CODE 
+	    </if>
+	    <if test="sel_area == 'A'.toString() and cmpn_area_depth1 != null and cmpn_area_depth1 != '' and induty_select == '' ">
+		  	GROUP BY UPPER_CODE	
+	    </if>
+	    <if test="sel_area == 'C'.toString() and cmpn_area_depth2 != null and cmpn_area_depth2 != '' and induty_select == '' ">
+		  	GROUP by AREA_CODE	
+	    </if>
+	    <if test="induty_select == 'I'.toString() and sel_area == 'A'.toString() ">
+		  	GROUP BY UPPER_CODE, INDUTY_GUBUN 
+		</if>
+		<if test="induty_select == 'I'.toString() and sel_area == 'C'.toString() ">
+		  	GROUP BY AREA_CODE, INDUTY_GUBUN	
+	  	</if>
+	  	<if test="induty_select == 'T'.toString() and sel_area == 'A'.toString() ">
+		  	GROUP BY UPPER_CODE, INDUTY_GROUP
+	    </if>
+	    <if test="induty_select == 'T'.toString() and sel_area == 'C'.toString() ">
+		  	GROUP BY AREA_CODE, INDUTY_GROUP
+		</if>
+		<if test="induty_select == 'D'.toString() and sel_area == 'A'.toString() ">
+		  	GROUP BY UPPER_CODE, INDUTY_CODE	
+        </if>
+        <if test="induty_select == 'D'.toString() and sel_area == 'C'.toString() ">
+		  	GROUP BY AREA_CODE, INDUTY_CODE
+        </if>
+	  ) T3
+	  <if test="induty_select == 'A'.toString() and sel_area == null ">
+	  ON T2.AREA_CODE = T3.AREA_CODE 
+	  and T2.INDUTY_CODE = T3.INDUTY_CODE
+	  </if>
+	  <if test="induty_select == '' and sel_area == '' ">
+   	  ON T2.AREA_CODE = T3.AREA_CODE 
+	  and T2.INDUTY_CODE = T3.INDUTY_CODE	
+      </if>
+	  <if test="induty_select == 'I'.toString() and sel_area == '' ">
+	  ON T2.INDUTY_GUBUN = T3.INDUTY_GUBUN
+	  </if>
+	  <if test="induty_select == 'T'.toString() and sel_area == '' ">
+	  ON T2.INDUTY_CODE = T3.INDUTY_CODE
+	  </if>
+	  <if test="induty_select == 'D'.toString() and sel_area == '' ">
+	  ON T2.INDUTY_CODE = T3.INDUTY_CODE
+	  </if>
+	  <if test="induty_select == '' and sel_area == 'A'.toString() ">
+	  ON T2.UPPER_CODE = T3.UPPER_CODE
+	  </if>
+	  <if test="induty_select == '' and sel_area == 'C'.toString() ">
+	  ON T2.AREA_CODE = T3.AREA_CODE
+	  </if>
+	  
+	  <if test="induty_select == 'I'.toString() and sel_area == 'A'.toString() ">
+	  ON T2.INDUTY_GUBUN = T3.INDUTY_GUBUN
+	  AND T2.UPPER_CODE = T3.UPPER_CODE
+	  </if>
+	  <if test="induty_select == 'I'.toString() and sel_area == 'C'.toString() ">
+	  ON T2.INDUTY_GUBUN = T3.INDUTY_GUBUN
+	  AND T2.AREA_CODE = T3.AREA_CODE
+	  </if>
+	  <if test="induty_select == 'T'.toString() and sel_area == 'A'.toString() ">
+	  ON T2.INDUTY_CODE = T3.INDUTY_CODE
+	  AND T2.UPPER_CODE = T3.UPPER_CODE
+	  </if>
+	  <if test="induty_select == 'T'.toString() and sel_area == 'C'.toString() ">
+	  ON T2.INDUTY_CODE = T3.INDUTY_CODE
+	  AND T2.AREA_CODE = T3.AREA_CODE
+	  </if>
+	  <if test="induty_select == 'D'.toString() and sel_area == 'A'.toString() ">
+	  ON T2.INDUTY_CODE = T3.INDUTY_CODE
+	  AND T2.UPPER_CODE = T3.UPPER_CODE
+	  </if>
+	  <if test="induty_select == 'D'.toString() and sel_area == 'C'.toString() ">
+	  ON T2.INDUTY_CODE = T3.INDUTY_CODE
+	  AND T2.AREA_CODE = T3.AREA_CODE
+	  </if>
+	  
+	  <if test="induty_select == '' and sel_area == 'A'.toString() ">
+	  GROUP BY UPPER_CODE
+	  </if>
+	  <if test="induty_select == '' and sel_area == 'C'.toString() ">
+	  GROUP BY AREA_CODE
+	  </if>
+	  <if test="induty_select == 'A'.toString() and sel_area == null ">
+	  GROUP by T2.AREA_CODE, T2.INDUTY_GUBUN  
+	  </if>
+	  <if test="induty_select == 'A'.toString() and sel_area == '' ">
+	    	GROUP by T2.AREA_CODE, T2.INDUTY_GUBUN 
+	  </if>
+	  <if test="induty_select == 'I'.toString() and multiSelectGrid1 != null and multiSelectGrid1 != '' and sel_area == '' ">
+	    	GROUP by  T2.INDUTY_GUBUN
+	  </if>
+	  <if test="induty_select == 'T'.toString() and multiSelectGrid2 != null and multiSelectGrid2 != '' and sel_area == '' ">
+	    	GROUP BY T2.INDUTY_GROUP 
+	  </if>
+	  <if test="induty_select == 'D'.toString() and multiSelectGrid3 != null and multiSelectGrid3 != '' and sel_area == '' ">
+	    	GROUP BY T2.INDUTY_CODE 
+	  </if>
+	  <if test="sel_area == 'A'.toString() and cmpn_area_depth1 != null and cmpn_area_depth1 != '' and induty_select == 'A'.toString() ">
+		  	GROUP BY T2.UPPER_CODE	
+	  </if>
+	  <if test="sel_area == 'C'.toString() and cmpn_area_depth2 != null and cmpn_area_depth2 != '' and induty_select == 'A'.toString() ">
+		  	GROUP by T2.AREA_CODE	
+	  </if>
+	  <if test="induty_select == 'I'.toString() and sel_area == 'A'.toString() ">
+		  	GROUP BY T2.UPPER_CODE, T2.INDUTY_GUBUN 
+	  </if>
+	  <if test="induty_select == 'I'.toString() and sel_area == 'C'.toString() ">
+		  	GROUP BY T2.AREA_CODE, T2.INDUTY_GUBUN
+  	  </if>
+  	  <if test="induty_select == 'T'.toString() and sel_area == 'A'.toString() ">
+		  	GROUP BY T2.UPPER_CODE, T2.INDUTY_GROUP
+	  </if>
+	  <if test="induty_select == 'T'.toString() and sel_area == 'C'.toString() ">
+		  	GROUP BY T2.AREA_CODE, T2.INDUTY_GROUP
+	  </if>
+	  <if test="induty_select == 'D'.toString() and sel_area == 'A'.toString() ">
+		  	GROUP BY T2.UPPER_CODE, T2.INDUTY_CODE	
+      </if>
+      <if test="induty_select == 'D'.toString() and sel_area == 'C'.toString() ">
+		  	GROUP BY T2.AREA_CODE, T2.INDUTY_CODE	
+      </if>
+	) T4
+	<if test="induty_select == '' and sel_area == 'A'.toString() ">
+	ON T1.UPPER_CODE = T4.UPPER_CODE
+	</if>
+	<if test="induty_select == '' and sel_area == 'C'.toString() ">
+	ON T1.AREA_CODE = T4.AREA_CODE
+	</if>
+	<if test="induty_select != 'A'.toString() and induty_select != 'I'.toString() ">
+		ON T1.AREA_CODE = T4.AREA_CODE
+		and T1.INDUTY_CODE = T4.INDUTY_CODE
+	</if>
+	<if test="induty_select == 'A'.toString() or induty_select == 'I'.toString() ">
+		ON T1.AREA_CODE = T4.AREA_CODE
+    	and T1.INDUTY_GUBUN = T4.INDUTY_GUBUN
+	</if>
+	<if test="induty_select == '' and sel_area == '' ">
+	group by GBN_AS
+	</if>
+    <if test="induty_select == 'A'.toString() and sel_area == '' ">
+    	GROUP by AREA_CODE, INDUTY_GUBUN  
+	</if>
+	<if test="induty_select == 'I'.toString() and multiSelectGrid1 != null and multiSelectGrid1 != '' and sel_area == '' ">
+	GROUP BY INDUTY_GUBUN
+	</if>
+	<if test="induty_select == 'T'.toString() and multiSelectGrid2 != null and multiSelectGrid2 != '' and sel_area == '' ">
+    	GROUP BY INDUTY_GROUP  
+    </if>
+    <if test="induty_select == 'D'.toString() and multiSelectGrid3 != null and multiSelectGrid3 != '' and sel_area == '' ">
+    	GROUP BY INDUTY_CODE  
+    </if>
+    <if test="sel_area == 'A'.toString() and cmpn_area_depth1 != null and cmpn_area_depth1 != '' and induty_select == 'A'.toString() ">
+	  	GROUP BY UPPER_CODE	
+    </if>
+    <if test="sel_area == 'C'.toString() and cmpn_area_depth2 != null and cmpn_area_depth2 != '' and induty_select == 'A'.toString() ">
+	  	GROUP BY AREA_CODE	
+    </if>
+    <if test="induty_select == 'I'.toString() and sel_area == 'A'.toString() ">
+	  	GROUP BY UPPER_CODE, INDUTY_GUBUN  
+	</if>
+	<if test="induty_select == 'I'.toString() and sel_area == 'C'.toString() ">
+	  	GROUP BY AREA_CODE, INDUTY_GUBUN	
+ 	</if>
+ 	<if test="induty_select == 'T'.toString() and sel_area == 'A'.toString() ">
+	  	GROUP BY UPPER_CODE, INDUTY_GROUP
+    </if>
+    <if test="induty_select == 'T'.toString() and sel_area == 'C'.toString() ">
+	  	GROUP BY AREA_CODE, INDUTY_GROUP	
+	</if>
+	<if test="induty_select == 'D'.toString() and sel_area == 'A'.toString() ">
+	  	GROUP BY UPPER_CODE, INDUTY_CODE
+    </if>
+    <if test="induty_select == 'D'.toString() and sel_area == 'C'.toString() ">
+	  	GROUP BY AREA_CODE, INDUTY_CODE	
+    </if>
+	HAVING 1=1
+	AND DTLCLFC_NO IS NOT NULL
+	<if test="induty_select == 'I'.toString() ">
+		<if test="all_induty != 'Y'.toString() ">
+	  		and INDUTY_GUBUN IN 
+			<foreach item="item" collection="multiSelectGrid1" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+  	</if>
+  	<if test="induty_select == 'T'.toString() and multiSelectGrid2 != null and multiSelectGrid2 != '' ">
+  		and TEMA_CODE IN 
+		<foreach item="item" collection="multiSelectGrid2" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+  	</if>
+  	<if test="induty_select == 'D'.toString() and multiSelectGrid3 != null and multiSelectGrid3 != '' ">
+	  		and INDUTY_CODE IN 
+			<foreach item="item" collection="multiSelectGrid3" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+  	</if>
+  	<if test="sel_area == 'A'.toString() ">
+  		and UPPER_CODE in 
+		<foreach item="item" collection="cmpn_area_depth1" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+  	</if>
+  	<if test="sel_area == 'C'.toString() and cmpn_area_depth2 != null and cmpn_area_depth2 != '' ">
+  		and AREA_CODE in 
+		<foreach item="item" collection="cmpn_area_depth2" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+  	</if>
+  	ORDER BY AREA_CODE, INDUTY_GUBUN desc, DTLCLFC_NO
+	</select>
+	
+</mapper>
+

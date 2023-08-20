@@ -1,0 +1,54 @@
+<!--conf
+<sample>
+               <product version="1.6" edition="pro"/>
+                       <modifications>
+                               <modified date="070101"/>
+                       </modifications>
+               </sample>
+ --> 
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Different XML formats</title>
+	
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+</head>
+
+<body>
+	
+	<h1>Different XML formats</h1>
+	<p>The default xml format has the following tags: &lt;rows&gt; as a top, &lt;row&gt; to define rows and &lt;cell&gt; to set cells inside specified row. But tag names can be changed like in the sample presented below.</p>
+	
+	<div id="gridbox" style="width:500px; height:270px; background-color:white;"></div>
+		
+<p>Grid supports two additional XML formats, which are based on column IDs:</p>
+<b>"xmlA"</b> format
+
+<a href="javascript:void(0)" onclick="mygrid.xml.top='rows';mygrid.xml.row='./row';mygrid.clearAll();mygrid.load('php/xmlA.php','xmlA');">Reload grid from xml file in xmlA format</a><br/>
+<br/>
+<b>"xmlB"</b> format
+
+
+<a href="javascript:void(0)" onclick="mygrid.xml.top='rows';mygrid.xml.row='./row';mygrid.clearAll();mygrid.load('php/xmlB.php','xmlB');">Reload grid from xml file in xmlB format</a>	
+<script>
+	mygrid = new dhtmlXGridObject('gridbox');
+	mygrid.setImagePath("../../../codebase/imgs/");
+	mygrid.setHeader("Column A, Column B,Column C");
+	mygrid.setInitWidths("80,200,*")
+	mygrid.setColAlign("right,left,left")
+	mygrid.setColTypes("dyn,ed,ed");
+	mygrid.setColSorting("int,str,str")
+	mygrid.setColumnIds("first,second,third")
+	mygrid.xml.top="mytop";
+    mygrid.xml.row="./myrow";
+	mygrid.init();
+	mygrid.setSkin("dhx_skyblue");
+	mygrid.load("../common/custom.xml","xml");
+</script>
+
+</body>
+</html>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+
+	<bean name="propertiesService" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<!-- 
+		<property name="extFileName">
+			<set>
+		        <map>
+		        	<entry key="encoding" value="UTF-8" />
+		        	<entry key="filename" value="/WEB-INF/config/env/property/webapp.properties" />
+		        </map>
+		        <value>classpath*:properties/resource.properties</value>
+			</set>
+		</property>
+		 -->
+		 <property name="extFileName">
+			<set>
+		        <value>classpath:env/property/ked.properties</value>
+		        <value>classpath:env/property/gpin.properties</value>
+			</set>
+		</property>
+		<property name="properties">
+	        <map>
+	        	<entry key="serverMode" value="false" />									<!-- PC/서버구분(true: 서버, false: PC) -->
+	        	<entry key="productMode" value="false" />									<!-- 개발/운영구분(true: 운영, false: 개발) -->
+	        	<entry key="restrictAdminIP" value="false" />								<!-- 관리자 접근IP 제한구분(true: 제한, false: 비제한)-->
+	        	<entry key="annymsGroupCd" value="9999" />							<!-- 방문자(비로그인) 권한그룹 코드 -->
+	        	<entry key="adminGroupCd" value="0001" />								<!-- 관리자 권한그룹 코드 -->
+	        	<entry key="session.timeout" value="10800" />								<!-- 로그인 세션 타임아웃(초) -->
+	        	<entry key="attachFilePath" value="C:\aframe" />	<!-- 첨부파일업로드 경로 --> 
+	        </map>
+		</property>
+		
+	</bean>
+	
+</beans>	

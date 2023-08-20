@@ -1,0 +1,54 @@
+<!--conf
+<sample>
+              <product version="1.5" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               </sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Filtering</title>
+
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+	
+</head>
+
+<body>
+	<h1>Filtering</h1>
+	<p>You can set filter for different columns - occurrence of mask symbols will be searched. Filtering is case-sensitive.</p>
+	
+   	<div id="gridbox" style="width:600px; height: 150px; background-color:white;overflow:hidden"></div>
+	<fieldset style="width:600px">
+		<legend>Filter</legend>
+		Column 
+		<select id='a10'>
+			<option value='0'>0</option>
+			<option value='1'>1</option>
+			<option value='2'>2</option>
+		</select>
+		Mask
+		<input type="text" name="a12" value="" id="a12">
+		<input type="button" name="a11" value="Filter" id="a11" onclick='mygrid.filterBy(document.getElementById("a10").value,document.getElementById("a12").value);'><br/><br/>
+		<input type="button" name="a11" value="Filter column[0] < 500" id="a11" onclick='mygrid.filterBy(0,function(a){ return (a<500);});'>
+	</fieldset>
+
+<script>
+		mygrid = new dhtmlXGridObject('gridbox');
+		mygrid.setImagePath("../../../codebase/imgs/");
+		mygrid.setHeader("Sales,Book Title,Author");
+		mygrid.setInitWidths("50,250,*")
+		mygrid.setColAlign("right,left,left")
+		mygrid.setColTypes("dyn,ed,ed");
+		mygrid.setColSorting("str,str,str")
+		mygrid.init();
+		mygrid.setSkin("dhx_skyblue")
+		mygrid.loadXML("../common/100.xml");
+</script>
+
+</body>
+</html>

@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="biz.tech.mapif.ps.PGPS0050Mapper">
+	<!-- 전체(지역) 컬럼명 -->
+	<sql id="incAllAreaColumn">
+					, 'A' AS GBN_AS			<!-- 전체(지역)여부 -->
+					, 'D' AS GBN_IS			<!-- 소계(제조/비제조)여부 -->
+					, 'ALL' AS AREA_CODE
+					, '전체' AS ABRV
+					, 'ALL' AS UPPER_CODE
+					, '전체' AS UPPER_NM
+					, res.DTLCLFC_NO
+					, res.DTLCLFC_NM
+					, res.INDUTY_CODE
+					, res.INDUTY_NM
+					, res.INDUTY_SE
+					, res.INDUTY_SE_NM
+	</sql>
+	
+	<!-- 데이터 컬럼명 -->
+	<sql id="incDataColumn">
+					, 'D' AS GBN_AS			<!-- 전체(지역)여부 -->
+					, 'D' AS GBN_IS			<!-- 소계(제조/비제조)여부 -->
+					, res.AREA_CODE
+					, res.ABRV
+					, res.UPPER_CODE
+					, res.UPPER_NM
+					, res.DTLCLFC_NO
+					, res.DTLCLFC_NM
+					, res.INDUTY_CODE
+					, res.INDUTY_NM
+					, res.INDUTY_SE
+					, res.INDUTY_SE_NM
+	</sql>
+	
+	<!-- 가젤형기업현황 WHERE -->
+	<sql id="incWhereForStatics">
+	</sql>
+	
+	<!-- 가젤형기업현황 ORDER -->
+	<sql id="incOrderForStatics">
+		<if test="induty != null and induty != '' "><!-- 제조/비제조 -->
+			tb2.INDUTY_SE, 
+		</if>
+		<if test="induty == '2'.toString() "><!-- 테마업종 -->
+			tb2.DTLCLFC_NO, 
+		</if>
+		<if test="induty == '3'.toString() "><!-- 상세업종 -->
+			tb2.INDUTY_CODE, 
+		</if>
+	</sql>
+	
+	<!-- 가젤형기업현황 GROUP -->
+	<sql id="incGroupForStatics">
+		<if test="chartY != 'area' ">
+			<if test="induty != null and induty != '' "><!-- 제조/비제조 -->
+				res.INDUTY_SE, 
+			</if>
+			<if test="induty == '2'.toString() "><!-- 테마업종 -->
+				res.DTLCLFC_NO, 
+			</if>
+			<if test="induty == '3'.toString() "><!-- 상세업종 -->
+				res.INDUTY_CODE, 
+			</if>		
+		</if>
+	</sql>
+	
+	<!-- 업종/지역 조건 테이블 -->
+	<sql id="incConditionTable">
+						RIGHT JOIN		(
+												SELECT		  areaOt.AREA_CODE
+																, areaOt.ABRV
+																, areaOt.UPPER_CODE
+																, areaOt.UPPER_NM
+																, thmaOt.INDUTY_CODE
+																, thmaOt.DTLCLFC_NO
+																, thmaOt.DTLCLFC_NM
+																, thmaOt.INDUTY_SE
+																, thmaOt.INDUTY_SE_NM
+																, thmaOt.INDUTY_NM
+												FROM		(										
+																	SELECT		  area.AREA_CODE
+																					, area.ABRV
+																					, area.UPPER_CODE
+																					, code.CODE_NM AS UPPER_NM
+																	FROM		TB_AREA_DIV area, 
+																					(
+																						SELECT		CODE, CODE_NM
+																						FROM		tb_cmmncode
+																						WHERE		CODE_GROUP_NO = '57'
+																							AND		USE_AT = 'Y'
+																					) code
+																	WHERE		area.`DIV` = '2'
+																		AND		area.AREA_CODE != 'D99'
+																		AND		area.UPPER_CODE = code.CODE
+																	<if test="area != null and area != '' ">
+																		AND
+																		<if test="area == '1'.toString() "><!-- 권역별 -->
+																				area.UPPER_CODE
+																		</if>
+																		<if test="area == '2'.toString() "><!-- 시도별 -->
+																				area.AREA_CODE
+																		</if>
+																				IN
+																		<foreach collection="areaVal" item="arav" index="index" separator="," open="(" close=")">
+																			#{arav}
+																		</foreach>
+																	</if>					) areaOt,
+																(
+																	SELECT		  thmi.INDUTY_CODE
+																					, thdt.DTLCLFC_NO
+																					, thdt.DTLCLFC_NM
+																					, thdt.INDUTY_SE
+																					, code.CODE_NM AS INDUTY_SE_NM
+																					, indcd.KOREAN_NM AS INDUTY_NM
+																	FROM		TB_THEMA_INDUTY thmi, TB_THEMA_DTLS thdt,
+																					(
+																						SELECT		CODE, CODE_NM 
+																						FROM		tb_cmmncode
+						 																WHERE		CODE_GROUP_NO = '74'
+						 																	AND		USE_AT = 'Y'
+																					) code,
+																					(
+																						SELECT		  IF(INDUTY_CODE = LCLAS_CD, LCLAS_CD, CONCAT(LCLAS_CD, INDUTY_CODE)) IND_CODE
+																										, KOREAN_NM
+																										, LCLAS_CD
+																						FROM		TB_IND_CD
+																						WHERE		LCLAS_CD = 'C' AND SE = '2'
+																							<if test="induty == '3'.toString() ">		
+																							AND		INDUTY_CODE
+																									IN
+																								<foreach collection="indutyVal" item="indtyv" index="index" separator="," open="(" close=")">
+																										SUBSTR(#{indtyv}, 2, 2)
+																								</foreach>
+																							</if>
+						 																UNION ALL
+						 																SELECT		  IF(INDUTY_CODE = LCLAS_CD, LCLAS_CD, CONCAT(LCLAS_CD, INDUTY_CODE)) IND_CODE
+						 																				, KOREAN_NM
+						 																				, LCLAS_CD
+																						FROM		TB_IND_CD
+																						WHERE		LCLAS_CD != 'C' AND SE = '1'
+																							<if test="induty == '3'.toString() ">		
+																							AND		INDUTY_CODE
+																									IN
+																								<foreach collection="indutyVal" item="indtyv" index="index" separator="," open="(" close=")">
+																									#{indtyv}
+																								</foreach>
+																							</if>				) indcd
+																	WHERE		thmi.DTLCLFC_NO = thdt.DTLCLFC_NO
+																		AND		thmi.MANAGE_SN = thdt.MANAGE_SN
+																		AND		thdt.MANAGE_SN = '1'	
+																		AND		code.CODE = thdt.INDUTY_SE
+																		AND		thmi.INDUTY_CODE = indcd.IND_CODE
+																		<if test="induty == '1'.toString() or induty == '2'.toString() ">		
+																		AND
+																			<if test="induty == '1'.toString() "><!-- 제조/비제조 -->
+																					thdt.INDUTY_SE
+																			</if>
+																			<if test="induty == '2'.toString() "><!-- 테마업종 -->
+																					 thdt.DTLCLFC_NO
+																			</if>
+																					IN
+																			<foreach collection="indutyVal" item="indtyv" index="index" separator="," open="(" close=")">
+																				#{indtyv}
+																			</foreach>
+																		</if>				) thmaOt
+											) tb2
+							ON			 (tb1.INDUTY_CODE = tb2.INDUTY_CODE AND tb1.AREA_CODE = tb2.AREA_CODE)
+	</sql>
+	
+	<!-- 업종/지역 조건 컬럼명 -->
+	<sql id="incConditionColumn">
+										, tb2.AREA_CODE
+										, tb2.ABRV
+										, tb2.UPPER_CODE
+										, tb2.UPPER_NM
+										, tb2.DTLCLFC_NO
+										, tb2.DTLCLFC_NM									
+										, tb2.INDUTY_CODE
+										, tb2.INDUTY_NM
+										, tb2.INDUTY_SE
+										, tb2.INDUTY_SE_NM
+	</sql>
+	
+	<!-- ############## 업종별분포추이 ################## -->
+	<!-- 업종별분포추이 TB -->
+	<sql id="incSelectForTB">
+						SELECT
+										IFNULL(tb1.ENTRPRS_CO, 0) AS ENTRPRS_CO
+										<include refid="incConditionColumn" />
+						FROM		(
+											SELECT		INDUTY_CODE, AREA_CODE, ENTRPRS_CO
+											FROM		STS_ENTCLS
+											WHERE		STDYY_DO = #{stdyy}
+												AND		ENTCLS = #{entcls}
+										) tb1
+										<include refid="incConditionTable" />
+	</sql>
+
+	<!-- 업종별분포추이 데이터 목록 조회 -->
+	<select id="selectStaticsDataList" resultType="egovMap">
+	<if test="area != null and area != '' and (chartY == '' || chartY == null) ">
+	SELECT		/* ProgramID=biz.tech.mapif.ps.PGPS0050Mapper.selectStaticsDataList */ 
+					  SUM(res.ENTRPRS_CO) AS Y0_CO	
+					<include refid="incAllAreaColumn" />
+
+	FROM		(
+					<include refid="incSelectForTB" />
+					<include refid="incWhereForStatics" />
+					<trim prefix="ORDER BY" suffixOverrides=",">
+						<include refid="incOrderForStatics" />
+					</trim>
+		) res
+		<trim prefix="GROUP BY" suffixOverrides=",">
+			<include refid="incGroupForStatics" />
+		</trim>
+	UNION
+	</if>
+	SELECT		/* ProgramID=biz.tech.mapif.ps.PGPS0050Mapper.selectStaticsDataList */ 
+					  SUM(res.ENTRPRS_CO) AS Y0_CO
+					<include refid="incDataColumn" />
+	FROM		(
+					<include refid="incSelectForTB" />
+					<include refid="incWhereForStatics" />
+					<trim prefix="ORDER BY" suffixOverrides=",">
+						<if test="area == '1'.toString() "><!-- 권역별 -->
+							tb2.UPPER_CODE, 
+						</if>
+						<if test="area == '2'.toString() "><!-- 시도별 -->
+							tb2.AREA_CODE, 
+						</if>		
+						<include refid="incOrderForStatics" />
+					</trim>
+		) res
+		<trim prefix="GROUP BY" suffixOverrides=",">
+			<if test="chartY != 'induty' ">
+				<if test="area == '1'.toString() "><!-- 권역별 -->
+					res.UPPER_CODE, 
+				</if>
+				<if test="area == '2'.toString() "><!-- 시도별 -->
+					res.AREA_CODE, 
+				</if>
+			</if>
+			<include refid="incGroupForStatics" />
+		</trim>
+	</select>
+	
+	<!-- ############## 기업규모별현황 ################## -->
+	<!-- 기업규모별현황 TB -->
+	<sql id="incSelectForTBScle">
+						SELECT
+										  IFNULL(tb1.SCTN1, 0) AS SCTN1
+										, IFNULL(tb1.SCTN2, 0) AS SCTN2
+										, IFNULL(tb1.SCTN3, 0) AS SCTN3
+										, IFNULL(tb1.SCTN4, 0) AS SCTN4
+										, IFNULL(tb1.SCTN5, 0) AS SCTN5
+										, IFNULL(tb1.SCTN6, 0) AS SCTN6
+										, IFNULL(tb1.SCTN7, 0) AS SCTN7
+										, IFNULL(tb1.SCTN8, 0) AS SCTN8
+										, IFNULL(tb1.RESN_NM, 
+											<if test="resnSe == 'GR01' ">'매출액&amp;근로자'</if>
+											<if test="resnSe == 'GR02' ">'근로자'</if>
+											<if test="resnSe == 'GR03' ">'매출액'</if>
+											<if test="resnSe == 'GR04' ">'매출액or근로자'</if>
+											) AS RESN_NM
+										<include refid="incConditionColumn" />
+						FROM		(
+											SELECT		  INDUTY_CODE, AREA_CODE
+															, SCTN1, SCTN2, SCTN3, SCTN4, SCTN5, SCTN6, SCTN7, SCTN8
+															, code.CODE_NM AS RESN_NM
+											FROM		STS_GZLC_JDGMNT_RESN resn, tb_cmmncode code
+											WHERE		resn.STDYY_DO = #{stdyy}
+												AND		resn.GZLC_RESN_SE = #{resnSe}
+												AND		resn.GZLC_RESN_SE = code.CODE
+												AND		code.CODE_GROUP_NO='69'
+										) tb1
+										<include refid="incConditionTable" />
+	</sql>
+
+	<!-- 기업규모별현황 데이터 목록 조회 -->
+	<select id="selectStaticsDataListScle" resultType="egovMap">
+	<if test="area != null and area != '' and (chartY == '' || chartY == null) ">
+	SELECT		/* ProgramID=biz.tech.mapif.ps.PGPS0050Mapper.selectStaticsDataListScle */ 
+					  SUM(res.SCTN1) AS SCTN1
+					, SUM(res.SCTN2) AS SCTN2
+					, SUM(res.SCTN3) AS SCTN3
+					, SUM(res.SCTN4) AS SCTN4
+					, SUM(res.SCTN5) AS SCTN5
+					, SUM(res.SCTN6) AS SCTN6
+					, SUM(res.SCTN7) AS SCTN7
+					, SUM(res.SCTN8) AS SCTN8
+					, SUM(res.SCTN1+res.SCTN2+res.SCTN3+res.SCTN4+res.SCTN5+res.SCTN6+res.SCTN7+res.SCTN8) AS SUM_SCTN
+					, res.RESN_NM
+					<include refid="incAllAreaColumn" />
+
+	FROM		(
+					<include refid="incSelectForTBScle" />
+					<include refid="incWhereForStatics" />
+					<trim prefix="ORDER BY" suffixOverrides=",">
+						<include refid="incOrderForStatics" />
+					</trim>
+		) res
+		<trim prefix="GROUP BY" suffixOverrides=",">
+			<include refid="incGroupForStatics" />
+		</trim>
+	UNION
+	</if>
+	SELECT		/* ProgramID=biz.tech.mapif.ps.PGPS0050Mapper.selectStaticsDataList */ 
+					  SUM(res.SCTN1) AS SCTN1
+					, SUM(res.SCTN2) AS SCTN2
+					, SUM(res.SCTN3) AS SCTN3
+					, SUM(res.SCTN4) AS SCTN4
+					, SUM(res.SCTN5) AS SCTN5
+					, SUM(res.SCTN6) AS SCTN6
+					, SUM(res.SCTN7) AS SCTN7
+					, SUM(res.SCTN8) AS SCTN8
+					, SUM(res.SCTN1+res.SCTN2+res.SCTN3+res.SCTN4+res.SCTN5+res.SCTN6+res.SCTN7+res.SCTN8) AS SUM_SCTN
+					, res.RESN_NM
+					<include refid="incDataColumn" />
+	FROM		(
+					<include refid="incSelectForTBScle" />
+					<include refid="incWhereForStatics" />
+					<trim prefix="ORDER BY" suffixOverrides=",">
+						<if test="area == '1'.toString() "><!-- 권역별 -->
+							tb2.UPPER_CODE, 
+						</if>
+						<if test="area == '2'.toString() "><!-- 시도별 -->
+							tb2.AREA_CODE, 
+						</if>		
+						<include refid="incOrderForStatics" />
+					</trim>
+		) res
+		<trim prefix="GROUP BY" suffixOverrides=",">
+			<if test="chartY != 'induty' ">
+				<if test="area == '1'.toString() "><!-- 권역별 -->
+					res.UPPER_CODE, 
+				</if>
+				<if test="area == '2'.toString() "><!-- 시도별 -->
+					res.AREA_CODE, 
+				</if>
+			</if>
+			<include refid="incGroupForStatics" />
+		</trim>
+	</select>
+	
+	<!-- ############## 업력별분포 & 주요지표현황 ################## -->
+	<!-- 업력별분포 & 주요지표현황 TB -->
+	<sql id="incSelectForTBHistIdx">
+						SELECT
+										  IFNULL(tb1.ENTR_HIST_R7, 0) AS ENTR_HIST_R7
+										, IFNULL(tb1.ENTR_HIST_U7, 0) AS ENTR_HIST_U7
+										, IFNULL(tb1.ENTRPRS_CO, 0) AS ENTRPRS_CO
+										, IFNULL(tb1.SELNG_AM, 0) AS SELNG_AM
+										, IFNULL(tb1.XPORT_AM_DOLLAR, 0) AS XPORT_AM_DOLLAR
+										, IFNULL(tb1.ORDTM_LABRR_CO, 0) AS ORDTM_LABRR_CO
+										, IFNULL(tb1.RSRCH_DEVLOP_CT, 0) AS RSRCH_DEVLOP_CT
+										, IFNULL(tb1.RESN_NM, 
+											<if test="resnSe == 'GR01' ">'매출액&amp;근로자'</if>
+											<if test="resnSe == 'GR02' ">'근로자'</if>
+											<if test="resnSe == 'GR03' ">'매출액'</if>
+											<if test="resnSe == 'GR04' ">'매출액or근로자'</if>
+											) AS RESN_NM
+										<include refid="incConditionColumn" />
+						FROM		(
+											SELECT		  INDUTY_CODE, AREA_CODE
+															, ENTR_HIST_R7, ENTR_HIST_U7
+															, ENTRPRS_CO, SELNG_AM, XPORT_AM_DOLLAR, ORDTM_LABRR_CO, RSRCH_DEVLOP_CT
+															, code.CODE_NM AS RESN_NM
+											FROM		STS_GZLC gzlc, tb_cmmncode code
+											WHERE		gzlc.STDYY_DO = #{stdyy}
+												AND		gzlc.GZLC_RESN_SE = #{resnSe}
+												AND		gzlc.GZLC_RESN_SE = code.CODE
+												AND		code.CODE_GROUP_NO='69'
+										) tb1
+										<include refid="incConditionTable" />
+	</sql>
+
+	<!-- 주요지표 최종 컬럼 -->
+	<sql id="incHistIndxColumn">
+					  rslt.*
+					, IFNULL(TRUNCATE(rslt.SELNG_AM / rslt.ENTRPRS_CO / 100000, 0), 0) AS AVRG_SELNG_AM
+					, IFNULL(TRUNCATE(rslt.XPORT_AM_DOLLAR / rslt.ENTRPRS_CO / 1000000, 0), 0) AS AVRG_XPORT_AM_DOLLAR
+					, IFNULL(TRUNCATE(rslt.ORDTM_LABRR_CO / rslt.ENTRPRS_CO, 0), 0) AS AVRG_ORDTM_LABRR_CO
+					, IFNULL(TRUNCATE(rslt.RSRCH_DEVLOP_CT / rslt.ENTRPRS_CO, 0), 0) AS AVRG_RSRCH_DEVLOP_CT
+					, IFNULL(TRUNCATE(rslt.RSRCH_DEVLOP_CT / rslt.SELNG_AM / rslt.ENTRPRS_CO * 100, 2), 0) AS AVRG_RSRCH_DEVLOP_RT
+	</sql>
+
+	<!-- 업력별분포 & 주요지표현황 데이터 목록 조회 -->
+	<select id="selectStaticsDataListHistIndx" resultType="egovMap">
+			<if test="area != null and area != '' and (chartY == '' || chartY == null) ">
+	SELECT		/* ProgramID=biz.tech.mapif.ps.PGPS0050Mapper.selectStaticsDataListHistIndx */
+					<include refid="incHistIndxColumn" />
+	FROM		(
+					SELECT
+									  SUM(res.ENTR_HIST_R7) AS Y0_ENTR_HIST_R7
+									, SUM(res.ENTR_HIST_U7) AS Y0_ENTR_HIST_U7
+									, SUM(res.ENTR_HIST_R7+res.ENTR_HIST_U7) AS Y0_SUM_ENTR_HIST
+									, SUM(res.ENTRPRS_CO) AS ENTRPRS_CO
+									, SUM(res.SELNG_AM) AS SELNG_AM
+									, SUM(res.XPORT_AM_DOLLAR) AS XPORT_AM_DOLLAR
+									, SUM(res.ORDTM_LABRR_CO) AS ORDTM_LABRR_CO
+									, SUM(res.RSRCH_DEVLOP_CT) AS RSRCH_DEVLOP_CT
+									, res.RESN_NM
+									<include refid="incAllAreaColumn" />
+				
+					FROM		(
+									<include refid="incSelectForTBHistIdx" />
+									<include refid="incWhereForStatics" />
+									<trim prefix="ORDER BY" suffixOverrides=",">
+										<include refid="incOrderForStatics" />
+									</trim>
+									) res
+						<trim prefix="GROUP BY" suffixOverrides=",">
+							<include refid="incGroupForStatics" />
+						</trim>
+					) rslt
+	UNION
+					</if>
+	SELECT		/* ProgramID=biz.tech.mapif.ps.PGPS0050Mapper.selectStaticsDataListHistIndx */
+					<include refid="incHistIndxColumn" />
+	FROM		(
+					SELECT
+									  SUM(res.ENTR_HIST_R7) AS Y0_ENTR_HIST_R7
+									, SUM(res.ENTR_HIST_U7) AS Y0_ENTR_HIST_U7
+									, SUM(res.ENTR_HIST_R7+res.ENTR_HIST_U7) AS Y0_SUM_ENTR_HIST
+									, SUM(res.ENTRPRS_CO) AS ENTRPRS_CO
+									, SUM(res.SELNG_AM) AS SELNG_AM
+									, SUM(res.XPORT_AM_DOLLAR) AS XPORT_AM_DOLLAR
+									, SUM(res.ORDTM_LABRR_CO) AS ORDTM_LABRR_CO
+									, SUM(res.RSRCH_DEVLOP_CT) AS RSRCH_DEVLOP_CT
+									, res.RESN_NM
+									<include refid="incDataColumn" />
+					FROM		(
+									<include refid="incSelectForTBHistIdx" />
+									<include refid="incWhereForStatics" />
+									<trim prefix="ORDER BY" suffixOverrides=",">
+										<if test="area == '1'.toString() "><!-- 권역별 -->
+											tb2.UPPER_CODE, 
+										</if>
+										<if test="area == '2'.toString() "><!-- 시도별 -->
+											tb2.AREA_CODE, 
+										</if>		
+										<include refid="incOrderForStatics" />
+									</trim>
+									) res
+						<trim prefix="GROUP BY" suffixOverrides=",">
+							<if test="chartY != 'induty' ">
+								<if test="area == '1'.toString() "><!-- 권역별 -->
+									res.UPPER_CODE, 
+								</if>
+								<if test="area == '2'.toString() "><!-- 시도별 -->
+									res.AREA_CODE, 
+								</if>
+							</if>
+							<include refid="incGroupForStatics" />
+						</trim>
+	
+					) rslt
+	</select>
+</mapper>

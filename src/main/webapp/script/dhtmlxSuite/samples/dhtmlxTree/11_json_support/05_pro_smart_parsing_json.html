@@ -1,0 +1,37 @@
+<!--conf
+<sample>
+              <product version="1.5" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               </sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title> Smart JSON parsing</title>
+</head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+<body>
+	<h1>Smart JSON parsing </h1>
+	<p>The smartXMLParsing mode can work with JSON as well ( when the type of loaded data has been changed, all other API remains the same ).
+    The tree in the example contains about <strong>10000</strong> nodes.</p>
+	
+	<div id="treeboxbox_tree" style="width:250px; height:218px;background-color:#f5f5f5;border :1px solid Silver;; overflow:auto;"></div>
+	<br>
+
+	<script>
+			tree=new dhtmlXTreeObject("treeboxbox_tree","100%","100%",0);
+
+			tree.setSkin('dhx_skyblue');
+			tree.setImagePath("../../../codebase/imgs/dhxtree_skyblue/");
+			tree.enableSmartXMLParsing(true);
+			tree.loadJSON("../common/big_data.json");
+	</script>
+<br><br>
+
+</body>
+</html>

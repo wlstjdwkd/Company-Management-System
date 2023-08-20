@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+	<!-- 게시판 관리 기본 설정-->
+
+	<board>
+		<!-- 게시판 생성시 기본 설정 값(설정이 필요한 컬럼만 사용) -->
+		<defaultColumn>
+			<REG_NM />
+			<EXT_COLUMN1 /><EXT_COLUMN2 /><EXT_COLUMN3 /><EXT_COLUMN4 /><EXT_COLUMN5 />
+			<EXT_COLUMN6 /><EXT_COLUMN7 /><EXT_COLUMN8 /><EXT_COLUMN9 /><EXT_COLUMN10 />
+		</defaultColumn>
+
+		<defaultConfig table="OP_BOARD">
+			<REG_NM columnId="REG_NM" columnNm="등록자명" columnType="" columnComment="" searchYn="Y" searchType=""  requireYn="Y" useYn="Y" />
+
+			<EXT_COLUMN1 columnId="EXT_COLUMN1" columnNm="확장컬럼1" columnType="" columnComment="" searchYn="N" searchType="" requireYn="N" useYn="N" />
+			<EXT_COLUMN2 columnId="EXT_COLUMN2" columnNm="확장컬럼2" columnType="" columnComment="" searchYn="N" searchType="" requireYn="N" useYn="N" />
+			<EXT_COLUMN3 columnId="EXT_COLUMN3" columnNm="확장컬럼3" columnType="" columnComment="" searchYn="N" searchType="" requireYn="N" useYn="N" />
+			<EXT_COLUMN4 columnId="EXT_COLUMN4" columnNm="확장컬럼4" columnType="" columnComment="" searchYn="N" searchType="" requireYn="N" useYn="N" />
+			<EXT_COLUMN5 columnId="EXT_COLUMN5" columnNm="확장컬럼5" columnType="" columnComment="" searchYn="N" searchType="" requireYn="N" useYn="N" />
+			<EXT_COLUMN6 columnId="EXT_COLUMN6" columnNm="확장컬럼6" columnType="" columnComment="" searchYn="N" searchType="" requireYn="N" useYn="N" />
+			<EXT_COLUMN7 columnId="EXT_COLUMN7" columnNm="확장컬럼7" columnType="" columnComment="" searchYn="N" searchType="" requireYn="N" useYn="N" />
+			<EXT_COLUMN8 columnId="EXT_COLUMN8" columnNm="확장컬럼8" columnType="" columnComment="" searchYn="N" searchType="" requireYn="N" useYn="N" />
+			<EXT_COLUMN9 columnId="EXT_COLUMN9" columnNm="확장컬럼9" columnType="" columnComment="" searchYn="N" searchType="" requireYn="N" useYn="N" />
+			<EXT_COLUMN10 columnId="EXT_COLUMN10" columnNm="확장컬럼10" columnType="" columnComment="" searchYn="N" searchType="" requireYn="N" useYn="N" />
+		</defaultConfig>
+	</board>
+
+</configuration>

@@ -1,0 +1,68 @@
+<!--conf
+<sample>
+               <product version="2.5" edition="std"/>
+                       <modifications>
+                               <modified date="090819"/>
+                       </modifications>
+               </sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Extended marking</title>
+	
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+</head>
+
+<body>
+	<div id="gridbox" style="width:600px;height:270px;overflow:hidden"></div>
+			
+				<p><a href="javascript:void(0)" onclick="mygrid.addRow((new Date()).valueOf(),[0,'','','',false,'na',false,''],mygrid.getRowIndex(mygrid.getSelectedId()))">Add row</a></p>
+				<p><a href="javascript:void(0)" onclick="mygrid.deleteSelectedItem()">Remove Selected Row</a></p>
+				<input type="button" name="some_name" value="update" onclick="myDataProcessor.sendData();">
+	
+<script>
+function log(){
+	
+}
+	//init grid and set its parameters (this part as always)
+	mygrid = new dhtmlXGridObject('gridbox');
+	mygrid.setImagePath("../../../codebase/imgs/");
+	mygrid.setHeader("Status,Book Title,Author,Price,In Store,Shipping,Bestseller,Date of Publication");
+	mygrid.setInitWidths("60,150,120,80,80,80,80,200")
+	mygrid.setColAlign("right,left,left,right,center,left,center,center")
+	mygrid.setColTypes("ro,ed,txt,price,ch,coro,ch,ro");
+	mygrid.setSkin("dhx_skyblue");
+	mygrid.setColSorting("int,str,str,int,str,str,str,date")
+	mygrid.init();
+	mygrid.loadXML("php/get.php",function(){
+		mygrid.forEachRow(function(id){
+			mygrid.cells(id,0).setValue("");	
+		})
+	});	//used just for demo purposes
+	
+//============================================================================================
+	myDataProcessor = new dataProcessor("php/update_mark.php"); //lock feed url
+	myDataProcessor.init(mygrid); //link dataprocessor to the grid
+	myDataProcessor.setUpdateMode("off"); //link dataprocessor to the grid
+	myDataProcessor.attachEvent("onRowMark",function(id,status,mode){
+		if (status)
+			mygrid.cells(id,0).setValue(mode);
+		else
+			mygrid.cells(id,0).setValue("saved");
+		return false;
+	})
+	
+//============================================================================================
+
+</script>
+		
+
+
+</body>
+</html>
+
+

@@ -1,0 +1,147 @@
+<!--conf
+<sample>
+              <product version="1.4" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               </sample>
+ --> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html>
+<head>
+	<title>50,000 records in grid with paging</title>
+	
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+	<script>
+		var mygrid;
+		var timeoutHnd;
+		var flAuto = false;
+		function doOnLoad(){
+			mygrid = new dhtmlXGridObject('gridbox');
+			mygrid.setImagePath("../../../codebase/imgs/");
+
+			mygrid.setHeader("Name,Index,Code");
+			mygrid.setInitWidths("150,150,*")
+			mygrid.setColAlign("left,left,right")
+			mygrid.setColSorting("server,na,server");
+			mygrid.setColTypes("ro,ro,ro");
+
+			//available in pro version only
+			if (mygrid.setColspan)
+			    mygrid.attachEvent("onBeforeSorting",customColumnSort)
+
+		    mygrid.setSkin("dhx_skyblue");
+		    mygrid.init();
+		    mygrid.splitAt(1)
+		    mygrid.attachEvent("onBeforePageChanged",function(){
+		    	if (!this.getRowsNum())
+		    		return false;
+		    	return true;
+	    	})
+			//this code enables paging and sets its skin
+			mygrid.enablePaging(true,50,10,"pagingArea",true,"infoArea");
+			mygrid.setPagingSkin("bricks");
+			
+		    
+				//code below written to support standard edtiton
+                //it written especially for current sample and may not work
+				//in other cases, DON'T USE it if you have pro version
+				mygrid.sortField_old=mygrid.sortField;
+				mygrid.sortField=function(){
+					mygrid.setColSorting("str,str,str");
+                	if (customColumnSort(arguments[0]))
+						mygrid.sortField_old.apply(this,arguments);
+				}
+				mygrid.sortRows=function(col,type,order){
+				}
+
+
+			mygrid.attachEvent("onXLE",showLoading);
+			mygrid.attachEvent("onXLS",function(){showLoading(true)})//setOnLoadingStart(function(){showLoading(true)})
+		    mygrid.loadXML("php/50000_load_grid.php?un="+Date.parse(new Date()));
+		}
+
+		function showLoading(fl){
+			var span = document.getElementById("recfound")
+			if (!span) return;
+
+			if(!mygrid._serialise){
+				span.innerHTML = "<i>Loading... available in Professional Edition of dhtmlxGrid</i>"
+				return;
+			}
+			span.style.color = "red";
+			if(fl===true)
+				span.innerHTML = "loading...";
+			else
+				span.innerHTML = "";
+		}
+		function doSearch(ev){
+			if(!flAuto)
+				return;
+			var elem = ev.target||ev.srcElement;
+			if(timeoutHnd)
+				clearTimeout(timeoutHnd)
+			timeoutHnd = setTimeout(reloadGrid,500)
+		}
+		function reloadGrid(){
+			var nm_mask = document.getElementById("search_nm").value
+			var cd_mask = document.getElementById("search_cd").value
+			showLoading(true)
+			mygrid.clearAndLoad("php/50000_load_grid.php?nm_mask="+nm_mask+"&cd_mask="+cd_mask+"&orderBy="+window.s_col+"&direction="+window.a_direction);
+			if (window.a_direction)
+				mygrid.setSortImgState(true,window.s_col,window.a_direction);
+		}
+		function enableAutosubmit(state){
+			flAuto = state;
+			document.getElementById("submitButton").disabled = state
+		}
+		function customColumnSort(ind){
+			if (ind==1) {
+				alert("Table can't be sorted by this column.");
+				if (window.s_col)
+					mygrid.setSortImgState(true,window.s_col,window.a_direction);
+				return false;
+			}
+			var a_state = mygrid.getSortingState();
+			window.s_col=ind;
+			window.a_direction = ((a_state[1] == "des")?"asc":"des");
+            reloadGrid();
+			return true;
+		}
+		
+	</script>
+</head>
+
+<body onLoad="doOnLoad()">
+<h1>Working with big datasets</h1>
+
+<p style="font-size:14px;">
+This sample demonstrates how dhtmlxGrid works with rather big amount of data (50,000 records).<br>
+We have put 50,000 records into a table in a Mysql database filled with random words. dhtmlxGrid using Ajax loads visible records only. In this sample paging mode is supported.<br>
+When user is scrolling, dhtmlxGrid automatically loads new records from database and displays them. When user is scrolling back, those records that have been already loaded, are taken from cache.<br>
+If user wants to make a search (just enter some word into input fields), grid sends search criteria to server and loads only data that correspond to entered criteria.<br>
+<div style="color:red;text-decoration:underline;margin-top:5px;">Important: sample is working with real data - <b>50.000</b> records, but this is not the limit! Enjoy it's performance and imagine how it could be used in your product.</div>
+</p>
+
+<h3>Search By:</h3>
+<div>
+	Name<br>
+	<input type="text" id="search_nm" onKeyDown="doSearch(arguments[0]||event)">
+</div>
+<div>
+	Code<br>
+	<input type="text" id="search_cd" onKeyDown="doSearch(arguments[0]||event)">
+	<button onClick="reloadGrid()" id="submitButton" style="margin-left:30px;">Search</button>
+	<input type="checkbox" id="autosearch" onClick="enableAutosubmit(this.checked)"> Enable Autosearch
+</div>
+
+<div id="gridbox" style="width:100%;height:300px;margin-top:20px;"></div>
+<div><span id="pagingArea"></span>&nbsp;<span id="infoArea"></span></div>
+<span id="recfound"></span>
+</body>
+</html>

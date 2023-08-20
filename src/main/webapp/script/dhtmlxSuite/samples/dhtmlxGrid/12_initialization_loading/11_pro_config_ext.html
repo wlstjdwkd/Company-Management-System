@@ -1,0 +1,154 @@
+<!--conf
+<sample>
+              <product version="1.4" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               </sample>
+ --> 
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Run commands from XML</title>
+	
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+	<script>
+		function loadGridFromString(){
+			mygrid = new dhtmlXGridObject('gridbox');
+			mygrid.setDelimiter("|");
+			//mygrid.setStyle("text-align:center", "", "", "");
+			mygrid.setImagePath("../../../codebase/imgs/");
+			//mygrid.setSkin("light")
+			mygrid.loadXMLString(document.getElementById("gridcont1").value);
+		}
+		function loadGridFromString2(){
+			mygrid2 = new dhtmlXGridObject('gridbox2');
+			mygrid2.setImagePath("../../../codebase/imgs/");
+			mygrid2.setSkin("dhx_skyblue")
+			mygrid2.loadXMLString(document.getElementById("gridcont2").value);
+		}
+	</script>
+</head>
+
+<body>
+	<h1>Run grid methods from XML</h1>
+	<p>You are allowed to use methods before grid intialization:</p>
+	<div>
+		<li>Example:  <a href="javascript:void(0)" onClick="loadGridFromString()">Load grid with skyblue skin</a> set from XML by calling setSkin method before grid initialization</li>
+	</div>
+	<br>
+	<div id="gridbox" style="width:600px; height:100px; background-color:white;"></div>
+
+The same as with script:<br/>
+
+<textarea id="gridcont1" style="width:600px;height:150px;"><?xml version="1.0" encoding="UTF-8"?>
+<rows>
+    <head>
+        <beforeInit>
+			<call command="setSkin"><param>dhx_skyblue</param></call>
+			<call command="setStyle"><param>text-align:center;</param></call>
+		</beforeInit>
+		<column width="50" type="dyn" align="right"  sort="str">Sales</column>
+        <column width="150" type="ed" align="left"  sort="str">Book Title</column>
+        <column width="100" type="ed" align="left"  sort="str">Author</column>
+        <column width="80" type="price" align="right" sort="str">Price</column>
+        <column width="80" type="ch" align="center" sort="str">In Store</column>
+        <column width="80" type="co" align="left" sort="str">Shipping
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">10</option>
+            <option value="5">20</option>
+            <option value="6">30</option>
+        </column>
+        <column width="80" type="ra" align="center" sort="str">Bestseller</column>
+        <column width="200" type="ro" align="center" sort="str">Date of Publication</column>
+        <settings>
+            <colwidth>px</colwidth>
+        </settings>
+    </head>
+ 	<row id="1">
+		<cell>-1500</cell>
+		<cell>A Time to Kill</cell>
+		<cell>John Grisham</cell>
+		<cell>12.99</cell>
+		<cell>1</cell>
+		<cell>24</cell>
+		<cell>0</cell>
+		<cell>05/01/1998</cell>
+	</row>
+	<row id="2">
+		<cell>1000</cell>
+		<cell>Blood and Smoke</cell>
+		<cell>Stephen King</cell>
+		<cell>0</cell>
+		<cell>1</cell>
+		<cell>24</cell>
+		<cell>0</cell>
+		<cell>01/01/2000</cell>
+	</row>
+</rows>
+</textarea>
+
+<p>Also, you can run methods after grid intialization</p>
+	<div>
+		<li>Example:  <a href="javascript:void(0)" onClick="loadGridFromString2()">Load grid and set the 2nd column hidden</a> by calling setColumnHidden method from xml after grid initialization</li>
+	</div><br>
+<div id="gridbox2" style="width:600px;height:100px;background-color:white;"></div>
+
+The same as with script:<br/>
+
+<textarea id="gridcont2" style="width:600px;height:150px;"><?xml version="1.0" encoding="UTF-8"?>
+<rows>
+    <head>
+        <afterInit>
+			<call command="setColumnHidden"><param>1</param><param>true</param></call>
+		</afterInit>
+		<column width="50" type="dyn" align="right"  sort="str">Sales</column>
+        <column width="150" type="ed" align="left"  sort="str">Book Title</column>
+        <column width="100" type="ed" align="left"  sort="str">Author</column>
+        <column width="80" type="price" align="right" sort="str">Price</column>
+        <column width="80" type="ch" align="center" sort="str">In Store</column>
+        <column width="80" type="co" align="left" sort="str">Shipping
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">10</option>
+            <option value="5">20</option>
+            <option value="6">30</option>
+        </column>
+        <column width="80" type="ra" align="center" sort="str">Bestseller</column>
+        <column width="200" type="ro" align="center" sort="str">Date of Publication</column>
+        <settings>
+            <colwidth>px</colwidth>
+        </settings>
+    </head>
+ 	<row id="1">
+		<cell>-1500</cell>
+		<cell>A Time to Kill</cell>
+		<cell>John Grisham</cell>
+		<cell>12.99</cell>
+		<cell>1</cell>
+		<cell>24</cell>
+		<cell>0</cell>
+		<cell>05/01/1998</cell>
+	</row>
+	<row id="2">
+		<cell>1000</cell>
+		<cell>Blood and Smoke</cell>
+		<cell>Stephen King</cell>
+		<cell>0</cell>
+		<cell>1</cell>
+		<cell>24</cell>
+		<cell>0</cell>
+		<cell>01/01/2000</cell>
+	</row>
+</rows>
+</textarea>
+
+</body>
+</html>

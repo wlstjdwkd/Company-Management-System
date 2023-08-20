@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--conf
+<sample in_favorites="true">
+	<product version="1.0" edition="std"/>
+	<modifications>
+		<modified date="080205"/>
+	</modifications>
+<sampledescription><![CDATA[ ]]></sampledescription></sample>
+ --> 
+
+<html>
+<head>
+	<title>DataView with context menu</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+  
+	
+	<style type="text/css" media="screen">
+		html, body { 
+			height:100%;
+			};
+		
+	</style>
+	
+<body onload="doOnLoad()">
+	<h1>DataView with context menu</h1>
+	<div id="data_here" style="height:400px">
+	</div>
+	<script>
+		function doOnLoad() {
+			
+			menu = new dhtmlXMenuObject("contextArea");
+			menu.setIconsPath("../common/menu/");
+			menu.renderAsContextMenu();
+			menu.loadStruct("../common/dhxmenu.xml");
+
+
+			data = new dhtmlXDataView({
+				container:"data_here",
+				type:{
+					template:"#Package# : #Version#<br/>#Maintainer#",
+					padding:5,
+					height:40
+				},
+				x_count:3
+			});
+			data.attachEvent("onBeforeContextMenu",function(id,e){
+				menu._doOnContextBeforeCall(e,{id:id});
+				data.select(id);
+				return 	false;
+			});
+			data.load("../common/data.xml");
+		};
+	</script>
+</body>
+</html>
+

@@ -1,0 +1,63 @@
+<!--conf
+<sample>
+              <product version="1.6" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               </sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Paginal Output :: Insert/Delete/Move column</title>
+	
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+</head>
+
+<script>
+	var mygrid;
+	function doOnLoad(){
+		mygrid = new dhtmlXGridObject('gridbox');
+		mygrid.setImagePath("../../../codebase/imgs/");
+		mygrid.setHeader("Column A, Column B");
+		mygrid.setInitWidths("100,250")
+		mygrid.setColAlign("right,left")
+		mygrid.setColTypes("ro,ed");
+		mygrid.setColSorting("na,na")
+		mygrid.enablePaging(true,30,null,"pagingArea",true,"recinfoArea");
+		mygrid.enableColumnMove(true);
+		mygrid.init();
+		mygrid.setSkin("dhx_skyblue");
+		mygrid.setPagingSkin("bricks");
+		mygrid.loadXML("php/dynscroll.php");
+	}
+</script>
+<body onLoad="doOnLoad()">
+	
+	<h1>Paginal Output :: Insert/Delete/Move column </h1>
+	<p>	Inserting and deleting row,  column and moving  operations with paginal output are demonstrated in this sample.</p>
+	
+	<table width="600">
+		<tr>
+			<td id="recinfoArea"></td>
+		</tr>
+		<tr>
+			<td>
+				<div id="gridbox" style="width:62%; height:250px; background-color:white;overflow:hidden"></div>
+			</td>
+		</tr>
+		<tr>
+			<td id="pagingArea"></td>
+		</tr>
+	</table>
+	<a href="#" onClick="mygrid.deleteColumn(this.nextSibling.value);">Delete Column</a><select>
+		<option value="0">0</option><option value="1">1</option></select>
+		<br>
+	<a href="#" onClick="mygrid.insertColumn(this.nextSibling.value,'New','ed',200);">Insert new column at</a><select>
+		<option value="0">0</option><option value="1">1</option></select>
+
+</body>
+</html>

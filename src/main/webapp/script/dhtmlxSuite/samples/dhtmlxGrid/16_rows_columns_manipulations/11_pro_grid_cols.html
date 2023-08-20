@@ -1,0 +1,71 @@
+<!--conf
+<sample in_favorites="false">
+              <product version="1.4" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               </sample>
+ --> 
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Insert/Delete column</title>
+	
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+	
+</head>
+
+<body>
+	
+	<h1>Insert/Delete column</h1>
+	<p>You can easily insert/delete columns in your grid using the following methods:</p>
+	<div id="gridbox" style="width:600px;height:270px;background-color:white;"></div>
+	<br>
+	Add Column<br><br>
+	Index <br>
+	<input type="text" id="ind" maxlength="1" size="1" value="0"><br>
+	Label<br>
+	<input type="text" id="lbl" maxlength="50" size="20" value="New Column"><br>
+	Type (code)<br>
+	<input type="text" id="typ" maxlength="3" size="3" value="ed"><br>
+	Width (px)<br>
+	<input type="text" id="wdt" maxlength="3" size="3" value="100"><br>
+	
+	<button onClick="mygrid.insertColumn(document.getElementById('ind').value,document.getElementById('lbl').value,document.getElementById('typ').value,document.getElementById('wdt').value);">Add Column</button>
+	
+
+<p>In the method above you should specify the following parameters:</p>
+  <li>index - index of column</li>
+	<li>label - content of column</li>
+	<li>typeCode - type of column</li>
+	<li>width - width of column </li>
+	
+	<p>Drop Column</p>
+	<a href="javascript:void(0)" onClick="mygrid.deleteColumn(document.getElementById('indDrop').value);">Drop</a> column by index: <input type="text" id="indDrop" maxlength="1" size="1" value="0"><br>
+
+
+<br>
+<script>
+	mygrid = new dhtmlXGridObject('gridbox');
+	mygrid.setImagePath("../../../codebase/imgs/");
+    mygrid.setHeader("Sales,Book Title,Author,Price,In Store,Shipping,Bestseller,Date of Publication");
+	mygrid.setInitWidths("50,150,120,80,80,80,80,200")
+	mygrid.setColAlign("right,left,left,right,center,left,center,center")
+	mygrid.setColTypes("dyn,ed,ed,price,ch,co,ra,ro");
+    mygrid.getCombo(5).put(2,2);
+	mygrid.setColSorting("int,str,str,int,str,str,str,str")
+    mygrid.enableMultiselect(true);
+    mygrid.setColumnMinWidth(50,0);
+	mygrid.enableColumnMove(true);
+	mygrid.setSkin("dhx_skyblue")
+	mygrid.init();
+	mygrid.loadXML("../common/grid_16_rows_columns_manipulations.xml");
+
+</script>
+
+</body>
+</html>

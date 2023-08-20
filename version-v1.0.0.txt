@@ -1,0 +1,5 @@
+=====================================
+Current insa version : insa-1.0.0.0
+Imported aFrame Version : aFrame-1.0.0.6
+Release Data : 2022-03-19
+=====================================

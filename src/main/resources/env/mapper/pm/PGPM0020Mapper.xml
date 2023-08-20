@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="biz.tech.mapif.pm.PGPM0020Mapper">
+	<!-- 급여항목 목록조회 -->
+	<select id="findPayItmMstList" resultType="map">
+	SELECT  /* ID=biz.tech.mapif.pm.PGPM0020Mapper.findPayItmMstList */
+				  PAY_ITM_CD	as payItmCd		<!-- 급여 항목 코드 -->
+				, PAY_ITM_NM	as payItmNm		<!-- 급여 항목명 -->
+				, ITM_LV		as itmLv		<!-- 항목레벨 -->
+				, UP_ITM_CD		as upItmCd		<!-- 상위 항목 코드 -->
+				, ITM_SEQ		as itmSeq		<!-- 항목 순번 -->
+				, USE_YN		as useYn		<!-- 사용 여부 -->
+				, RMRK			as rmrk			<!-- 비고 -->
+				, ENRT_DT		as enrtDt		<!-- 등록 일자 -->
+						
+	FROM	TB_PAY_ITM_MST
+	<where>
+		<if test="upItmCd != null"> UP_ITM_CD = #{upItmCd} </if>
+		<if test='chkUseYn == "Y"'> AND USE_YN = #{chkUseYn} </if>
+	</where>
+	ORDER BY ITM_SEQ
+	</select>
+	
+	<!-- 급여항목 조회 -->
+	<select id="findPayItmMst" resultType="map">
+	SELECT	/* ID=biz.tech.mapif.pm.PGPM0020Mapper.findPayItmMst */
+				  PAY_ITM_CD	as payItmCd
+				, PAY_ITM_NM	as payItmNm
+				, ITM_LV		as itmLv
+				, UP_ITM_CD		as upItmCd
+				, ITM_SEQ		as itmSeq
+				, USE_YN		as useYn
+				, RMRK			as rmrk
+				, ENRT_DT		as enrtDt
+				
+	FROM		TB_PAY_ITM_MST
+	WHERE		PAY_ITM_CD = #{payItmCd}
+	</select>
+	
+	<!-- 급여 항목 등록 -->
+	<insert id="insertPayItmMst">
+	INSERT	/* ID=biz.tech.mapif.pm.PGPM0020Mapper.insertPayItmMst */
+	INTO		TB_PAY_ITM_MST (
+				  PAY_ITM_CD
+				, PAY_ITM_NM
+				, ITM_LV
+				, UP_ITM_CD
+				, ITM_SEQ
+				, USE_YN
+				, RMRK
+				, ENRT_DT
+	) VALUES (
+				  #{payItmCd}
+				, #{payItmNm}
+				, #{itmLv}
+				, #{upItmCd}
+				, #{itmSeq}
+				, #{useYn}
+				, #{rmrk}
+		<choose>
+			<when test="_databaseId == 'mysql'">
+				, SYSDATE()
+			</when>
+			<when test="_databaseId == 'tibero'">
+				, SYSDATE
+			</when>
+			<otherwise>
+				, SYSDATE()
+			</otherwise>
+		</choose>
+	)
+	</insert>
+	
+	<!-- 급여항목 수정 -->
+	<update id="updatePayItemMst">
+	UPDATE	/* ID=biz.tech.mapif.pm.PGPM0020Mapper.updatePayItemMst */
+				  TB_PAY_ITM_MST
+	SET 
+				  PAY_ITM_NM	= #{payItmNm}
+				, UP_ITM_CD		= #{upItmCd}
+				, ITM_SEQ		= #{itmSeq}
+				, USE_YN		= #{useYn}
+				, RMRK			= #{rmrk}
+				
+	WHERE		  PAY_ITM_CD = #{payItmCd}                                                                                                                                                                 
+	</update>
+	
+	<!-- 급여항목 비활성 -->
+	<update id="deletePayItemMst">
+	UPDATE	/* ID=biz.tech.mapif.pm.PGPM0020Mapper.deletePayItemMst */
+			TB_PAY_ITM_MST
+	SET 
+				  USE_YN = 'N'
+				
+	WHERE PAY_ITM_CD = #{payItmCd}                                                                                                                                                                 
+	</update>
+</mapper>

@@ -1,0 +1,54 @@
+<!--conf
+<sample>
+	<product version="1.0" edition="std"/>
+	<modifications>
+		<modified date="080205"/>
+	</modifications>
+<sampledescription><![CDATA[In dhtmlxFolders it is possible to sort items based on any data part, in any direction. See this in action]]></sampledescription></sample>
+ --> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<title>Sorting items</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+    <script src="./types/ftypes.js" type="text/javascript"></script>
+    <link rel="STYLESHEET" type="text/css" href="./types/ftypes.css">
+	<script>
+		dhtmlx.image_path = "../../../codebase/imgs/"
+		var data;
+		function doOnLoad(){
+			data = new dhtmlXDataView("data_container");
+			changeType("ficon");
+			data.load("../common/files_ext.xml");
+		}
+		
+		function changeType(type){
+			data.types[type].icons_src_dir = "../common/images";
+			data.define("type",type);
+		}
+	</script>
+<body onload="doOnLoad()">
+	<h1>Sorting Items</h1>
+	<div style="position:relative;">
+		<img src="../common/images/samples_frame.gif" width="436" height="513" alt="" border="0">
+		<div id="data_container" style="width:396px;height:396px;overflow:hidden;position:absolute;top:65px;left:20px;border:0px solid red;"></div>
+	</div>
+	
+	Sort by type <span style="cursor:pointer;color:blue;text-decoration:underline;" onclick="data.sort('#type#','asc');">asc</span> | <span style="cursor:pointer;color:blue;text-decoration:underline;" onclick="data.sort('#type#','desc');">desc</span><br>
+	Sort by name <span style="cursor:pointer;color:blue;text-decoration:underline;" onclick="data.sort('#name#','asc');">asc</span> | <span style="cursor:pointer;color:blue;text-decoration:underline;" onclick="data.sort('#name#','desc');">desc</span><br>
+	Sort by size <span style="cursor:pointer;color:blue;text-decoration:underline;" onclick="data.sort('#filesize#','asc');">asc</span> | <span style="cursor:pointer;color:blue;text-decoration:underline;" onclick="data.sort('#filesize#','desc');">desc</span><br>
+	
+	
+	<h3>Order remains while changing types</h3>
+	<input type="radio" name="switch" onclick="changeType(this.value)" value="ficon" checked> F-icon<br>
+	<input type="radio" name="switch" onclick="changeType(this.value)" value="ftiles"> F-titles<br>
+	<input type="radio" name="switch" onclick="changeType(this.value)" value="ftable"> F-table<br>
+
+
+
+</body>
+</html>
+

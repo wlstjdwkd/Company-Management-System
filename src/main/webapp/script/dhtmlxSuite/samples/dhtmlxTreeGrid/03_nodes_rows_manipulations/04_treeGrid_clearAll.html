@@ -1,0 +1,63 @@
+<!--conf
+<sample>
+              <product version="1.4" edition="std"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               </sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Repopulation TreeGrid</title>	
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+</head>
+
+<body>
+	
+	<h1>Repopulation TreeGrid</h1>
+	<p>
+            Empty TreeGrid and repopulate it with xml or script
+	</p>
+
+
+	<table width="574">
+		<tr>
+			<td>
+				<div id="gridbox" width="100%" height="150px" style="background-color:white;"></div>
+			</td>
+		</tr>
+		<tr>
+			<td>
+<div id="gridtbl1" width="100%" height="200px" style="background-color:white;"></div>
+<br>
+<div><a href="#" onclick="mygrid.clearAll()">Clear all</a></div>
+<div><a href="#" onclick="mygrid.loadXML('../common/test_list_1.xml');">Reload XML</a></div>
+            </td>
+		</tr>
+	</table>
+<br>
+
+
+<script>
+		mygrid = new dhtmlXGridObject('gridbox');
+
+		
+		mygrid.setImagePath("../../../codebase/imgs/");
+		mygrid.setHeader("Tree,Plain Text,Long Text,Color,Checkbox");
+		mygrid.setInitWidths("150,100,100,100,100")
+		mygrid.setColAlign("left,left,left,left,center")
+		mygrid.setColTypes("tree,ed,txt,ch,ch");
+		mygrid.setColSorting("str,str,str,na,str")
+
+		mygrid.init();
+		mygrid.setSkin("dhx_skyblue")
+	   	mygrid.loadXML("../common/test_list_1.xml");
+</script>
+
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!--conf
+<sample>
+              <product version="1.4" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               </sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Smart Rendering (static)</title>
+	
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+</head>
+
+<body>
+	
+	<h1>Smart Rendering with single loading</h1>
+
+    <p>To increase grid performance working with rather large amount of data you can enable <strong>Smart Rendering</strong>.</p>
+	<p>The simplest option is to use it with single loading. In this case entire data will be loaded from server at once and it will not be more attempts to load additional portions of data.<br />
+	Big advantage of this way is that you manipulate all rows (even those rows which are not rendered yet) with javascript methods of the grid (try to change selected row using links below the grid).<br />
+	No additional programming is required for existing grids - just enable Smart Redering with the  <code>enableSmartRendering(true) </code>command.</p>
+	
+	<div style="height:20px;">
+		<div id="a_1" style="color:red;">Loading whole data (2,000 rows) at once</div>
+	</div>
+	
+	<div id="gridbox" style="width:600px; height:250px; background-color:white;overflow:hidden"></div>
+	
+	<a href="javascript:void(0)" onclick='mygrid.selectRowById("r212");'>Select row with id=r212; mygrid.selectRowById("r212");</a><br/>
+    <a href="javascript:void(0)" onclick='mygrid.selectRowById("r512");'>Select row with id=r512; mygrid.selectRowById("r512");</a><br/>
+    <a href="javascript:void(0)" onclick='mygrid.selectRowById("r786");'>Select row with id=r786; mygrid.selectRowById("r786");</a><br/>
+	
+<script>
+	mygrid = new dhtmlXGridObject('gridbox');
+	mygrid.setImagePath("../../../codebase/imgs/");
+	mygrid.setHeader("Sales,Book Title,Author,Price,In Store,Shipping,Bestseller,Date of Publication");
+	mygrid.setInitWidths("50,150,120,80,80,80,80,200")
+	mygrid.setColAlign("right,left,left,right,center,left,center,center")
+	mygrid.setColTypes("ed,ed,ed,price,ch,co,ro,ro");
+
+    mygrid.getCombo(5).put(2,2);
+  	mygrid.setColSorting("int,str,str,int,str,str,str,date")
+	
+
+   mygrid.attachEvent("onXLS",function(){ document.getElementById("a_1").style.display="block"; });
+   	mygrid.attachEvent("onXLE",function(){ document.getElementById("a_1").style.display="none"; });
+
+	mygrid.init();
+	mygrid.setSkin("dhx_skyblue");
+    mygrid.enableSmartRendering(true);
+    mygrid.loadXML("../common/smartrend.xml");
+</script>
+
+</body>
+</html>

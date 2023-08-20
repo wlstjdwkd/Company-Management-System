@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="BatchResultDao">
+
+	<resultMap id="batchResultResult" type="batchResult">
+		<result property="batchResultId" column="batch_result_id" />
+		<result property="batchSchdulId" column="batch_schdul_id" />
+		<result property="batchOpertId" column="batch_opert_id" />
+		<result property="batchOpertNm" column="batch_opert_nm" />
+		<result property="batchProgrm" column="batch_progrm" />
+		<result property="paramtr" column="paramtr" />
+		<result property="sttus" column="sttus" />
+		<result property="sttusNm" column="sttus_nm" />
+		<result property="errorInfo" column="error_info" />
+		<result property="executBeginTime" column="execut_begin_tm" />
+		<result property="executEndTime" column="execut_end_tm" />
+		<result property="register" column="register" />
+		<result property="rgsde" column="rgsde" />
+		<result property="updusr" column="updusr" />
+		<result property="updde" column="updde" />
+	</resultMap>
+    
+	<!-- 배치처리결과 목록 조회 -->
+	<select id="selectBatchResultList" parameterType="BatchResult" resultMap="batchResultResult">
+	SELECT	/* ProgramID=sqlmap.egovcom.bat.EgovBatchResultMapper.selectBatchResultList */
+					  a.batch_result_id
+					, a.batch_schdul_id
+					, a.batch_opert_id
+					, b.batch_opert_nm
+					, b.batch_progrm
+					, a.paramtr
+					, a.sttus
+					, c.code_nm sttus_nm
+					, a.error_info
+					, a.execut_begin_tm
+					, a.execut_end_tm
+					, DATE_FORMAT(a.updde, '%Y-%m-%d %H:%i:%S') AS updde
+					, a.updusr
+					, a.register
+					, DATE_FORMAT(a.rgsde, '%Y-%m-%d %H:%i:%S') AS rgsde
+	FROM		comtnbatchresult a, comtnbatchopert b, tb_cmmncode c
+	WHERE		a.batch_opert_id = b.batch_opert_id
+		AND		a.sttus = c.code
+		AND		c.code_group_no = '8'
+			<!-- 검색조건 -->
+			<if test="sttus != null and sttus != '' ">AND a.sttus = #{sttus}</if>
+			<if test="searchKeywordFrom != null and searchKeywordFrom != '' ">AND SUBSTR(a.execut_begin_tm,1, 8) >= #{searchKeywordFrom}</if>
+			<if test="searchKeywordTo != null and searchKeywordTo != '' ">AND SUBSTR(a.execut_begin_tm,1, 8) <![CDATA[<=]]> #{searchKeywordTo}</if>
+			<if test="searchCondition == 0">AND b.batch_opert_nm LIKE CONCAT ('%', #{searchKeyword},'%')</if>
+			<if test="searchCondition == 1">AND a.batch_schdul_id LIKE CONCAT ('%', #{searchKeyword},'%')</if>
+	ORDER BY	a.batch_result_id DESC
+	LIMIT			#{recordCountPerPage} OFFSET #{firstIndex}
+	</select>
+
+	<!-- 배치처리결과 목록 갯수 조회 -->
+	<select id="selectBatchResultListCnt" parameterType="BatchResult" resultType="int">
+	SELECT	/* ProgramID=sqlmap.egovcom.bat.EgovBatchResultMapper.selectBatchResultListCnt */
+					COUNT(*) totcnt
+	FROM		comtnbatchresult a, comtnbatchopert b, tb_cmmncode c
+	WHERE		a.batch_opert_id = b.batch_opert_id
+		AND		a.sttus = c.code
+		AND		c.code_group_no = '8'
+			<!-- 검색조건 -->
+			<if test="sttus != null and sttus != '' ">AND a.sttus = #{sttus}</if>
+			<if test="searchKeywordFrom != null and searchKeywordFrom != '' ">AND SUBSTR(a.execut_begin_tm,1, 8) >= #{searchKeywordFrom}</if>
+			<if test="searchKeywordTo != null and searchKeywordTo != '' ">AND SUBSTR(a.execut_begin_tm,1, 8) <![CDATA[<=]]> #{searchKeywordTo}</if>
+			<if test="searchCondition == 0">AND b.batch_opert_nm LIKE CONCAT ('%', #{searchKeyword},'%')</if>
+			<if test="searchCondition == 1">AND a.batch_schdul_id LIKE CONCAT ('%', #{searchKeyword},'%')</if>
+	</select>
+    
+	<!-- 배치처리결과 상세 조회 -->
+	<select id="selectBatchResult" parameterType="BatchResult" resultMap="batchResultResult">
+	SELECT	/* ProgramID=sqlmap.egovcom.bat.EgovBatchResultMapper.selectBatchResult */
+					  a.batch_result_id
+					, a.batch_schdul_id
+					, a.batch_opert_id
+					, b.batch_opert_nm
+					, b.batch_progrm
+					, a.paramtr
+					, a.sttus
+					, c.code_nm sttus_nm
+					, a.error_info
+					, a.execut_begin_tm
+					, a.execut_end_tm
+					, DATE_FORMAT(a.updde, '%Y-%m-%d %H:%i:%S') AS updde
+					, a.updusr
+					, a.register
+					, DATE_FORMAT(a.rgsde, '%Y-%m-%d %H:%i:%S') AS rgsde
+	FROM		comtnbatchresult a, comtnbatchopert b, tb_cmmncode c
+	WHERE		a.batch_opert_id = b.batch_opert_id
+		AND		a.sttus = c.code
+		AND		c.code_group_no = '8'
+		AND		a.batch_result_id = #{batchResultId}
+	</select>
+
+	<!-- 배치처리결과 추가 -->
+    <insert id="insertBatchResult" parameterType="BatchResult">
+	INSERT	/* ProgramID=sqlmap.egovcom.bat.EgovBatchResultMapper.insertBatchResult */
+	INTO			comtnbatchresult (
+					  batch_result_id
+					, batch_schdul_id
+					, batch_opert_id
+					, paramtr
+					, sttus
+					, error_info
+					, execut_begin_tm
+					, execut_end_tm
+					, updusr
+					, updde
+					, register
+					, rgsde ) 
+	VALUES (
+					  #{batchResultId}
+					, #{batchSchdulId}
+					, #{batchOpertId}  
+					, #{paramtr}
+					, #{sttus}
+					, #{errorInfo}
+					, #{executBeginTime}
+					, #{executEndTime}
+					, #{updusr}
+					, SYSDATE()
+					, #{register}
+					, SYSDATE()
+	) 
+    </insert>
+
+	<!-- 배치처리결과 상세 수정 -->
+	<update id="updateBatchResult" parameterType="BatchResult">
+	UPDATE	/* ProgramID=sqlmap.egovcom.bat.EgovBatchResultMapper.updateBatchResult */
+					comtnbatchresult
+	SET			  error_info = #{errorInfo}
+					, sttus = #{sttus}
+					, execut_end_tm = #{executEndTime}
+					, updusr = #{updusr}
+					, updde = SYSDATE()
+	WHERE		batch_result_id = #{batchResultId} 
+	</update>
+
+	<!-- 배치처리결과 삭제 -->
+	<delete id="deleteBatchResult" parameterType="BatchResult">
+	DELETE	/* ProgramID=sqlmap.egovcom.bat.EgovBatchResultMapper.deleteBatchResult */
+	FROM		comtnbatchresult 
+	WHERE		batch_result_id = #{batchResultId} 
+	</delete>
+
+</mapper>

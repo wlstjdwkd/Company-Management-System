@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="biz.tech.mapif.ev.PGEV1110Mapper">
+
+<select id="findDayoff" resultType="hashmap">
+	SELECT /* EMP_NO=biz.tech.mapif.ev.PGEV1100Mapper.findDayoff */
+				  a.EMP_NO					/* 직원번호 */
+				, a.EMP_NM					/* 이름 */
+				, c.CODE_NM	as DEPT_NM		/* 부서이름 */
+				, a.INCO_DT					/* 입사일자(근무가능일) */
+				, b.WORK_YEAR				/* 근속 연수 */
+				, #{ad_select_year} as SELECT_YEAR	/* 선택 연도 */
+				, b.USE_YEAR				/* 기준연도 */
+				, b.TOTAL_CNT				/* 해당 연도 연차 */
+				, b.OVERUSE					/* 초과사용 허용 */
+				, b.INSERT_DATE				/* 연차 생성일 */
+	FROM		tb_pay_emp a
+	LEFT OUTER JOIN
+				tb_dayoff b
+	ON			a.EMP_NO = b.EMP_NO
+	AND			b.USE_YEAR = #{ad_select_year}
+	LEFT OUTER JOIN
+				tb_cmmncode c
+	ON			a.DEPT_CD = c.CODE
+	<where>
+		TIMESTAMPDIFF(DAY,  a.INCO_DT , DATE(CONCAT(#{ad_select_year},"-12-31"))) > 0
+		<if test="ad_search_word !='' and ad_search_word !=null">
+			<if test="ad_search_type == 'EMP_NO'">AND a.EMP_NO = #{ad_search_word}</if>
+			<if test="ad_search_type == 'EMP_NM'">AND a.EMP_NM = #{ad_search_word}</if>
+			<if test="ad_search_type == 'DEPT_CD'">AND c.CODE_NM = #{ad_search_word}</if>
+		</if>
+	</where>
+</select>
+
+<insert id="insertDayoff">
+	INSERT INTO tb_dayoff ( 
+	  	  EMP_NO					/* 직원번호 */
+		, USE_YEAR					/* 해당 연도 */
+		, WORK_YEAR					/* 근속 연수 */
+		, TOTAL_CNT					/* 근속연차 */
+		) 
+		VALUES (
+			  #{emp_no}
+			, #{use_year}				  
+			, TIMESTAMPDIFF(YEAR, #{inco_dt}, DATE(CONCAT(#{use_year},"-12-31")))
+			,(
+				CASE
+					WHEN
+						TIMESTAMPDIFF(MONTH,  #{inco_dt}, DATE(CONCAT(#{use_year},"-12-31"))) >= 12 
+					THEN
+						((TIMESTAMPDIFF(YEAR, #{inco_dt}, DATE(CONCAT(#{use_year},"-12-31")))-1) DIV 2 ) + 15
+					ELSE
+						(TIMESTAMPDIFF(MONTH, (SELECT DATE(INCO_DT) FROM tb_pay_emp WHERE EMP_NO=#{emp_no}), 
+							DATE(CONCAT(YEAR((SELECT DATE(INCO_DT) FROM tb_pay_emp WHERE EMP_NO=#{emp_no})),"-12-31"))))
+				END
+			)
+		)
+	ON DUPLICATE KEY UPDATE
+		TOTAL_CNT =
+      		(
+				CASE
+					WHEN
+						TIMESTAMPDIFF(MONTH,  #{inco_dt}, DATE(CONCAT(#{use_year},"-12-31"))) >= 12 
+					THEN
+						((TIMESTAMPDIFF(YEAR, #{inco_dt}, DATE(CONCAT(#{use_year},"-12-31")))-1) DIV 2 ) + 15
+					ELSE
+						(TIMESTAMPDIFF(MONTH, (SELECT DATE(INCO_DT) FROM tb_pay_emp WHERE EMP_NO=#{emp_no}), 
+							DATE(CONCAT(YEAR((SELECT DATE(INCO_DT) FROM tb_pay_emp WHERE EMP_NO=#{emp_no})),"-12-31"))))
+				END
+			)
+   		, INSERT_DATE = CURDATE()
+</insert>
+
+<update id="deleteDayoff">
+	   	UPDATE	tb_dayoff
+      	SET 	TOTAL_CNT = 0,
+      			INSERT_DATE = null
+		WHERE 	PK=(SELECT PK FROM tb_dayoff WHERE EMP_NO=#{emp_no} AND USE_YEAR=#{use_year})
+</update>
+
+</mapper>

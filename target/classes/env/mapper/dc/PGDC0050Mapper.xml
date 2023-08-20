@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="biz.tech.mapif.dc.PGDC0050Mapper">
+
+	<!-- 주가수집 작업 목록조회 -->
+	<select id="findStkpcMgrList" resultType="map">
+		SELECT	/* ProgramID=biz.tech.mapif.dc.PGDC0050Mapper.findStkpcMgrList */
+						 STDYY									AS 	stdYy									/* 기준년(PK)  */
+						,LPAD(STDMT,2,'0')					AS 	stdMt									/* 기준월(PK)  */
+						,RCDCNT								AS 	rcdCnt								/* 레코드건수 */
+						,REGIST_SUCCES_CO					AS 	successCnt							/* 등록성공건수 */		
+						,REGIST_FAILR_CO					AS 	failCnt							/* 등록실패건수 */		
+						,(
+							CASE PROCESS_STTUS	
+								WHEN 	'1'	 	THEN '시작'			
+								WHEN 	'2' 	THEN '오류'
+								WHEN 	'3'		THEN '성공'	
+								ELSE	'N/A'
+							END
+						)										AS    proSatus									/* 처리상태(1,2,3)*/				
+						,DATE_FORMAT(EXC_TIME , '%Y-%m-%d %H:%m')  AS 	runTm				/* 수행일시 */
+						,(CASE WHEN EXC_TIME IS NOT NULL 
+								THEN  ROUND(TIMESTAMPDIFF(SECOND, CREAT_DE, EXC_TIME ) / 60)
+							END
+						)										AS 	diffMin 	
+						,(CASE WHEN EXC_TIME IS NOT NULL 
+								THEN MOD( TIMESTAMPDIFF(SECOND, CREAT_DE, EXC_TIME ) ,60)
+							END
+						)										AS 	diffSec 									
+		FROM					TB_MNBY_STKPC_INFO_DTLS
+		<where>
+			<!-- 검색조건 -->
+			<if test="stdYy != null and stdYy != ''" >
+					AND 			STDYY  = #{stdYy}
+			</if>
+		</where>
+		ORDER 		BY STDYY,  STDMT DESC 
+	</select>
+
+	<!-- 주가수집 작업 목록조회 -->
+	<select id="findErrMsg" resultType="String">
+		SELECT	/* ProgramID=biz.tech.mapif.dc.PGDC0050Mapper.findErrMsg */
+						 ERROR_MSSAGE									AS 	errMsg									/* 기준년(PK)  */
+		FROM					TB_MNBY_STKPC_INFO_DTLS
+		<where>
+			<!-- 검색조건 -->
+					STDYY  = #{stdYy} 	
+						AND	STDMT =  #{stdMt	}
+		</where>
+	</select>
+	
+	<!-- 주가수집 작업 목록조회 -->
+	<select id="findStkpcList" resultType="map">
+		SELECT *	/* ProgramID=biz.tech.mapif.dc.PGDC0050Mapper.findStkpcList */ 
+		FROM
+		(	
+			SELECT
+							stk.STDYY 						AS 	stdYy									/* 기준년(PK)  */
+							, LPAD(stk.STDMT,2,'0')			AS 	stdMt									/* 기준월(PK)  */
+							, stk.STOCK_CD						AS 	stkCd									/* 상장종목번호  */
+							, stk.STKPC 							AS 	stkPc									/* 주가  */
+							, ent.ENTRPRS_NM 			AS 	entNm								/* 기업명  */
+			FROM
+			(
+				SELECT * FROM TB_STKPC 
+			<where>
+				<!-- 검색조건 -->
+				<if test="stdYy != null and stdYy != ''" >
+						AND 			STDYY  = #{stdYy}
+				</if>
+				<if test="stdMt != null and stdMt != ''" >
+						AND 			STDMT  = #{stdMt}
+				</if>
+			</where>
+			) stk
+			LEFT  JOIN TB_LST_ENTRPRS ent ON (stk.STOCK_CD = ent.STOCK_CD ) 
+			) stk_ent
+			<where>
+				<!-- 검색조건 -->
+				<if test="searchKeyword != null and searchKeyword != ''" >
+						AND 			entNm  LIKE CONCAT('%', #{searchKeyword}, '%')
+				</if>
+			</where>
+		LIMIT			${limitFrom} , ${limitTo}
+	</select>
+
+		<!-- 주가수집 작업 목록조회 -->
+	<select id="findStkpcListCnt" resultType="int" >
+		SELECT	/* ProgramID=biz.tech.mapif.dc.PGDC0050Mapper.findStkpcListCnt */
+								COUNT(*)	
+		FROM
+		(
+			SELECT * 												
+			FROM
+			(
+				SELECT stk.STDYY, stk.STDMT, stk.STOCK_CD, ent.ENTRPRS_NM FROM 
+					( SELECT * FROM TB_STKPC 
+			<where>
+				<!-- 검색조건 -->
+				<if test="stdYy != null and stdYy != ''" >
+						AND 			STDYY  = #{stdYy}
+				</if>
+				<if test="stdMt != null and stdMt != ''" >
+						AND 			STDMT  = #{stdMt}
+				</if>
+			</where>
+			) stk
+			LEFT  JOIN TB_LST_ENTRPRS ent ON (stk.STOCK_CD = ent.STOCK_CD ) 
+			) stk_ent
+			<where>
+				<!-- 검색조건 -->
+				<if test="searchKeyword != null and searchKeyword != ''" >
+						AND 			ENTRPRS_NM  LIKE CONCAT('%', #{searchKeyword}, '%')
+				</if>
+			</where>
+		) stk_cnt			
+	</select>
+		
+	<!-- 주가수집관리 삭제 -->
+	<delete id="deletStkpcMgr">
+		DELETE	/* ProgramID=biz.tech.mapif.dc.PGDC0050Mapper.deletStkpcMgr */
+			FROM					TB_MNBY_STKPC_INFO_DTLS
+		<where>
+			<!-- 검색조건 -->
+						STDYY  = #{stdYy} 	
+						AND	STDMT =  #{stdMt	}
+		</where>
+	</delete>
+
+		<!-- 주가정보 삭제 -->
+	<delete id="deletStkpcPcList">
+		DELETE	/* ProgramID=biz.tech.mapif.dc.PGDC0050Mapper.deletStkpcPcList */
+			FROM	 TB_STKPC
+		<where>
+			<!-- 검색조건 -->
+						STDYY  = #{stdYy} 	
+						AND	STDMT =  #{stdMt	}
+		</where>
+	</delete>
+	
+		<select id="findBatchJobbyBatchNm" resultType="map">
+		SELECT	/* ProgramID=biz.tech.mapif.dc.PGDC0050Mapper.findBatchJobbyBatchNm */
+						batch_opert_id  as batchOpertId
+						,batch_opert_nm  as  batchOpertNm
+						,batch_progrm  as batchProgrm
+		FROM		comtnbatchopert
+		WHERE		batch_opert_nm = #{batchNm}
+	</select>
+	
+	
+	
+</mapper>

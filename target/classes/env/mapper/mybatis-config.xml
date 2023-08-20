@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+    <settings>
+        <setting name="lazyLoadingEnabled" value="true" />
+        <setting name="cacheEnabled" value="true" />
+        <setting name="multipleResultSetsEnabled" value="true" />
+        <setting name="useColumnLabel" value="true" />
+        <setting name="useGeneratedKeys" value="false" />
+        <setting name="defaultExecutorType" value="SIMPLE" />
+        <setting name="defaultStatementTimeout" value="600" />
+        <setting name="safeRowBoundsEnabled" value="false" />
+        <setting name="mapUnderscoreToCamelCase" value="false" />
+        <setting name="localCacheScope" value="SESSION" />
+        <setting name="lazyLoadTriggerMethods" value="equals,clone,hashCode,toString" />
+        <setting name="jdbcTypeForNull" value="NULL" />
+        <!-- SLF4J, LOG4J, LOG4J2, JDK_LOGGING, COMMONS_LOGGING, STDOUT_LOGGING, NO_LOGGING -->
+        <setting name="logImpl" value="SLF4J" />
+    </settings>
+    
+    <typeAliases>
+    	<typeAlias alias="menuVO" type="com.comm.menu.MenuVO" />
+    	<typeAlias alias="userVO" type="com.comm.user.UserVO" />
+    	<typeAlias alias="entUserVO" type="com.comm.user.EntUserVO" />
+    	<typeAlias alias="codeVO" type="com.comm.code.CodeVO" />
+    	<typeAlias alias="authorityVO" type="com.comm.user.AuthorityVO" />
+    	<!-- 전자정부 공통 컴포넌트 -->
+    	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap" />
+    	<typeAlias alias="comDefaultVO" type="egovframework.com.cmm.ComDefaultVO" />
+    	<!-- 전자정부 배치 -->
+    	<typeAlias alias="batchOpert" type="egovframework.com.sym.bat.service.BatchOpert" />
+    	<typeAlias alias="batchResult" type="egovframework.com.sym.bat.service.BatchResult" />
+    	<typeAlias alias="batchSchdul" type="egovframework.com.sym.bat.service.BatchSchdul" />
+    	<typeAlias alias="batchSchdulDfk" type="egovframework.com.sym.bat.service.BatchSchdulDfk" />
+    	<!-- 전자정부 설문 -->
+		<typeAlias alias="QustnrManageVO" type="egovframework.com.uss.olp.qmc.service.QustnrManageVO" />
+    	<typeAlias alias="QustnrItemManageVO" type="egovframework.com.uss.olp.qim.service.QustnrItemManageVO" />
+    	<typeAlias alias="QustnrQestnManageVO" type="egovframework.com.uss.olp.qqm.service.QustnrQestnManageVO" />
+    	<typeAlias alias="QustnrRespondInfoVO" type="egovframework.com.uss.olp.qri.service.QustnrRespondInfoVO" />
+    	<typeAlias alias="QustnrTmplatManageVO" type="egovframework.com.uss.olp.qtm.service.QustnrTmplatManageVO" />
+    </typeAliases>
+
+	<!-- logging SQL ID 
+	<plugins>
+		<plugin interceptor="egovframework.rte.cmmn.ria.xplatform.map.ResultSetMetaDataPlugin" />
+	</plugins>-->
+</configuration>

@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.comm.mapif.MenuMapper">
+
+	<!-- 사용자 메뉴 목록 조회 -->
+	<select id="findUserMenu" resultType="menuVO">
+	SELECT 	/* ProgramID=com.comm.mapif.MenuMapper.findUserMenu */
+			  mn.menu_no									AS menuNo
+			, mn.progrm_id								AS progrmId
+			, mn.menu_nm								AS menuNm
+			, mn.menu_level								AS menuLevel
+			, mn.parnts_menu_no							AS parntsMenuNo
+			, mn.outpt_ordr								AS outptOrdr
+			, mn.outpt_ty								AS outptTy
+			, mn.outpt_at								AS outptAt
+			, mn.use_at										AS useAt
+			, mn.last_node_at								AS lastNodeAt
+			, mn.url										AS url
+			, mn.site_se									AS siteSe
+			, IF(mn.menu_level <![CDATA[<=]]> 1, 'Y', 'N')	AS topNodeAt
+			, pg.job_se										AS jobSe
+	FROM 	tb_menuinfo mn, tb_progrminfo pg, tb_authorinfo ati
+	WHERE	mn.progrm_id = pg.progrm_id
+	AND		pg.progrm_id = ati.progrm_id
+	AND		ati.author_group_code IN
+	<foreach item="item" collection="authorGrpCd" open="(" separator="," close=")">
+		#{item}
+	</foreach>
+	AND			ati.menu_outpt_at = 'Y'					<!-- 메뉴출력여부 -->
+	AND			mn.use_at = 'Y'							<!-- 메뉴사용여부 -->
+	ORDER BY 	mn.menu_level ASC, mn.parnts_menu_no ASC, mn.outpt_ordr ASC
+	</select>
+
+	<!-- 사용자 메뉴 목록 조회 -->
+	<select id="findNoScreenMenu" resultType="map">
+	SELECT /* ProgramID=com.comm.mapif.MenuMapper.findNoScreenMenu */
+		   mn.menu_no	AS menuNo			
+	  FROM tb_menuinfo mn
+	 WHERE mn.last_node_at = 'N'
+	</select>
+
+	<!-- 메뉴목록갯수 -->
+	<select id="findMenuListCnt" resultType="int">
+	SELECT	/* ProgramID=com.comm.mapif.MenuMapper.findMenuListCnt */
+			COUNT(*)
+	FROM	tb_menuinfo
+	
+	<!-- 검색조건 -->
+	<where>
+		<if test="searchSiteSe != '' and searchSiteSe != null">site_se = #{searchSiteSe}</if>
+		<if test="searchMenuNm != '' and searchMenuNm != null">AND menu_nm LIKE CONCAT('%', #{searchMenuNm}, '%')</if>
+	</where>
+	</select>
+
+
+	<!-- 메뉴목록조회 -->
+	<select id="findMenuList" resultType="map">
+	SELECT	/* ProgramID=com.comm.mapif.MenuMapper.findMenuList */
+			  mn.menu_no																AS menuNo
+			, mn.menu_nm															AS menuNm
+			, pg.progrm_nm															AS progrmNm
+			, mn.menu_level															AS menuLevel
+			, mn.parnts_menu_no														AS parntsMenuNo
+			, (SELECT code_nm FROM tb_cmmncode WHERE code_group_no='3' AND code=mn.outpt_ty)	AS outptTyNm
+			, IF(mn.outpt_at = 'Y', '출력', '출력안함')		AS outptAt
+			, IF(mn.use_at = 'Y', '사용', '사용안함')			AS useAt
+			, (SELECT code_nm FROM tb_cmmncode WHERE code_group_no='1' AND code=mn.site_se)	AS siteSeNm
+			, mn.rn
+	FROM (
+		SELECT tbl3.*, @RNUM := @RNUM + 1 AS rn
+		FROM (
+			SELECT DISTINCTROW mn1.*
+			FROM tb_menuinfo mn1, (
+				SELECT c1.site_se, 
+						c1.menu_no AS level1, c1.outpt_ordr ordr1, 
+						c2.menu_no AS level2, c2.outpt_ordr ordr2, 
+						c3.menu_no AS level3, c3.outpt_ordr ordr3, 
+						c4.menu_no AS level4, c4.outpt_ordr ordr4
+				FROM tb_menuinfo AS c1
+				LEFT JOIN tb_menuinfo AS c2 ON (c2.parnts_menu_no = c1.menu_no)
+				LEFT JOIN tb_menuinfo AS c3 ON (c3.parnts_menu_no = c2.menu_no)
+				LEFT JOIN tb_menuinfo AS c4 ON (c4.parnts_menu_no = c3.menu_no)
+				WHERE c1.menu_level='1'
+				ORDER BY site_se DESC, ordr1, ordr2, ordr3, ordr4
+			) tbl1
+			WHERE	mn1.menu_no = tbl1.level1
+				OR	mn1.menu_no = tbl1.level2
+				OR	mn1.menu_no = tbl1.level3
+				<!-- 상위메뉴찾기 제한조건 -->
+				<if test="menuLevelCheck == null">
+				OR	mn1.menu_no = tbl1.level4
+				</if>
+		) tbl3, ( SELECT @RNUM := 0 ) R
+	) mn, tb_progrminfo pg
+	WHERE	mn.progrm_id = pg.progrm_id
+	<!-- 검색조건 -->
+	<if test="searchSiteSe != '' and searchSiteSe != null">AND	mn.site_se = #{searchSiteSe}</if>
+	<if test="searchMenuNm != '' and searchMenuNm != null">AND mn.menu_nm LIKE CONCAT('%', #{searchMenuNm}, '%')</if>
+	
+	ORDER BY rn
+	LIMIT ${limitFrom} , ${limitTo}
+	</select>
+
+	<!-- 하위메뉴갯수 -->
+	<select id="findSubMenuCnt" resultType="int">
+	SELECT	/* ProgramID=com.comm.mapif.MenuMapper.findSubMenuCnt */
+			COUNT(*)
+	FROM	tb_menuinfo
+	WHERE	parnts_menu_no = #{menuNo}
+	</select>
+	
+	<!-- 메뉴정보조회 -->
+	<select id="findMenuInfo" resultType="map">
+	SELECT	/* ProgramID=com.comm.mapif.MenuMapper.findMenuInfo */
+			  mn.menu_no															AS menuNo
+			, mn.menu_nm															AS menuNm
+			, mn.progrm_id															AS progrmId
+			, pg.progrm_nm															AS progrmNm
+			, mn.menu_level															AS menuLevel
+			, (SELECT menu_no FROM tb_menuinfo WHERE menu_no=mn.parnts_menu_no)	AS parntsMenuNo 
+			, (SELECT menu_nm FROM tb_menuinfo WHERE menu_no=mn.parnts_menu_no)	AS parntsMenuNm
+			, mn.outpt_ordr															AS outptOrdr
+			, mn.outpt_ty																AS outptTy
+			, mn.outpt_at																AS outptAt
+			, mn.use_at																	AS useAt
+			, mn.site_se																AS siteSe
+			, mn.last_node_at															AS lastNodeAt
+			, mn.url																	AS url
+	FROM	tb_menuinfo mn, tb_progrminfo pg
+	WHERE	mn.menu_no = #{menuNo}
+		AND	mn.progrm_id = pg.progrm_id
+	</select>
+	
+	
+	<!-- 출력순서 조회 -->
+	<select id="findOutptOrdr" resultType="int">
+	SELECT /* ProgramID=com.comm.mapif.MenuMapper.findOutptOrdr */
+		   ifnull (MAX(mn.outpt_ordr), 0)				
+	  FROM tb_menuinfo mn
+	  WHERE mn.parnts_menu_no = #{menuNo}
+	</select>
+	
+	<!-- 메뉴등록 -->
+	<insert id="insertMenu">
+	INSERT	/* ProgramID=com.comm.mapif.MenuMapper.insertMenu */
+	INTO		tb_menuinfo	(
+			  progrm_id
+			, menu_nm
+			, menu_level
+			, parnts_menu_no
+			, outpt_ordr
+			, outpt_ty
+			, outpt_at
+			, use_at
+			, last_node_at
+			, site_se
+			, url
+			, register
+			, rgsde
+			, updusr
+			, updde
+	)
+	VALUES	(
+			  #{progrmId}
+			, #{menuNm}
+			, #{menuLevel}
+			, #{parntsMenuNo}
+			, #{outptOrdr}
+			, #{outptTy}
+			, #{outptAt}
+			, #{useAt}
+			, #{lastNodeAt}
+			, #{siteSe}
+			, #{url}
+			, #{register}
+			, SYSDATE()
+			, #{updusr}
+			, SYSDATE()
+	)
+	</insert>
+
+	<!-- 메뉴수정 -->
+	<update id="updateMenu">
+	UPDATE	/* ProgramID=com.comm.mapif.MenuMapper.updateMenu */
+			tb_menuinfo
+	SET 
+			  progrm_id = #{progrmId}
+			, menu_nm = #{menuNm}
+			, menu_level = #{menuLevel}
+			, parnts_menu_no = #{parntsMenuNo}
+			, outpt_ordr = #{outptOrdr}
+			, outpt_ty = #{outptTy}
+			, outpt_at = #{outptAt}
+			, use_at = #{useAt}
+			, last_node_at = #{lastNodeAt}
+			, site_se = #{siteSe}
+			, url = #{url}
+			, updusr = #{updusr}
+			, updde = SYSDATE()
+	WHERE menu_no = #{menuNo}                                                                                                                                                                 
+	</update>
+	
+	<!-- lastNodeAt 수정 -->
+	<update id="updateLastNodeAt">
+	UPDATE /* ProgramID=com.comm.mapif.MenuMapper.updateLastNodeAt */
+		   tb_menuinfo
+	SET
+		   last_node_at = #{lastNodeAt}				
+	WHERE menu_no = #{parntsMenuNo}
+	</update>
+	
+	<!-- 메뉴삭제 -->
+	<delete id="deleteMenu">
+	DELETE	/* ProgramID=com.comm.mapif.MenuMapper.deleteMenu */
+	FROM	tb_menuinfo
+	WHERE	menu_no = #{menuNo}
+	</delete>
+	
+</mapper>

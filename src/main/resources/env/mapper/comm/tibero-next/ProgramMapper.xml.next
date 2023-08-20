@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.comm.mapif.ProgramMapper">
+
+	<resultMap id="findProgramResult" type="hashmap">
+		<result property="progrmId" 	column="progrmId" />
+		<result property="progrmNm" 	column="progrmNm" />
+		<result property="jobSe" 		column="jobSe" />
+		<result property="svcAt" 		column="svcAt" />
+		<result property="rm"			column="rm" />
+		<result property="viewFilePath"	column="viewFilePath" />
+		<result property="preProgrmId"	column="preProgrmId" />
+	</resultMap>
+	
+	<resultMap id="findCodeAuthorListResult" type="hashmap">
+		<result property="code" 		column="code" />
+		<result property="codeGroupNo" 	column="codeGroupNo" />
+		<result property="codeNm" 		column="codeNm" />
+		<result property="codeDc" 		column="codeDc" />
+		<result property="outptOrdr" 	column="outptOrdr" />
+		<result property="useAt" 		column="useAt" />
+		<result property="progrmId" 	column="progrmId" />
+		<result property="menuOutptAt" 	column="menuOutptAt" />
+		<result property="inqireAt" 	column="inqireAt" />
+		<result property="streAt" 		column="streAt" />
+		<result property="deleteAt" 	column="deleteAt" />
+		<result property="prntngAt" 	column="prntngAt" />
+		<result property="excelAt" 		column="excelAt" />
+		<result property="spclAt" 		column="spclAt" />
+	</resultMap>
+	
+	<resultMap id="findAuthorResult" type="hashmap">
+		<result property="progrmId" 		column="progrmId" />
+		<result property="authorGroupCode" 	column="authorGroupCode" />
+		<result property="menuOutptAt" 		column="menuOutptAt" />
+		<result property="inqireAt" 		column="inqireAt" />
+		<result property="streAt" 			column="streAt" />
+		<result property="deleteAt" 		column="deleteAt" />
+		<result property="prntngAt" 		column="prntngAt" />
+		<result property="excelAt" 			column="excelAt" />
+		<result property="spclAt" 			column="spclAt" />
+	</resultMap>
+
+	<!-- 프로그램정보 조회-->
+	<select id="findProgram" resultMap="findProgramResult">
+		SELECT 	/* ProgramID=com.comm.mapif.ProgramMapper.findProgram */
+			 progrm_id				progrmId		/* 프로그램ID */
+			,progrm_nm				progrmNm		/* 프로그램명 */
+			,job_se					jobSe			/* 업무 구분 */
+			,svc_at					svcAt			/* 업무 로직 */
+			,rm 									/* 비고 */
+			,view_file_path			viewFilePath	/* 파일 경로 */
+			,SUBSTR(progrm_id, 5)	preProgrmId		/* 프로그램ID 앞에 4자리 */
+		FROM tb_progrminfo
+		WHERE progrm_id = #{progrmId}
+	</select>
+
+	<!-- 프로그램목록갯수 -->
+	<select id="findProgramListCnt" resultType="int">
+		SELECT	/* ProgramID=com.comm.mapif.ProgramMapper.findProgramListCnt */
+			COUNT(*)
+		FROM tb_progrminfo
+		<!-- 검색조건 -->
+		<where>
+			<if test="searchJobSe != '' and searchJobSe != null">job_se = #{searchJobSe}</if>
+			<if test="searchProgramNm != '' and searchProgramNm != null">AND progrm_nm LIKE '%'||#{searchProgramNm}||'%'</if>
+		</where>
+	</select>
+
+	<!-- 프로그램목록조회 -->
+	<select id="findProgramList" resultMap="findProgramResult">
+		SELECT * /* ProgramID=com.comm.mapif.ProgramMapper.findProgramList */
+		FROM (
+			SELECT	
+				 progrm_id 		AS progrmId		/* 프로그램ID */
+				,progrm_nm 		AS progrmNm		/* 프로그램이름 */
+				,(SELECT code_nm FROM tb_cmmncode WHERE code_group_no='4' AND code=tb_progrminfo.job_se) AS jobSe	/* 업무구분 이름 */
+				,DECODE(svc_at,'Y','서비스','링크') 	AS svcAt	/* 서비스 여부 */
+				,rm		/* 비고 */
+				,rownum			AS num
+			FROM tb_progrminfo
+			<where>
+				<!-- 검색조건 -->
+				<if test="searchJobSe != '' and searchJobSe != null">AND job_se = #{searchJobSe}</if>
+				<if test="searchProgramNm != '' and searchProgramNm != null">AND progrm_nm LIKE '%'||#{searchProgramNm}||'%'</if>
+			</where>
+			ORDER BY progrm_id
+		)
+		WHERE num BETWEEN (1 + #{limitFrom}) AND (#{limitFrom} + #{limitTo})
+	</select>
+
+	<!-- 프로그램 등록 -->
+	<insert id="insertProgram">
+		INSERT /* ProgramID=com.comm.mapif.ProgramMapper.insertProgram */
+		INTO tb_progrminfo (
+			 progrm_id			/* 프로그램ID */
+			,progrm_nm			/* 프로그램 이름 */
+			,job_se				/* 업무구분 */
+			,svc_at				/* 서비스 여부 */
+			,view_file_path		/* 파일 경로 */
+			,rm					/* 비고 */
+			,register			/* 등록자 */
+			,rgsde				/* 등록일 */
+			,updusr				/* 수정자 */
+			,updde				/* 수정일 */
+		) VALUES (
+			 #{progrmId}
+			,#{progrmNm}
+			,#{jobSe}
+			,#{svcAt}
+			,#{viewFilePath}
+			,#{rm}
+			,#{register}
+			,SYSDATE
+			,#{updusr}
+			,SYSDATE
+		)
+	</insert>
+
+	<!-- 프로그램 수정 -->
+	<update id="updateProgram">
+		UPDATE /* ProgramID=sqlmpa.cm.ProgramMapper.updateProgram */
+			tb_progrminfo
+		SET
+			 progrm_nm = #{progrmNm}			/* 프로그램 이름 */
+			,job_se = #{jobSe}					/* 업무 구분 */
+			,svc_at = #{svcAt}					/* 서비스 여부 */
+			,view_file_path = #{viewFilePath}	/* 파일 경로 */
+			,rm = #{rm}							/* 비고 */
+			,updusr = #{updusr}					/* 수정자 */
+			,updde = SYSDATE					/* 수정일 */
+		WHERE progrm_id = #{progrmId}
+	</update>
+
+	<!-- 프로그램 삭제 -->
+	<delete id="deleteProgram">
+		DELETE 	/* ProgramID=com.comm.mapif.ProgramMapper.deleteProgram*/
+		FROM tb_progrminfo
+		WHERE progrm_id = #{progrmId}
+	</delete>
+
+	<!-- 권한 정보 조회 -->
+	<select id="findAuthor" resultMap="findAuthorResult">
+		SELECT 	/* ProgramID=com.comm.mapif.ProgramMapper.findAuthor */
+			 progrm_id			AS progrmId			/* 프로그램 ID */
+			,author_group_code	AS authorGroupCode	/* 권한 그룹 코드 */
+			,menu_outpt_at		AS menuOutptAt		/* 메뉴 출력 여부 */
+			,inqire_at			AS inqireAt			/* 조회 여부 */
+			,stre_at			AS streAt			/* 저장 여부 */
+			,delete_at			AS deleteAt			/* 삭제 여부 */
+			,prntng_at			AS prntngAt			/* 인쇄 여부 */
+			,excel_at			AS excelAt			/* 엑셀 여부 */
+			,spcl_at			AS spclAt			/* 특수 여부 */
+		FROM tb_authorinfo
+		WHERE progrm_id = #{progrmId}
+	</select>
+
+	<!-- 권한 정보 입력 -->
+	<insert id = "insertAuthor">
+		INSERT /* ProgramID=com.comm.mapif.ProgramMapper.insertAuthor */
+		INTO tb_authorinfo (
+			 progrm_id			/* 프로그램ID */
+			,author_group_code	/* 권한 그룹 코드 */
+			,menu_outpt_at		/* 메뉴 출력 여부 */
+			,inqire_at			/* 조회 여부 */
+			,stre_at			/* 저장 여부 */
+			,delete_at			/* 삭제 여부 */
+			,prntng_at			/* 출력 여부 */
+			,excel_at			/* 엑셀 여부 */
+			,spcl_at			/* 특수 여부 */
+			,register			/* 등록자 */
+			,rgsde				/* 등록일 */
+			,updusr				/* 수정자 */
+			,updde				/* 수정일 */
+		) VALUES (
+			 #{progrmId}
+			,#{authorGroupCode}
+			,#{menuOutptAt}
+			,#{inqireAt}
+			,#{streAt}
+			,#{deleteAt}
+			,#{prntngAt}
+			,#{excelAt}
+			,#{spclAt}
+			,#{register}
+			,SYSDATE
+			,#{updusr}
+			,SYSDATE
+		)
+	</insert>
+
+	<update id = "updateAuthor">
+		UPDATE /* ProgramID=sqlmpa.cm.ProgramMapper.updateAuthor */
+			tb_authorinfo
+		SET
+			 menu_outpt_at = #{menuOutptAt}	/* 메뉴 출력 여부 */
+			,inqire_at = #{inqireAt}		/* 조회 여부 */
+			,stre_at = #{streAt}			/* 저장 여부 */
+			,delete_at = #{deleteAt}		/* 삭제 여부 */
+			,prntng_at = #{prntngAt}		/* 인쇄 여부 */
+			,excel_at = #{excelAt}			/* 엑셀 여부 */
+			,spcl_at = #{spclAt}			/* 특수 여부 */
+			,updusr = #{updusr}				/* 수정자 */
+			,updde = SYSDATE				/* 수정일 */
+		WHERE progrm_id = #{progrmId}
+		AND author_group_code = #{authorGroupCode}
+	</update>
+
+	<!-- 권한정보 삭제 -->
+	<delete id="deleteAuthor">
+		DELETE 	/* ProgramID=com.comm.mapif.ProgramMapper.deleteAuthor*/
+		FROM tb_authorinfo
+		WHERE progrm_id = #{progrmId}
+	</delete>
+
+	<!-- 공통코드 목록, 권한 정보 조회 -->
+	<select id="findCodeAuthorList" resultMap="findCodeAuthorListResult">
+		SELECT	/* ProgramID=com.comm.mapif.ProgramMapper.findCodeAuthorList */
+			 a.code				AS code			/* 코드 */
+			,code_group_no		AS codeGroupNo	/* 코드 그룹 번호 */
+			,a.code_nm			AS codeNm		/* 코드명 */
+			,a.code_dc			AS codeDc		/* 코드 설명 */
+			,a.outpt_ordr		AS outptOrdr	/* 출력 순서 */
+			,a.use_at			AS useAt		/* 사용 여부 */
+			,b.progrm_id		AS progrmId		/* 프로그램 ID */
+			,b.menu_outpt_at	AS menuOutptAt	/* 메뉴 출력 여부 */
+			,b.inqire_at		AS inqireAt		/* 조회 여부 */
+			,b.stre_at			AS streAt		/* 저장 여부 */
+			,b.delete_at		AS deleteAt		/* 삭제 여부 */
+			,b.prntng_at		AS prntngAt		/* 인쇄 여부 */
+			,b.excel_at			AS excelAt		/* 엑셀 여부 */
+			,b.spcl_at			AS spclAt		/* 특수 여부 */
+		FROM tb_cmmncode a
+		LEFT OUTER JOIN (
+			SELECT
+				 progrm_id
+				,author_group_code
+				,menu_outpt_at
+				,inqire_at
+				,stre_at
+				,delete_at
+				,prntng_at
+				,excel_at
+				,spcl_at
+			FROM tb_authorinfo
+			WHERE progrm_id = #{progrmId}
+		) b
+		ON a.code = b.author_group_code
+		WHERE code_group_no = #{codeGroupNo}
+		ORDER BY outpt_ordr ASC
+	</select>
+
+	<!-- 프로그램 중복 체크 -->
+	<select id="selectProgrmCnt" resultType="int">
+		SELECT  /* ProgramID=com.comm.mapif.ProgramMapper.selectProgrmCnt */
+			COUNT(*) as cnt
+		FROM tb_progrminfo
+		WHERE progrm_id = #{progrmId}
+	</select>
+
+</mapper>

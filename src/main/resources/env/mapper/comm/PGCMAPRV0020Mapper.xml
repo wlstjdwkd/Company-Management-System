@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.comm.mapif.PGCMAPRV0020Mapper">
+
+	<resultMap type="hashmap" id="list">
+		<result property="num"					column="num" />
+		<result property="confmerId"			column="confmerId" />
+		<result property="altrtvConfmerId"		column="altrtvConfmerId" />
+		<result property="altrtvConfmerDeptNm"	column="altrtvConfmerDeptNm" />
+		<result property="confmerNm"			column="confmerNm" />
+		<result property="altrtvConfmerNm"		column="altrtvConfmerNm" />
+		<result property="altrtvConfmBgnDe"		column="altrtvConfmBgnDe" />
+		<result property="altrtvConfmEndDe"		column="altrtvConfmEndDe" />
+		<result property="altrtvReason"			column="altrtvReason" />
+		<result property="useAt"				column="useAt" />
+		<result property="rgsde"				column="rgsde" />
+		<result property="updde"				column="updde" />
+	</resultMap>
+	
+	<resultMap type="hashmap" id="detail">
+		<result property="confmerId"			column="confmerId" />
+		<result property="altrtvConfmerId"		column="altrtvConfmerId" />
+		<result property="altrtvConfmerDeptNm"	column="altrtvConfmerDeptNm" />
+		<result property="confmerNm"			column="confmerNm" />
+		<result property="altrtvConfmerNm"		column="altrtvConfmerNm" />
+		<result property="altrtvConfmBgnDe"		column="altrtvConfmBgnDe" />
+		<result property="altrtvConfmEndDe"		column="altrtvConfmEndDe" />
+		<result property="altrtvReason"			column="altrtvReason" />
+		<result property="useAt"				column="useAt" />
+	</resultMap>
+	
+	<resultMap type="hashmap" id="emplyrMap">
+		<result property="userNo" 		column="userNo" />
+		<result property="nm" 			column="nm" />
+		<result property="deptCd" 		column="deptCd" />
+		<result property="deptNm" 		column="deptNm" />
+	</resultMap>
+
+	<!-- 대체승인 목록 출력 -->
+	<select id="findList" resultMap="list">
+		SELECT * /* ProgramID=com.comm.mapif.PGCMAPRV0020Mapper.findList */
+		FROM (
+			SELECT
+				confmerId,
+				altrtvConfmerId,
+				altrtvConfmerDeptNm,
+				confmerNm,
+				altrtvConfmerNm,
+				altrtvConfmBgnDe,
+				altrtvConfmEndDe,
+				altrtvReason,
+				useAt,
+				rgsde,
+				updde,
+				rownum as num
+			FROM (
+				SELECT
+					ALTRTV.CONFMER_ID AS confmerId,
+					ALTRTV.ALTRTV_CONFMER_ID AS altrtvConfmerId,
+					EMP.DEPT_NM AS altrtvConfmerDeptNm,
+					ALTRTV.CONFMER_NM AS confmerNm,
+					ALTRTV.ALTRTV_CONFMER_NM AS altrtvConfmerNm,
+					TO_CHAR(ALTRTV.ALTRTV_CONFM_BGN_DE,'YYYY-MM-DD') AS altrtvConfmBgnDe,
+					TO_CHAR(ALTRTV.ALTRTV_CONFM_END_DE,'YYYY-MM-DD') AS altrtvConfmEndDe,
+					ALTRTV.ALTRTV_REASON AS altrtvReason,
+					ALTRTV.USE_AT AS useAt,
+					TO_CHAR(ALTRTV.RGSDE,'YYYY-MM-DD') AS rgsde,
+					TO_CHAR(ALTRTV.UPDDE,'YYYY-MM-DD') AS updde
+				FROM TB_ALTRTV_CONFRM ALTRTV
+				LEFT JOIN TB_EMPLYR EMP
+				ON ALTRTV.ALTRTV_CONFMER_ID = EMP.USER_NO
+				WHERE ALTRTV.CONFMER_ID = #{confmerId}
+				ORDER BY ALTRTV.ALTRTV_CONFM_BGN_DE DESC
+			)
+		)
+		WHERE num BETWEEN (1 + #{limitFrom}) AND (#{limitFrom} + #{limitTo})
+	</select>
+
+	<!-- 대체승인 목록 갯수 출력 -->
+	<select id="findListCnt" resultType="int">
+		SELECT /* ProgramID=com.comm.mapif.PGCMAPRV0020Mapper.findListCnt */
+			COUNT(*)
+		FROM (
+			SELECT
+				ALTRTV.CONFMER_ID AS confmerId,
+				ALTRTV.ALTRTV_CONFMER_ID AS altrtvConfmerId,
+				EMP.DEPT_NM AS altrtvConfmerDeptNm,
+				ALTRTV.CONFMER_NM AS confmerNm,
+				ALTRTV.ALTRTV_CONFMER_NM AS altrtvConfmerNm,
+				TO_CHAR(ALTRTV_CONFM_BGN_DE,'YYYY-MM-DD') AS altrtvConfmBgnDe,
+				TO_CHAR(ALTRTV_CONFM_END_DE,'YYYY-MM-DD') AS altrtvConfmEndDe,
+				ALTRTV.ALTRTV_REASON AS altrtvReason,
+				ALTRTV.USE_AT AS useAt,
+				TO_CHAR(ALTRTV.RGSDE,'YYYY-MM-DD') AS rgsde,
+				TO_CHAR(ALTRTV.UPDDE,'YYYY-MM-DD') AS updde
+			FROM TB_ALTRTV_CONFRM ALTRTV
+			LEFT JOIN TB_EMPLYR EMP
+			ON ALTRTV.ALTRTV_CONFMER_ID = EMP.USER_NO
+			WHERE ALTRTV.CONFMER_ID = #{confmerId}
+			ORDER BY ALTRTV.ALTRTV_CONFM_BGN_DE DESC
+		)
+	</select>
+	
+	<!-- 대체승인 상세 출력 -->
+	<select id="getAltrtvDetail" resultMap="detail">
+		SELECT /* ProgramID=com.comm.mapif.PGCMAPRV0020Mapper.getAltrtvDetail */
+			ALTRTV.CONFMER_ID AS confmerId,
+			ALTRTV.ALTRTV_CONFMER_ID AS altrtvConfmerId,
+			EMP.DEPT_NM AS altrtvConfmerDeptNm,
+			ALTRTV.CONFMER_NM AS confmerNm,
+			ALTRTV.ALTRTV_CONFMER_NM AS altrtvConfmerNm,
+			TO_CHAR(ALTRTV.ALTRTV_CONFM_BGN_DE,'YYYY-MM-DD') AS altrtvConfmBgnDe,
+			TO_CHAR(ALTRTV.ALTRTV_CONFM_END_DE,'YYYY-MM-DD') AS altrtvConfmEndDe,
+			ALTRTV.ALTRTV_REASON AS altrtvReason,
+			ALTRTV.USE_AT AS useAt
+		FROM TB_ALTRTV_CONFRM ALTRTV
+		LEFT JOIN TB_EMPLYR EMP
+		ON ALTRTV.ALTRTV_CONFMER_ID = EMP.USER_NO
+		WHERE ALTRTV.CONFMER_ID = #{confmerId}
+		AND ALTRTV.ALTRTV_CONFMER_ID = #{altrtvConfmerId}
+		AND TO_CHAR(ALTRTV.ALTRTV_CONFM_BGN_DE,'YYYY-MM-DD') = #{altrtvConfmBgnDe}
+	</select>
+	
+	<!-- 대체승인자 선택 리스트 -->
+	<select id="findAltrtvConfmerList" resultMap="emplyrMap">
+		SELECT /* ProgramID=com.comm.mapif.PGCMAPRV0020Mapper.findAltrtvConfmerList */
+			EMP.USER_NO AS userNo,
+			EMP.NM AS nm,
+			EMP.DEPT_CD AS deptCd,
+			EMP.DEPT_NM AS deptNm
+		FROM TB_EMPLYR EMP, TB_USERINFO USR
+		WHERE EMP.USER_NO = USR.USER_NO
+		AND EMP.USER_NO != #{userNo} AND USR.STTUS = '01'
+		ORDER BY EMP.USER_NO
+	</select>
+
+	<!-- 대체승인자 등록 -->
+	<insert id="insertAltrtvInfo">
+		INSERT INTO /* ProgramID=com.comm.mapif.PGCMAPRV0020Mapper.insertAltrtvInfo */
+		TB_ALTRTV_CONFRM
+		(
+			 CONFMER_ID
+			,ALTRTV_CONFMER_ID
+			,CONFMER_NM
+			,ALTRTV_CONFMER_NM
+			,ALTRTV_CONFM_BGN_DE
+			,ALTRTV_CONFM_END_DE
+			,ALTRTV_REASON
+			,USE_AT
+			,REGISTER
+			,RGSDE
+		)
+		VALUES
+		(
+			 #{confmerId}
+			,#{altrtvConfmerId}
+			,#{confmerNm}
+			,#{altrtvConfmerNm}
+			,#{altrtvConfmBgnDe}
+			,#{altrtvConfmEndDe}
+			,#{altrtvReason}
+			,#{useAt}
+			,#{register}
+			,SYSDATE
+		)
+	</insert>
+
+	<!-- 대체승인자 수정 -->
+	<update id="updateAltrtvInfo">
+		UPDATE /* ProgramID=com.comm.mapif.PGCMAPRV0020Mapper.updateAltrtvInfo */
+			TB_ALTRTV_CONFRM
+		SET
+			 ALTRTV_CONFM_BGN_DE = #{altrtvConfmBgnDe}
+			,ALTRTV_CONFM_END_DE = #{altrtvConfmEndDe}
+			,ALTRTV_REASON = #{altrtvReason}
+			,USE_AT = #{useAt}
+			,UPDUSR = #{updusr}
+			,UPDDE =  SYSDATE
+		WHERE CONFMER_ID = #{confmerId}
+		AND ALTRTV_CONFMER_ID = #{preAltrtvConfmerId}
+		AND ALTRTV_CONFM_BGN_DE = #{preAltrtvConfmBgnDe}
+	</update>
+	
+	<!-- 대체승인자테이블 출력 -->
+	<select id="findAltrtvConfmDe" resultMap="list">
+		SELECT
+			CONFMER_ID AS confmerId,
+			ALTRTV_CONFMER_ID AS altrtvConfmerId,
+			CONFMER_NM AS confmerNm,
+			ALTRTV_CONFMER_NM AS altrtvConfmerNm,
+			TO_CHAR(ALTRTV_CONFM_BGN_DE,'YYYY-MM-DD') AS altrtvConfmBgnDe,
+			TO_CHAR(ALTRTV_CONFM_END_DE,'YYYY-MM-DD') AS altrtvConfmEndDe,
+			ALTRTV_REASON AS altrtvReason,
+			USE_AT AS useAt
+		FROM TB_ALTRTV_CONFRM ALTRTV
+		WHERE CONFMER_ID = #{confmerId} AND USE_AT = 'Y'
+		<if test="preAltrtvConfmerId != '' and preAltrtvConfmerId != null">
+			AND NOT (ALTRTV_CONFMER_ID = #{preAltrtvConfmerId} AND ALTRTV_CONFM_BGN_DE = #{preAltrtvConfmBgnDe})
+		</if>
+	</select>
+	
+	<!-- 동일한대체승인자테이블 출력 -->
+	<select id="findSameAltrtvConfmDe" resultMap="list">
+		SELECT
+			CONFMER_ID AS confmerId,
+			ALTRTV_CONFMER_ID AS altrtvConfmerId,
+			CONFMER_NM AS confmerNm,
+			ALTRTV_CONFMER_NM AS altrtvConfmerNm,
+			TO_CHAR(ALTRTV_CONFM_BGN_DE,'YYYY-MM-DD') AS altrtvConfmBgnDe,
+			TO_CHAR(ALTRTV_CONFM_END_DE,'YYYY-MM-DD') AS altrtvConfmEndDe,
+			ALTRTV_REASON AS altrtvReason,
+			USE_AT AS useAt
+		FROM TB_ALTRTV_CONFRM ALTRTV
+		WHERE CONFMER_ID = #{confmerId}
+		AND (ALTRTV_CONFMER_ID = #{altrtvConfmerId} AND ALTRTV_CONFM_BGN_DE = #{altrtvConfmBgnDe})
+	</select>
+	
+	<!-- 대체승인자 삭제 -->
+	<delete id="deleteAltrtvInfo">
+		DELETE
+		FROM TB_ALTRTV_CONFRM
+		WHERE CONFMER_ID = #{confmerId}
+		AND ALTRTV_CONFMER_ID = #{altrtvConfmerId}
+		AND ALTRTV_CONFM_BGN_DE = #{altrtvConfmBgnDe}
+	</delete>
+
+</mapper>

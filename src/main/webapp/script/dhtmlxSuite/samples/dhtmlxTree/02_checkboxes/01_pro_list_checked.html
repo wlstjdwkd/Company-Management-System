@@ -1,0 +1,56 @@
+<!--conf
+<sample>
+            <product version="1.5" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               </sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Lists of check boxes states</title>
+</head>
+
+<body>
+	<h1>Lists of check boxes states</h1>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+    <p> The following methods allow you to get lists reflecting the check boxes states (checked, unchecked, partially checked), moreover you can get a list of checked branches (some sub-items are checked).</p> 
+	
+	<table>
+		<tr>
+			<td valign="top">
+				<div id="treeboxbox_tree" style="width:250px; height:218px;background-color:#f5f5f5;border :1px solid Silver;"></div>
+			</td>
+			<td style="padding-left:25" valign="top">
+			
+			<br>
+			<br>
+			<a href="javascript:void(0);" onClick="alert(tree.getAllChecked());">Get list of checked</a><br><br>
+			<a href="javascript:void(0);" onClick="alert(tree.getAllUnchecked());">Get list of unchecked</a><br><br>
+			<a href="javascript:void(0);" onClick="alert(tree.getAllPartiallyChecked());">Get list of partially checked</a><br><br>
+			<a href="javascript:void(0);" onClick="alert(tree.getAllCheckedBranches());">Get list of checked branches</a><br><br>
+			</td>
+		</tr>
+
+	</table>
+
+	<script>
+			tree=new dhtmlXTreeObject("treeboxbox_tree","100%","100%",0);
+
+			tree.setSkin('dhx_skyblue');
+			tree.setImagePath("../../../codebase/imgs/dhxtree_skyblue/");
+			tree.enableCheckBoxes(1);
+			tree.enableThreeStateCheckboxes(true); 
+			tree.enableSmartXMLParsing(true);
+			tree.loadXML("../common/tree_cl.xml");
+
+						
+	</script>
+<br><br>
+
+</body>
+</html>

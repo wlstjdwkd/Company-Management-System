@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="biz.tech.mapif.js.PGJS0010Mapper">
+	
+	<!-- 판정정보 조회 -->
+	<select id="selectJdgmntManage" resultType="egovMap">
+	SELECT		/* ProgramID=biz.tech.mapif.js.PGJS0010Mapper.selectJdgmntManage */
+					  IFNULL( (SELECT STDYY FROM TB_JDGMNT_MANAGE WHERE STDYY = #{stdyy} LIMIT 1), '-')	STDYY
+					, IFNULL( (SELECT DATE_FORMAT(HPE_JDGMNT_DE,'%Y-%m-%d') FROM TB_JDGMNT_MANAGE WHERE STDYY = #{stdyy} AND JDGMNT_MBY = 'S'), '-')		SYSTEM_JDGMNT_DE
+					, IFNULL( (SELECT DATE_FORMAT(HPE_JDGMNT_DE,'%Y-%m-%d') FROM TB_JDGMNT_MANAGE WHERE STDYY = #{stdyy} AND JDGMNT_MBY = 'M'), '-')		DCSN_JDGMNT_DE
+	</select>
+	
+	<!-- 통계생성목록 조회 -->
+	<select id="selectStatsOpertList" resultType="egovMap">
+	SELECT		/* ProgramID=biz.tech.mapif.js.PGJS0010Mapper.selectStatsOpertList */
+					  cmcd.CODE
+					, cmcd.CODE_NM
+					, stat.STDYY
+					, DATE_FORMAT(STR_TO_DATE(stat.CREAT_DE, '%Y%m%d'), '%Y-%m-%d') CREAT_DE
+					, stat.STTUS
+					, IF(stat.STTUS IS NULL, '-', IF(stat.STTUS = 'S', '성공', '실패')) STTUS_NM
+	FROM		tb_cmmncode cmcd
+	LEFT JOIN	TB_STATS_OPERT stat
+	ON			stat.STATS_DIV_CODE = cmcd.CODE
+  		AND		stat.STDYY = #{stdyy}
+	WHERE		cmcd.CODE_GROUP_NO = '45'
+	</select>
+	
+	<!-- 통계 프로시져 호출 -->
+	<select id="callStaticsSp" statementType="CALLABLE" resultType="int">
+	{
+		<!-- 
+			STSNM01	기업군_업종별지역별 기본 통계 
+			STSNM02	특성별_업종별지역별통계 
+			STSNM03	업종별_매출액구간별기업수              
+			STSNM04	업종별_근로자수구간별기업수 
+			STSNM05	업종별_R&D집약도구간별기업수 
+			STSNM06	업종별_수출액구간별기업수
+			STSNM07	가젤형사유별_매출액구간별기업수 
+			STSNM08	매출규모별_R&D집약도 
+			STSNM09	기업 위상  A 
+			STSNM10	기업 분류요인 분석 B 
+			STSNM11	진입시기별 기업 현황 C 
+		-->
+		<if test="code eq 'STSNM01' ">CALL sp_STS_ENTCLS(#{stdyy}, ${gubun}, #{code})</if>
+    	<if test="code eq 'STSNM02' ">CALL sp_STS_CHARTR(#{stdyy}, ${gubun}, #{code})</if>
+    	<if test="code eq 'STSNM03' ">CALL sp_STS_INDUTY_SCTN(#{stdyy}, ${gubun}, #{code})</if>
+    	<if test="code eq 'STSNM04' ">CALL sp_STS_LABRR_SCTN(#{stdyy}, ${gubun}, #{code})</if>
+    	<if test="code eq 'STSNM05' ">CALL sp_STS_RND_SCTN(#{stdyy}, ${gubun}, #{code})</if>
+    	<if test="code eq 'STSNM06' ">CALL sp_STS_XPORT_SCTN(#{stdyy}, ${gubun}, #{code})</if>
+    	<if test="code eq 'STSNM07' ">CALL sp_STS_GZLC_JDGMNT_RESN(#{stdyy}, ${gubun}, #{code})</if>
+    	<if test="code eq 'STSNM08' ">CALL sp_STS_SELNG_RND_SCTN(#{stdyy}, ${gubun}, #{code})</if>
+    	<if test="code eq 'STSNM09' ">CALL sp_STS_HPE_PHASE(#{stdyy}, ${gubun}, #{code})</if>
+    	<if test="code eq 'STSNM10' ">CALL sp_STS_HPE_JDGMNT_RESN(#{stdyy}, ${gubun}, #{code})</if>
+    	<if test="code eq 'STSNM11' ">CALL sp_STS_ENTRY_ERA(#{stdyy}, ${gubun}, #{code})</if>
+	}
+	</select>
+		
+	
+</mapper>

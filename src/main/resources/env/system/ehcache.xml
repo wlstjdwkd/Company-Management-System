@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"	xsi:noNamespaceSchemaLocation="ehcache.xsd" 
+	updateCheck="false" monitoring="autodetect" dynamicConfig="true">
+	<!-- 공통코드 -->
+	<cache 	name="systemCode"
+				maxEntriesLocalHeap="1000"
+				eternal="true"
+				overflowToDisk="false" 
+				diskPersistent="false" 
+				timeToIdleSeconds="0"
+				timeToLiveSeconds="0" 
+				memoryStoreEvictionPolicy="LRU">
+	</cache>
+	<!-- 비출력 메뉴정보 -->
+	<cache 	name="noScreenMunuNo"
+				maxEntriesLocalHeap="100"
+				eternal="true"
+				overflowToDisk="false" 
+				diskPersistent="false" 
+				timeToIdleSeconds="0"
+				timeToLiveSeconds="0" 
+				memoryStoreEvictionPolicy="LRU">
+	</cache>
+	<!-- 게시판 설정 정보 -->
+	<cache 	name="boardConfig"
+				maxEntriesLocalHeap="200"
+				eternal="true"
+				overflowToDisk="false" 
+				diskPersistent="false" 
+				timeToIdleSeconds="0"
+				timeToLiveSeconds="0" 
+				memoryStoreEvictionPolicy="LRU">
+	</cache>
+	<!-- 프로그램정보 -->
+	<cache 	name="programInfo"
+				maxEntriesLocalHeap="200"
+				eternal="true"
+				overflowToDisk="false" 
+				diskPersistent="false" 
+				timeToIdleSeconds="0"
+				timeToLiveSeconds="0" 
+				memoryStoreEvictionPolicy="LRU">
+	</cache>
+</ehcache>

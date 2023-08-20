@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="biz.tech.mapif.um.PGUM0001Mapper">
+
+<!-- 최근년도 구하기 -->
+<select id="findMaxStdyy" resultType = "int">
+	SELECT 			/* ProgramID=biz.tech.mapif.um.PGUM0001Mapper.findMaxStdyy */
+						MAX(STDYY_DO)								/* 데이터 최근 년도		*/
+	FROM STS_HPE_PHASE
+</select>
+
+<!-- 기업 규모별 주요지표 정보 찾기 -->
+<select id = "findEntrprSize" resultType = "Map" >
+	SELECT				/* ProgramID=biz.tech.mapif.um.PGUM0001Mapper.findEntrprSize */
+							  a.HPE_VALUE		AS hpe					/*	기업 지표		*/
+							, a.SMLPZ_VALUE		AS smlpz				/*	중소기업 지표		*/
+							, a.LTRS_VALUE		AS ltrs					/*	대기업 지표		*/
+	FROM STS_HPE_PHASE a
+	WHERE PHASE_IX = #{phaseIx}
+	AND STDYY_DO = #{stdyyDo}
+</select>
+
+<!-- 기업 인재 채용정보 정보 찾기 -->
+<select id = "findEmpmnInfo" resultType = "Map">
+	SELECT			/* ProgramID=biz.tech.mapif.um.PGUM0001Mapper.findEmpmnInfo */
+						 a.EMPMN_MANAGE_NO	AS empmnManageNo	/*채용관리번호	*/
+			  			, a.EMPMN_SJ		AS empmnSj			/*채용 제목		*/
+						, a.JSSFC			AS jssfc			/*직종			*/
+						, b.ENTRPRS_NM		AS entrprsNm		/*기업 이름		*/
+						, a.USER_NO			AS userNo			/*사용자 번호	*/
+						, a.ECNY_APPLY_DIV						/*입사지원구분	*/
+						, a.ECNY_APPLY__WEB_ADRES				/*입사지원웹주소*/
+	FROM			TB_EMPMN_PBLANC a
+	<!-- LEFT JOIN tb_entrprsuser b -->
+	LEFT JOIN TB_EMPMN_ENTRPRS b
+	ON (a.USER_NO = b.USER_NO
+		AND a.BIZRNO = b.BIZRNO)	
+	WHERE 1=1
+	AND RCRIT_END_DE <![CDATA[>=]]> NOW()
+	AND a.JSSFC NOT LIKE '%재가요양보호사%'
+	<if test="tempA != null and tempA != '' ">														/* 필터링 */
+		<foreach item="item" collection="array_filterListA" open = "AND" separator="AND" close="">	/* 채용 제목 필터 */
+			ifnull(a.EMPMN_SJ, '') NOT LIKE CONCAT ('%', trim(#{item}), '%')
+		</foreach>
+	</if>
+	<if test="tempB != null and tempB != '' ">																
+		<foreach item="item" collection="array_filterListB" open = "AND" separator="AND" close="">	/* 직종 필터 */
+			ifnull(a.JSSFC, '') NOT LIKE CONCAT ('%', trim(#{item}), '%')
+		</foreach>
+	</if>
+	ORDER BY a.UPDT_DE DESC, a.REGIST_DE DESC
+	LIMIT 0,5
+</select>
+
+<!-- 기업 지원사업 정보 찾기 -->
+<select id = "findRssInfo" resultType = "Map">
+	SELECT				/* ProgramID=biz.tech.mapif.um.PGUM0001Mapper.findRssInfo */
+			   				  SJ								AS sj							/*	제목				*/
+						 	, URL								AS url						/*	URL				*/
+							, MNGT_MIRYFC				AS mngtMiryfc			/*	주관 부처		*/
+			 				, REALM							AS realm					/*	분야				*/
+	
+	FROM				TB_RSS_COLCT_DATA
+	WHERE				NTCE_AT = 'Y'
+	ORDER BY			SN DESC
+	LIMIT 0,5
+</select>
+
+<!-- 공지사항 정보 찾기 -->
+<select id = "findNoticeInfo" resultType = "Map">
+	SELECT 			/* ProgramID=biz.tech.mapif.um.PGUM0001Mapper.findNoticeInfo */
+			 		 TITLE							AS title							/* 	제목			*/
+					, BBS_CD						AS Cd							/*	게시판코드	*/
+					, REF_SEQ						AS refSeq						/*	참조 번호	*/
+			
+	FROM 		OP_BOARD
+	WHERE 		BBS_CD = 1001
+	ORDER BY	SEQ DESC
+	LIMIT 0,10
+</select>
+</mapper>

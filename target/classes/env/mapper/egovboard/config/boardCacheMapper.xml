@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="_boardCache">
+
+	<select id="boardConfList" resultType="egovframework.board.config.BoardConfVO">
+		SELECT BBS_CD   AS bbsCd,
+			   BBS_NM   AS bbsNm
+		  FROM OP_BOARD_CONF
+		 WHERE USE_YN = 'Y'
+		 ORDER BY BBS_NM ASC
+	</select>
+
+	<select id="boardConfView" parameterType="egovframework.board.config.BoardConfVO" resultType="egovframework.board.config.BoardConfVO">
+		SELECT A.BBS_CD				AS bbsCd,
+			   A.BBS_NM				AS bbsNm,
+			   A.BBS_DESC			AS bbsDesc,
+			   A.USE_YN				AS useYn,
+			   B.KIND_CD			AS kindCd,
+			   B.CTG_YN				AS ctgYn,
+			   B.NOTICE_YN			AS noticeYn,
+			   B.COMMENT_YN			AS commentYn,
+			   B.SKIN_PATH			AS skinPath,
+			   B.HEADER_PATH		AS headerPath,
+			   B.FOOTER_PATH		AS footerPath,
+			   B.LIST_SKIN          AS listSkin,
+               B.VIEW_SKIN          AS viewSkin,
+               B.FORM_SKIN          AS formSkin,
+			   C.USR_EDITOR_YN		AS usrEditorYn,
+			   C.MGR_EDITOR_YN		AS mgrEditorYn,
+			   C.FILE_YN			AS fileYn,
+			   C.UPLOAD_TYPE		AS uploadType,
+			   C.MAX_FILE_CNT		AS maxFileCnt,
+			   C.MAX_FILE_SIZE		AS maxFileSize,
+			   C.TOTAL_FILE_SIZE	AS totalFileSize,
+			   C.FILE_EXTS			AS fileExts,
+			   C.BAN_YN				AS banYn,
+			   C.BAN_CONTENTS		AS banContents,
+			   C.CAPTCHA_YN			AS captchaYn,
+			   C.OPEN_YN			AS openYn,
+			   D.LIST_VIEW_CD		AS listViewCd,
+			   D.RECOMM_YN			AS recommYn,
+			   D.SUE_YN				AS sueYn,
+			   D.STFY_YN			AS stfyYn,
+			   D.TAG_YN				AS tagYn,
+			   D.READ_COOKIE_HOUR	AS readCookieHour,
+			   E.RPP_NUM			AS rppNum,
+			   E.DOWN_YN			AS downYn,
+			   E.CUT_TITLE_NUM		AS cutTitleNum,
+			   E.NEW_ARTICLE_NUM	AS newArticleNum,
+			   E.EMPHASIS_NUM		AS emphasisNum,
+			   E.REGISTER_VIEW_CD	AS registerViewCd,
+			   E.FEED_YN			AS feedYn
+		  FROM OP_BOARD_CONF A,	  OP_BOARD_CONF_GLOBAL B,
+			   OP_BOARD_CONF_FORM C, OP_BOARD_CONF_VIEW D, 
+			   OP_BOARD_CONF_LIST E
+		 WHERE A.BBS_CD = #{bbsCd}
+		   AND A.BBS_CD = B.BBS_CD
+		   AND A.BBS_CD = C.BBS_CD
+		   AND A.BBS_CD = D.BBS_CD
+		   AND A.BBS_CD = E.BBS_CD
+	</select>
+
+	<select id="boardCtgList" parameterType="int" resultType="egovframework.board.config.BoardCtgVO">
+		SELECT CTG_CD  AS ctgCd, 
+			   CTG_NM  AS ctgNm,
+			   USE_YN  AS useYn
+		  FROM OP_BOARD_CTG
+		 WHERE BBS_CD = #{bbsCd}
+		 ORDER BY ORDER_NO ASC
+	</select>
+
+	<select id="boardListArrange" parameterType="int" resultType="egovframework.board.config.BoardArrangeVO">
+		SELECT COLUMN_ID AS columnId,
+			   COLUMN_NM AS columnNm,
+			   ORDER_NO AS orderNo,
+			   BEAN_NM AS beanNm
+		  FROM OP_BOARD_CONF_ARRANGE
+		 WHERE BBS_CD = #{bbsCd}
+		   AND LIST_VIEW_GUBUN = 'list'
+		 ORDER BY ORDER_NO ASC
+	</select>
+
+	<select id="boardViewArrange" parameterType="int" resultType="egovframework.board.config.BoardArrangeVO">
+		SELECT COLUMN_ID AS columnId,
+			   COLUMN_NM AS columnNm,
+			   ORDER_NO AS orderNo,
+			   BEAN_NM AS beanNm
+		  FROM OP_BOARD_CONF_ARRANGE
+		 WHERE BBS_CD = #{bbsCd}
+		   AND LIST_VIEW_GUBUN = 'view'
+		 ORDER BY ORDER_NO ASC
+	</select>
+
+	<select id="boardExtensionList" parameterType="map" resultType="egovframework.board.config.BoardExtensionVO">
+		SELECT BBS_CD AS bbsCd,
+			   COLUMN_ID AS columnId,
+			   COLUMN_NM AS columnNm,
+			   COLUMN_TYPE AS columnType,
+			   COLUMN_COMMENT AS columnComment,
+			   SEARCH_YN AS searchYn,
+			   SEARCH_TYPE AS searchType,
+			   REQUIRE_YN AS requireYn,
+			   USE_YN AS useYn
+		  FROM OP_BOARD_CONF_EXTENSION
+		 WHERE BBS_CD = #{bbsCd}
+			<if test="searchYn != null  and searchYn != ''">
+			AND SEARCH_YN = #{searchYn}
+			</if>
+		   AND USE_YN = 'Y'
+		 ORDER BY COLUMN_NM ASC
+	</select>
+
+</mapper>

@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="biz.tech.mapif.im.PGIM0110Mapper">
+
+	<!-- 테마별업종 조회(코드그룹별)
+	<select id="findCodesByGroupNo" resultType="MAP">
+		SELECT 	/* ProgramID=biz.tech.mapif.im.PGIM0110Mapper.findCodesByGroupNo */
+			code 			AS code			/* 코드 */
+			,code_dc		AS codeDc		/* 코드설명 */
+			,code_group_no	AS codeGroupNo	/* 코드그룹번호 */
+			,code_nm		AS codeNm		/* 코드명 */
+		FROM	tb_cmmncode
+		WHERE	code_group_no = #{param}
+		AND		use_at = 'Y'
+		ORDER BY	outpt_ordr ASC
+	</select> -->
+     
+	<!-- 성장현황 - 현황 목록 개수 조회 -->
+	<select id="findTotalIdxInfoRowCnt" resultType="int">
+		SELECT 	/* ProgramID=biz.tech.mapif.im.PGIM0110Mapper.findTotalIdxInfoRowCnt */
+			COUNT(1)
+		FROM (
+			SELECT
+				STDYY
+				, CASE WHEN MNGMT_STLE = '기업(일반)' THEN '일반중견' ELSE '관계기업' END AS MNGMT_STLE
+				, 10 AS COL1
+				, 20 AS COL2
+				, 30 AS COL3
+				, 40 AS COL4
+				, 50 AS COL5
+				, 150 AS COL6
+			FROM	TB_ENTPRS_INFO
+			WHERE	1=1
+			AND		STDYY = <!-- #{sel_target_year} --> "2018"
+			GROUP BY	STDYY, MNGMT_STLE
+		) A
+	</select>
+	
+	<!-- 성장현황 - 현황 조회 -->
+	<select id="selectGrowthSttus" resultType="Map">
+		SELECT /* ProgramID=biz.tech.mapif.im.PGIM0110Mapper.selectGrowthSttus */
+			G_NUM, IFNULL(GUBUN,'전체') GUBUN, B_ENT, H_ENT, R_ENT, C_ENT, S_ENT, (B_ENT+H_ENT+R_ENT+C_ENT+S_ENT) AS SUM_ENT
+		FROM (
+			SELECT
+				1 AS G_NUM
+				, '전체' AS GUBUN
+				, IFNULL(SUM( CASE WHEN A.LTRS_AT = 'Y' THEN 1 else 0 end), 0) AS B_ENT
+				, IFNULL(SUM( CASE WHEN A.DCSN_HPE_AT = 'Y' THEN 1 else 0 end), 0) AS H_ENT
+				, IFNULL(SUM( CASE WHEN A.DCSN_RCPY_AT = 'Y' THEN 1 else 0 end), 0) AS R_ENT
+				, IFNULL(SUM( CASE WHEN A.SYS_HPE_AT = 'Y' OR A.SELNG_HPEC_AT = 'Y' OR A.RND_HPEC_AT = 'Y' THEN 1 else 0 end ), 0) AS C_ENT
+				, IFNULL(SUM( CASE WHEN IFNULL(A.LTRS_AT,'N') != 'Y' AND IFNULL(A.DCSN_HPE_AT,'N') != 'Y' AND IFNULL(A.SYS_HPE_AT,'N') != 'Y'
+					AND IFNULL(A.SELNG_HPEC_AT,'N') != 'Y' AND IFNULL(A.RND_HPEC_AT,'N') != 'Y' THEN 1 else 0 end ), 0) AS S_ENT
+		    FROM (
+		    	SELECT	STDYY, HPE_CD, JURIRNO, ENTRPRS_NM, LTRS_AT, DCSN_HPE_AT, DCSN_RCPY_AT, SYS_HPE_AT, SELNG_HPEC_AT, RND_HPEC_AT
+		    	FROM	TB_ENTPRS_INFO
+		    	WHERE	STDYY = "2017"
+		    	AND IFNULL(DCSN_RCPY_AT,'N') != 'Y'
+		    ) A, (
+		    	SELECT	STDYY, HPE_CD, JURIRNO, ENTRPRS_NM, LTRS_AT, DCSN_HPE_AT, DCSN_RCPY_AT, SYS_HPE_AT, SELNG_HPEC_AT, RND_HPEC_AT
+		    	FROM	TB_ENTPRS_INFO
+		    	WHERE	STDYY = "2018"
+		    	AND DCSN_HPE_AT='Y'
+		    ) B
+		 	WHERE	A.HPE_CD = B.HPE_CD
+		 	UNION	ALL
+		 
+		 	SELECT
+		 		3 AS G_NUM
+		 		, '일반중견' AS GUBUN
+		 		, IFNULL(SUM( CASE WHEN A.LTRS_AT = 'Y' THEN 1 else 0 end), 0) AS B_ENT
+		 		, IFNULL(SUM( CASE WHEN A.DCSN_HPE_AT = 'Y' THEN 1 else 0 end), 0) AS H_ENT
+		 		, IFNULL(SUM( CASE WHEN A.DCSN_RCPY_AT = 'Y' THEN 1 else 0 end), 0) AS R_ENT
+		 		, IFNULL(SUM( CASE WHEN A.SYS_HPE_AT = 'Y' OR A.SELNG_HPEC_AT = 'Y' OR A.RND_HPEC_AT = 'Y' THEN 1 else 0 end ), 0) AS C_ENT
+		 		, IFNULL(SUM( CASE WHEN IFNULL(A.LTRS_AT,'N') != 'Y' AND IFNULL(A.DCSN_HPE_AT,'N') != 'Y' AND IFNULL(A.SYS_HPE_AT,'N') != 'Y'
+		 			AND IFNULL(A.SELNG_HPEC_AT,'N') != 'Y' AND IFNULL(A.RND_HPEC_AT,'N') != 'Y' THEN 1 else 0 end ), 0) AS S_ENT
+		 	FROM (
+			    SELECT	STDYY, HPE_CD, JURIRNO, ENTRPRS_NM, LTRS_AT, DCSN_HPE_AT, DCSN_RCPY_AT, SYS_HPE_AT, SELNG_HPEC_AT, RND_HPEC_AT
+			    FROM	TB_ENTPRS_INFO
+			    WHERE	STDYY = "2017"
+		    ) A, (
+		    	SELECT	STDYY, HPE_CD, JURIRNO, ENTRPRS_NM, LTRS_AT, DCSN_HPE_AT, DCSN_RCPY_AT, SYS_HPE_AT, SELNG_HPEC_AT, RND_HPEC_AT
+		    	FROM	TB_ENTPRS_INFO
+		    	WHERE	STDYY = "2018"
+		    	AND		DCSN_HPE_AT = 'Y'
+		    ) B
+		    WHERE	A.HPE_CD = B.HPE_CD
+		    UNION	ALL
+		    
+		    SELECT
+		    	4 AS G_NUM
+		    	, '관계기업' AS GUBUN
+		    	, IFNULL(SUM( CASE WHEN A.LTRS_AT = 'Y' THEN 1 else 0 end), 0) AS B_ENT
+		    	, IFNULL(SUM( CASE WHEN A.DCSN_HPE_AT = 'Y' THEN 1 else 0 end), 0) AS H_ENT
+		    	, IFNULL(SUM( CASE WHEN A.DCSN_RCPY_AT = 'Y' THEN 1 else 0 end), 0) AS R_ENT
+		    	, IFNULL(SUM( CASE WHEN A.SYS_HPE_AT = 'Y' OR A.SELNG_HPEC_AT = 'Y' OR A.RND_HPEC_AT = 'Y' THEN 1 else 0 end ), 0) AS C_ENT
+		    	, IFNULL(SUM( CASE WHEN IFNULL(A.LTRS_AT,'N') != 'Y' AND IFNULL(A.DCSN_HPE_AT,'N') != 'Y' AND IFNULL(A.SYS_HPE_AT,'N') != 'Y'
+		    		AND IFNULL(A.SELNG_HPEC_AT,'N') != 'Y' AND IFNULL(A.RND_HPEC_AT,'N') != 'Y' THEN 1 else 0 end ), 0) AS S_ENT
+		    FROM (
+		    	SELECT	STDYY, HPE_CD, JURIRNO, ENTRPRS_NM, LTRS_AT, DCSN_HPE_AT, DCSN_RCPY_AT, SYS_HPE_AT, SELNG_HPEC_AT, RND_HPEC_AT
+			    FROM	TB_ENTPRS_INFO
+			    WHERE	STDYY = "2017"
+			) A, (
+		    	SELECT	STDYY, HPE_CD, JURIRNO, ENTRPRS_NM, LTRS_AT, DCSN_HPE_AT, DCSN_RCPY_AT, SYS_HPE_AT, SELNG_HPEC_AT, RND_HPEC_AT
+		    	FROM	TB_ENTPRS_INFO
+		    	WHERE	STDYY = "2018"
+		    	AND DCSN_RCPY_AT = 'Y'
+		    ) B
+		    WHERE	A.HPE_CD = B.HPE_CD
+		) X
+		GROUP BY	GUBUN
+		UNION		ALL
+		
+		SELECT
+			2 AS G_NUM
+			, GUBUN
+			, IFNULL(ROUND(B_ENT/(B_ENT+H_ENT+R_ENT+C_ENT+S_ENT)*100, 2),0) B_ENT
+			, IFNULL(ROUND(H_ENT/(B_ENT+H_ENT+R_ENT+C_ENT+S_ENT)*100, 2),0) H_ENT
+			, IFNULL(ROUND(R_ENT/(B_ENT+H_ENT+R_ENT+C_ENT+S_ENT)*100, 2),0) R_ENT
+			, IFNULL(ROUND(C_ENT/(B_ENT+H_ENT+R_ENT+C_ENT+S_ENT)*100, 2),0) C_ENT
+			, IFNULL(ROUND(S_ENT/(B_ENT+H_ENT+R_ENT+C_ENT+S_ENT)*100, 2),0) S_ENT
+			, CASE WHEN (B_ENT+H_ENT+R_ENT+C_ENT+S_ENT) = 0 OR (B_ENT+H_ENT+R_ENT+C_ENT+S_ENT)=NULL THEN 0 ELSE 100 END AS SUM_ENT
+		FROM (
+			SELECT
+				'(비중)' AS GUBUN
+				, IFNULL(SUM( CASE WHEN A.LTRS_AT = 'Y' THEN 1 else 0 end), 0) AS B_ENT
+		    	, IFNULL(SUM( CASE WHEN A.DCSN_HPE_AT = 'Y' THEN 1 else 0 end), 0) AS H_ENT
+		    	, IFNULL(SUM( CASE WHEN A.DCSN_RCPY_AT = 'Y' THEN 1 else 0 end), 0) AS R_ENT
+		    	, IFNULL(SUM( CASE WHEN A.SYS_HPE_AT = 'Y' OR A.SELNG_HPEC_AT = 'Y' OR A.RND_HPEC_AT = 'Y' THEN 1 else 0 end ), 0) AS C_ENT
+		    	, IFNULL(SUM( CASE WHEN IFNULL(A.LTRS_AT,'N') != 'Y' AND IFNULL(A.DCSN_HPE_AT,'N') != 'Y' AND IFNULL(A.SYS_HPE_AT,'N') != 'Y'
+		    		AND IFNULL(A.SELNG_HPEC_AT,'N') != 'Y' AND IFNULL(A.RND_HPEC_AT,'N') != 'Y' THEN 1 else 0 end ), 0) AS S_ENT
+			FROM (
+				SELECT	STDYY, HPE_CD, JURIRNO, ENTRPRS_NM, LTRS_AT, DCSN_HPE_AT, DCSN_RCPY_AT, SYS_HPE_AT, SELNG_HPEC_AT, RND_HPEC_AT
+			    FROM	TB_ENTPRS_INFO
+			    WHERE	STDYY = "2017"
+			    AND		IFNULL(DCSN_RCPY_AT,'N') != 'Y'
+		    ) A, (
+		    	SELECT	STDYY, HPE_CD, JURIRNO, ENTRPRS_NM, LTRS_AT, DCSN_HPE_AT, DCSN_RCPY_AT, SYS_HPE_AT, SELNG_HPEC_AT, RND_HPEC_AT
+			    FROM	TB_ENTPRS_INFO
+			    WHERE	STDYY = "2018"
+			    AND		DCSN_HPE_AT = 'Y'
+			) B
+			WHERE	A.HPE_CD = B.HPE_CD
+		) Y
+		ORDER BY	G_NUM
+	</select>
+	
+	<select id="selectGrowthSttusChart" resultType="Map">
+		SELECT /* ProgramID=biz.tech.mapif.im.PGIM0110Mapper.selectGrowthSttusChart */
+			G_NUM, ifnull(GUBUN,'전체') GUBUN, B_ENT, H_ENT, R_ENT, C_ENT, S_ENT, (B_ENT+H_ENT+R_ENT+C_ENT+S_ENT) AS SUM_ENT
+		FROM (
+			SELECT
+		 		3 AS G_NUM
+		 		, '일반중견' AS GUBUN
+		 		, IFNULL(SUM( CASE WHEN A.LTRS_AT = 'Y' THEN 1 else 0 end), 0) AS B_ENT
+		 		, IFNULL(SUM( CASE WHEN A.DCSN_HPE_AT = 'Y' THEN 1 else 0 end), 0) AS H_ENT
+		 		, IFNULL(SUM( CASE WHEN A.DCSN_RCPY_AT = 'Y' THEN 1 else 0 end), 0) AS R_ENT
+		 		, IFNULL(SUM( CASE WHEN A.SYS_HPE_AT = 'Y' OR A.SELNG_HPEC_AT = 'Y' OR A.RND_HPEC_AT = 'Y' THEN 1 else 0 end ), 0) AS C_ENT
+		 		, IFNULL(SUM( CASE WHEN IFNULL(A.LTRS_AT,'N') != 'Y' AND IFNULL(A.DCSN_HPE_AT,'N') != 'Y' AND IFNULL(A.SYS_HPE_AT,'N') != 'Y'
+		 			AND IFNULL(A.SELNG_HPEC_AT,'N') != 'Y' AND IFNULL(A.RND_HPEC_AT,'N') != 'Y' THEN 1 else 0 end ), 0) AS S_ENT
+		 	FROM (
+			    SELECT	STDYY, HPE_CD, JURIRNO, ENTRPRS_NM, LTRS_AT, DCSN_HPE_AT, DCSN_RCPY_AT, SYS_HPE_AT, SELNG_HPEC_AT, RND_HPEC_AT
+			    FROM	TB_ENTPRS_INFO
+			    WHERE	STDYY = "2017"
+		    ) A, (
+		    	SELECT	STDYY, HPE_CD, JURIRNO, ENTRPRS_NM, LTRS_AT, DCSN_HPE_AT, DCSN_RCPY_AT, SYS_HPE_AT, SELNG_HPEC_AT, RND_HPEC_AT
+		    	FROM	TB_ENTPRS_INFO
+		    	WHERE	STDYY = "2018"
+		    	AND		DCSN_HPE_AT = 'Y'
+		    ) B
+		    WHERE	A.HPE_CD = B.HPE_CD
+		    UNION	ALL
+		    
+		    SELECT
+		    	4 AS G_NUM
+		    	, '관계기업' AS GUBUN
+		    	, IFNULL(SUM( CASE WHEN A.LTRS_AT = 'Y' THEN 1 else 0 end), 0) AS B_ENT
+		    	, IFNULL(SUM( CASE WHEN A.DCSN_HPE_AT = 'Y' THEN 1 else 0 end), 0) AS H_ENT
+		    	, IFNULL(SUM( CASE WHEN A.DCSN_RCPY_AT = 'Y' THEN 1 else 0 end), 0) AS R_ENT
+		    	, IFNULL(SUM( CASE WHEN A.SYS_HPE_AT = 'Y' OR A.SELNG_HPEC_AT = 'Y' OR A.RND_HPEC_AT = 'Y' THEN 1 else 0 end ), 0) AS C_ENT
+		    	, IFNULL(SUM( CASE WHEN IFNULL(A.LTRS_AT,'N') != 'Y' AND IFNULL(A.DCSN_HPE_AT,'N') != 'Y' AND IFNULL(A.SYS_HPE_AT,'N') != 'Y'
+		    		AND IFNULL(A.SELNG_HPEC_AT,'N') != 'Y' AND IFNULL(A.RND_HPEC_AT,'N') != 'Y' THEN 1 else 0 end ), 0) AS S_ENT
+		    FROM (
+		    	SELECT	STDYY, HPE_CD, JURIRNO, ENTRPRS_NM, LTRS_AT, DCSN_HPE_AT, DCSN_RCPY_AT, SYS_HPE_AT, SELNG_HPEC_AT, RND_HPEC_AT
+			    FROM	TB_ENTPRS_INFO
+			    WHERE	STDYY = "2017"
+			) A, (
+		    	SELECT	STDYY, HPE_CD, JURIRNO, ENTRPRS_NM, LTRS_AT, DCSN_HPE_AT, DCSN_RCPY_AT, SYS_HPE_AT, SELNG_HPEC_AT, RND_HPEC_AT
+		    	FROM	TB_ENTPRS_INFO
+		    	WHERE	STDYY = "2018"
+		    	AND DCSN_RCPY_AT = 'Y'
+		    ) B
+		    WHERE	A.HPE_CD = B.HPE_CD
+		) X
+		ORDER BY	G_NUM
+	</select>
+
+</mapper>

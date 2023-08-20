@@ -1,0 +1,60 @@
+<!--conf
+<sample>
+               <product version="1.5" edition="pro"/>
+                       <modifications>
+                               <modified date="070101"/>
+                       </modifications>
+               </sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Keymap - excel</title>
+			<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+	<style>
+		div.gridbox_light table.obj tr.rowselected td.cellselected, div.gridbox table.obj td.cellselected {
+			background-color:#ACCADD;
+		}
+	</style>
+	
+</head>
+
+<body>
+	<h1>Keymap - excel</h1>
+	<p>There is an opportunity to set one of two keymaps: excel or access. Excel keymap is presented in the sample below:</p>
+	
+	<div id="gridbox"  style="width:600px; height:250px; background-color:white;overflow:hidden"></div>
+	<p> The excel keymap provides the following keys for navigation:<br/>
+		<ul>
+		<li>Up-Arrow / Down-Arrow - navigate to the cell in the next or previous row and select it,</li>
+		<li>Left-Arrow / Right-Arrow - navigate to the cell in the previous or next cell and select it,</li>
+		<li>ARROWS+Ctrl - move to the last/first cell in grid (column/row) -only if editor closed,</li>
+		<li>Page Up / Page Down - navigate to the top / bottom row or to the previous / next page (if paging is enabled),</li>
+		
+		<li>tab - moves one cell forward (close editor),</li>              
+		<li>tab+shift - move one cell backward (close editor),</li> 
+		<li>Enter - navigates to the next cell and select it,</li> 
+  		<li>enter+shift - move to cell above (close editor),</li>
+		<li>HOME - moves to the first cell of the row,</li>
+		etc.
+		</ul>
+	</p>
+
+<script>
+	mygrid = new dhtmlXGridObject('gridbox');
+	mygrid.setImagePath("../../../codebase/imgs/");
+	mygrid.setHeader("Sales,Book Title,Author,Price,In Store,Shipping");
+	mygrid.setInitWidths("60,150,100,80,80,80")
+	mygrid.enableAutoWidth(true)
+	mygrid.setColAlign("right,left,left,right,center,left")
+	mygrid.setColTypes("dyn,edtxt,ed,price,ch,co");
+	mygrid.enableMultiselect(true)
+	mygrid.init();
+	mygrid.loadXML("../common/100.xml");
+</script>
+
+</body>
+</html>

@@ -1,0 +1,100 @@
+@charset "utf-8"; /* top img */
+.menu01{background: url("../images/cs/top_img_cs.png") no-repeat; }
+
+/* 공지사항리스트 말줄임 */
+.list_zone table td.tw{width: 539px; }
+.list_zone table td.tw a{display: block;width: 539px;text-align:left;white-space:nowrap; overflow:hidden;text-overflow:ellipsis; }
+
+/* 공고리스트 말줄임 */
+.list_zone table td.tw{width: 500px; }
+.list_zone table td.tw a{display: block;width: 500px;text-align:left;white-space:nowrap; overflow:hidden;text-overflow:ellipsis; }
+
+/* 법령리스트 말줄임 */
+.list_zone table td.law{width: 440px; }
+.list_zone table td.law a{display: block;width: 380px;text-align:left;white-space:nowrap; overflow:hidden;text-overflow:ellipsis; }
+
+/* 보도,연구자료 말줄임 */
+.list_zone table td.data{width: 440px; }
+.list_zone table td.data a{display: block;width: 380px;text-align:left;white-space:nowrap; overflow:hidden;text-overflow:ellipsis; }
+
+/* 채용정보 말줄임 */
+.list_zone table td.job1{width: 140px; }
+.list_zone table td.job1 a{display: block;width: 140px;text-align:left;white-space:nowrap; overflow:hidden;text-overflow:ellipsis; }
+.list_zone table td.job2{width: 150px; }
+.list_zone table td.job2 a{display: block;width: 150px;text-align:left;white-space:nowrap; overflow:hidden;text-overflow:ellipsis; }
+
+/* 20150831 추가*/
+span.ico_k { background-image:url(../images/cs/icon_k.png); background-repeat:no-repeat; background-size: 12px; padding:1px 15px 2px 20px}/*기업정보*/
+span.ico_w { background-image:url(../images/cs/icon_w.png); background-repeat:no-repeat; background-size: 12px; padding:1px 15px 2px 20px}/*월드클래스300*/
+span.ico_a{ background-image:url(../images/cs/icon_a.png); background-repeat:no-repeat; background-size: 12px; padding:1px 15px 2px 20px}/*ATC*/
+span.ico_c { background-image:url(../images/cs/icon_c.png); background-repeat:no-repeat; background-size: 12px; padding:1px 15px 2px 20px}/*코스피*/
+span.ico_d { background-image:url(../images/cs/icon_d.png); background-repeat:no-repeat; background-size: 12px; padding:1px 15px 1px 20px}/*코스닥*/
+span.ico_i { background-image:url(../images/cs/icon_i.png); background-repeat:no-repeat; background-size: 12px; padding:1px 15px 1px 20px}/*입사지원*/
+
+/* 20160111 추가 : <span>테그에서 사용 */
+span.ico_k_2 { background-image:url(../images/cs/icon_k.png); background-repeat:no-repeat; background-size: 12px; padding:1px 10px 2px 10px}/*기업정보*/
+span.ico_w_2 { background-image:url(../images/cs/icon_w.png); background-repeat:no-repeat; background-size: 12px; padding:1px 10px 2px 10px}/*월드클래스300*/
+span.ico_a_2{ background-image:url(../images/cs/icon_a.png); background-repeat:no-repeat; background-size: 12px; padding:1px 10px 2px 10px}/*ATC*/
+span.ico_c_2 { background-image:url(../images/cs/icon_c.png); background-repeat:no-repeat; background-size: 12px; padding:1px 10px 2px 10px}/*코스피*/
+span.ico_d_2 { background-image:url(../images/cs/icon_d.png); background-repeat:no-repeat; background-size: 12px; padding:1px 10px 1px 10px}/*코스닥*/
+span.ico_i { background-image:url(../images/cs/icon_i.png); background-repeat:no-repeat; background-size: 12px; padding:1px 10px 1px 10px}/*입사지원*/
+.list_zone table td.job3 a{display: block;text-align:left;white-space:nowrap; overflow:hidden;text-overflow:ellipsis; }
+.ex_top{position: relative;border-bottom: 1px dotted #ccc;padding:5px; margin-bottom:10px; margin-top:20px }
+.fr a:hover{color: #416e98;text-decoration: underline;  }
+.mgb5 { margin-bottom:5px;}
+
+
+#rolling_b {  display:block; height:110px; margin-top:30px; position:relative}
+.ui-carousel { margin: 0; overflow: auto;}.ui-carousel > .wrapper { margin: 0; padding: 0; width: 9999px; }
+.ui-carousel > .wrapper > * { border: 0; display: block; float: left; overflow: hidden; }
+#carousel { margin: 0 auto; }
+#carousel img { border: 0px solid #ccc; }
+#ui-carousel-next, #ui-carousel-prev { width: 30px; height: 30px; background: url(../images/cs/arrow-left.png) #fff center center no-repeat; display: block;  z-index: 100; }
+#ui-carousel-next { margin-left:717px; margin-top:-50px; background-image: url(../images/cs/arrow-right.png); }
+#ui-carousel-prev {  margin-top:-30px; position:absolute}
+#ui-carousel-next > span, #ui-carousel-prev > span { display: none; }
+ 
+/* 사이트맵
+	--------------------------------------------------*/
+.sm_wrap{position: relative;margin-bottom: 50px; }
+.sm_wrap li{display: inline-block;width: 161px;margin-right: 30px;border-top: 2px solid #0072bc;font-family: "Dotum";color: #353535; }
+.sm_wrap li:last-child{margin-right: 0; }
+.sm_wrap li h4{font-size: 17px;margin: 6px 0 10px 10px; }
+.sm_wrap li > ul {border-top: 1px solid #c7ccdd;padding: 20px 0 0 0; }
+.sm_wrap li > ul > li{margin-left: 13px;line-height: 30px;border: 0;background: url("../images/ucm/bul01.png") left 12px no-repeat;padding-left: 13px; }
+.sm_wrap li.line_dif{border-top: 2px solid #82ca9c; }
+
+/* 채용--*/
+.introduction{position: relative;border-top: 1px solid #205e8d;padding-top: 22px;padding-bottom: 10px; }
+.search_top .inner table { vertical-align:middle; }
+.search_top .inner table tr td {padding:3px; vertical-align:middle}
+.search_top .inner table tr td span { margin-bottom:5px; margin-left:5px; display:inline-block}
+
+.detail_zone{position: relative; display:inline-block; width:98%; margin-top:10px;clear:both}
+.detail_left{ float:left; width:48%; margin-bottom:30px; }
+.detail_right{ float:right; width:48%; margin-bottom:30px; }
+
+.type_zone{position: relative; display:inline-block; width:98%; margin-top:10px;clear:both;}
+.type_1{float:left; width:31%; margin-bottom:30px; margin-right: 30px;}
+.type_2{float:left; width:31%; margin-bottom:30px; margin-right: 30px;}
+.type_3{float:left; width:31%; margin-bottom:30px; }
+
+.view_zone2{position: relative; display:inline-block; width:98%; margin-top:10px;clear:both}
+.table_view2{border-top: 2px solid #bfccd8;font-family:"Dotum"; border-bottom:1px solid #d8dfe3 }
+.table_view2 th{background: #e0edf7;text-align: center;font-size: 12px;color: #3e7087;padding: 5px;border-bottom: 1px solid #d8dfe3;text-align:left; padding-left:25px; }
+.table_view2 td{text-align: left;font-size: 12px;color: #353535;padding:5px;}
+.table_view2 td.none{text-align: left;font-size: 12px;color: #353535;padding:5px;border-right: 1px solid #d8dfe3;border-bottom: 1px solid #d8dfe3;border-left: 0px solid #d8dfe3; }
+.table_view2 td:last-child{}
+
+.btn_tar_zon{display: inline-block;margin-top: 2px; float:right}
+.btn_tar_zone .btn_search{background:url("../images/ucm/btn_search.png") 0 0  no-repeat;padding: 2px 21px 8px 32px; }
+h4 span{float: right;background: url("../images/ucm/bul03.png") left 5px no-repeat;font-size: 12px;color: #353535;font-weight: normal;padding-left: 13px;zoom:1; }
+
+
+/*가입완료*/
+.pop_imgbox{position: relative;border-bottom: 1px solid #c4c2c2;width:750px;height: 202px; margin-top:30px; display: block;background: url("../images/mb/bg_mem_img.png") repeat-x;margin: 55px 0 0 0;text-align: center}
+.pop_imgbox p{position: absolute;margin: 0px 0 0 110px;font-size: 11px;color: #aa4d10;font-family: "Dotum"; }
+.pop_imgbox .in_dot{}
+.pop_imgbox .ok ul{height: 140px;padding: 18px 0 0 251px;background: url("../images/cs/ok.png") 106px 13px no-repeat; }
+.pop_imgbox ul li{font-weight: bold;display: block;font-size: 14px;color: #26496a;margin-top:8px; text-align:left}
+.pop_imgbox ul li span{color: #0054a6;}

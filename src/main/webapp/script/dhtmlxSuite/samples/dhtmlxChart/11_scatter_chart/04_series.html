@@ -1,0 +1,95 @@
+<!--conf
+<sample>
+              <product version="3.5" edition="std"/>
+                     <modifications>
+                            <modified date="120731"/>
+                     </modifications>
+               </sample>
+ -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<title>Legend</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+	
+    <script src="../common/testdata.js"></script>
+
+</head>
+<body>
+    <div id="chartDiv" style="width:600px;height:250px;margin:20px;border:1px solid #ededed;"></div>
+    <script>
+        var colors = {"a":"#69ba00", "b": "#4aa397", "c": "#de619c"};
+        var borders = {"a":"#447900", "b": "#0a796a", "c": "#b7286c"};
+
+        var legendValues = [];
+        for(var t in colors)
+            legendValues.push({text:"Type "+t.toUpperCase(),color:colors[t]});
+
+	    chart =  new dhtmlXChart({
+            view:"scatter",
+			container:"chartDiv",
+	    	value:"#b1#",
+			xValue: "#a#",
+            yAxis:{
+                title:"Value B"
+            },
+            xAxis:{
+                title:"Value A"
+            },
+            item:{
+                radius:3,
+                type:"s",
+                borderColor:function(obj){
+                   return borders["a"]
+                },
+                borderWidth:2,
+                color:function(obj){
+                   return colors["a"]
+                }
+            },
+            legend:{
+				layout:"y",
+				width: 75,
+                margin:5,
+				align:"right",
+				valign:"middle",
+                marker:{
+                    type:"item"
+                },
+				values:legendValues
+			}
+        });
+        chart.addSeries({
+            value:"#b2#",
+            item:{
+                radius:3,
+                type:"s",
+                borderColor:function(obj){
+                    return borders["b"]
+                },
+                borderWidth:2,
+                color:function(obj){
+                    return colors["b"]
+                }
+            }
+        });
+        chart.addSeries({
+            value:"#b3#",
+            item:{
+                radius:3,
+                type:"s",
+                borderColor:function(obj){
+                    return borders["c"]
+                },
+                borderWidth:2,
+                color:function(obj){
+                    return colors["c"]
+                }
+            }
+        })
+		chart.parse(scatter_dataset2,"json");
+	</script>
+</body>
+</html>

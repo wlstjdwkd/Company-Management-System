@@ -1,0 +1,80 @@
+<!--conf
+<sample>
+              <product version="2.6" edition="std"/>
+                     <modifications>
+                            <modified date="100609"/>
+                     </modifications>
+               </sample>
+ -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<title>Scale</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+	
+	<script src="../common/testdata.js"></script>
+	<style>
+	.scale{
+		font-size: 11px
+	}
+	</style>
+
+	<script>
+	window.onload = function(){
+        var chart1 =  new dhtmlXChart({
+            view:"area",
+            container:"chart1",
+            value:"#sales#",
+            alpha:0.8,
+            color:"#36abee",
+            xAxis:{
+                template:"'#year#"
+            },
+            yAxis:{
+            }
+        });
+        chart1.parse(dataset,"json");
+
+        var chart2 =  new dhtmlXChart({
+            view:"area",
+            container:"chart2",
+            color:"#58dccd",
+            alpha:0.8,
+            value:"#sales#",
+            tooltip:{
+                template:"#sales#"
+            },
+            xAxis:{
+                template:"<span class='scale'>'#year#</span>",
+                title:"Year"
+            },
+            yAxis:{
+                start:0,
+                step:10,
+                end:100,
+                template:function(value){
+                    return "<span class='scale'>"+(value%20?"":value)+"</span>"
+                },
+                title:"Sales"
+            }
+        })
+        chart2.parse(dataset,"json");
+	}
+	</script>
+</head>
+<body >
+	<table>
+		<tr>
+			<td>Default</td>
+			<td>Custom scales</td>
+		</tr>
+		<tr>
+			<td><div id="chart1" style="width:400px;height:250px;border:1px solid #A4BED4;"></div></td>
+			<td><div id="chart2" style="width:400px;height:250px;border:1px solid #A4BED4;"></div></td>
+		</tr>
+	</table>
+</body>
+</html>
+

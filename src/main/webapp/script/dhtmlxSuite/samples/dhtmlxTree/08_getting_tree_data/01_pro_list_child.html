@@ -1,0 +1,53 @@
+<!--conf
+<sample>
+              <product version="1.5" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               </sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title> Lists of nodes</title>
+</head>
+
+<body>
+	<h1>Lists of nodes</h1>
+	<p>You can simply get the list of nodes with and without child items. Use the same methods in Grid and TreeGrid.</p>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+	<table>
+		<tr>
+			<td>
+				<div id="treeboxbox_tree" style="width:250px; height:218px;background-color:#f5f5f5;border :1px solid Silver;"></div>
+			</td>
+			<td rowspan="2" style="padding-left:25" valign="top">
+                <a href="#" onClick="alert(tree.getAllFatItems());">Get all nodes with child items</a><br/>
+                <a href="#" onClick="alert(tree.getAllLeafs());">Get all nodes without child items </a>
+			</td>
+		</tr>
+		
+	</table>
+
+	<script>
+
+
+			tree=new dhtmlXTreeObject("treeboxbox_tree","100%","100%",0);
+
+
+
+			tree.setSkin('dhx_skyblue');
+			tree.setImagePath("../../../codebase/imgs/dhxtree_skyblue/");
+			tree.enableSmartXMLParsing(true);
+			tree.enableCheckBoxes(true);
+			tree.enableDragAndDrop(true);
+			tree.enableThreeStateCheckboxes(true);
+			tree.loadXML("../common/tree.xml")
+	</script>
+<br><br>
+
+</body>
+</html>

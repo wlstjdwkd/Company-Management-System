@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="biz.tech.mapif.pc.PGPC0020Mapper">
+
+<!--데이터 최근년도 구하기 -->
+<select id="findMaxStdyy" resultType = "int">
+	SELECT 			/* ProgramID=biz.tech.mapif.pc.PGPC0020Mapper.findMaxStdyy */
+						MAX(STDYY_DO)								/* 데이터 최근 년도		*/
+	FROM STS_HPE_PHASE
+</select>
+
+<!-- 업종별 지표 정보 찾기 -->
+<select id = "findMlfscPoint" resultType="Map"> 
+	SELECT 	/* ProgramID=biz.tech.mapif.pc.PGPC0020Mapper.findMlfscPoint */
+				  SUM(ENTRPRS_CO)					AS entrprsCo						/*	기업수			*/
+				, SUM(XPORT_AM_DOLLAR)			AS xportAmDollar				/* 수출액달러		*/
+				, SUM(ORDTM_LABRR_CO)			AS ordtmLabrrCo					/*	상시근로자수	*/
+				, SUM(SELNG_AM)						AS selngAm						/*	매출액			*/
+	FROM STS_ENTCLS
+	<where>
+	<if test="C == 'CC' ">
+		AND INDUTY_CODE LIKE CONCAT ('C', '%')
+	</if>
+	<if test="C != 'CC' ">
+		AND INDUTY_CODE NOT LIKE CONCAT ('C', '%')
+	</if>
+	AND	ENTCLS = 'EA1'
+	AND STDYY_DO = #{stdyyDo}
+	</where>
+</select>
+
+<!--  업종별, 지역별 지표정보 찾기 -->
+<select id = "findCounPoint"  resultType = "Map">
+	SELECT	/* ProgramID=biz.tech.mapif.pc.PGPC0020Mapper.findCounPoint */
+					  a.ABRV												AS abrv									/*	지역명 약칭	*/
+					, ifnull(c.productEntrprsCo, 0)								AS productEntrprsCo				/*	제조기업수		*/
+					, ifnull(d.nEntrprsCo, 0)										AS nEntrprsCo							/* 비제조기업수	*/
+	FROM 	TB_AREA_DIV a
+	LEFT OUTER JOIN (																							/* 제조 기업 		*/
+				SELECT
+				   				  AREA_CODE 
+								,  SUM(ENTRPRS_CO)								AS		productEntrprsCo
+								,  SUM(XPORT_AM_DOLLAR)						AS		productXportAmDollar
+				FROM 			STS_ENTCLS 
+				WHERE 			INDUTY_CODE LIKE CONCAT ('C', '%')
+				AND	ENTCLS = 'EA1'
+				AND STDYY_DO = #{stdyyDo}
+				GROUP BY AREA_CODE
+	) c
+	ON		a.AREA_CODE = c.AREA_CODE
+	LEFT OUTER JOIN (																							/* 비제조 기업		*/
+				SELECT 
+				   					AREA_CODE
+								,  SUM(ENTRPRS_CO)								AS			nEntrprsCo
+								,  SUM(XPORT_AM_DOLLAR)						AS			nXportAmDollar
+				FROM 		STS_ENTCLS 
+				WHERE 		rtrim(substr(INDUTY_CODE, 1, 1)) != 'C'
+				AND	ENTCLS = 'EA1'
+				AND STDYY_DO = #{stdyyDo}
+				GROUP BY AREA_CODE
+	) d
+	ON		a.AREA_CODE = d.AREA_CODE
+	WHERE	UPPER_CODE LIKE CONCAT ('WC', '%')
+	order by abrv
+	
+</select>
+	
+<!-- 기업 규모별 지표 정보 찾기 -->
+<select id = "findEntrprSize" resultType = "Map" >
+	SELECT    /* ProgramID=biz.tech.mapif.pc.PGPC0020Mapper.findEntrprSize */
+				  a.HPE_VALUE									AS hpe										/* 	기업 지표		*/
+				, a.SMLPZ_VALUE									AS smlpz									/*	중소기업 지표		*/
+				, a.ALL_VALUE																						/* 합계					*/
+				, a.LTRS_VALUE									AS ltrs										/*	대기업 지표		*/
+	FROM STS_HPE_PHASE a
+	WHERE PHASE_IX = #{phaseIx}
+	AND STDYY_DO = #{stdyyDo}
+	
+</select>
+
+</mapper>

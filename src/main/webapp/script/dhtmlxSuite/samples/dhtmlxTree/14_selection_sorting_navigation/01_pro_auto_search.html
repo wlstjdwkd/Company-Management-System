@@ -1,0 +1,47 @@
+<!--conf
+<sample>
+              <product version="1.5" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               </sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title> Auto search</title>
+</head>
+
+<body>
+	<h1>Auto Search</h1>
+	<p>Just select any item in the tree and start typing, a tree item with name which you have typed will be selected. To restart the search use the backspace button.</p>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+	
+	<div id="treeboxbox_tree" style="width:250px; height:218px;background-color:#f5f5f5;border :1px solid Silver;; overflow:auto;"></div>
+			<br>
+    
+
+    Select any item in the tree and use the next keys:
+        <li>Up arrow - select upper item</li>
+        <li>Down arrow - select lower item</li>
+        <li>Right arrow - open item</li>
+        <li>Left arrow - close item</li>
+        <li>Enter - call item's action</li>
+	<script>
+			tree=new dhtmlXTreeObject("treeboxbox_tree","100%","100%",0);
+
+			tree.setSkin('dhx_skyblue');
+			tree.setImagePath("../../../codebase/imgs/dhxtree_skyblue/");
+			tree.enableSmartXMLParsing(true);
+            tree.enableDragAndDrop(true);
+            tree.enableKeyboardNavigation(true);
+            tree.enableKeySearch(true);
+			tree.loadXML("../common/tree3_14_selection_sorting_navigation.xml");
+	</script>
+
+
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!--conf
+<sample>
+              <product version="1.5" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               </sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Numeric filtering and master checkbox</title>	
+
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+<style>
+		div.gridbox div.ftr td{
+			text-align:right;
+			background-color:#E5F2F8;
+			border-right:0px solid gray;
+		}
+		div.gridbox_light table.hdr td {
+			text-align:center;
+		}
+	</style>
+</head>
+<body>
+	<h1>Numeric filtering and master checkbox</h1>
+<p> Grid provides filtering by a numeric value. Just try to enter value in the header. Setting special parameters in footer allows to process column's numeric data.<br/>
+Sample demonstates also the master checkbox in the header. Try to select checkbox and then all cells in a column will be checked, vice versa as well. 
+</p>
+	<div id="gridbox" style="width: 600px; height: 350px; background-color:white;"></div>
+<script>
+	mygrid = new dhtmlXGridObject('gridbox');
+	mygrid.setSkin("dhx_skyblue")
+	
+	mygrid.setImagePath("../../../codebase/imgs/");
+	mygrid.setHeader("Sales,Book Title,Author,Price,In Store,Shipping,Bestseller,Date of Publication");
+	mygrid.attachHeader("1,2,3,#numeric_filter,#master_checkbox,6,stat,8");
+	mygrid.setInitWidths("50,170,100,80,80,80,80,200")
+	mygrid.setColAlign("right,left,left,right,center,left,center,center")
+	mygrid.setColTypes("dyn,edtxt,ed,price,ch,co,ra,ro");
+
+	mygrid.init();
+	
+	mygrid.attachFooter(' ${#stat_total},Total sales,-,#cspan,#cspan,#cspan,#cspan,#cspan');
+	mygrid.attachFooter('{#stat_max},Max sales,-,#cspan,#cspan,#cspan,#cspan,#cspan');
+	mygrid.attachFooter('{#stat_min},Min sales,-,#cspan,#cspan,#cspan,#cspan,#cspan');
+	mygrid.attachFooter('{#stat_average},Average sales,-,#cspan,#cspan,#cspan,#cspan,#cspan');
+	mygrid.attachFooter('{#stat_count},Count of rows,-,#cspan,#cspan,#cspan,#cspan,#cspan');
+	mygrid.attachFooter('${#stat_multi_total}0:3,Total sum (Sales*Price),-,#cspan,#cspan,#cspan,#cspan,#cspan');
+	mygrid.loadXML("../common/grid_08_filtering.xml");
+</script>
+
+</body>
+</html>

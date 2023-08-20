@@ -1,0 +1,58 @@
+<!--conf
+<sample in_favorites="false">
+              <product version="1.4" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               </sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Paginal Output</title>
+	
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+</head>
+
+<script>
+	var mygrid;
+	function doOnLoad(){
+		mygrid = new dhtmlXGridObject('gridbox');
+		mygrid.setImagePath("../../../codebase/imgs/");
+		mygrid.setHeader("Column A, Column B");
+		mygrid.setInitWidths("300,*")
+		mygrid.setColAlign("right,left")
+		mygrid.setColTypes("ro,ed");
+		mygrid.setColSorting("str,str")
+		mygrid.enablePaging(true,10,3,"pagingArea",true,"recinfoArea");
+		mygrid.init();
+		mygrid.setSkin("dhx_skyblue")
+		mygrid.loadXML("../common/dynscroll.xml");
+	}
+</script>
+<body onLoad="doOnLoad()">
+	
+	<h1>Paginal Output</h1>
+	<p>	
+		In the sample below number of rows per page is set to 10 and number of pages per group is set to 3:<br>
+		
+	</p>
+	<table width="500">
+		<tr>
+			<td id="recinfoArea"></td>
+		</tr>
+		<tr>
+			<td>
+				<div id="gridbox" style="widht:100%; height:150px; background-color:white;overflow:hidden"></div>
+			</td>
+		</tr>
+		<tr>
+			<td id="pagingArea"></td>
+		</tr>
+	</table>
+
+</body>
+</html>

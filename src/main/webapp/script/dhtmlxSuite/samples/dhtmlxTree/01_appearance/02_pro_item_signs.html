@@ -1,0 +1,52 @@
+<!--conf
+<sample in_favorites="false">
+              <product version="1.5" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               </sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Item's sign and highlighting</title>
+</head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+<body>
+	<h1> Item's sign and highlighting</h1>
+	
+	<table>
+		<tr>
+			<td valign="top">
+				<div id="treeboxbox_tree" style="width:250px; height:218px;background-color:#f5f5f5;border :1px solid Silver;"></div>
+			</td>
+			<td style="padding-left: 25;" valign="top">
+				<p>To show/hide cross sign of any item in the tree you should select an item, then click on an appropriate action link.</p>
+				<a href="#" onclick="hide();">Hide item's cross sign</a><br>
+				<a href="#" onclick="show();">Show item's cross sign</a><br>
+			</td>
+		</tr>
+	</table>
+	
+	<p>There is the possibility to switch on item's highlighting feature - when it is on, item's label will be highlighted during the mouse over. To achieve this you should set the tree.enableHighlighting() method to true.</p>
+	<script>
+		tree = new dhtmlXTreeObject("treeboxbox_tree","100%","100%",0);
+		
+		tree.setSkin('dhx_skyblue');
+		tree.setImagePath("../../../codebase/imgs/dhxtree_skyblue/");
+		tree.enableHighlighting(true);
+		tree.loadXML("../common/tree.xml");
+		
+		function hide(){
+			tree.showItemSign(tree.getSelectedItemId(),false);
+		};
+		function show(){
+			tree.showItemSign(tree.getSelectedItemId(),true);
+		};
+	</script>
+	<br><br>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!--conf
+<sample>
+              <product version="1.4" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               </sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Multi selection</title>
+	
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+
+</head>
+
+<body>
+	
+	<h1>Multi selection</h1>
+	<p>You can enable multiselection mode in you grid by using enableMultiselect method.</p>
+	
+	<div id="gridbox" style="width:320px;height:270px;background-color:white;"></div>
+		
+<script>
+	mygrid = new dhtmlXGridObject('gridbox');
+	mygrid.setImagePath("../../../codebase/imgs/");
+	mygrid.setHeader("Author,Title");
+	mygrid.setInitWidths("150,150")
+	mygrid.setColAlign("left,left")
+	mygrid.setColTypes("ro,link");
+	mygrid.setColSorting("str,str");
+    mygrid.enableMultiselect(true);
+    mygrid.init();
+	mygrid.setSkin("dhx_skyblue");
+	mygrid.loadXML("../common/grid_links_ms.xml");
+</script>
+
+</body>
+</html>

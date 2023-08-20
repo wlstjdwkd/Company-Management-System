@@ -1,0 +1,90 @@
+<!--conf
+<sample>
+              <product version="1.4" edition="std"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               </sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Enable/Disable tooltips</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+</head>
+
+<body>
+	<h1>Enable/Disable tooltips</h1>
+	<p>You are allowed to enable/disable tooltip for any column in the grid:</p>
+	<table width="574">
+	  <tr>
+			<td>
+				<div id="gridbox" style="width:100%;height:270px;background-color:white;"></div>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			
+<br><br>
+Enable tooltips for the next columns:
+<br/>
+<input type='checkbox' id='c1' onclick='chTT()'> 1
+<input type='checkbox' id='c2' checked='true' onclick='chTT()'> 2
+<input type='checkbox' id='c3' checked='true' onclick='chTT()'> 3
+<input type='checkbox' id='c4' checked='true' onclick='chTT()'> 4
+<input type='checkbox' id='c5' checked='true' onclick='chTT()'> 5
+
+            </td>
+		</tr>
+	</table>
+<br>
+
+
+<script>
+function chTT(){
+    var z="";
+    if (document.getElementById("c1").checked)
+        z+="true,";
+    else
+        z+="false,";
+    if (document.getElementById("c2").checked)
+        z+="true,";
+    else
+        z+="false,";
+    if (document.getElementById("c3").checked)
+        z+="true,";
+    else
+        z+="false,";
+    if (document.getElementById("c4").checked)
+        z+="true,";
+    else
+        z+="false,";
+    if (document.getElementById("c5").checked)
+        z+="true,";
+    else
+        z+="false,";
+        alert(z);
+    mygrid.enableTooltips(z);
+}
+		mygrid = new dhtmlXGridObject('gridbox');
+
+		mygrid.selMultiRows = true;
+		mygrid.setImagePath("../../../codebase/imgs/");
+		mygrid.setHeader("Salse,Book Title,Author,Price,In Store");
+		mygrid.setInitWidths("50,150,120,100,*")
+		mygrid.setColAlign("right,left,left,left,center")
+		mygrid.setColTypes("dyn,ed,ed,price,ch");
+		mygrid.setColSorting("int,str,str,int,intr")
+		mygrid.init();
+		mygrid.setSkin("dhx_skyblue")
+        //disable tooltips for first column
+		mygrid.enableTooltips("false,true,true,true,true");
+     
+	   	mygrid.loadXML("../common/grid_16_rows_columns_manipulations.xml");
+</script>
+
+</body>
+</html>

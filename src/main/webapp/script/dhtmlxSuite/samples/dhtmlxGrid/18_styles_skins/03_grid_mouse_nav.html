@@ -1,0 +1,74 @@
+<!--conf
+<sample>
+               <product version="1.4" edition="std"/>
+                       <modifications>
+                               <modified date="070101"/>
+                       </modifications>
+               </sample>
+ --> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html XMlns="http://www.w3.org/1999/xhtml" XMl:lang="en" lang="en">
+
+<head>
+   	<title>Light mouse navigation</title>
+	
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+</head>
+
+<body>
+   
+   <h1>Light mouse navigation</h1>
+   <p>
+      You can enable/disable "light mouse navigation" mode<br />
+      The keyboard navigation can be disabled/enabled as well
+   </p>
+  
+   <table width="600">
+      <tr>
+         <td width="50%" valign="top">
+            <div id="gridbox" style="width:100%;height:270px;background-color:white;"></div>
+         </td>
+
+      </tr>
+      <tr>
+         <td>
+            <a href="#" onclick="mygrid.enableLightMouseNavigation(true)">enable light mouse navigation</a><br>
+            <a href="#" onclick="mygrid.enableLightMouseNavigation(false)">disabel light mouse navigation</a><br>
+             <a href="#" onclick="mygrid.enableKeyboardSupport(true)">enable hot keys</a><br>
+            <a href="#" onclick="mygrid.enableKeyboardSupport(false)">disable hot keys</a><br>
+                <div id="a_1"></div>
+         </td>
+      </tr>
+   </table>
+<br>
+
+
+<script>
+
+   function m_f2(id){
+        document.getElementById("a_1").innerHTML="Selected row: "+id;
+   }
+	
+   mygrid = new dhtmlXGridObject('gridbox');
+   mygrid.setImagePath("../../../codebase/imgs/");
+   mygrid.setHeader("Sales,Book Title,Author,Price,In Store,Shipping,Bestseller,Date of Publication");
+   mygrid.setInitWidths("50,150,120,80,80,80,80,200")
+   mygrid.setColAlign("right,left,left,right,center,left,center,center")
+   mygrid.setColTypes("dyn,ed,ed,price,ch,co,ra,ro");
+   mygrid.attachEvent("onRowSelect",m_f2);
+   mygrid.getCombo(5).put(2,2);
+   mygrid.setColSorting("int,str,str,int,str,str,str,date")
+   mygrid.init();
+   mygrid.enableLightMouseNavigation(true)
+   mygrid.setSkin("dhx_skyblue")
+   mygrid.loadXML("../common/grid.xml");
+
+</script>
+
+</body>
+</html>

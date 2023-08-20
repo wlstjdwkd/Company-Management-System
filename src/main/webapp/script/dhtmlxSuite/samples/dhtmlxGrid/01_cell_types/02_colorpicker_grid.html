@@ -1,0 +1,49 @@
+<!--conf
+<sample>
+               <product version="1.4" edition="std"/>
+                       <modifications>
+                               <modified date="070101"/>
+                       </modifications>
+               </sample>
+ --> 
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+	<title>Colorpicker eXcell</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+</head>
+<body>
+	<h1>Colorpicker eXcell</h1>
+	<p>There is possiblity in dhtmlxGrid to edit color of any cell using Colorpicker.</p>
+	<div id="gridbox" style="width:500px;height:160px;background-color:white;"></div>
+	<p>Current example also uses onCellEdit event handler to populate corresponding text cell with color value chosen with color picker and vice versa.</p>
+<script>
+	function doOnColorChanged(stage,rId,cIn){
+		if(stage==2){
+			if(cIn==0){
+				mygrid.cells(rId,1).setValue(mygrid.cells(rId,0).getValue())
+			}else if(cIn==1){
+				mygrid.cells(rId,0).setValue(mygrid.cells(rId,1).getValue())
+			}
+		}
+		return true;
+	}
+	mygrid = new dhtmlXGridObject('gridbox');
+	mygrid.setImagePath("../../../codebase/imgs/");
+	mygrid.setHeader("Color Name,Color");
+	mygrid.setInitWidths("80,*");
+	mygrid.setColAlign("left,center");
+	mygrid.setColTypes("ed,cp");
+	mygrid.setColSorting("str,str");
+	mygrid.attachEvent("onEditCell",doOnColorChanged);
+	mygrid.setSkin("dhx_skyblue");
+	mygrid.enableAutoHeight(true);
+	mygrid.init();
+	mygrid.loadXML("../common/colors.xml");
+</script>
+
+</body>
+</html>

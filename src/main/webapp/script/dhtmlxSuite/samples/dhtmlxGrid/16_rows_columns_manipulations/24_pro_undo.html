@@ -1,0 +1,58 @@
+<!--conf
+<sample in_favorites="false">
+              <product version="1.4" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               </sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Undo/Redo</title>
+	
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+	
+</head>
+
+<body onload='doOnLoad()'>
+	<h1>Undo/Redo</h1>
+	<p>Just edit any data in grid, and then you can check UNDO | REDO functionality which allows you to restore previous state of data.</p>
+	<table width="600px">
+		<tr>
+			<td width="50%" valign="top">
+				<div id="gridbox" style="width:100%;height:270px;background-color:white;"></div>
+			</td>
+		</tr>
+		<tr>
+			<td>
+                <div><input id='z1' type="button"  onclick='mygrid.doUndo();' value='Undo'></div>
+                <div><input id='z1' type="button"  onclick='mygrid.doRedo();' value='Redo'></div>
+                <div><input id='z1' type="button"  onclick='alert(mygrid.getRedo().length);' value='Get redo count'></div>
+                <div><input id='z1' type="button"  onclick='alert(mygrid.getUndo().length)' value='Get undo count'></div>
+			</td>
+		</tr>
+	</table>
+<br>
+<script>
+
+    function doOnLoad(){
+	mygrid = new dhtmlXGridObject('gridbox');
+	mygrid.setImagePath("../../../codebase/imgs/");
+	mygrid.setHeader("Sales,Book Title,Author,Price,In Store,Shipping,Bestseller,Date of Publication");
+	mygrid.setInitWidths("50,150,120,80,80,80,80,200")
+	mygrid.setColAlign("right,left,left,right,center,left,center,center")
+	mygrid.setColTypes("dyn,ed,ed,price,ch,co,ra,ro");
+	mygrid.setColSorting("int,str,str,int,str,str,str,date")
+	mygrid.init();
+	mygrid.setSkin("dhx_skyblue");
+   	mygrid.loadXML("../common/grid_16_rows_columns_manipulations.xml");
+    mygrid.enableUndoRedo();
+    }
+</script>
+
+</body>
+</html>

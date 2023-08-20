@@ -1,0 +1,65 @@
+<!--conf
+<sample in_favorites="true">
+              <product version="1.6" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               <sampledescription><![CDATA[Starting from v.1.6 dhtmlxTree officially supports loading from JSON object. See it in action.]]></sampledescription></sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+   <title> Different loading modes</title>
+</head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+<body>
+   <h1>Different loading modes</h1>
+   <p>To load the tree from JSON you need to have a JSON object or a file. </p>
+   <table>
+      <tr>
+         <td>
+            <div id="treeboxbox_tree" style="width:250px; height:218px;background-color:#f5f5f5;border :1px solid Silver;; overflow:auto;"/>
+         </td>
+         <td rowspan="2" style="padding-left:25" valign="top">
+<textarea id="a12" rows="8" cols="42">
+{id:0,item:[
+	{id:1,text:"1111"},
+	{id:2, text:"222222",item:[
+		{id:"21", text:"child"}]},
+	{id:3,text:"3333"}
+]}
+</textarea>
+		<br/>
+     	 <a href="javascript:void(0)" onClick="tree.deleteChildItems(0);  eval('var z='+document.getElementById('a12').value); tree.loadJSONObject(z);">
+reload from JSON object (textarea)
+</a>         <br/>
+<a href="javascript:void(0)" onClick="tree.deleteChildItems(0); tree.loadJSON('../common/data.json');">
+load from external JSON file
+</a>
+         </td>
+      </tr>
+   </table>
+       
+
+
+
+	<script>
+var tree = new dhtmlXTreeObject('treeboxbox_tree', '100%', '100%', 0); 
+tree.setSkin('dhx_skyblue');
+tree.setImagePath("../../../codebase/imgs/dhxtree_skyblue/");
+tree.enableDragAndDrop(true);
+tree.loadJSONObject({id:0, item:[{id:1,text:"1111"},{id:2, text:"222222", item:[{id:"21", text:"child"}]},{id:3,text:"3333"}]})
+	</script>
+	
+
+	<p>Format of JSON.
+		<br>{ id:ID, attributes.... , item:[ array of child objects ]}</br></p>
+	
+
+
+</body>
+</html>
+

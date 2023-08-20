@@ -1,0 +1,65 @@
+<!--conf
+<sample>
+              <product version="3.5" edition="std"/>
+                     <modifications>
+                            <modified date="120731"/>
+                     </modifications>
+               </sample>
+ -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<title>Legend</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+	
+    <script src="../common/testdata.js"></script>
+</head>
+<body>
+    <div id="chartDiv" style="width:600px;height:250px;margin:20px;border:1px solid #ededed;"></div>
+    <script>
+        var colors = {"Type A":"#69ba00", "Type B": "#4aa397", "Type C": "#de619c"};
+        var borders = {"Type A":"#447900", "Type B": "#0a796a", "Type C": "#b7286c"};
+
+        var legendValues = [];
+        for(var t in colors)
+            legendValues.push({text:t,color:colors[t]});
+
+	    chart =  new dhtmlXChart({
+            view:"scatter",
+			container:"chartDiv",
+	    	value:"#b#",
+			xValue: "#a#",
+            yAxis:{
+                title:"Value B"
+            },
+            xAxis:{
+                title:"Value A"
+            },
+            tooltip:{
+              template:"#a# - #b#"
+            },
+            item:{
+                radius:3,
+                type:"s",
+                borderColor:function(obj){
+                   return borders[obj.type]
+                },
+                borderWidth:2,
+                color:function(obj){
+                   return colors[obj.type]
+                }
+            },
+            legend:{
+				layout:"x",
+				width: 75,
+				align:"center",
+				valign:"top",
+				values:legendValues
+			}
+        });
+		chart.parse(scatter_dataset,"json");
+	</script>
+</body>
+</html>

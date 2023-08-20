@@ -1,0 +1,1032 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="_board">
+
+<!-- 
+==========================================================
+게시물 목록 날짜형식 				'%Y-%m-%d							 =
+========================================================== 
+-->
+
+	<!-- 게시물 목록용-->
+	<sql id="boardListBody">
+		SELECT A.BBS_CD   AS bbsCd,
+			   A.SEQ	  AS seq,
+			   A.REF_SEQ	AS refSeq,
+			   A.ORDER_NO 	AS orderNo,
+			   A.DEPTH		AS depth,
+			   A.CTG_CD		AS ctgCd,
+			   (SELECT CTG_NM FROM OP_BOARD_CTG WHERE BBS_CD = A.BBS_CD AND CTG_CD = A.CTG_CD) AS ctgNm,
+			   <!-- DECODE (A.NOTICE_YN, 'Y', 'Y', 'N') AS noticeYn, -->
+			   CASE A.NOTICE_YN
+			   	WHEN 'Y' THEN 'Y'
+			   	ELSE 'N'
+			   END AS noticeYn,
+			<if test="cutTitleNum != null  and cutTitleNum != ''">
+			   SUBSTRING(A.TITLE, 1, (#{cutTitleNum} * 2))	AS title,
+			</if>
+			<if test="cutTitleNum == null or cutTitleNum == ''">
+			   A.TITLE		AS title,
+			</if>
+			   LENGTH(A.TITLE) AS titleLength,
+			   CASE WHEN A.BBS_CD IN(1009,1010,1011,1012)<!-- 이미지파일의 내용을 가져와 느려지는 것을 방지 -->
+			        THEN NULL
+			        ELSE A.CONTENTS	
+			    END 		AS contents,
+			   A.SUMMARY	AS summary,
+			   A.FILE_SEQ	AS fileSeq,
+			   A.READ_CNT	AS readCnt,
+			   A.SCORE_SUM	AS scoreSum,
+			   A.SCORE_CNT	AS scoreCnt,
+			   A.ACCUSE_CNT	AS accuseCnt,
+			   A.RECOM_CNT	AS recomCnt,
+			   A.IP_ADDR	AS ipAddr,
+			   A.AGENT		AS agent,
+			   A.OPEN_YN	AS openYn,
+			   A.BAN_YN		AS banYn,
+			   <!-- DECODE(A.REG_PWD, '', 'N', 'Y') AS regPwd, -->
+			   CASE A.REG_PWD
+			   	WHEN '' THEN 'N'
+			   	ELSE 'Y'
+			   END AS regPwd,
+			   A.REG_NM		AS regNm,
+			   A.REG_ID		AS regId,
+			   A.USER_KEY	AS userKey,
+			   <!-- TO_CHAR(TO_DATE(A.REG_DT, 'YYYYMMDDHH24MISS'), 'YYYY/MM/DD') AS regDt, -->
+			   DATE_FORMAT(A.REG_DT, '%Y-%m-%d') AS regDt,
+			   A.MOD_ID		AS modId,
+			   <!-- TO_CHAR(TO_DATE(A.MOD_DT, 'YYYYMMDDHH24MISS'), 'YYYY/MM/DD') AS modDt, -->
+			   DATE_FORMAT(A.MOD_DT, '%Y-%m-%d') AS modDt,
+			   A.MGR_ID		AS mgrId,
+			   A.MGR_NM		AS mgrNm,
+			   A.DEPT_CD 	AS deptCd,
+			   A.DEPT_NM	AS deptNm,
+			   <!-- TO_CHAR(TO_DATE(A.REPLY_DT, 'YYYYMMDDHH24MISS'),'YYYY/MM/DD') AS replyDt, -->
+			   DATE_FORMAT(STR_TO_DATE(A.REPLY_DT, 'YYYY%m%dHH24MISS'), '%Y-%m-%d') AS replyDt,
+			   <!-- TRUNC(TO_DATE(TO_CHAR(SYSDATE, 'YYYYMMDD'), 'YYYYMMDD')) - TRUNC(TO_DATE(SUBSTR(A.REG_DT, 1, 8), 'YYYYMMDD')) AS passDay, -->
+			   <!-- TRUNCATE(STR_TO_DATE(DATE_FORMAT(SYSDATE, 'YYYYMMDD'), 'YYYYMMDD')) - TRUNCATE(STR_TO_DATE(SUBSTR(A.REG_DT, 1, 8), 'YYYYMMDD')) AS passDay, -->
+			   A.EXT_COLUMN1 AS extColumn1,
+			   A.EXT_COLUMN2 AS extColumn2,
+			   A.EXT_COLUMN3 AS extColumn3,
+			   A.EXT_COLUMN4 AS extColumn4,
+			   A.EXT_COLUMN5 AS extColumn5,
+			   A.EXT_COLUMN6 AS extColumn6,
+			   A.EXT_COLUMN7 AS extColumn7,
+			   A.EXT_COLUMN8 AS extColumn8,
+			   A.EXT_COLUMN9 AS extColumn9,
+			   A.EXT_COLUMN10 AS extColumn10,
+			   A.MGR_DEL_YN	 AS mgrDelYn,
+			   (SELECT BBS_NM FROM OP_BOARD_CONF WHERE BBS_CD = A.MOVE_BBS_CD) AS moveBbsNm			   
+		  		FROM OP_BOARD A
+		  	<if test="q_searchType != null  and q_searchType != ''">
+		  		<if test="q_searchType == 1005">
+				, OP_BOARD_TAG B
+				</if>
+			</if>
+		 	WHERE A.BBS_CD = #{bbsCd}
+			<if test="q_searchType != null  and q_searchType != ''">
+				<if test="q_searchType == 1005">
+				AND A.BBS_CD = B.BBS_CD
+				AND A.SEQ = B.SEQ
+				</if>
+			</if>
+	</sql>
+	
+	<!-- 검색 (searchType에 따라서 조건이 변경됨)-->
+	<sql id="searchDynamic">
+		<trim>
+			<if test="q_ctgCd != null  and q_ctgCd != ''">
+				AND A.CTG_CD = #{q_ctgCd}
+			</if>
+			<if test="q_searchVal != null  and q_searchVal != ''">
+				<if test="q_searchType == 1001">
+					AND A.${q_searchKey} = #{q_searchVal}
+				</if>
+				<if test="q_searchType == 1002">
+				   AND A.${q_searchKey} LIKE <!-- '%' || #{q_searchVal} || '%' -->CONCAT('%', #{q_searchVal}, '%')
+				</if>
+				<if test="q_searchType == 1003">
+				   AND A.${q_searchKey} &lt;= #{q_searchVal}
+				</if>
+				<if test="q_searchType == 1004">
+				   AND A.${q_searchKey} &gt;= #{q_searchVal}
+				</if>
+				<if test="q_searchType == 1005">
+					AND B.TAG_NM = #{q_searchVal}
+				</if>
+				<if test="q_searchType == 1006">
+					AND A.${q_searchKey} LIKE <!-- '%' || #{q_searchVal} || '%' -->CONCAT('%', #{q_searchVal}, '%')
+				</if>
+			</if>
+			<if test='banYn != null  and banYn != "" and banYn == "N"'>
+				AND A.BAN_YN = 'N'
+			</if>
+			<if test="q_startDt != null  and q_startDt != ''">
+				AND A.REG_DT &gt;= #{q_startDt}
+			</if>
+			<if test="q_endDt != null  and q_endDt != ''">
+				AND A.REG_DT &lt;= #{q_endDt}
+			</if>
+			<if test="extColumn3 != null and extColumn3 != ''">
+				AND A.EXT_COLUMN3 = #{extColumn3}
+			</if>
+			<if test="userKey != null">
+				AND A.REG_ID = #{userKey}
+			</if>
+			<if test="q_pjtStartDt != null  and q_pjtStartDt != '' and q_pjtEndDt != null  and q_pjtEndDt != '' and q_dateType != null and q_dateType != ''">
+				<if test="q_dateType == 'regDt'"> AND A.REG_DT &gt;= #{q_pjtStartDt} AND A.REG_DT &lt;= #{q_pjtEndDt}</if>
+				<if test="q_dateType == 'replyDt'"> AND A.REPLY_DT &gt;= #{q_pjtStartDt} AND A.REPLY_DT &lt;= #{q_pjtEndDt}</if>
+			</if>
+			<if test="q_sttsType != null and q_sttsType != ''">
+				AND A.EXT_COLUMN1 = #{q_sttsType}
+			</if>
+			<if test="excludeOpenN != null and excludeOpenN == &quot;Y&quot;">
+				AND A.OPEN_YN = 'Y'
+			</if>
+		</trim>
+	</sql>
+
+	<!-- 공지글을 포함하지 않는 정렬 -->
+	<sql id="sortDynamic">
+		<trim>
+			<if test="q_sortName != null  and q_sortName != ''">
+			   <if test="q_sortName == 'ROWNUM'">
+				   ORDER BY A.REF_SEQ ${q_sortOrder}, A.ORDER_NO ASC
+			   </if>
+               <if test="q_sortName != 'ROWNUM'">
+                  ORDER BY A.${q_sortName} ${q_sortOrder}, A.REG_DT DESC
+               </if>
+			</if>
+			<if test="q_sortName == null or q_sortName == ''">
+				ORDER BY A.REG_DT DESC, A.REF_SEQ DESC, A.ORDER_NO ASC
+			</if>
+		</trim>
+	</sql>
+
+	<!-- 공지글을 포함한 정렬 -->
+    <sql id="sortDynamicAll">
+        <trim>
+            <if test="q_sortName != null  and q_sortName != ''">
+               <if test="q_sortName == 'ROWNUM'">
+                   ORDER BY A.NOTICE_YN DESC, A.REF_SEQ ${q_sortOrder}, A.ORDER_NO
+               </if>
+               <if test="q_sortName != 'ROWNUM'">
+                  ORDER BY A.${q_sortName} ${q_sortOrder}, A.REG_DT DESC
+               </if>
+            </if>
+            <if test="q_sortName == null or q_sortName == ''">
+                ORDER BY A.NOTICE_YN DESC, A.REG_DT DESC, A.REF_SEQ DESC, A.ORDER_NO ASC
+            </if>
+        </trim>
+    </sql>
+
+	<!-- 공지글이 아닌 게시물 목록 -->
+	<select id="boardList" parameterType="egovframework.board.admin.BoardVO" resultType="egovframework.board.admin.BoardVO">
+		/* 인트라 게시물 목록(공지글 미포함) */
+		SELECT
+			Z.*
+			, (SELECT COUNT(F.ORDER_NO)
+				  FROM OP_FILE F
+				 WHERE F.FILE_SEQ = Z.fileSeq) AS fileCnt
+			, (SELECT COUNT(C.BBS_CD)
+				  FROM OP_BOARD_CMT C
+				 WHERE C.BBS_CD = #{bbsCd}
+				   AND C.SEQ = Z.seq) AS commentCnt
+		FROM (
+			SELECT Y.* FROM (
+				SELECT <!-- ROWNUM NUM,  -->X.* FROM (
+				<include refid="boardListBody"/>
+				<trim>
+					<if test="noticeYn != null  and noticeYn != ''">
+						AND A.NOTICE_YN = 'N'
+					</if>
+				</trim>
+				<include refid="searchDynamic"/>
+				<trim><!-- 도메인코드 -->
+					<if test="extColumn3 != null and extColumn3 != ''">
+						AND A.EXT_COLUMN3 = #{extColumn3}
+					</if>
+					<if test="extColumn1 != null and extColumn1 != ''">
+						AND A.EXT_COLUMN1 = #{extColumn1}
+					</if>
+				</trim>
+				<include refid="sortDynamic"/>
+				) X
+				<!-- WHERE ROWNUM &lt;= #{pagingEndNum} -->
+		 	) Y
+		 	<!-- WHERE NUM &gt;= #{pagingStartNum} --> 
+		 ) Z
+		 LIMIT #{limitFrom}, #{limitTo}
+	</select>
+	
+	<!-- 공지글 목록 -->
+	<select id="noticeList" parameterType="egovframework.board.admin.BoardVO" resultType="egovframework.board.admin.BoardVO">
+		SELECT
+			Z.*
+			, (SELECT COUNT(F.ORDER_NO)
+				  FROM OP_FILE F
+				 WHERE F.FILE_SEQ = Z.fileSeq) AS fileCnt
+			, (SELECT COUNT(C.BBS_CD)
+				  FROM OP_BOARD_CMT C
+				 WHERE C.BBS_CD = #{bbsCd}
+				   AND C.SEQ = Z.seq) AS commentCnt
+		FROM (
+			SELECT Y.* FROM (
+				SELECT <!-- ROWNUM NUM,  -->X.* FROM (
+					<include refid="boardListBody"/>
+					   AND A.NOTICE_YN = 'Y'
+					<include refid="searchDynamic"/>
+					  ORDER BY A.REF_SEQ DESC, A.ORDER_NO
+					) X
+				<!-- WHERE ROWNUM &lt;= #{pagingEndNum} -->
+			 ) Y
+			 <!-- WHERE NUM &gt;= #{pagingStartNum} --> 
+		) Z 
+		ORDER BY refSeq DESC, orderNo ASC
+		LIMIT #{limitFrom}, #{limitTo}
+	</select>
+	
+	<!-- 게시물 갯수 페이져용 -->
+	<select id="boardListCount" parameterType="egovframework.board.admin.BoardVO" resultType="int">
+		SELECT COUNT(A.SEQ) AS totalCount
+		  FROM OP_BOARD A
+		<if test="q_searchType != null  and q_searchType != ''">
+			<if test="q_searchType == 1005">
+				, OP_BOARD_TAG B
+			</if>
+		</if>
+		 WHERE A.BBS_CD = #{bbsCd}
+		 <if test="q_searchType != null  and q_searchType != ''">
+			<if test="q_searchType == 1005">
+				AND A.BBS_CD = B.BBS_CD
+				AND A.SEQ = B.SEQ
+			</if>
+		</if>
+		   AND A.NOTICE_YN = #{noticeYn}
+		   <include refid="searchDynamic"/>
+		   <trim><!-- 도메인코드 -->
+				<if test="extColumn3 != null and extColumn3 != ''">
+					AND A.EXT_COLUMN3 = #{extColumn3}
+				</if>
+				<if test="extColumn1 != null and extColumn1 != ''">
+					AND A.EXT_COLUMN1 = #{extColumn1}
+				</if>
+			</trim>
+	</select>
+
+
+<!-- 
+==========================================================
+게시물 상세보기											 =
+========================================================== 
+-->
+	
+	<!-- 게시물 보기 -->
+	<select id="boardView" parameterType="egovframework.board.admin.BoardVO" resultType="egovframework.board.admin.BoardVO">
+		/* 인트라 게시물 상세보기 */
+		SELECT A.BBS_CD			AS bbsCd,
+			   A.SEQ			AS seq,
+			   A.REF_SEQ		AS refSeq,
+			   A.ORDER_NO		AS orderNo,
+			   A.DEPTH			AS depth,
+			   A.CTG_CD			AS ctgCd,
+			   (SELECT CTG_NM FROM OP_BOARD_CTG WHERE BBS_CD = A.BBS_CD AND CTG_CD = A.CTG_CD) AS ctgNm,
+			   <!-- DECODE(A.NOTICE_YN, 'Y', 'Y', 'N') AS noticeYn, -->
+			   CASE A.NOTICE_YN
+			   	WHEN 'Y' THEN 'Y'
+			   	ELSE 'N'
+			   END AS noticeYn,
+			   A.TITLE			AS title,
+			   A.CONTENTS		AS contents,
+			   A.SUMMARY		AS summary,
+			   A.REPLY_CONTENTS AS replyContents,
+			   <!-- TO_CHAR(TO_DATE(A.REPLY_DT, 'YYYYMMDDHH24MISS'),'YYYY-MM-DD HH24:MI:SS') AS replyDt, -->
+			   DATE_FORMAT(STR_TO_DATE(A.REPLY_DT, 'YYYY%m%dHH24MISS'), '%Y-%m-%d %H:%i:%s') AS replyDt,
+			   A.FILE_SEQ		AS fileSeq,
+			   A.READ_CNT		AS readCnt,
+			   A.RECOM_CNT		AS recomCnt,
+			   A.ACCUSE_CNT		AS accuseCnt,
+			   A.SCORE_CNT		AS scoreCnt,
+			   A.SCORE_SUM		AS scoreSum,
+			   A.IP_ADDR		AS ipAddr,
+			   A.AGENT			AS agent,
+			   A.OPEN_YN		AS openYn,
+			   A.BAN_YN			AS banYn,
+			   A.REG_ID			AS regId,
+			   A.REG_NM			AS regNm,
+			   A.REG_PWD		AS regPwd,
+			   A.MOD_ID			AS modId,
+			   <!-- (SELECT MGR_NM FROM OP_MGR WHERE MGR_ID = A.MOD_ID) AS modNm, -->
+			   <!-- TO_CHAR(TO_DATE(A.REG_DT, 'YYYYMMDDHH24MISS'), 'YYYY-MM-DD HH24:MI:SS') AS regDt, -->
+			   DATE_FORMAT(A.REG_DT, '%Y-%m-%d %H:%i:%s') AS regDt,
+			   <!-- TO_CHAR(TO_DATE(A.MOD_DT, 'YYYYMMDDHH24MISS'), 'YYYY-MM-DD HH24:MI:SS') AS modDt, -->
+			   DATE_FORMAT(A.MOD_DT, '%Y-%m-%d %H:%i:%s') AS modDt,
+			   A.MGR_ID			AS mgrId,
+			   A.DEPT_CD 		AS deptCd,
+			   A.DEPT_NM		AS deptNm,
+			   A.MGR_NM			AS mgrNm,
+			   A.EXT_COLUMN1	AS extColumn1,
+			   A.EXT_COLUMN2	AS extColumn2,
+			   A.EXT_COLUMN3	AS extColumn3,
+			   A.EXT_COLUMN4	AS extColumn4,
+			   A.EXT_COLUMN5	AS extColumn5,
+			   A.EXT_COLUMN6	AS extColumn6,
+			   A.EXT_COLUMN7	AS extColumn7,
+			   A.EXT_COLUMN8	AS extColumn8,
+			   A.EXT_COLUMN9	AS extColumn9,
+			   A.EXT_COLUMN10	AS extColumn10,
+			   (SELECT COUNT(BBS_CD)
+				  FROM OP_BOARD_CMT
+				 WHERE BBS_CD = #{bbsCd}
+				   AND SEQ = A.SEQ) AS commentCnt,
+			   A.MGR_DEL_YN		AS mgrDelYn,
+			   (SELECT BBS_NM FROM OP_BOARD_CONF WHERE BBS_CD = A.MOVE_BBS_CD) AS moveBbsNm,
+			   A.CELL_PHONE AS cellPhone,
+			   A.EMAIL_ADDR AS emailAddr,
+			   A.ANS_FILE_SEQ		AS ansFileSeq
+		  FROM OP_BOARD A
+		 WHERE A.BBS_CD = #{bbsCd}
+		   AND A.SEQ = #{seq}
+	</select>
+	
+	<!-- 다음글 -->
+	<select id="boardNextView" parameterType="egovframework.board.admin.BoardVO" resultType="egovframework.board.admin.BoardVO">
+		/* 인트라 게시물 다음글 */
+		SELECT Z.BBS_CD	AS bbsCd,
+			   Z.TITLE	AS title,
+			   Z.SEQ	AS seq,
+			   Z.OPEN_YN AS openYn,
+			   Z.REG_PWD AS regPwd,
+			   Z.MGR_DEL_YN AS mgrDelYn,
+			   (SELECT BBS_NM FROM OP_BOARD_CONF WHERE BBS_CD = Z.MOVE_BBS_CD) AS moveBbsNm,
+			   (SELECT COUNT(F.ORDER_NO) FROM OP_FILE F WHERE F.FILE_SEQ = Z.FILE_SEQ) AS fileCnt,
+			   (SELECT COUNT(C.BBS_CD) FROM OP_BOARD_CMT C WHERE C.BBS_CD = #{bbsCd} AND C.SEQ = Z.seq) AS commentCnt,
+			   PASS_DAY AS passDay
+		  FROM (<include refid="boardSimpleList"/>) Z
+		 WHERE Z.POS = ( SELECT (X.POS-1)
+						   FROM (<include refid="boardSimpleList"/>) X
+						  WHERE X.SEQ = #{seq}
+							AND X.BBS_CD = #{bbsCd} )
+		<if test="userKey != null">
+			AND Z.REG_ID = #{userKey}
+		</if>
+	</select>
+
+	<!-- 이전글 -->
+	<select id="boardPrevView" parameterType="egovframework.board.admin.BoardVO" resultType="egovframework.board.admin.BoardVO">
+		/* 인트라 게시물 이전글 */
+		SELECT Z.BBS_CD	AS bbsCd,
+			   Z.TITLE	AS title,
+			   Z.SEQ	AS seq,
+			   Z.OPEN_YN AS openYn,
+			   Z.REG_PWD AS regPwd,
+			   Z.MGR_DEL_YN AS mgrDelYn,
+			   (SELECT BBS_NM FROM OP_BOARD_CONF WHERE BBS_CD = Z.MOVE_BBS_CD) AS moveBbsNm,
+			   (SELECT COUNT(F.ORDER_NO) FROM OP_FILE F WHERE F.FILE_SEQ = Z.FILE_SEQ) AS fileCnt,
+			   (SELECT COUNT(C.BBS_CD) FROM OP_BOARD_CMT C WHERE C.BBS_CD = #{bbsCd} AND C.SEQ = Z.seq) AS commentCnt,
+			   PASS_DAY AS passDay
+		  FROM (<include refid="boardSimpleList"/>) Z
+		 WHERE Z.POS = ( SELECT (X.POS+1)
+						   FROM (<include refid="boardSimpleList"/>) X
+						  WHERE X.SEQ = #{seq}
+							AND X.BBS_CD = #{bbsCd} )
+		<if test="userKey != null">
+			AND Z.REG_ID = #{userKey}
+		</if>
+	</select>
+	
+	<!-- 다음글/이전글용 -->
+	<sql id="boardSimpleList">
+		SELECT BBS_CD, SEQ, TITLE, MGR_DEL_YN, MOVE_BBS_CD, OPEN_YN, REG_PWD, FILE_SEQ, PASS_DAY, REG_ID, @rownum:=@rownum+1 POS<!-- ROWNUM AS POS -->
+		  FROM (SELECT A.BBS_CD,
+						  A.TITLE,
+						  A.SEQ,
+						  A.OPEN_YN,
+						  A.REG_PWD,
+						  A.MGR_DEL_YN,
+						  A.MOVE_BBS_CD,
+						  A.FILE_SEQ,
+						  <!-- TRUNC(TO_DATE(TO_CHAR(SYSDATE, 'YYYYMMDD'), 'YYYYMMDD')) - TRUNC(TO_DATE(SUBSTR(A.REG_DT, 1, 8), 'YYYYMMDD')) AS PASS_DAY -->
+						  DATE(STR_TO_DATE(DATE_FORMAT(SYSDATE(), '%Y%m%d'), 'YYYY%m%d')) - DATE(DATE_FORMAT(A.REG_DT, 'YYYY%m%d')) AS PASS_DAY,
+						  A.REG_ID
+				  FROM OP_BOARD A
+				<if test="q_searchType != null  and q_searchType != ''">
+					<if test="q_searchType == 1005">
+						, OP_BOARD_TAG B
+					</if>
+				</if>
+				 WHERE A.BBS_CD	 = #{bbsCd}
+				   AND A.NOTICE_YN	= #{noticeYn}
+				<if test="q_searchType != null  and q_searchType != ''">
+					<if test="q_searchType == 1005">
+						AND A.BBS_CD = B.BBS_CD
+						AND A.SEQ = B.SEQ
+					</if>
+				</if>
+						<include refid="searchDynamic"/>
+					   	<if test="extColumn3 != null and extColumn3 != ''">
+							AND A.EXT_COLUMN3 = #{extColumn3}
+						</if>
+					   	<include refid="sortDynamic"/>
+		) C, (SELECT @rownum:=0) TMP
+	</sql>
+
+<!-- 
+==========================================================
+게시물 등록,수정,삭제									 =
+========================================================== 
+-->
+	<!-- 게시물 반복 등록 검사-->
+	<select id="boardRepeatInsertCheck" parameterType="egovframework.board.admin.BoardVO" resultType="int">
+		SELECT
+			COUNT(*) AS COUNT
+		FROM
+			OP_BOARD
+		WHERE
+				BBS_CD = #{bbsCd}
+			AND	TITLE = #{title}
+			AND REG_ID = #{regId}
+			AND DATE_FORMAT(REG_DT,'%Y%m%d') = DATE_FORMAT(SYSDATE(),'%Y%m%d')
+	</select>
+	
+	<!-- 게시물 첫번째 자식-->
+	<select id="boardMinChildNode" parameterType="egovframework.board.admin.BoardVO" resultType="egovframework.board.admin.BoardVO">
+		SELECT
+			BBS_CD AS bbsCd,
+			SEQ AS seq,
+			REF_SEQ AS refSeq,
+			ORDER_NO AS orderNo,
+			DEPTH AS depth
+		FROM
+			OP_BOARD
+		WHERE
+				BBS_CD = #{bbsCd}
+			AND REF_SEQ = #{refSeq}
+			AND ORDER_NO = 
+				(SELECT ifnull(MIN(ORDER_NO), #{orderNo}) FROM OP_BOARD
+					WHERE BBS_CD = #{bbsCd} AND REF_SEQ = #{refSeq}
+						AND ORDER_NO &gt; #{orderNo}
+						AND DEPTH = (#{depth} - 1) )
+	</select>
+	
+	<!-- 게시물 마지막 자식-->
+	<select id="boardMaxChildNode" parameterType="egovframework.board.admin.BoardVO" resultType="egovframework.board.admin.BoardVO">
+		SELECT
+			BBS_CD AS bbsCd,
+			SEQ AS seq,
+			REF_SEQ AS refSeq,
+			ORDER_NO AS orderNo,
+			DEPTH AS depth
+		FROM
+			OP_BOARD
+		WHERE
+				BBS_CD = #{bbsCd}
+			AND REF_SEQ = #{refSeq}
+			AND ORDER_NO =
+				(SELECT ifnull(MAX(ORDER_NO), #{orderNo}) FROM OP_BOARD
+					WHERE BBS_CD = #{bbsCd} AND REF_SEQ =  #{refSeq}
+						AND ORDER_NO &gt; #{orderNo}
+						AND DEPTH &gt; #{depth} )
+	</select>
+
+	<!-- 게시물 하위 자식들 OrderNo 1증가 -->
+	<update id="boardUpdateOrderNo" parameterType="egovframework.board.admin.BoardVO">
+		UPDATE OP_BOARD
+		   SET ORDER_NO = ORDER_NO + 1
+		 WHERE BBS_CD   = #{bbsCd}
+		   AND REF_SEQ		= #{refSeq}
+		   AND ORDER_NO &gt; #{orderNo}
+	</update>
+
+	<!-- 게시물 등록 -->
+	<insert id="boardInsert" parameterType="egovframework.board.admin.BoardVO">
+		INSERT INTO OP_BOARD (
+			BBS_CD,
+			SEQ,
+			REF_SEQ,
+			ORDER_NO,
+			DEPTH,
+			CTG_CD,
+			NOTICE_YN,
+			TITLE,
+			CONTENTS,
+			SUMMARY,
+			FILE_SEQ,
+			IP_ADDR,
+			AGENT,
+			OPEN_YN,
+			BAN_YN,
+			REG_PWD,
+			REG_NM,
+			REG_ID,
+			MGR_ID,
+			MGR_NM,
+			DEPT_CD,
+			DEPT_NM,
+			EXT_COLUMN1,
+			EXT_COLUMN2,
+			EXT_COLUMN3,
+			EXT_COLUMN4,
+			EXT_COLUMN5,
+			EXT_COLUMN6,
+			EXT_COLUMN7,
+			EXT_COLUMN8,
+			EXT_COLUMN9,
+			EXT_COLUMN10,
+			CELL_PHONE,
+			EMAIL_ADDR
+		) VALUES (
+			#{bbsCd},
+			#{seq},
+			#{refSeq},
+			#{orderNo},
+			#{depth},
+			#{ctgCd},
+			#{noticeYn},
+			#{title},
+			#{contents},
+			<!-- nvl(#{summary},' '), -->
+			ifnull(#{summary},' '),
+			#{fileSeq},
+			#{ipAddr},
+			#{agent},
+			#{openYn},
+			#{banYn},
+			#{regPwd},
+			#{regNm},
+			#{regId},
+			#{mgrId},
+			#{mgrNm},
+			#{deptCd},
+			#{deptNm},
+			#{extColumn1},
+			#{extColumn2},
+			#{extColumn3},
+			#{extColumn4},
+			#{extColumn5},
+			#{extColumn6},
+			#{extColumn7},
+			#{extColumn8},
+			#{extColumn9},
+			#{extColumn10},
+			#{cellPhone},
+			#{emailAddr}
+		)
+	</insert>
+	
+	<!-- 게시물 수정 -->
+	<update id="boardUpdate" parameterType="egovframework.board.admin.BoardVO">
+		UPDATE OP_BOARD
+		<set>
+		   <if test="title != null  and title != ''">
+				TITLE = #{title},
+		   </if>
+		   <if test="contents != null  and contents != ''">
+				CONTENTS = #{contents},
+		   </if>
+		   <if test="summary != null  and summary != ''">
+				SUMMARY = #{summary},
+		   </if>
+		   <if test="replyContents != null  and replyContents != ''">
+				REPLY_CONTENTS = #{replyContents},
+				<!-- REPLY_DT = TO_CHAR(SYSDATE, 'YYYYMMDDhh24miss'), -->
+				REPLY_DT = DATE_FORMAT(SYSDATE(), '%Y-%m-%d %H:%i:%s'),
+		   </if>
+		   <if test="ctgCd != null  and ctgCd != ''">
+				CTG_CD = #{ctgCd},
+		   </if>
+		   <if test="noticeYn != null  and noticeYn != ''">
+				NOTICE_YN = #{noticeYn},
+		   </if>
+		   <if test="regPwd != null  and regPwd != ''">
+				REG_PWD = #{regPwd},
+		   </if>
+		   <if test="regNm != null  and regNm != ''">
+				REG_NM = #{regNm},
+		   </if>
+				 <if test="fileSeq &gt; 0">
+					 FILE_SEQ = #{fileSeq},
+				 </if>
+		   <if test="openYn != null  and openYn != ''">
+				OPEN_YN = #{openYn},
+		   </if>
+		   <if test="banYn != null  and banYn != ''">
+				BAN_YN = #{banYn},
+		   </if>
+		   <if test="deptCd != null  and deptCd != ''">
+				DEPT_CD = #{deptCd},
+		   </if>
+		   <if test="deptNm != null  and deptNm != ''">
+				DEPT_NM = #{deptNm},
+		   </if>
+		   <if test="extColumn1 != null  and extColumn1 != ''">
+		   		EXT_COLUMN1 = #{extColumn1},
+		   </if>
+		   <if test="extColumn2 != null  and extColumn2 != ''">
+		   		EXT_COLUMN2 = #{extColumn2},
+		   </if>
+		   <if test="extColumn3 != null  and extColumn3 != ''">
+		   		EXT_COLUMN3 = #{extColumn3},
+		   </if>
+		   <if test="extColumn4 != null  and extColumn4 != ''">
+		   		EXT_COLUMN4 = #{extColumn4},
+		   </if>
+		   <if test="extColumn5 != null  and extColumn5 != ''">
+		   		EXT_COLUMN5 = #{extColumn5},
+		   </if>
+		   <if test="extColumn6 != null  and extColumn6 != ''">
+		   		EXT_COLUMN6 = #{extColumn6},
+		   </if>
+		   <if test="extColumn7 != null  and extColumn7 != ''">
+		   		EXT_COLUMN7 = #{extColumn7},
+		   </if>
+		   <if test="extColumn8 != null  and extColumn8 != ''">
+		   		EXT_COLUMN8 = #{extColumn8},
+		   </if>
+		   <if test="extColumn9 != null  and extColumn9 != ''">
+		   		EXT_COLUMN9 = #{extColumn9},
+		   </if>
+		   <if test="extColumn10 != null  and extColumn10 != ''">
+		   		EXT_COLUMN10 = #{extColumn10},
+		   </if>
+			   <!-- MOD_DT = TO_CHAR(SYSDATE, 'YYYYMMDDhh24miss') -->
+			   MOD_DT = DATE_FORMAT(SYSDATE(), '%Y-%m-%d %H:%i:%s')
+		 </set>
+		 WHERE BBS_CD = #{bbsCd}
+		   AND SEQ = #{seq}
+	</update>		
+	
+	<!-- 태그이름별 전체갯수 -->
+	<select id="boardTagCount" parameterType="egovframework.board.admin.BoardTagVO" resultType="int">
+		SELECT COUNT(A.SEQ) AS totalCount
+		  FROM OP_BOARD_TAG A
+		 WHERE A.BBS_CD = #{bbsCd}
+		   AND A.SEQ = #{seq}
+		   AND A.TAG_NM = #{tagNm}
+	</select>
+	
+	<!-- 태그 등록 -->
+	<insert id="boardTagInsert" parameterType="egovframework.board.admin.BoardTagVO">
+		INSERT INTO OP_BOARD_TAG (
+			BBS_CD,	
+			SEQ,
+			TAG_NM
+		) VALUES (
+			#{bbsCd},   
+			#{seq},
+			#{tagNm}	
+		)
+	</insert>
+	
+	<!-- 게시물 목록에서 여러개 삭제시 -->
+	<select id="deleteBoardList" parameterType="egovframework.board.admin.BoardVO" resultType="egovframework.board.admin.BoardVO">
+		SELECT A.BBS_CD   AS bbsCd,
+			   A.SEQ	  AS seq,
+			   A.TITLE	AS title,
+			   A.FILE_SEQ AS fileSeq,
+			   A.REF_SEQ  AS refSeq,
+			   A.ORDER_NO AS orderNo,
+			   A.DEPTH	AS depth
+		  FROM OP_BOARD A 
+		 WHERE A.BBS_CD = #{bbsCd}
+		   AND A.REF_SEQ = #{refSeq}
+		   AND A.SEQ &gt;= #{seq}
+		   AND A.ORDER_NO &gt;= #{orderNo}
+		   AND A.ORDER_NO &lt;= #{depth}
+	</select>
+	
+	<!-- 게시물 보기에서 하나 삭제 -->
+	<delete id="boardDelete" parameterType="egovframework.board.admin.BoardVO">
+		DELETE FROM OP_BOARD
+		 WHERE BBS_CD = #{bbsCd}
+		   AND SEQ	= #{seq}
+	</delete>
+	
+	<!-- 삭제 데이터 보관 -->
+	<insert id="trashBoardInsert" parameterType="egovframework.board.admin.BoardVO">
+		INSERT INTO OP_BOARD_TRASH (
+			BBS_CD,
+			SEQ,
+			REF_SEQ,
+			ORDER_NO,
+			DEPTH,
+			CTG_CD,
+			NOTICE_YN,
+			TITLE,
+			CONTENTS,
+			SUMMARY,
+			REPLY_CONTENTS,
+			REPLY_DT,
+			FILE_SEQ,
+			READ_CNT,
+			SCORE_CNT,
+			SCORE_SUM,
+			ACCUSE_CNT,
+			RECOM_CNT,
+			IP_ADDR,
+			AGENT,
+			OPEN_YN,
+			BAN_YN,
+			REG_PWD,
+			REG_NM,
+			REG_ID,
+			REG_DT,
+			MOD_ID,
+			MOD_DT,
+			MGR_ID,
+			MGR_NM,
+			EXT_COLUMN1,
+			EXT_COLUMN2,
+			EXT_COLUMN3,
+			EXT_COLUMN4,
+			EXT_COLUMN5,
+			EXT_COLUMN6,
+			EXT_COLUMN7,
+			EXT_COLUMN8,
+			EXT_COLUMN9,
+			EXT_COLUMN10,
+			MGR_DEL_YN,
+			MOVE_BBS_CD,
+			DEL_DT,
+			DEL_DESC
+		)
+		SELECT
+			BBS_CD,
+			SEQ,
+			REF_SEQ,
+			ORDER_NO,
+			DEPTH,
+			CTG_CD,
+			NOTICE_YN,
+			TITLE,
+			CONTENTS,
+			SUMMARY,
+			REPLY_CONTENTS,
+			REPLY_DT,
+			FILE_SEQ,
+			READ_CNT,
+			SCORE_CNT,
+			SCORE_SUM,
+			ACCUSE_CNT,
+			RECOM_CNT,
+			IP_ADDR,
+			AGENT,
+			OPEN_YN,
+			BAN_YN,
+			REG_PWD,
+			REG_NM,
+			REG_ID,
+			REG_DT,
+			MOD_ID,
+			MOD_DT,
+			MGR_ID,
+			MGR_NM,
+			EXT_COLUMN1,
+			EXT_COLUMN2,
+			EXT_COLUMN3,
+			EXT_COLUMN4,
+			EXT_COLUMN5,
+			EXT_COLUMN6,
+			EXT_COLUMN7,
+			EXT_COLUMN8,
+			EXT_COLUMN9,
+			EXT_COLUMN10,
+			MGR_DEL_YN,
+			MOVE_BBS_CD,
+			#{delDt},
+			#{delDesc}
+		FROM OP_BOARD
+		WHERE BBS_CD = #{bbsCd}
+		AND SEQ = #{seq}
+	</insert>
+	
+	<!-- 삭제 태그 보관 -->
+	<insert id="trashTagInsert" parameterType="egovframework.board.admin.BoardVO">
+		INSERT INTO OP_BOARD_TAG_TRASH (
+			BBS_CD,
+			SEQ,
+			TAG_NM
+		)
+		SELECT
+			BBS_CD,
+			SEQ,
+			TAG_NM
+		FROM OP_BOARD_TAG
+		WHERE BBS_CD = #{bbsCd}
+		AND SEQ = #{seq}
+	</insert>
+
+	<!-- 삭제 댓글 보관 -->
+	<insert id="trashCommentInsert" parameterType="egovframework.board.admin.BoardVO">
+		INSERT INTO OP_BOARD_CMT_TRASH (
+			BBS_CD,
+			SEQ,
+			CMT_SEQ,
+			ICON_KEY,
+			COMMENTS,
+			IP_ADDR,
+			SCORE,
+			USER_KEY,
+			REG_PWD,
+			REG_ID,
+			REG_NM,
+			REG_DT,
+			MOD_ID,
+			MOD_DT,
+			MGR_ID,
+			DEL_DT,
+			DEL_DESC
+		) SELECT
+			BBS_CD,
+			SEQ,
+			CMT_SEQ,
+			ICON_KEY,
+			COMMENTS,
+			IP_ADDR,
+			SCORE,
+			USER_KEY,
+			REG_PWD,
+			REG_ID,
+			REG_NM,
+			REG_DT,
+			MOD_ID,
+			MOD_DT,
+			MGR_ID,
+			#{delDt},
+			#{delDesc}
+		FROM OP_BOARD_CMT
+		WHERE BBS_CD = #{bbsCd}
+		AND SEQ = #{seq}
+		<if test="cmtSeq != null">
+			AND CMT_SEQ = #{cmtSeq}
+		</if>
+	</insert>
+	
+	<!-- 게시물 삭제시 하위 댓글 삭제 -->
+	<update id="commentDeleteAll" parameterType="egovframework.board.admin.BoardVO">
+		DELETE FROM OP_BOARD_CMT
+		WHERE BBS_CD = #{bbsCd}
+		AND SEQ = #{seq}
+	</update>
+	
+	<!-- 게시물 모든 태그 삭제 -->
+	<delete id="boardTagDeleteAll" parameterType="egovframework.board.admin.BoardVO">
+		DELETE FROM OP_BOARD_TAG
+		WHERE BBS_CD = #{bbsCd}
+		AND SEQ = #{seq}
+	</delete>
+	
+	<!-- 민원형 게시판 답변 등록 수정 -->
+	<update id="boardAnswerUpdate" parameterType="egovframework.board.admin.BoardVO">
+		UPDATE OP_BOARD SET
+			REPLY_CONTENTS  = #{replyContents},
+			OPEN_YN = #{openYn},
+			<if test="replyContents != null and replyContents != ''">
+			REPLY_DT = DATE_FORMAT(SYSDATE(), '%Y-%m-%d %H:%i:%s'),
+			</if>
+			<if test="mgrNm != null  and mgrNm != ''">
+				MGR_NM = #{mgrNm},
+			</if>
+			<if test="deptCd != null  and deptCd != ''">
+				DEPT_CD = #{deptCd},
+		   </if>
+		   <if test="deptNm != null  and deptNm != ''">
+				DEPT_NM = #{deptNm},
+		   </if>
+		   <if test="extColumn1 != null  and extColumn1 != ''">
+		   		EXT_COLUMN1 = #{extColumn1},
+		   </if>
+		   <if test="extColumn2 != null  and extColumn2 != ''">
+		   		EXT_COLUMN2 = #{extColumn2},
+		   </if>
+		   <if test="extColumn3 != null  and extColumn3 != ''">
+		   		EXT_COLUMN3 = #{extColumn3},
+		   </if>
+		   <if test="extColumn4 != null  and extColumn4 != ''">
+		   		EXT_COLUMN4 = #{extColumn4},
+		   </if>
+		   <if test="extColumn5 != null  and extColumn5 != ''">
+		   		EXT_COLUMN5 = #{extColumn5},
+		   </if>
+		   <if test="extColumn6 != null  and extColumn6 != ''">
+		   		EXT_COLUMN6 = #{extColumn6},
+		   </if>
+		   <if test="extColumn7 != null  and extColumn7 != ''">
+		   		EXT_COLUMN7 = #{extColumn7},
+		   </if>
+		   <if test="extColumn8 != null  and extColumn8 != ''">
+		   		EXT_COLUMN8 = #{extColumn8},
+		   </if>
+		   <if test="extColumn9 != null  and extColumn9 != ''">
+		   		EXT_COLUMN9 = #{extColumn9},
+		   </if>
+		   <if test="extColumn10 != null  and extColumn10 != ''">
+		   		EXT_COLUMN10 = #{extColumn10},
+		   </if>
+		   <if test="ansFileSeq != null  and ansFileSeq != ''">
+		   		ANS_FILE_SEQ = #{ansFileSeq},
+		   </if>
+			MOD_DT = DATE_FORMAT(SYSDATE(), '%Y-%m-%d %H:%i:%s')
+		 WHERE BBS_CD = #{bbsCd}
+		   AND SEQ = #{seq}
+	</update>
+
+<!-- 
+==========================================================
+공통													 =
+========================================================== 
+-->
+
+	<!-- 게시물별 태그 목록 -->
+	<select id="boardTagList" parameterType="egovframework.board.admin.BoardVO" resultType="String">
+		SELECT A.TAG_NM AS tagNm
+		  FROM OP_BOARD_TAG A 
+		 WHERE A.BBS_CD = #{bbsCd}
+		   AND A.SEQ = #{seq}
+	</select>
+	
+	<!-- 게시물 ReadCnt 1증가 -->
+	<update id="boardIncReadCnt" parameterType="egovframework.board.admin.BoardVO">
+		UPDATE OP_BOARD
+		   SET READ_CNT = READ_CNT + 1
+		 WHERE BBS_CD = #{bbsCd}
+		   AND SEQ = #{seq}
+	</update>
+	
+<!--
+==========================================================
+게시판 댓글 기능										 =
+==========================================================
+-->
+	
+	<!-- 게시물 댓글 반복 등록 검사-->
+	<select id="boardAnswerRepeatInsertCheck" parameterType="HashMap" resultType="int">
+		SELECT
+			COUNT(*) AS COUNT
+		FROM
+			OP_BOARD_ANSWER
+		WHERE
+				BBS_CD = #{bbsCd}
+			AND SEQ = #{seq}
+			AND	ANSWER_CN = #{answerCn}
+			AND REG_ID = #{regId}
+			AND DATE_FORMAT(REG_DT,'%Y%m%d') = DATE_FORMAT(SYSDATE(),'%Y%m%d')
+	</select>
+	
+	<!-- 게시물 댓글 등록 -->
+	<insert id="boardAnswerInsert" parameterType="HashMap">
+		INSERT INTO OP_BOARD_ANSWER (
+			BBS_CD,
+			SEQ,
+			ANSWER_SEQ,
+			ANSWER_CN,
+			REG_ID,
+			REG_NM,
+			REG_DT
+		) VALUES (
+			#{bbsCd},
+			#{seq},
+			#{answerSeq},
+			#{answerCn},
+			#{regId},
+			#{regNm},
+			DATE_FORMAT(SYSDATE(), '%Y-%m-%d %H:%i:%s')
+		)
+	</insert>
+	
+	<!-- 게시물 댓글 목록 조회 -->
+	<select id="boardAnswerList" parameterType="HashMap" resultType="HashMap">
+		SELECT BBS_CD, SEQ, ANSWER_SEQ, ANSWER_CN, REG_ID, REG_NM, REG_DT, MOD_DT
+		  FROM OP_BOARD_ANSWER
+		 WHERE BBS_CD = #{bbsCd}
+		   AND SEQ = #{seq}
+		 ORDER BY ANSWER_SEQ
+		 LIMIT #{limitFrom}, #{limitTo}
+	</select>
+	
+	<!-- 게시물 댓글 조회 갯수 -->
+	<select id="boardAnswerListCount" parameterType="HashMap" resultType="int">
+		SELECT COUNT(*)
+		  FROM OP_BOARD_ANSWER
+		 WHERE BBS_CD = #{bbsCd}
+		   AND SEQ = #{seq}
+	</select>
+	
+	<!-- 게시물 댓글 수정 -->
+	<update id="boardAnswerSeqUpdate" parameterType="HashMap">
+		UPDATE OP_BOARD_ANSWER
+		   SET ANSWER_CN = #{answerCn}
+		     , MOD_DT = DATE_FORMAT(SYSDATE(), '%Y-%m-%d %H:%i:%s')
+		 WHERE BBS_CD = #{bbsCd}
+		   AND SEQ = #{seq}
+		   AND ANSWER_SEQ = #{answerSeq}
+	</update>
+	
+	<!-- 게시물 댓글 삭제 -->
+	<delete id="boardAnswerSeqDelete" parameterType="HashMap">
+		DELETE FROM OP_BOARD_ANSWER
+		 WHERE BBS_CD = #{bbsCd}
+		   AND SEQ = #{seq}
+		   AND ANSWER_SEQ = #{answerSeq}
+	</delete>
+</mapper>

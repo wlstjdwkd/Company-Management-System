@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rows>
+	<row>
+		<cell>Name</cell>
+		<cell type='ed'>Test value</cell>
+	</row>
+	<row>
+		<cell>Description</cell>
+		<cell type='ed'></cell>
+	</row>	
+	<row>
+		<cell>Border</cell>	
+			<row>
+				<cell>BorderSize</cell>
+				<cell type='ed' validate="int"></cell>
+			</row>	
+			<row>
+				<cell>BorderStyle</cell>
+				<cell type='list' values="dotted,dashed,solid"></cell>
+			</row>	
+			<row>
+				<cell>BorderColor</cell>
+				<cell type='cp'></cell>
+			</row>	
+			<row>
+				<cell>Cursor</cell>
+				<cell type='ed'></cell>
+			</row>		
+	</row>
+	<row open="1">
+		<cell>Decoration</cell>	
+			<row>
+				<cell>Decoration</cell>
+				<cell type='list' values="True,False">True</cell>
+			</row>	
+			
+			<row>
+				<cell>TabIndex</cell>
+				<cell type='ed'></cell>
+			</row>	
+			<row>
+				<cell>TabStop</cell>
+				<cell type='list' values="True,False">True</cell>
+			</row>	
+			<row>
+				<cell>Sorted</cell>
+				<cell type='list' values="True,False">True</cell>
+			</row>	
+	</row>
+</rows>

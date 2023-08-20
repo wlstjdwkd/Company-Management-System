@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="biz.tech.mapif.sc.PGSC0040Mapper">
+
+	<!-- 사용 내역 목록조회 -->
+	<select id="findExpenseList" resultType="hashmap">
+	SELECT 	/* ProgramID=com.mapif.ProgramMapper.findProgram */
+					  em_num					AS emnum						/* 		사원 번호 	*/
+					, h_date					AS hdate						/*		일 자		*/
+					, history					AS history						/*		내 역		*/
+					, fee						AS fee							/*		상 호		*/
+					, price 					AS price						/*		가 격		*/
+					, ex_num					AS exnum						/*		순번		*/
+	  
+	FROM		tb_dhtmlx_expense
+	<where>
+	<!-- 검색조건 -->
+	<if test="searchemNm != '' and searchemNm != null">em_num=(SELECT em_num FROM lyj_employee WHERE em_name=#{searchemNm})</if>
+	</where>
+	</select>
+	
+</mapper>

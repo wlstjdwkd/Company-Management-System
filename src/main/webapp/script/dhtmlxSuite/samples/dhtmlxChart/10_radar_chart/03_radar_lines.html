@@ -1,0 +1,80 @@
+<!--conf
+<sample>
+              <product version="3.5" edition="std"/>
+                     <modifications>
+                            <modified date="120731"/>
+                     </modifications>
+               </sample>
+ -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<title>Radar lines</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+	
+    <script src="../common/testdata.js"></script>
+</head>
+<body>
+    <div id="chartDiv" style="width:400px;height:250px;margin:20px;"></div>
+    <script>
+        var chart =  new dhtmlXChart({
+            container:"chartDiv",
+            view:"radar",
+            value:"#companyA#",
+            tooltip:{
+                template:"#companyA#"
+            },
+            line:{
+                color:"#3590D0",
+                width:2
+            },
+            item:{
+                color:"#ffffff",
+                borderColor:"#3399ff",
+                radius:2,
+                borderWidth:2,
+                type:"d"
+            },
+			xAxis:{
+				template:"#month#"
+			},
+			yAxis:{
+                lineShape:"arc"
+            },
+			legend:{
+				layout:"y",
+				width: 110,
+				align:"right",
+				valign:"middle",
+				marker:{
+					type:"item"
+				},
+				values:[
+					{text:"company A",color:"#3399ff"},
+					{text:"company B",color:"#66cc00"}
+				]
+			}
+        });
+        chart.addSeries({
+            value:"#companyB#",
+            tooltip:{
+                template:"#companyB#"
+            },
+            line:{
+                color:"#66cc00",
+                width:2
+            },
+            item:{
+                color:"#ffffff",
+                borderColor:"#66cc00",
+                radius:2,
+                borderWidth:2,
+                type:"s"
+            }
+        });
+        chart.parse(companies,"json");
+	</script>
+</body>
+</html>

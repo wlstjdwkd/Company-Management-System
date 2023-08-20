@@ -1,0 +1,62 @@
+<!--conf
+<sample in_favorites="false">
+              <product version="1.4" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               </sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Smart Rendering and loading notification</title>
+	
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+</head>
+
+<body>
+	<h1>Smart Rendering and loading notification</h1>
+   	<p>This sample demonstrates how loading notification can be set</p>
+	 <div style="height:20px">
+        <div id="a_1" style="color:red;">Loading portion of data</div>
+    </div>
+	<div  style='position:relative; height:250px; width:600px;'>
+		<div id="gridbox" style="width:600px; height:250px; background-color:white;overflow:hidden"></div>
+		<div id="cover" style='width:500px; font-size:20pt; text-align:center; font-family:Tahoma; position:absolute; top:50px; left:50px; height:150px; widht:500px; background-color:silver; opacity:0.3; -moz-opacity:0.3; filter:alpha(opacity=30);'>
+			Loading	
+		</div>
+	</div>
+<br>
+<script>
+	mygrid = new dhtmlXGridObject('gridbox');
+	mygrid.setImagePath("../../../codebase/imgs/");
+	mygrid.setHeader("A,B,C,D,E,F,J,H");
+	mygrid.setInitWidths("50,120,150,80,80,80,80,200")
+	mygrid.setColAlign("right,left,left,right,center,left,center,center")
+	mygrid.setColTypes("ed,ed,ed,price,ch,co,ro,ro");
+	mygrid.enableAutoWidth(true)
+    mygrid.getCombo(5).put(2,2);
+  	
+
+    mygrid.attachEvent("onXLS",function(){ document.getElementById("a_1").style.display="block"; });
+    mygrid.attachEvent("onXLE",function(){ document.getElementById("a_1").style.display="none"; });
+	
+	mygrid.attachEvent("onXLS",function(){
+		document.getElementById('cover').style.display='block';
+	});
+	mygrid.attachEvent("onXLE",function(){
+		document.getElementById('cover').style.display='none';
+	});
+	
+	
+	
+	mygrid.setSkin("dhx_skyblue");
+	mygrid.init();
+	mygrid.enableSmartRendering(true,50);
+    mygrid.loadXML("php/dynload_slow.php");
+</script>
+</body>
+</html>

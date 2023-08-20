@@ -1,0 +1,46 @@
+<!--conf
+<sample>
+               <product version="3.0" edition="std"/>
+                       <modifications>
+                               <modified date="110701"/>
+                       </modifications>
+               </sample>
+ -->
+ 	<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+	<title>Combo loaded from Datastore</title>
+</head>
+
+<body>
+	<div id="combo_here1" style="width:600px; height:270px; background-color:white;"></div>
+	<div id="combo_here2" style="width:600px; height:270px; background-color:white;"></div>
+
+<script>
+	var list = new dhtmlXDataStore({
+		url:"../common/data/data.json",
+		datatype:"json"
+	});
+	list.data.scheme({
+		$init:function(obj){
+			obj.value = obj.text = obj.Package;
+		}
+	});
+	
+
+	dhtmlx.image_path = "../../../codebase/imgs/";
+    combo1 = new dhtmlXCombo("combo_here1","combo1","100%");
+	combo1.sync(list);
+
+	combo2 = new dhtmlXCombo("combo_here2","combo1","100%");
+	combo2.sync(list);
+
+</script>
+
+
+</body>
+</html>

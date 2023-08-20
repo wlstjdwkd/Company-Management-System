@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Application context definition for PetClinic Datasource. -->
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+	<!-- ========================= VIEW DEFINITION ========================= -->
+	
+    <bean id="textView" class="com.infra.view.TextView" />
+    <bean id="jsonView" class="com.infra.view.JsonView" />
+    <bean id="excelView" class="com.infra.view.ExcelView" />
+    <bean id="downloadView" class="com.infra.view.DownloadView" />
+<!--     
+    <bean id="htmlView" class="com.infra.view.HtmlView" />	
+	<bean id="pdfView" class="com.infra.view.PdfView" />
+	<bean id="atomView" class="com.infra.view.AtomView" />
+	<bean id="rssView" class="com.infra.view.RssView" />
+ -->
+</beans>

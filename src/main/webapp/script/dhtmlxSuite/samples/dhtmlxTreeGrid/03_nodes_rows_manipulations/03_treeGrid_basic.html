@@ -1,0 +1,73 @@
+<!--conf
+<sample in_favorites="false">
+              <product version="1.4" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               </sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>TreeGrid basic operations</title>	 	
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+</head>
+
+<body>
+	
+	<h1>TreeGrid basic operations</h1>
+	<p>
+            Basic operations - add, delete rows in TreeGrid
+	</p>
+
+
+	<table width="574">
+		<tr>
+			<td>
+				<div id="gridbox" width="100%" height="250px" style="background-color:white;"></div>
+			</td>
+		</tr>
+		<tr>
+			<td>
+<div id="gridtbl1" width="100%" height="200px" style="background-color:white;"></div>
+<br><br>
+<div><a href="#" onclick="mygrid.addRow((new Date()).valueOf(),['new row','text','text',1,0],0)">Add new row</a></div>
+<div><a href="#" onclick="var z=mygrid.getRowId(this.nextSibling.value); if (z) mygrid.addRow((new Date()).valueOf(),['new row','text','text',1,1],0,z)">Add new row at child of node at position</a><input></div>
+<div><a href="#" onclick="var z=mygrid.getSelectedId(); if (z) mygrid.addRow((new Date()).valueOf(),['new row','text','text',1,1],0,z)">Add new row as child of selected</a></div>
+<div>&nbsp;</div>
+<div><a href="#" onclick="var z=mygrid.getRowId(this.nextSibling.value); if (z) mygrid.deleteRow(z)">Delete row at position</a><input></div>
+<div><a href="#" onclick="mygrid.deleteSelectedItem()">Delete selected rows</a></div>
+<div><a href="#" onclick="mygrid.addRowBefore((new Date()).valueOf(),['new row','text','text',1,0],mygrid.getSelectedId())">addRowBefore selected rows</a></div>
+<div><a href="#" onclick="mygrid.addRowAfter((new Date()).valueOf(),['new row','text','text',1,0],mygrid.getSelectedId())">addRowAfter selected rows</a></div>
+
+            </td>
+		</tr>
+	</table>
+<br>
+<div><a href="#" onclick="alert(mygrid.getRowIndex(mygrid.getSelectedId()))">Index of selected</a></div>
+<div><a href="#" onclick="mygrid.expandAll()">expandAll</a></div>
+<div><a href="#" onclick="mygrid.collapseAll()">collapseAll</a></div>
+
+
+<script>
+		mygrid = new dhtmlXGridObject('gridbox');
+
+		
+		mygrid.setImagePath("../../../codebase/imgs/");
+		mygrid.setHeader("Tree,Plain Text,Long Text,Color,Checkbox");
+		mygrid.setInitWidths("150,100,100,100,100")
+		mygrid.setColAlign("left,left,left,left,center")
+		mygrid.setColTypes("tree,ed,txt,ch,ch");
+		mygrid.setColSorting("str,str,str,na,str")
+		mygrid.enableAutoHeigth(true);
+
+		mygrid.init();
+		mygrid.setSkin("dhx_skyblue")
+	   	mygrid.loadXML("../common/test_list_1.xml");
+</script>
+
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!--conf
+<sample>
+              <product version="1.4" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               </sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Smart Rendering (static) :: Column move</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+</head>
+<body>
+	<h1>Smart Rendering with single loading :: Column move</h1>
+
+  	<p>You are allowed to change position of columns in grid. Check this functionality in the sample below.</p>
+	
+    <div style="height:20px;">
+		<div id="a_1" style="color:red;">Loading whole data (2,000 rows) at once</div>
+	</div>
+	
+	<div id="gridbox" style="width:600px; height:250px; background-color:white;overflow:hidden"></div>
+	
+	<a href="javascript:void(0)" onclick='mygrid.setSelectedRow("r212");'>Select row with id=r212; mygrid.setSelectedRow("r212");</a><br/>
+    <a href="javascript:void(0)" onclick='mygrid.setSelectedRow("r512");'>Select row with id=r512; mygrid.setSelectedRow("r512");</a><br/>
+    <a href="javascript:void(0)" onclick='mygrid.setSelectedRow("r786");'>Select row with id=r786; mygrid.setSelectedRow("r786");</a><br/>
+	
+<script>
+	mygrid = new dhtmlXGridObject('gridbox');
+	mygrid.setImagePath("../../../codebase/imgs/");
+	mygrid.setHeader("Sales,Book Title,Author,Price,In Store,Shipping,Bestseller,Date of Publication");
+	mygrid.setInitWidths("50,150,120,80,80,80,80,200")
+	mygrid.setColAlign("right,left,left,right,center,left,center,center")
+	mygrid.setColTypes("ed,ed,ed,price,ch,co,ro,ro");
+
+    mygrid.getCombo(5).put(2,2);
+  	mygrid.setColSorting("int,str,str,int,str,str,str,date")
+	
+
+	mygrid.enableColumnMove(true);
+
+    mygrid.attachEvent("onXLS",function(){ document.getElementById("a_1").style.display="block"; });
+   	mygrid.attachEvent("onXLE",function(){ document.getElementById("a_1").style.display="none"; });
+
+	mygrid.init();
+	mygrid.setSkin("dhx_skyblue");
+    mygrid.enableSmartRendering(true);
+    mygrid.loadXML("../common/smartrend.xml");
+</script>
+
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!--conf
+<sample>
+              <product version="1.4" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               </sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Smart Rendering and colspan</title>
+	
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+
+</head>
+
+<body>
+	
+	<h1>Smart Rendering and colspan</h1>
+    <p>You are allowed to enable both smart rendering and colspan modes in your grid.</p>
+
+    <div style="height:20px;">
+		<div id="a_1" style="color:red;">Loading data</div>
+	</div>
+	
+	<div id="gridbox" style="width:600px; height:250px; background-color:white;overflow:hidden"></div>
+	
+	<a href="javascript:void(0)" onClick="mygrid.setSelectedRow('r36');">Select row with id=r36; mygrid.setSelectedRow("r36");</a><br/>
+	<a href="javascript:void(0)" onClick="mygrid.setSelectedRow('r72');">Select row with id=r72; mygrid.setSelectedRow("r72");</a><br/>
+	
+<script>
+	mygrid = new dhtmlXGridObject('gridbox');
+	mygrid.setImagePath("../../../codebase/imgs/");
+	mygrid.setHeader("Sales,Book Title,Author,Price,In Store,Shipping,Bestseller,Date of Publication");
+	mygrid.setInitWidths("50,150,120,80,80,80,80,200")
+	mygrid.setColAlign("right,left,left,right,center,left,center,center")
+	mygrid.setColTypes("ed,ed,ed,price,ch,co,ro,ro");
+
+    mygrid.enableCollSpan(true);
+    mygrid.getCombo(5).put(2,2);
+  	mygrid.setColSorting("int,str,str,int,str,str,str,date")
+	
+
+     mygrid.attachEvent("onXLS",function(){ document.getElementById("a_1").style.display="block"; });
+    mygrid.attachEvent("onXLE",function(){ document.getElementById("a_1").style.display="none"; });
+
+	mygrid.init();
+	mygrid.setSkin("dhx_skyblue");
+    mygrid.enableSmartRendering(true);
+    mygrid.loadXML("../common/smartrend_cl.xml");
+</script>
+
+</body>
+</html>

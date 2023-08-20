@@ -1,0 +1,104 @@
+<EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata" entityID="g-pin.go.kr" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" xmlns:xenc="http://www.w3.org/2001/04/xmlenc#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<IDPSSODescriptor WantAuthnRequestsSigned="true" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+
+		<KeyDescriptor use="signing">
+			<ds:KeyInfo>
+				<ds:X509Data>
+					<ds:X509Certificate>
+MIID5jCCAs6gAwIBAgIQR2CxaQHdLs7d5mTkNKN/CTANBgkqhkiG9w0BAQUFADBQMQswCQYDVQQG
+EwJLUjEcMBoGA1UEChMTR292ZXJubWVudCBvZiBLb3JlYTENMAsGA1UECxMER1BLSTEUMBIGA1UE
+AxMLQ0ExMzEwMDAwMDEwHhcNMDcxMjEzMDQxMzI5WhcNMTAwMzEzMDQxMzI5WjBdMQswCQYDVQQG
+EwJLUjEcMBoGA1UECgwTR292ZXJubWVudCBvZiBLb3JlYTEYMBYGA1UECwwPR3JvdXAgb2YgU2Vy
+dmVyMRYwFAYDVQQDDA1TVlIxMzEwNjk3MDAyMIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgFt7
+WLb9z5j/uw5uWXr2K7MG3AT58inozhHN0YvcHZRXngfDZSEh/sI1GMMrIHmuJ8BsmvsVGpYmz6qE
+7aVTKK6B3kJRHnha3Y+YXKSHx21ui+i4fBiQlb+5dx95VueaJ5EcvsfrOysXync64n1oc1sjatuV
+2DVvIfp0ZMFgUhmJAgMBAAGjggEyMIIBLjAfBgNVHSMEGDAWgBQBzxeuBI2HzLdVC3Fsa0ic5rGy
+lTAdBgNVHQ4EFgQUaweMgdxPp07C6+98q1nAzRaSNzkwDgYDVR0PAQH/BAQDAgUgMBgGA1UdIAQR
+MA8wDQYJKoMaho0hAgECMAAwgYkGA1UdHwSBgTB/MH2ge6B5hndsZGFwOi8vbGRhcC5nY2MuZ28u
+a3I6Mzg5L2NuPWNybDAwMDksY249Q0ExMzEwMDAwMDEsb3U9R1BLSSxvPUdvdmVybm1lbnQgb2Yg
+S29yZWEsYz1LUj9jZXJ0aWZpY2F0ZVJldm9jYXRpb25saXN0O2JpbmFyeTA2BggrBgEFBQcBAQQq
+MCgwJgYIKwYBBQUHMAGGGmh0dHA6Ly9ndmEuZ3BraS5nby5rcjo4MDgwMA0GCSqGSIb3DQEBBQUA
+A4IBAQA7ScvrtfNCrRqm9A9OOw/8Si7K8zZWrfFPj3mfW2g5lR9mgCobV9dzF4eYcSYuklyBmGQO
+5JZ/e8EvSm4rzn7xqJLpOFc4sSKQgrpsFuw/pA/xOn/UxLoVNhFyxc/WcSbI7Z8ZeLj8NXN0XLNm
+Ce4cfrC+ypmc7tSeoN/7IMxS7cibZUnMBoWf6uTiS2jnh5dWhnEIhGgxPkW3bnNKeOJ4F0lq6ce2
+ZBEIbtTcRMHgmsng7MckvPJx/IE2vKLRRi4V+eAf/NKWCQETP5GzZXvb9kHrunncXFdUXn/AM+HK
+MLeOcOizEsA3Cnb7UClSVJq20KrNyeUhybbAgEmvhwAR
+					</ds:X509Certificate>
+				</ds:X509Data>
+			</ds:KeyInfo>
+		</KeyDescriptor>
+		<KeyDescriptor use="encryption">
+			<ds:KeyInfo>
+				<ds:X509Data>
+					<ds:X509Certificate>
+MIID5jCCAs6gAwIBAgIQR2CxaQHdLs7d5mTkNKN/CTANBgkqhkiG9w0BAQUFADBQMQswCQYDVQQG
+EwJLUjEcMBoGA1UEChMTR292ZXJubWVudCBvZiBLb3JlYTENMAsGA1UECxMER1BLSTEUMBIGA1UE
+AxMLQ0ExMzEwMDAwMDEwHhcNMDcxMjEzMDQxMzI5WhcNMTAwMzEzMDQxMzI5WjBdMQswCQYDVQQG
+EwJLUjEcMBoGA1UECgwTR292ZXJubWVudCBvZiBLb3JlYTEYMBYGA1UECwwPR3JvdXAgb2YgU2Vy
+dmVyMRYwFAYDVQQDDA1TVlIxMzEwNjk3MDAyMIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgFt7
+WLb9z5j/uw5uWXr2K7MG3AT58inozhHN0YvcHZRXngfDZSEh/sI1GMMrIHmuJ8BsmvsVGpYmz6qE
+7aVTKK6B3kJRHnha3Y+YXKSHx21ui+i4fBiQlb+5dx95VueaJ5EcvsfrOysXync64n1oc1sjatuV
+2DVvIfp0ZMFgUhmJAgMBAAGjggEyMIIBLjAfBgNVHSMEGDAWgBQBzxeuBI2HzLdVC3Fsa0ic5rGy
+lTAdBgNVHQ4EFgQUaweMgdxPp07C6+98q1nAzRaSNzkwDgYDVR0PAQH/BAQDAgUgMBgGA1UdIAQR
+MA8wDQYJKoMaho0hAgECMAAwgYkGA1UdHwSBgTB/MH2ge6B5hndsZGFwOi8vbGRhcC5nY2MuZ28u
+a3I6Mzg5L2NuPWNybDAwMDksY249Q0ExMzEwMDAwMDEsb3U9R1BLSSxvPUdvdmVybm1lbnQgb2Yg
+S29yZWEsYz1LUj9jZXJ0aWZpY2F0ZVJldm9jYXRpb25saXN0O2JpbmFyeTA2BggrBgEFBQcBAQQq
+MCgwJgYIKwYBBQUHMAGGGmh0dHA6Ly9ndmEuZ3BraS5nby5rcjo4MDgwMA0GCSqGSIb3DQEBBQUA
+A4IBAQA7ScvrtfNCrRqm9A9OOw/8Si7K8zZWrfFPj3mfW2g5lR9mgCobV9dzF4eYcSYuklyBmGQO
+5JZ/e8EvSm4rzn7xqJLpOFc4sSKQgrpsFuw/pA/xOn/UxLoVNhFyxc/WcSbI7Z8ZeLj8NXN0XLNm
+Ce4cfrC+ypmc7tSeoN/7IMxS7cibZUnMBoWf6uTiS2jnh5dWhnEIhGgxPkW3bnNKeOJ4F0lq6ce2
+ZBEIbtTcRMHgmsng7MckvPJx/IE2vKLRRi4V+eAf/NKWCQETP5GzZXvb9kHrunncXFdUXn/AM+HK
+MLeOcOizEsA3Cnb7UClSVJq20KrNyeUhybbAgEmvhwAR
+					</ds:X509Certificate>
+				</ds:X509Data>
+			</ds:KeyInfo>
+			<EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#rsa-1_5"/>
+		</KeyDescriptor>
+		
+		
+		<!--
+		<ArtifactResolutionService isDefault="true" index="0" Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="http://10.46.110.226/ArtifactResponseService"/>
+		<ArtifactResolutionService isDefault="true" index="0" Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="http://10.46.110.220/ArtifactResponseService"/>
+		<ArtifactResolutionService isDefault="true" index="0" Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="http://www.g-pin.go.kr/ArtifactResponseService"/>
+		-->
+		<ArtifactResolutionService isDefault="true" index="0" Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="https://www.g-pin.go.kr/ArtifactResponseService"/>
+		
+		
+		
+		
+		
+		<SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="http://localhost/SLOProcService/Soap" ResponseLocation="http://localhost/SLOReturnService/Soap"/>
+		<SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="http://localhost/SLOProcService/Redirect" ResponseLocation="http://localhost/SLOReturnService/Redirect"/>
+		<ManageNameIDService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="http://localhost/NIMProcService/Soap" ResponseLocation="http://localhost/NIMReturnService/Soap"/>	
+		<ManageNameIDService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="http://localhost/NIMProcService/Redirect" ResponseLocation="http://localhost/NIMReturnService/Redirect"/>
+		<NameIDFormat>
+			urn:oasis:names:tc:SAML:1.1:nameid-format:X509SubjectName
+		</NameIDFormat>
+		<NameIDFormat>
+			urn:oasis:names:tc:SAML:2.0:nameid-format:persistent
+		</NameIDFormat>
+		<NameIDFormat>
+			urn:oasis:names:tc:SAML:2.0:nameid-format:transient
+		</NameIDFormat>	
+		
+		<!--
+		<SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="http://10.46.110.226/VerifyRequestService/Post"/>
+		<AttributeQueryService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="http://10.46.110.226/AttributeRequestService/Post"/>
+		
+		<SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="http://10.46.110.220/VerifyRequestService/Post"/>
+		<AttributeQueryService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="http://10.46.110.220/AttributeRequestService/Post"/>
+		
+		<SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="http://www.g-pin.go.kr/VerifyRequestService/Post"/>
+		<AttributeQueryService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="http://www.g-pin.go.kr/AttributeRequestService/Post"/>
+		-->
+		<SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://www.g-pin.go.kr/VerifyRequestService/Post"/>
+		<AttributeQueryService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://www.g-pin.go.kr/AttributeRequestService/Post"/>
+		<AttributeQueryService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://www.g-pin.go.kr/MYPINVerifyRequestService/Post"/>
+		
+		</IDPSSODescriptor>
+	<Organization>
+		<OrganizationName xml:lang="en">Electronics and Telecommunications Research Institute</OrganizationName>
+		<OrganizationDisplayName xml:lang="en">ETRI</OrganizationDisplayName>
+		<OrganizationURL xml:lang="en">http://www.etri.re.kr</OrganizationURL>
+	</Organization>
+</EntityDescriptor>

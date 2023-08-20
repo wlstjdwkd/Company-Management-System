@@ -1,0 +1,51 @@
+<!--conf
+<sample in_favorites="false">
+               <product version="1.4" edition="std"/>
+                       <modifications>
+                               <modified date="070101"/>
+                       </modifications>
+               </sample>
+ --> 
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Setting cells and column properties</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+</head>
+
+<body>
+	<h1>Setting cells and column properties</h1>
+	<p>
+		Using eXcell technology (extended cells) you can define the formating for each column of the javascript grid and the editor to edit it.<br>
+		For more details and the list of available cell types see <strong>"Column Types"</strong> and <strong>"Using eXcell"</strong> chapters of Documentation Guide.<br>
+		During grid initialization you also can define:
+		<ul>
+		<li>column alignment - <code>setColAlign</code></li>
+		<li>header labels - <code>setHeader</code></li>
+		<li>sorting type - <code>setColSorting</code></li>
+		<li>column initial width - <code>setInitWidths</code></li>
+		</ul>
+	</p>
+		
+		<div id="gridbox" style="width:600px;height:270px;background-color:white;"></div>
+	<br />
+<script>
+	mygrid = new dhtmlXGridObject('gridbox');
+	mygrid.setImagePath("../../../codebase/imgs/");
+	mygrid.setHeader("Sales,Book Title,Author,Price,In Store,Shipping,Bestseller,Date of Publication");
+	mygrid.setInitWidths("50,150,120,80,80,80,80,200")
+	mygrid.setColAlign("right,left,left,right,center,left,center,center")
+	mygrid.setColTypes("dyn,ed,txt,price,ch,coro,ra,ro");
+	mygrid.setColSorting("int,str,str,int,str,str,str,date")
+    mygrid.getCombo(5).put(2,2);    
+	mygrid.setSkin("dhx_skyblue")
+	mygrid.init();
+	mygrid.loadXML("../common/grid.xml");
+</script>
+
+</body>
+</html>

@@ -1,0 +1,31 @@
+@charset "utf-8";
+
+
+
+/*유형선택*/
+.type_zone{position: relative;}
+.table_type { border-top:2px solid #b1c3be !important;}
+.table_type th{padding-left: 15px !important;}
+.request_tbl{margin-bottom: 30px; border-top:1px;}
+.txt_code{position: absolute;display: none;line-height: 18px;font-family: "Dotum";color: #FFF;width: 200px;background: #3474b2;border: 2px solid #FFF;padding: 10px;font-size: 12px;font-weight: normal;
+z-index: 1;}
+
+/*테이블가로형*/
+.table_hrz{position: relative;}
+.table_hrz table{width:100%;border:0;border-top: 2px solid #b1c3be;border-bottom: 2px solid #b1c3be; border-spacing:0; margin-bottom:9px;}
+.table_hrz table th{padding: 5px;background:#dbe9e7;border-bottom: 1px solid #abb6b4;border-left: 1px solid #abb6b4;text-align: center;color: #4a6e5d;}
+.table_hrz table td{padding: 5px;border-bottom:1px solid #d7d7d7;border-left: 1px solid #d7d7d7;text-align: center; vertical-align:middle}
+.table_hrz table th:first-child, .table_hrz table td:first-child {
+border-left: 0;
+}
+.table_hrz table thead th:last-child{border-right: 0;}
+/*관계기업추가테이블*/
+.tbl_add{position: relative;margin: 20px 0;}
+.tbl_add .request_tbl,
+.tbl_add .table_basic{
+	margin-bottom: 10px !important;
+}
+.tbl_add .tbl_tline{border-top: 1px solid #4b6fa3;}
+
+
+ p.im{ 	font-size: 12px; color: #353535; font-weight: normal; margin-top: -28px; padding-right:10px; margin-bottom:5PX; float:right; vertical-align:middle; margin-bottom:10px;}

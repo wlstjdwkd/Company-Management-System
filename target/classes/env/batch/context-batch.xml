@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd">
+
+	<bean id="dataSource-batch" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="net.sf.log4jdbc.sql.jdbcapi.DriverSpy"/>
+		<property name="url" value="jdbc:log4jdbc:mysql://175.113.254.43:8889/portal_db?characterEncoding=utf8"/>
+		<property name="username" value="hpewww"/>
+		<property name="password" value="hpewww"/>
+	</bean>
+
+	<alias name="dataSource-batch" alias="aframe.dataSource"/>
+	
+    <context:component-scan base-package="egovframework">
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Service"/>
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Repository"/>
+       <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+    </context:component-scan>
+    
+    <context:component-scan base-package="biz">
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Service"/>
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Repository"/>
+       <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+       <context:exclude-filter type="regex" expression="biz.tech.dc..*"/>
+       <context:exclude-filter type="regex" expression="biz.tech.my..*"/>
+       <context:exclude-filter type="regex" expression="biz.tech.mb..*"/>
+    </context:component-scan>
+    <context:component-scan base-package="com">
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Service"/>
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Repository"/>
+       <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+       <context:exclude-filter type="regex" expression="biz.tech.dc..*"/>
+       <context:exclude-filter type="regex" expression="biz.tech.my..*"/>
+       <context:exclude-filter type="regex" expression="biz.tech.mb..*"/>
+    </context:component-scan>
+
+	<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<property name="basenames">
+			<list>
+				<value>classpath:/env/message/message-common</value>
+				<value>classpath:/egovframework/rte/fdl/idgnr/messages/idgnr</value>
+				<value>classpath:/egovframework/rte/fdl/property/messages/properties</value>
+			</list>
+		</property>
+		<property name="cacheSeconds">
+			<value>60</value>
+		</property>
+	</bean>
+
+    <bean id="egovMessageSource" class="egovframework.com.cmm.EgovMessageSource">
+        <property name="reloadableResourceBundleMessageSource">
+            <ref bean="messageSource" />
+        </property>
+    </bean>
+    	
+	<bean id="leaveaTrace" class="egovframework.rte.fdl.cmmn.trace.LeaveaTrace">
+		<property name="traceHandlerServices">
+			<list>
+				<ref bean="traceHandlerService" />
+			</list>
+		</property>
+	</bean>
+
+	<bean id="traceHandlerService" class="egovframework.rte.fdl.cmmn.trace.manager.DefaultTraceHandleManager">
+		<property name="reqExpMatcher">
+			<ref bean="antPathMater" />
+		</property>
+		<property name="patterns">
+			<list>
+				<value>*</value>
+			</list>
+		</property>
+		<property name="handlers">
+			<list>
+				<ref bean="defaultTraceHandler" />
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="antPathMater" class="org.springframework.util.AntPathMatcher" />
+	<bean id="defaultTraceHandler" class="egovframework.rte.fdl.cmmn.trace.handler.DefaultTraceHandler" />
+
+	<bean id="multipartResolver" class="org.springframework.web.multipart.support.StandardServletMultipartResolver" />
+	
+	<!-- import resource="classpath:/env/spring/context-common.xml" /-->
+	<import resource="classpath:/env/spring/context-properties.xml" />
+	<import resource="classpath:/env/spring/context-aspect.xml" />
+	<import resource="classpath:/env/spring/context-transaction.xml" />
+	<import resource="classpath:/env/spring/context-mapper.xml" />
+	<import resource="classpath:/env/spring/context-idgen.xml" />
+</beans>

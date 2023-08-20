@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.infra.file.fileDao">
+
+	<resultMap id="fileResult" type="com.infra.file.FileVO">
+		<result property="fileSeq" column="FILE_SEQ"/>
+		<result property="fileId" column="FILE_ID"/>
+		<result property="orderNo" column="ORDER_NO"/>
+		<result property="localNm" column="LOCAL_NM"/>
+		<result property="serverNm" column="SERVER_NM"/>
+		<result property="fileUrl" column="FILE_URL"/>
+		<result property="fileSize" column="FILE_SIZE"/>
+		<result property="fileByteSize" column="FILE_BSIZE"/>
+		<result property="fileType" column="FILE_TYPE"/>
+		<result property="fileExt" column="FILE_EXT"/>
+		<result property="inputNm" column="INPUT_NM"/>
+		<result property="downCnt" column="DOWN_CNT"/>
+	</resultMap>
+
+    <select id="getMaxFileSeq" resultType="int">
+        SELECT ifnull(MAX(FILE_SEQ),0)+1 
+          FROM OP_FILE
+    </select>
+    
+    <select id="getFiles" parameterType="int" resultMap="fileResult">
+        SELECT
+            FILE_SEQ, FILE_ID, ORDER_NO,
+            LOCAL_NM, SERVER_NM, FILE_URL,
+            FILE_SIZE, FILE_BSIZE, FILE_TYPE,
+            FILE_EXT, INPUT_NM, DOWN_CNT
+         FROM OP_FILE
+         WHERE FILE_SEQ = #{fileSeq}
+         ORDER BY ORDER_NO ASC
+    </select>
+    
+        
+    <select id="getFile" parameterType="string" resultMap="fileResult">
+        SELECT
+            FILE_SEQ, FILE_ID, ORDER_NO,
+            LOCAL_NM, SERVER_NM, FILE_URL,
+            FILE_SIZE, FILE_BSIZE, FILE_TYPE,
+            FILE_EXT, INPUT_NM, DOWN_CNT
+         FROM OP_FILE
+         WHERE FILE_ID  = #{fileId}
+    </select>  
+    
+    <select id="getFilesSeqs" parameterType="HashMap" resultMap="fileResult">
+        SELECT
+            FILE_SEQ, FILE_ID, ORDER_NO,
+            LOCAL_NM, SERVER_NM, FILE_URL,
+            FILE_SIZE, FILE_BSIZE, FILE_TYPE,
+            FILE_EXT, INPUT_NM, DOWN_CNT
+         FROM OP_FILE         
+         WHERE FILE_SEQ in ( ${fileSeq} )         
+         ORDER BY ORDER_NO ASC
+    </select>
+
+    <update id="updateFileDown" parameterType="string">
+        UPDATE OP_FILE
+           SET DOWN_CNT = DOWN_CNT + 1
+         WHERE FILE_ID  = #{fileId}
+    </update>
+        
+    <insert id="insertFile" parameterType="com.infra.file.FileVO">
+        INSERT INTO OP_FILE (
+               FILE_SEQ,     FILE_ID,
+               ORDER_NO,
+               LOCAL_NM,     SERVER_NM,    FILE_BSIZE,
+               FILE_SIZE,    FILE_TYPE,    INPUT_NM,
+               FILE_URL,     FILE_EXT
+        )
+        VALUES (
+               #{fileSeq},    #{fileId},
+               (SELECT ifnull(MAX(F.ORDER_NO),0)+1
+                  FROM OP_FILE F
+                 WHERE FILE_SEQ = #{fileSeq}),
+               replace(#{localNm}, ',', ' '),    replace(#{serverNm}, ',', ' '),   #{fileByteSize},
+               #{fileSize},   #{fileType},   #{inputNm},
+               replace(#{fileUrl}, ',', ' '),    #{fileExt}
+        )
+    </insert>
+    
+    <delete id="deleteFileLog" parameterType="com.infra.file.FileVO">
+        DELETE FROM OP_FILE_LOG
+        WHERE FILE_SEQ = #{fileSeq}
+          AND FILE_ID  = #{fileId}
+    </delete>
+    
+    <delete id="deleteFile" parameterType="com.infra.file.FileVO">
+        DELETE FROM OP_FILE
+        WHERE FILE_SEQ = #{fileSeq}
+          AND FILE_ID  = #{fileId}
+    </delete>
+    
+    <delete id="deleteFilesLog" parameterType="int">
+        DELETE FROM OP_FILE_LOG
+        WHERE FILE_SEQ = #{fileSeq}
+    </delete>
+    
+    <delete id="deleteFiles" parameterType="int">
+        DELETE FROM OP_FILE
+        WHERE FILE_SEQ = #{fileSeq}
+    </delete>
+
+    <!-- file log -->
+    <!-- <select id="getFileLogs" parameterType="map" resultType="filesLogVO">
+        SELECT Y.* FROM (
+            SELECT ROWNUM NUM, X.* FROM (
+                SELECT A.FILE_SEQ  AS fileSeq,
+                       A.FILE_ID   AS fileId,
+                       A.ORDER_NO  AS orderNo,
+                       A.WORKER_NM AS workerNm,
+                       TO_CHAR(TO_DATE(A.REG_DT, 'YYYYMMDDHH24MISS'), 'YYYY-MM-DD HH24:MI:SS') AS regDt
+                  FROM OP_FILE_LOG A
+                 WHERE A.FILE_SEQ = #{fileSeq}
+                   AND A.FILE_ID  = #{fileId}
+                  ORDER BY A.ORDER_NO ASC
+                ) X
+            WHERE ROWNUM &lt;= #{pagingEndNum}
+         ) Y
+         WHERE NUM &gt;= #{pagingStartNum}
+    </select> -->
+
+    <select id="getFileLogCount" parameterType="map" resultType="int">
+        SELECT COUNT(A.ORDER_NO) AS totalCount
+          FROM OP_FILE_LOG A
+         WHERE A.FILE_SEQ = #{fileSeq}
+           AND A.FILE_ID  = #{fileId}
+    </select>
+
+    <select id="getFileSeqByFileId" parameterType="string" resultType="int">
+        SELECT FILE_SEQ
+          FROM OP_FILE
+         WHERE FILE_ID  = #{fileId}
+    </select>
+
+    <insert id="insertFileLog" parameterType="map">
+        <selectKey order="BEFORE" keyProperty="orderNo" resultType="int">
+            SELECT ifnull(MAX(ORDER_NO), 0) + 1
+              FROM OP_FILE_LOG
+             WHERE FILE_SEQ = #{fileSeq}
+               AND FILE_ID  = #{fileId}
+        </selectKey>
+        INSERT INTO OP_FILE_LOG (
+            FILE_SEQ,      FILE_ID,     ORDER_NO,    WORKER_NM
+        )
+        VALUES (
+            #{fileSeq},     #{fileId},    #{orderNo},   #{workerNm}
+        )
+    </insert>
+
+
+</mapper>

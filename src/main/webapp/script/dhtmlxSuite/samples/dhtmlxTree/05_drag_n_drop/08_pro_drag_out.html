@@ -1,0 +1,74 @@
+<!--conf
+<sample>
+              <product version="1.5" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               </sample>
+ --> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<title>Custom Drag Out</title>
+</head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+<body>
+	
+	<h1>Custom Drag Out</h1>
+	<p>You can drag a node from the tree to some input control on page using the addDragLanding() method.</p>
+	<table>
+		<tr><td>
+			<div id="treeboxbox_tree" style="width:250px; height:218px;background-color:#f5f5f5;border :1px solid Silver;; overflow:auto; float:left"></div></td>
+		<td valign="top">
+			<div style='float:left'>&nbsp;<input type="text" width="120px" id="sInput"></div>
+		</td></tr>
+	</table>
+	
+	
+	<br>
+
+	<script>
+        function maf(){
+            return false;
+        }
+
+			tree=new dhtmlXTreeObject("treeboxbox_tree","100%","100%",0);
+
+
+			tree.setSkin('dhx_skyblue');
+			tree.setImagePath("../../../codebase/imgs/dhxtree_skyblue/");
+			tree.enableDragAndDrop(true);
+            tree.setDragHandler(maf);
+			tree.enableSmartXMLParsing(true);
+			tree.loadXML("../common/tree.xml")
+
+			
+			function s_control(){
+			
+				this._drag=function(sourceHtmlObject,dhtmlObject,targetHtmlObject){
+					targetHtmlObject.style.backgroundColor="";
+					targetHtmlObject.value=sourceHtmlObject.parentObject.label;
+				}
+
+				this._dragIn=function(htmlObject,shtmlObject){
+					htmlObject.style.backgroundColor="#fffacd";
+					return htmlObject;
+				}
+
+				this._dragOut=function(htmlObject){
+					htmlObject.style.backgroundColor="";
+					return this;
+				}
+			
+			}
+			var sinput=document.getElementById('sInput');
+			tree.dragger.addDragLanding(sinput, new s_control);
+			
+	</script>
+
+	
+
+</body>
+</html>

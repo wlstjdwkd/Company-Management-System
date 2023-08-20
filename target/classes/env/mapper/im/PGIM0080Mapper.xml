@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="biz.tech.mapif.im.PGIM0080Mapper">
+
+	<!-- 월별추진현황 신청기준집계 조회 -->
+	<select id="findApplicationTotal" resultType="map">
+		SELECT /* ProgramID=biz.tech.mapif.im.PGIM0080Mapper.findApplicationTotal */
+			IFNULL(RCEPT_DE_Y, '소계') AS YYYY,
+			IFNULL(RCEPT_DE_M, '소계') AS MM,
+			SUM(CASE WHEN ST_CD = 'A' THEN 1 ELSE 0 END) AS 'PS0',		 	/*신청*/
+			SUM(CASE WHEN ACC_CD = 'PS1' THEN 1 ELSE 0 END) AS 'PS1',		/*접수*/
+			SUM(CASE WHEN ACC_CD = 'PS2' THEN 1 ELSE 0 END) AS 'PS2',      	/*검토중*/
+			SUM(CASE WHEN ACC_CD = 'PS3' THEN 1 ELSE 0 END) AS 'PS3',      	/*보완요청*/
+			SUM(CASE WHEN ACC_CD = 'PS4' THEN 1 ELSE 0 END) AS 'PS4',      	/*보완접수*/
+			SUM(CASE WHEN ACC_CD = 'PS5' THEN 1 ELSE 0 END) AS 'PS5',      	/*보완검토중*/
+			SUM(CASE WHEN ACC_CD = 'RC1' THEN 1 ELSE 0 END) AS 'RC1',      	/*발급*/
+			SUM(CASE WHEN ACC_CD = 'RC2' THEN 1 ELSE 0 END) AS 'RC2',      	/*반려*/
+			SUM(CASE WHEN ACC_CD = 'RC3' THEN 1 ELSE 0 END) AS 'RC3',      	/*접수취소*/
+			SUM(CASE WHEN ACC_CD = 'RC4' THEN 1 ELSE 0 END) AS 'RC4'       	/*발급취소*/
+		FROM
+		(
+			SELECT
+				SUBSTRING(DATE_FORMAT(RCEPT_DE, '%Y%m'), 1, 4) AS RCEPT_DE_Y
+				,SUBSTRING(DATE_FORMAT(RCEPT_DE, '%Y%m'), 5, 2) AS RCEPT_DE_M
+				,ST_CD
+				,ACC_CD
+				,COUNT(1)
+			FROM
+			(
+				SELECT 'A' AS ST_CD
+					,RCEPT_DE
+					,STTUS_CODE AS ACC_CD
+					,RCEPT_NO
+				FROM TB_APPLY_MASTER
+				WHERE REQST_SE IN ( 'AK1', 'AK2')
+					AND STTUS_CODE IN ('PS1', 'PS2', 'PS3', 'PS4', 'PS5', 'PS6')
+					<if test="REQST_SE != null and REQST_SE != ''">
+						AND REQST_SE = #{REQST_SE}
+					</if>
+					<if test="REQST_YEAR_FROM_SEARCH != null and REQST_YEAR_FROM_SEARCH != '' and REQST_YEAR_TO_SEARCH != null and REQST_YEAR_TO_SEARCH != '' ">
+						AND RCEPT_DE BETWEEN #{REQST_YEAR_FROM_SEARCH} AND #{REQST_YEAR_TO_SEARCH}
+					</if>
+				UNION ALL
+				SELECT 'B' AS ST_CD
+					,RCEPT_DE
+					,RESULT_CODE AS ACC_CD
+					,RCEPT_NO
+				FROM TB_APPLY_MASTER WHERE REQST_SE IN ( 'AK1', 'AK2')
+					AND RESULT_CODE IN ('RC1', 'RC2', 'RC3', 'RC4')
+					<if test="REQST_SE != null and REQST_SE != ''">
+						AND REQST_SE = #{REQST_SE}
+					</if>
+					<if test="REQST_YEAR_FROM_SEARCH != null and REQST_YEAR_FROM_SEARCH != '' and REQST_YEAR_TO_SEARCH != null and REQST_YEAR_TO_SEARCH != '' ">
+						AND RCEPT_DE BETWEEN #{REQST_YEAR_FROM_SEARCH} AND #{REQST_YEAR_TO_SEARCH}
+					</if>
+			) T1
+			GROUP BY
+				ST_CD
+				,DATE_FORMAT(RCEPT_DE, '%Y')
+				,DATE_FORMAT(RCEPT_DE, '%M')
+				,ACC_CD
+				,RCEPT_NO
+			) A
+			GROUP BY RCEPT_DE_Y, RCEPT_DE_M
+			WITH ROLLUP
+	</select>
+	
+	<!-- 월별추진현황 신청기준집계 년도별 카운트 -->
+	<select id="findApplicationTotalCnt" resultType="int">
+		SELECT	/* ProgramID=biz.tech.mapif.im.PGIM0080Mapper.findApplicationTotalCnt */
+			COUNT(YYYY)		AS	 CNT
+		FROM (
+			SELECT
+				IFNULL(RCEPT_DE_Y, '소계')	AS	YYYY
+			FROM (
+				SELECT
+					SUBSTRING(DATE_FORMAT(A.RCEPT_DE, '%Y%m'), 1, 4) AS RCEPT_DE_Y
+					,SUBSTRING(DATE_FORMAT(A.RCEPT_DE, '%Y%m'), 5, 2) AS RCEPT_DE_M
+					,A.RCEPT_NO
+					,MAX(B.RESN_OCCRRNC_DE)
+					,B.SE_CODE
+				FROM TB_APPLY_MASTER A, TB_RESN_MANAGE B
+				WHERE A.RCEPT_NO = B.RCEPT_NO
+					<if test="REQST_SE != null and REQST_SE != ''">
+						AND A.REQST_SE = #{REQST_SE}
+					</if>
+					<if test="REQST_YEAR_FROM_SEARCH != null and REQST_YEAR_FROM_SEARCH != '' and REQST_YEAR_TO_SEARCH != null and REQST_YEAR_TO_SEARCH != '' ">
+						AND A.RCEPT_DE BETWEEN #{REQST_YEAR_FROM_SEARCH} AND #{REQST_YEAR_TO_SEARCH}
+					</if>
+				GROUP BY SUBSTRING(DATE_FORMAT(A.RCEPT_DE, '%Y%m'), 1, 4), SUBSTRING(DATE_FORMAT(A.RCEPT_DE, '%Y%m'), 5, 2), A.RCEPT_NO, B.SE_CODE
+			) L
+				GROUP BY L.RCEPT_DE_Y, L.RCEPT_DE_M
+				WITH ROLLUP
+		) tb
+			GROUP BY YYYY
+	</select>
+
+</mapper>

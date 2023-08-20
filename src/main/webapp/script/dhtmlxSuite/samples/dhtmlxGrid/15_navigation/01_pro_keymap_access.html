@@ -1,0 +1,79 @@
+<!--conf
+<sample>
+               <product version="1.5" edition="pro"/>
+                       <modifications>
+                               <modified date="070101"/>
+                       </modifications>
+               </sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Keymap - access</title>
+	
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+	<style>
+		div.gridbox_light table.obj tr.rowselected td.cellselected, div.gridbox table.obj td.cellselected {
+			background-color:#ACCADD;
+		}
+	</style>
+</head>
+
+<body>
+	
+	<h1>Keymap - access</h1>
+	<p>	In your grid you are allowed to set the same navigation as in MS Access. In this access keymap the editor of selected cell should be opened every time cell is selected. </p>
+	
+	
+	<table width="600px">
+		<tr>
+			<td id="recinfoArea"></td>
+		</tr>
+		<tr>
+			<td>
+				<div id="gridbox" style="width:100%; height:270px; background-color:white;overflow:hidden"></div>
+			</td>
+		</tr>
+		<tr>
+			<td id="pagingArea"></td>
+		</tr>
+	</table>
+    <p> The access keymap provides the following keys for navigation:<br/>
+	<ul>
+		<li>Enter / Tab- navigate to the next right cell, the editor of the cell opens</li>
+		<li>Shift+Enter / Tag+shift - move to the previous cell, its editor is open</li>
+		<li>Down-Arrow / Up-Arrow - move to the cell in the next / previous row, the editor of cell is open</li>
+		<li>F2 - the editor of selected cell opens</li>
+		<li>Space - enables snapshot of selected cell (checked/unchecked) if selected cell is checkbox</li>
+		<li>Esc - closes the editor of selected cell</li>
+		<li>PageUp / PageDown- moves to the previous/next page if paginal output is on. Selection of any cell in grid is required.</li>
+		<li>Right Arrow / Left Arrow - navigate to the next right/left cell if cell editor is closed. If not keys are not active.</li>
+		<li>Ctrl+Right Arrow / Ctrl+Left Arrow - navigate to the last/first cell in the row and opens its editor. If the editor of cell is open nothing will happen </li>
+		<li>Ctrl+Up Arrow / Ctrl+Down Arrow - navigate to the first/last cell in the column (within one page in grid)</li>
+		<li>Shift+Up Arrow Shift+Down Arrow - move to the cell up/down in the column and open cell editor</li>
+		<li>Ctrl+Shift+Up Arrow / Ctrl+Shift+Down Arrow - navigate to the first/last cell in the column (withing current page) and opens cell editor</li>
+		<li>Up Arrow - the same functionality as Shift+Up Arrow</li>
+		<li>Down Arrow - the same functionality as Shift+Up Down</li>
+		<li>Home = Ctrl+Left Arrow</li>
+		<li>End = Ctrl+Right Arrow</li>
+		<li>Ctrl+Home -move to the first cell of the first column in the page and open its editor</li>
+		<li>Ctrl+End - move to the last cell of the last column in the page and open its editor </li>
+	</ul>
+<script>
+	mygrid = new dhtmlXGridObject('gridbox');
+	mygrid.setImagePath("../../../codebase/imgs/");
+	mygrid.setHeader("Sales,Book Title,Author,Price,In Store,Shipping");
+	mygrid.setInitWidths("60,150,100,80,80,80")
+	mygrid.enableAutoWidth(true)
+	mygrid.setColAlign("right,left,left,right,center,left")
+	mygrid.setColTypes("dyn,edtxt,ed,price,ch,co");
+	mygrid.enableMultiselect(true)
+	mygrid.init();
+	mygrid.enablePaging(true,12,3,"pagingArea",true,"recinfoArea");
+	mygrid.loadXML("../common/100.xml");
+</script>
+</body>
+</html>

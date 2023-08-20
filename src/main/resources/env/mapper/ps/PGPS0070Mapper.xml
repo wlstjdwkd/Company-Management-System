@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="biz.tech.mapif.ps.PGPS0070Mapper">
+
+	<sql id="dynamicWhere">
+     <trim>
+        <if test="sel_target_year != null and sel_target_year != '' ">
+			AND STDYY=#{sel_target_year}
+		</if>
+		<if test="searchCondition != null and searchCondition != '' ">
+			<if test="searchCondition == 'EA1' "></if>
+			<if test="searchCondition == 'EA2' ">AND A.MNGMT_STLE LIKE '%기업(일반)%'</if>
+			<if test="searchCondition == 'EA3' ">AND A.MNGMT_STLE LIKE '%관계기업%'</if>
+			<if test="searchCondition == 'EA4' ">AND A.MNGMT_STLE LIKE '%후보기업%'</if>
+			<if test="searchCondition == 'EA5' ">AND A.MNGMT_STLE LIKE '%가젤형%'</if>
+		</if>
+     </trim>
+     </sql>
+     
+     <sql id="dynamicWhere2">
+     <trim>
+        <if test="sel_target_year != null and sel_target_year != '' ">
+			AND STDYY_DO=#{sel_target_year}
+		</if>
+     </trim>
+     </sql>
+     
+    <!-- 테마별업종 조회(코드그룹별) -->
+	<select id="findCodesByGroupNo" resultType="MAP">
+	SELECT 	/* ProgramID=biz.tech.mapif.ps.PGPS0070Mapper.findCodesByGroupNo */
+				   code 			AS code			/* 코드 */
+				  ,code_dc			AS codeDc		/* 코드설명 */
+				  ,code_group_no	AS codeGroupNo	/* 코드그룹번호 */
+				  ,code_nm			AS codeNm		/* 코드명 */
+	  FROM		tb_cmmncode
+	 WHERE		code_group_no = #{param}
+	 	AND		use_at = 'Y'
+	 ORDER		BY outpt_ordr ASC	
+	</select>
+     
+	<!-- 지역(본사기준) - 구/군 -->
+	<select id="areaSelect" resultType="Map">
+	select /* ProgramID=biz.tech.mapif.ps.PGPS0070Mapper.areaSelect */
+		substr(HEDOFC_ADRES, 1, INSTR(HEDOFC_ADRES, " ")) AS AREA1
+	from TB_ENTPRS_INFO
+	where substr(HEDOFC_ADRES, 1, INSTR(HEDOFC_ADRES, " ")) is not null
+	group by substr(HEDOFC_ADRES, 1, INSTR(HEDOFC_ADRES, " "))
+	</select>
+
+	<!-- 주요지표-현황 목록 개수 조회-->
+	<select id="findTotalIdxInfoRowCnt" resultType="int">
+	SELECT 	/* ProgramID=biz.tech.mapif.ps.PGPS0070Mapper.findTotalIdxInfoRowCnt */
+	    COUNT(*)
+	from TB_ENTPRS_INFO A
+	where 1=1
+	  <!-- 검색조건 시작 -->
+		<include refid="dynamicWhere"/>
+	  <!-- 검색조건 끝 -->
+	</select>
+	
+	<!-- 기업위상 현황 조회 -->
+	<select id="phaseList" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.ps.PGPS0070Mapper.phaseList */
+	X.STDYY_DO
+	, REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(X.CODE_NM, '(개)',''), '(조원)', ''), '(억불)', ''), '(억원)', ''), '(만명)', '') as CODE_NM
+	, CASE WHEN GUBUN = 1 THEN X.CODE_NM ELSE '비중(%)' END AS GUBUN
+	, IFNULL(X.HPE_VALUE, 0) AS HPE_VALUE
+	, IFNULL(X.SMLPZ_VALUE, 0) AS SMLPZ_VALUE
+	, IFNULL(X.LTRS_VALUE, 0) AS LTRS_VALUE
+	, IFNULL(X.ALL_V, 0) AS ALL_V
+	, X.CODE_DC
+	FROM (
+	  select STDYY_DO
+	  , 1 AS GUBUN
+	  , A.PHASE_IX
+	  , B.CODE_NM
+	  , A.HPE_VALUE
+	  , A.SMLPZ_VALUE
+	  , A.LTRS_VALUE
+	  , A.HPE_VALUE + A.SMLPZ_VALUE + A.LTRS_VALUE as ALL_V
+	  , A.ALL_VALUE
+	  , A.CREAT_DE
+	  , B.CODE_DC
+	  from STS_HPE_PHASE A, tb_cmmncode B
+	  where A.PHASE_IX = B.CODE
+	UNION
+	  select STDYY_DO
+	  , 2 AS GUBUN
+	  , A.PHASE_IX
+	  , CODE_NM
+	  , CONCAT(ROUND((A.HPE_VALUE/(A.HPE_VALUE + A.SMLPZ_VALUE + A.LTRS_VALUE))*100, 0), '%') as HPE_VALUE
+	  , CONCAT(ROUND((A.SMLPZ_VALUE/(A.HPE_VALUE + A.SMLPZ_VALUE + A.LTRS_VALUE))*100, 0), '%') AS SMLPZ_VALUE
+	  , CONCAT(ROUND((A.LTRS_VALUE/(A.HPE_VALUE + A.SMLPZ_VALUE + A.LTRS_VALUE))*100, 0), '%') AS LTRS_VALUE
+	  , CONCAT(ROUND((A.HPE_VALUE + A.SMLPZ_VALUE + A.LTRS_VALUE)/(A.HPE_VALUE + A.SMLPZ_VALUE + A.LTRS_VALUE)*100, 2), '%') AS ALL_V
+	  , A.ALL_VALUE
+	  , A.CREAT_DE
+	  , B.CODE_DC
+	  from STS_HPE_PHASE A, tb_cmmncode B
+	  where A.PHASE_IX = B.CODE
+	  AND PHASE_IX NOT IN ('PI11','PI13','PI16','PI19','PI20','PI21')
+	) X
+	WHERE 1=1
+	<!-- 검색조건 시작 -->
+		<include refid="dynamicWhere2"/>
+	<!-- 검색조건 끝 -->
+	order by length(PHASE_IX), PHASE_IX
+	</select>
+	
+	<!-- 기업위상 추이 조회 -->
+	<select id="phaseList2" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.ps.PGPS0070Mapper.phaseList2 */
+	REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(X.CODE_NM, '(개)',''), '(조원)', ''), '(억불)', ''), '(억원)', ''), '(만명)', '') as CODE_NM
+	, CASE WHEN GUBUN = 1 THEN X.CODE_NM ELSE '비중(%)' END AS GUBUN
+	<foreach item="item" collection="selectYear" open="" separator="" close="">
+		, IFNULL(MAX(case when STDYY_DO=#{item} then X.HPE_VALUE else 0 end), 0) as #{item}
+	</foreach>
+	FROM (
+	  select CODE, CODE_NM, CODE_DC
+	  from tb_cmmncode
+	  WHERE CODE_GROUP_NO = 40
+	  AND USE_AT = 'Y'
+	) Y
+	LEFT JOIN
+	(
+	  select STDYY_DO
+	  , 1 AS GUBUN
+	  , A.PHASE_IX
+	  , B.CODE_NM
+	  , A.HPE_VALUE
+	  , B.CODE_DC
+	  from STS_HPE_PHASE A, tb_cmmncode B
+	  where A.PHASE_IX = B.CODE
+	UNION
+	  select STDYY_DO
+	  , 2 AS GUBUN
+	  , A.PHASE_IX
+	  , CODE_NM
+	  , CONCAT(ROUND((A.HPE_VALUE/(A.HPE_VALUE + A.SMLPZ_VALUE + A.LTRS_VALUE))*100, 2), '%') as HPE_VALUE
+	  , B.CODE_DC
+	  from STS_HPE_PHASE A, tb_cmmncode B
+	  where A.PHASE_IX = B.CODE
+	  AND PHASE_IX NOT IN ('PI9','PI11','PI13','PI16','PI19','PI20','PI21')
+	) X
+	ON Y.CODE = X.PHASE_IX
+	GROUP BY Y.CODE_NM, Y.CODE
+	order by length(PHASE_IX), PHASE_IX
+	</select>
+	
+	<select id="phaseListChart" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.ps.PGPS0070Mapper.phaseListChart */
+	STDYY_DO
+	, CODE_NM
+	, ROUND((A.LTRS_VALUE/(A.HPE_VALUE + A.SMLPZ_VALUE + A.LTRS_VALUE))*100, 0) AS LTRS_VALUE
+	, ROUND((A.HPE_VALUE/(A.HPE_VALUE + A.SMLPZ_VALUE + A.LTRS_VALUE))*100, 0) as HPE_VALUE
+	, ROUND((A.SMLPZ_VALUE/(A.HPE_VALUE + A.SMLPZ_VALUE + A.LTRS_VALUE))*100, 0) AS SMLPZ_VALUE
+	, ROUND((A.HPE_VALUE + A.SMLPZ_VALUE + A.LTRS_VALUE)/(A.HPE_VALUE + A.SMLPZ_VALUE + A.LTRS_VALUE)*100, 2) AS ALL_V
+	, B.CODE_DC
+	from STS_HPE_PHASE A, tb_cmmncode B
+	where A.PHASE_IX = B.CODE
+	AND PHASE_IX NOT IN ('PI11','PI13','PI16')
+	<!-- 검색조건 시작 -->
+		<include refid="dynamicWhere2"/>
+	<!-- 검색조건 끝 -->
+	order by length(PHASE_IX), PHASE_IX
+	</select>
+</mapper>
+

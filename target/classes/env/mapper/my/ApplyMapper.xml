@@ -1,0 +1,916 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="biz.tech.mapif.my.ApplyMapper">
+	
+	<!-- 입사지원 정보 조회 -->
+	<select id="findCompApplyInfo" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.my.ApplyMapper.findCompApplyInfo */
+			EMPMN_MANAGE_NO				/* 채용관리번호(PK)(FK) */
+			,USER_NO		            /* 사용자번호(PK) */
+			,RCEPT_AT                   /* 접수여부 */
+			,RCEPT_DE                   /* 접수일자   */ 
+			,NM                         /* 성명 */
+			,ENG_NM                     /* 영문성명 */
+			,PHOTO_FILE_NM              /* 사진파일명 */
+			,PHOTO_FILE_SN              /* 사진파일순번   */
+			,(	SELECT FL.FILE_URL 
+				FROM OP_FILE FL 
+				WHERE PHOTO_FILE_SN = FL.FILE_SEQ
+				ORDER BY ORDER_NO ASC
+			 	LIMIT 0, 1
+			 ) AS PHOTO_FILE_PATH		/* 사진파일경로 */
+			,BRTHDY                     /* 생년월일 */
+			,DATE_FORMAT(BRTHDY, '%Y') AS BRTHDY_YEAR
+			,DATE_FORMAT(BRTHDY, '%m') AS BRTHDY_MONTH
+			,DATE_FORMAT(BRTHDY, '%d') AS BRTHDY_DAY
+			,EMAIL                      /* 이메일 */
+			,ZIP                        /* 우편번호 */
+			,ADRES                      /* 주소   */ 
+			,TELNO                      /* 전화번호 */
+			,MBTLNUM                    /* 휴대폰번호 */
+			,APPLY_SJ                   /* 지원제목   */ 
+			,APPLY_REALM                /* 지원분야   */ 
+			,CAREER_DIV                 /* 경력구분 */
+			,CAREER                     /* 경력   */ 
+			,ANSLRY_DIV                 /* 연봉구분 */
+			,HOPE_ANSLRY                /* 희망연봉 */
+			,RWDMRT_TRGET_AT            /* 보훈대상여부   */ 
+			,EMPYMN_PRTC_TRGET_AT       /* 취업보호대상여부   */ 
+			,EMPLYM_SPRMNY_TRGET_AT     /* 고용지원금대상여부 */
+			,TROBL_AT                   /* 장애여부 */
+			,TROBL_GRAD                 /* 장애등급 */
+			,MTRSC_DIV                  /* 병역구분 */
+			,ENST_YM                    /* 입대년월 */
+			,DMBLZ_YM                   /* 제대연월   */ 
+			,MSCL                       /* 군별 */
+			,CLSS                       /* 계급 */
+			,HIST_FILE1                 /* 이력서1 */
+			,HIST_FILE_SEQ1             /* 이력서파일순번1 */
+			,(	SELECT FL.FILE_SIZE
+				FROM OP_FILE FL 
+				WHERE HIST_FILE_SEQ1 = FL.FILE_SEQ
+				ORDER BY ORDER_NO ASC
+			 	LIMIT 0, 1
+			 ) AS HIST_FILE_SIZE1		/* 이력서파일사이즈1 */
+			,HIST_FILE2                 /* 이력서2 */
+			,HIST_FILE_SEQ2             /* 이력서파일순번2 */
+			,ANSWER1                    /* 답변1 */
+			,ANSWER2                    /* 답변2 */
+			,ANSWER3                    /* 답변3 */
+			,ANSWER4                    /* 답변4 */
+			,ANSWER5                    /* 답변5 */
+			,REGIST_DE                  /* 등록일자   */
+			,(SELECT CODE_NM 
+			FROM tb_cmmncode C 
+			WHERE CODE_GROUP_NO = '56' 
+			AND C.CODE = MTRSC_DIV ) AS MTRSC_DIV_NM  /*병역구분명*/
+			,(SELECT CODE_NM 
+			FROM tb_cmmncode C 
+			WHERE CODE_GROUP_NO = '46' 
+			AND C.CODE = MSCL ) AS MSCL_NM  		  /*군별명*/
+			,(SELECT CODE_NM 
+			FROM tb_cmmncode C 
+			WHERE CODE_GROUP_NO = '47' 
+			AND C.CODE = CLSS ) AS CLSS_NM  	  	  /*계급명*/
+	FROM TB_COMP_APPLY	
+	WHERE 1=1
+	AND EMPMN_MANAGE_NO = #{EMPMN_MANAGE_NO}
+	AND USER_NO = #{USER_NO}
+	</select>
+	
+	<!-- 입사지원현황 카운트 -->
+	<select id="findApplyCount" resultType="int">
+	SELECT /* ProgramID=biz.tech.mapif.my.ApplyMapper.findCompApplyInfo */
+			COUNT(*)
+	FROM TB_COMP_APPLY A, TB_EMPMN_PBLANC B, tb_entrprsuser EP 
+	WHERE 1=1
+	<if test="EMPMN_MANAGE_NO != null and EMPMN_MANAGE_NO != ''">
+	AND A.EMPMN_MANAGE_NO = #{EMPMN_MANAGE_NO}
+	</if>
+	<if test="USER_NO != null and USER_NO != ''">
+	AND A.USER_NO = #{USER_NO}
+	</if>
+	<if test="RCEPT_AT != null and RCEPT_AT != ''">
+	AND A.RCEPT_AT = #{RCEPT_AT}
+	</if>
+	AND A.EMPMN_MANAGE_NO = B.EMPMN_MANAGE_NO
+	AND EP.USER_NO = B.USER_NO
+	<include refid="searchCondition"/>
+	</select>
+	
+	<!-- 입사지원현황 리스트 -->
+	<select id="findApplyList" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.my.ApplyMapper.findApplyList */
+			A.EMPMN_MANAGE_NO												/* 채용관리번호(PK)(FK) */
+			,A.USER_NO		            									/* 사용자번호(PK) */
+			,A.RCEPT_AT                   									/* 접수여부 */
+			,A.NM															/* 성명 */
+			,A.APPLY_SJ                   									/* 지원제목   */
+			,A.APPLY_REALM                									/* 지원분야   */
+			,A.CAREER_DIV													/* 경력구분 */
+			,CASE A.CAREER_DIV
+				WHEN 'CK0' THEN '신입'
+				WHEN 'CK1' THEN '경력'	
+				ELSE NULL
+				END 							AS CAREER_DIV_NM			/* 경력구분명 */
+			,DATE_FORMAT(A.RCEPT_DE, '%Y-%m-%d') AS RCEPT_DE                /* 접수일자   */
+			,B.JSSFC														/* 직종 */
+			,B.EMPMN_SJ														/* 채용제목 */
+			,DATE_FORMAT(B.RCRIT_BEGIN_DE, '%Y-%m-%d') AS RCRIT_BEGIN_DE	/*모집시작일자*/
+			,DATE_FORMAT(B.RCRIT_END_DE, '%Y-%m-%d') AS RCRIT_END_DE		/*모집종료일자*/
+			<!-- ,(SELECT EP.ENTRPRS_NM
+				FROM tb_entrprsuser EP 
+				WHERE EP.USER_NO = B.USER_NO) AS ENTRPRS_NM		/* 기업명 */ -->
+			,EP.ENTRPRS_NM													/* 기업명 */
+			,B.USER_NO AS EP_NO												/*기업사용자번호*/
+			,B.BIZRNO														/*사업자등록번호*/
+			,B.RCRIT_END_DE <![CDATA[<]]> NOW() AS CLOSED					/*마감유무*/
+	FROM TB_COMP_APPLY A, TB_EMPMN_PBLANC B, tb_entrprsuser EP 
+	WHERE 1=1
+	<if test="EMPMN_MANAGE_NO != null and EMPMN_MANAGE_NO != ''">
+	AND A.EMPMN_MANAGE_NO = #{EMPMN_MANAGE_NO}
+	</if>
+	<if test="USER_NO != null and USER_NO != ''">
+	AND A.USER_NO = #{USER_NO}
+	</if>
+	<if test="RCEPT_AT != null and RCEPT_AT != ''">
+	AND A.RCEPT_AT = #{RCEPT_AT}
+	</if>
+	AND A.EMPMN_MANAGE_NO = B.EMPMN_MANAGE_NO
+	AND EP.USER_NO = B.USER_NO
+	<include refid="searchCondition"/>
+	ORDER BY A.RCEPT_DE DESC
+	<if test="ALL_LIST != &quot;Y&quot;">
+	LIMIT #{limitFrom}, #{limitTo}
+	</if>
+	</select>
+	
+	<!-- 입사지원현황 검색조건 -->
+	<sql id="searchCondition">
+	<if test="use_search != null and use_search == &quot;Y&quot;">
+		<if test="search_word != null and search_word != ''" >
+			<choose>			
+				<when test="search_type == 0">AND EP.ENTRPRS_NM LIKE CONCAT('%', #{search_word}, '%')</when>
+				<when test="search_type == 1">AND B.EMPMN_SJ LIKE CONCAT('%', #{search_word}, '%')</when>
+				<when test="search_type == 2">AND A.NM LIKE CONCAT('%', #{search_word}, '%')</when>
+				<when test="search_type == 3">AND B.JSSFC LIKE CONCAT('%', #{search_word}, '%')</when>
+			</choose>
+		</if>
+	</if>
+	</sql>	
+	
+	<!-- 사진 첨부 등록 -->
+	<insert id="insertApplyAtchPhoto">
+	INSERT INTO TB_COMP_APPLY /* ProgramID=biz.tech.mapif.my.ApplyMapper.insertApplyAtchPhoto */
+		        (
+		        EMPMN_MANAGE_NO
+		        ,USER_NO		        
+				,PHOTO_FILE_NM			/*사진파일명    */
+				,PHOTO_FILE_SN			/*사진파일순번  */
+				,REGIST_DE				/*등록일자      */						
+		        )
+         VALUES
+                (
+                #{EMPMN_MANAGE_NO}
+				,#{USER_NO}
+				,#{PHOTO_FILE_NM}
+				,#{PHOTO_FILE_SN}
+				,NOW()				
+                )
+	</insert>
+	
+	<!-- 사진 첨부 수정 -->
+	<update id="updateApplyAtchPhoto">
+	UPDATE 	/* ProgramID=biz.tech.mapif.my.ApplyMapper.updateApplyAtchPhoto */
+			TB_COMP_APPLY
+   	SET 	PHOTO_FILE_NM		= #{PHOTO_FILE_NM}
+   			,PHOTO_FILE_SN		= #{PHOTO_FILE_SN}			
+			,UPDT_DE			= NOW()
+ 	WHERE 	EMPMN_MANAGE_NO	= #{EMPMN_MANAGE_NO}
+ 	AND		USER_NO	= #{USER_NO}   	
+	</update>
+	
+	<!-- 포트폴리오 첨부 수정 -->
+	<update id="updateAttFileHist">
+	UPDATE 	/* ProgramID=biz.tech.mapif.my.ApplyMapper.updateAttFileHist */
+			TB_COMP_APPLY
+   	SET 	HIST_FILE1			= #{HIST_FILE1}
+   			,HIST_FILE_SEQ1		= #{HIST_FILE_SEQ1}			
+			,UPDT_DE			= NOW()
+ 	WHERE 	EMPMN_MANAGE_NO	= #{EMPMN_MANAGE_NO}
+ 	AND		USER_NO	= #{USER_NO} 
+	</update>
+	
+	<!-- 접수여부 변경(입사지원 취소시) -->
+	<update id="updateReceptAt">
+	UPDATE 	/* ProgramID=biz.tech.mapif.my.ApplyMapper.updateReceptAt */
+			TB_COMP_APPLY
+   	SET 	RCEPT_AT		= #{RCEPT_AT}   			
+			,UPDT_DE		= NOW()
+ 	WHERE 	EMPMN_MANAGE_NO	= #{EMPMN_MANAGE_NO}
+ 	AND		USER_NO	= #{USER_NO} 
+	</update>
+	
+	<!-- 입사지원 정보 삭제 -->
+	<delete id="deleteApplyInfo">
+	DELETE 	/* ProgramID=biz.tech.mapif.my.ApplyMapper.deleteApplyInfo */
+	FROM 	TB_COMP_APPLY
+	WHERE 	EMPMN_MANAGE_NO = #{EMPMN_MANAGE_NO}
+ 	AND  	USER_NO   = #{USER_NO}
+	</delete>
+	
+	<!-- 입사지원 메인 등록 -->
+	<insert id="insertCompApply">
+	INSERT INTO TB_COMP_APPLY /* ProgramID=biz.tech.mapif.my.ApplyMapper.insertCompApply */
+		        (
+		        EMPMN_MANAGE_NO				/* 채용관리번호(PK)(FK) */
+				,USER_NO		            /* 사용자번호(PK) */
+				,RCEPT_AT                   /* 접수여부 */
+				,RCEPT_DE                   /* 접수일자   */ 
+				,NM                         /* 성명 */
+				,ENG_NM                     /* 영문성명 */
+				,PHOTO_FILE_NM              /* 사진파일명 */
+				,PHOTO_FILE_SN              /* 사진파일순번   */ 
+				,BRTHDY                     /* 생년월일 */
+				,EMAIL                      /* 이메일 */
+				,ZIP                        /* 우편번호 */
+				,ADRES                      /* 주소   */ 
+				,TELNO                      /* 전화번호 */
+				,MBTLNUM                    /* 휴대폰번호 */
+				,APPLY_SJ                   /* 지원제목   */ 
+				,APPLY_REALM                /* 지원분야   */ 
+				,CAREER_DIV                 /* 경력구분 */
+				,CAREER                     /* 경력   */ 
+				,ANSLRY_DIV                 /* 연봉구분 */
+				,HOPE_ANSLRY                /* 희망연봉 */
+				,RWDMRT_TRGET_AT            /* 보훈대상여부   */ 
+				,EMPYMN_PRTC_TRGET_AT       /* 취업보호대상여부   */ 
+				,EMPLYM_SPRMNY_TRGET_AT     /* 고용지원금대상여부 */
+				,TROBL_AT                   /* 장애여부 */
+				,TROBL_GRAD                 /* 장애등급 */
+				,MTRSC_DIV                  /* 병역구분 */
+				,ENST_YM                    /* 입대년월 */
+				,DMBLZ_YM                   /* 제대연월   */ 
+				,MSCL                       /* 군별 */
+				,CLSS                       /* 계급 */
+				,HIST_FILE1                 /* 이력서1 */
+				,HIST_FILE_SEQ1             /* 이력서파일순번1 */
+				,HIST_FILE2                 /* 이력서2 */
+				,HIST_FILE_SEQ2             /* 이력서파일순번2 */
+				,ANSWER1                    /* 답변1 */
+				,ANSWER2                    /* 답변2 */
+				,ANSWER3                    /* 답변3 */
+				,ANSWER4                    /* 답변4 */
+				,ANSWER5                    /* 답변5 */
+				,REGIST_DE                  /* 등록일자   */						        		        	
+		        )
+         VALUES
+                (                 
+				 #{EMPMN_MANAGE_NO}
+				,#{USER_NO}
+				,#{RCEPT_AT}
+				<choose>
+					<when test="RCEPT_AT == &quot;Y&quot;">,NOW()</when>
+					<otherwise>,#{RCEPT_DE}</otherwise>
+				</choose>				
+				,#{NM}
+				,#{ENG_NM}
+				,#{PHOTO_FILE_NM}
+				,#{PHOTO_FILE_SN}
+				,#{BRTHDY}
+				,#{EMAIL}
+				,#{ZIP}
+				,#{ADRES}
+				,#{TELNO}
+				,#{MBTLNUM}
+				,#{APPLY_SJ}
+				,#{APPLY_REALM}
+				,#{CAREER_DIV}
+				,#{CAREER}
+				,#{ANSLRY_DIV}
+				,#{HOPE_ANSLRY}
+				,#{RWDMRT_TRGET_AT}
+				,#{EMPYMN_PRTC_TRGET_AT}
+				,#{EMPLYM_SPRMNY_TRGET_AT}
+				,#{TROBL_AT}
+				,#{TROBL_GRAD}
+				,#{MTRSC_DIV}
+				,#{ENST_YM}
+				,#{DMBLZ_YM}
+				,#{MSCL}
+				,#{CLSS}
+				,#{HIST_FILE1}
+				,#{HIST_FILE_SEQ1}
+				,#{HIST_FILE2}
+				,#{HIST_FILE_SEQ2}
+				,#{ANSWER1}
+				,#{ANSWER2}
+				,#{ANSWER3}
+				,#{ANSWER4}
+				,#{ANSWER5}
+				,NOW()
+                )	
+	</insert>
+	
+	<!-- 입사지원 메인 수정 -->
+	<update id="updateCompApply">
+	UPDATE 	/* ProgramID=biz.tech.mapif.my.ApplyMapper.updateCompApply */
+			TB_COMP_APPLY
+   	SET 	RCEPT_AT				   =		#{RCEPT_AT}
+			,RCEPT_DE                  =		<choose>
+												<when test="RCEPT_AT == &quot;Y&quot;">NOW()</when>
+												<otherwise>#{RCEPT_DE}</otherwise>
+												</choose>
+			,NM                        =		#{NM}
+			,ENG_NM                    =		#{ENG_NM}
+			<!-- ,PHOTO_FILE_NM             =		#{PHOTO_FILE_NM}
+			,PHOTO_FILE_SN             =		#{PHOTO_FILE_SN} -->
+			,BRTHDY                    =		#{BRTHDY}
+			,EMAIL                     =		#{EMAIL}
+			,ZIP                       =		#{ZIP}
+			,ADRES                     =		#{ADRES}
+			,TELNO                     =		#{TELNO}
+			,MBTLNUM                   =		#{MBTLNUM}
+			,APPLY_SJ                  =		#{APPLY_SJ}
+			,APPLY_REALM               =		#{APPLY_REALM}
+			,CAREER_DIV                =		#{CAREER_DIV}
+			,CAREER                    =		#{CAREER}
+			,ANSLRY_DIV                =		#{ANSLRY_DIV}
+			,HOPE_ANSLRY               =		#{HOPE_ANSLRY}
+			,RWDMRT_TRGET_AT           =		#{RWDMRT_TRGET_AT}
+			,EMPYMN_PRTC_TRGET_AT      =		#{EMPYMN_PRTC_TRGET_AT}
+			,EMPLYM_SPRMNY_TRGET_AT    =		#{EMPLYM_SPRMNY_TRGET_AT}
+			,TROBL_AT                  =		#{TROBL_AT}
+			,TROBL_GRAD                =		#{TROBL_GRAD}
+			,MTRSC_DIV                 =		#{MTRSC_DIV}
+			,ENST_YM                   =		#{ENST_YM}
+			,DMBLZ_YM                  =		#{DMBLZ_YM}
+			,MSCL                      =		#{MSCL}
+			,CLSS                      =		#{CLSS}
+			,HIST_FILE1                =		#{HIST_FILE1}
+			,HIST_FILE_SEQ1            =		#{HIST_FILE_SEQ1}
+			,HIST_FILE2                =		#{HIST_FILE2}
+			,HIST_FILE_SEQ2            =		#{HIST_FILE_SEQ2}
+			,ANSWER1                   =		#{ANSWER1}
+			,ANSWER2                   =		#{ANSWER2}
+			,ANSWER3                   =		#{ANSWER3}
+			,ANSWER4                   =		#{ANSWER4}
+			,ANSWER5                   =		#{ANSWER5}
+			,UPDT_DE                   =		NOW()   	
+ 	WHERE 	EMPMN_MANAGE_NO = #{EMPMN_MANAGE_NO}
+ 	AND		USER_NO = #{USER_NO}
+	</update>
+	
+	<!-- 학력사항 조회 -->
+	<select id="findCaAcdmcr" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.my.ApplyMapper.findCaAcdmcr */
+			EMPMN_MANAGE_NO				/* 채용관리번호(PK)(FK) */
+			,USER_NO            		/* 사용자번호(PK)(FK) */
+			,SN		                    /* 순번(PK) */
+			,ACDMCR_CODE               	/* 학력코드 */
+			,SCHUL_NM                   /* 학교명 */
+			,MAJOR1                     /* 전공1 */ 
+			,MAJOR2                     /* 전공2 */ 
+			,LOCPLC                     /* 소재지 */			
+			,ENTSCH_DE              	/* 입학일자 */
+			,ENTSCH_SE                  /* 입학구분 */			
+			,GRDTN_DE					/* 졸업일자 */
+			,GRDTN_SE                   /* 졸업구분 */
+			,SCRE                       /* 성적 */ 
+			,PSCORE                     /* 만점 */
+			,REGIST_DE                  /* 등록일자 */
+			,UPDT_DE                    /* 수정일자 */
+			,(SELECT CODE_NM 
+			FROM tb_cmmncode C 
+			WHERE CODE_GROUP_NO = '53' 
+			AND C.CODE = SUBSTRING(ACDMCR_CODE, 1, 1) ) AS ACD_LV_NM  /*학교수준명*/
+			,(SELECT CODE_NM 
+			FROM tb_cmmncode C 
+			WHERE CODE_GROUP_NO = '53' 
+			AND C.CODE = ACDMCR_CODE ) AS ACD_TYPE_NM  /*학교분류명*/
+			,(SELECT CODE_NM 
+			FROM tb_cmmncode C 
+			WHERE CODE_GROUP_NO = '54' 
+			AND C.CODE = ENTSCH_SE ) AS ENTSCH_SE_NM  /*입학구분명*/
+			,(SELECT CODE_NM 
+			FROM tb_cmmncode C 
+			WHERE CODE_GROUP_NO = '55' 
+			AND C.CODE = GRDTN_SE ) AS GRDTN_SE_NM  /*졸업구분명*/
+	FROM	TB_CA_ACDMCR
+	WHERE 	EMPMN_MANAGE_NO = #{EMPMN_MANAGE_NO}
+ 	AND		USER_NO = #{USER_NO}
+ 	ORDER BY SN			
+	</select>
+	
+	<!-- 교육이수내역 조회 -->
+	<select id="findCaEdc" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.my.ApplyMapper.findCaEdc */
+			EMPMN_MANAGE_NO				/* 채용관리번호(PK)(FK) */
+			,USER_NO                    /* 사용자번호(PK)(FK) */
+			,SN                         /* 순번(PK) */
+			,EDC_NM                     /* 교육명 */
+			,ECLST                      /* 교육기관 */
+			,DATE_FORMAT(EDC_BEGIN_DE, '%Y-%m-%d') AS EDC_BEGIN_DE	/* 교육시작일자 */
+			,DATE_FORMAT(EDC_END_DE, '%Y-%m-%d') AS EDC_END_DE		/* 교육종료일자 */			
+			,EDC_CN                     /* 교육내용 */ 
+			,REGIST_DE                  /* 등록일자 */ 
+			,UPDT_DE                    /* 수정일자 */
+	FROM	TB_CA_EDC
+	WHERE 	EMPMN_MANAGE_NO = #{EMPMN_MANAGE_NO}
+ 	AND		USER_NO = #{USER_NO}
+ 	ORDER BY SN
+	</select>
+	
+	<!-- 외국어능력 조회 -->
+	<select id="findCaFggg" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.my.ApplyMapper.findCaFggg */
+			EMPMN_MANAGE_NO				/* 채용관리번호(PK)(FK) */
+			,USER_NO                    /* 사용자번호(PK)(FK) */
+			,SN                         /* 순번(PK) */
+			,FGGG_NM                    /* 외국어명 */
+			,FGGG_LEVEL                 /* 외국어수준 */
+			,ATHRI_EXPR_NM              /* 공인시험명 */
+			,ACQS_SCORE                 /* 취득점수 */
+			,PSCORE                     /* 만점 */
+			,DATE_FORMAT(ACQS_DE, '%Y-%m-%d') AS ACQS_DE	/* 취득일자 */			
+			,REGIST_DE                  /* 등록일자 */ 
+			,UPDT_DE                    /* 수정일자 */
+	FROM	TB_CA_FGGG
+	WHERE 	EMPMN_MANAGE_NO = #{EMPMN_MANAGE_NO}
+ 	AND		USER_NO = #{USER_NO}
+ 	ORDER BY SN 	
+	</select>
+	
+	<!-- 해외연수경험 조회 -->
+	<select id="findCaSdytrn" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.my.ApplyMapper.findCaSdytrn */
+			EMPMN_MANAGE_NO				/* 채용관리번호(PK)(FK) */
+			,USER_NO                    /* 사용자번호(PK)(FK) */
+			,SN                         /* 순번(PK) */
+			,SDYTRN_NATION              /* 연수국가 */
+			,DATE_FORMAT(SDYTRN_BEGIN_DE, '%Y-%m-%d') AS SDYTRN_BEGIN_DE	/* 연수시작일자 */
+			,DATE_FORMAT(SDYTRN_END_DE, '%Y-%m-%d') AS SDYTRN_END_DE		/* 연수종료일자 */			
+			,SDYTRN_CN                  /* 연수내용 */
+			,EDC_CN                     /* 교육내용 */ 
+			,REGIST_DE                  /* 등록일자 */ 
+			,UPDT_DE                    /* 수정일자 */
+	FROM	TB_CA_SDYTRN
+	WHERE 	EMPMN_MANAGE_NO = #{EMPMN_MANAGE_NO}
+ 	AND		USER_NO = #{USER_NO}
+ 	ORDER BY SN
+	</select>
+	
+	<!-- 경력사항 조회 -->
+	<select id="findCaCareer" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.my.ApplyMapper.findCaCareer */
+			EMPMN_MANAGE_NO				/* 채용관리번호(PK)(FK) */
+			,USER_NO                    /* 사용자번호(PK)(FK) */
+			,SN                         /* 순번(PK) */
+			,WRC_NM                     /* 직장명 */
+			,DATE_FORMAT(BEGIN_DE, '%Y-%m-%d') AS BEGIN_DE	/* 시작일자 */
+			,DATE_FORMAT(END_DE, '%Y-%m-%d') AS END_DE		/* 종료일자 */			
+			,OFCPS                      /* 직위 */
+			,CHRG_JOB                   /* 담당업무 */
+			,REGIST_DE                  /* 등록일자 */ 
+			,UPDT_DE                    /* 수정일자 */
+	FROM	TB_CA_CAREER
+	WHERE 	EMPMN_MANAGE_NO = #{EMPMN_MANAGE_NO}
+ 	AND		USER_NO = #{USER_NO}
+ 	ORDER BY SN
+	</select>
+	
+	<!-- 자격사항 조회 -->
+	<select id="findCaQualf" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.my.ApplyMapper.findCaQualf */
+			EMPMN_MANAGE_NO				/* 채용관리번호(PK)(FK) */
+			,USER_NO                    /* 사용자번호(PK)(FK) */
+			,SN                         /* 순번(PK) */
+			,QUALF_NM                   /* 자격명 */
+			,GRAD                       /* 등급 */
+			,CRQFC_NO                   /* 자격증번호 */
+			,PBLICTE_INSTT              /* 발행기관 */
+			,DATE_FORMAT(ACQS_DE, '%Y-%m-%d') AS ACQS_DE	/* 취득일자 */			
+			,REGIST_DE                  /* 등록일자 */ 
+			,UPDT_DE                    /* 수정일자 */
+	FROM	TB_CA_QUALF
+	WHERE 	EMPMN_MANAGE_NO = #{EMPMN_MANAGE_NO}
+ 	AND		USER_NO = #{USER_NO}
+ 	ORDER BY SN
+	</select>
+	
+	<!-- 수상내역 조회 -->
+	<select id="findCaRwrpns" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.my.ApplyMapper.findCaRwrpns */
+			EMPMN_MANAGE_NO				/* 채용관리번호(PK)(FK) */
+			,USER_NO                     /* 사용자번호(PK)(FK) */
+			,SN                          /* 순번(PK) */
+			,AQTC_NM                     /* 수상명 */
+			,PBLICTE_INSTT               /* 발행기관 */
+			,DATE_FORMAT(OCCRRNC_ON, '%Y-%m-%d') AS OCCRRNC_ON	/* 발생일 */			
+			,RM                          /* 비고 */
+			,REGIST_DE                   /* 등록일자 */ 
+			,UPDT_DE                     /* 수정일자 */
+	FROM	TB_CA_RWRPNS
+	WHERE 	EMPMN_MANAGE_NO = #{EMPMN_MANAGE_NO}
+ 	AND		USER_NO = #{USER_NO}
+ 	ORDER BY SN
+	</select>
+	
+	<!-- 필터 조회 -->
+	<select id="findFilter" resultType="Map">
+	SELECT  /* ProgramID=biz.tech.mapif.my.ApplyMapper.findFilter */
+		FLTR_NM						/* 필터 구분명 	*/
+		, ATRB						/* 속성 			*/
+	FROM TB_EMPMN_FILTER
+	WHERE FLTR_SE = #{ad_select}
+	</select>
+	
+	<!-- 학력사항 등록 -->
+	<insert id="insertCaAcdmcr">
+	INSERT INTO TB_CA_ACDMCR /* ProgramID=biz.tech.mapif.my.ApplyMapper.insertCaAcdmcr */
+		        (
+		        EMPMN_MANAGE_NO				/* 채용관리번호(PK)(FK) */
+				,USER_NO            		/* 사용자번호(PK)(FK) */
+				,SN		                    /* 순번(PK) */
+				,ACDMCR_CODE               	/* 학력코드 */
+				,SCHUL_NM                   /* 학교명 */
+				,MAJOR1                     /* 전공1 */ 
+				,MAJOR2                     /* 전공2 */ 
+				,LOCPLC                     /* 소재지 */ 
+				,ENTSCH_DE                  /* 입학일자 */
+				,ENTSCH_SE                  /* 입학구분 */
+				,GRDTN_DE                   /* 졸업일자 */
+				,GRDTN_SE                   /* 졸업구분 */
+				,SCRE                       /* 성적 */ 
+				,PSCORE                     /* 만점 */
+				,REGIST_DE                  /* 등록일자 */
+				,UPDT_DE                    /* 수정일자 */			
+		        )
+         VALUES
+                (                 
+				 #{EMPMN_MANAGE_NO}
+				,#{USER_NO}
+				,#{SN}
+				,#{ACDMCR_CODE}
+				,#{SCHUL_NM}
+				,#{MAJOR1}
+				,#{MAJOR2}
+				,#{LOCPLC}
+				,#{ENTSCH_DE}
+				,#{ENTSCH_SE}
+				,#{GRDTN_DE}
+				,#{GRDTN_SE}
+				,#{SCRE}
+				,#{PSCORE}
+				,NOW()
+				,#{UPDT_DE}						
+                )
+	</insert>
+	
+	<!-- 교육이수내역 등록 -->
+	<insert id="insertCaEdc">
+	INSERT INTO TB_CA_EDC /* ProgramID=biz.tech.mapif.my.ApplyMapper.insertCaEdc */
+		        (
+	        	EMPMN_MANAGE_NO				/* 채용관리번호(PK)(FK) */
+				,USER_NO                    /* 사용자번호(PK)(FK) */
+				,SN                         /* 순번(PK) */
+				,EDC_NM                     /* 교육명 */
+				,ECLST                      /* 교육기관 */
+				,EDC_BEGIN_DE               /* 교육시작일자 */
+				,EDC_END_DE                 /* 교육종료일자 */ 
+				,EDC_CN                     /* 교육내용 */ 
+				,REGIST_DE                  /* 등록일자 */ 
+				,UPDT_DE                    /* 수정일자 */ 		        
+		        )
+         VALUES
+                (                 
+				 #{EMPMN_MANAGE_NO}
+				,#{USER_NO}
+				,#{SN}
+				,#{EDC_NM}
+				,#{ECLST}
+				,#{EDC_BEGIN_DE}
+				,#{EDC_END_DE}
+				,#{EDC_CN}
+				,NOW()
+				,#{UPDT_DE}
+                )
+	</insert>
+	
+	<!-- 외국어능력 등록 -->
+	<insert id="insertCaFggg">
+	INSERT INTO TB_CA_FGGG /* ProgramID=biz.tech.mapif.my.ApplyMapper.insertCaFggg */
+		        (
+		        EMPMN_MANAGE_NO				/* 채용관리번호(PK)(FK) */
+				,USER_NO                    /* 사용자번호(PK)(FK) */
+				,SN                         /* 순번(PK) */
+				,FGGG_NM                    /* 외국어명 */
+				,FGGG_LEVEL                 /* 외국어수준 */
+				,ATHRI_EXPR_NM              /* 공인시험명 */
+				,ACQS_SCORE                 /* 취득점수 */
+				,PSCORE                     /* 만점 */
+				,ACQS_DE                    /* 취득일자 */
+				,REGIST_DE                  /* 등록일자 */ 
+				,UPDT_DE                    /* 수정일자 */ 		        	
+		        )
+         VALUES
+                (                 
+				 #{EMPMN_MANAGE_NO}
+				,#{USER_NO}
+				,#{SN}
+				,#{FGGG_NM}
+				,#{FGGG_LEVEL}
+				,#{ATHRI_EXPR_NM}
+				,#{ACQS_SCORE}
+				,#{PSCORE}
+				,#{ACQS_DE}
+				,NOW()
+				,#{UPDT_DE}		
+                )
+	</insert>
+	
+	<!-- 해외연수경험 등록 -->
+	<insert id="insertCaSdytrn">
+	INSERT INTO TB_CA_SDYTRN /* ProgramID=biz.tech.mapif.my.ApplyMapper.insertCmpnyIntrcnInfo */
+		        (
+		       	EMPMN_MANAGE_NO				/* 채용관리번호(PK)(FK) */
+				,USER_NO                    /* 사용자번호(PK)(FK) */
+				,SN                         /* 순번(PK) */
+				,SDYTRN_NATION              /* 연수국가 */
+				,SDYTRN_BEGIN_DE            /* 연수시작일자 */
+				,SDYTRN_END_DE              /* 연수종료일자 */
+				,SDYTRN_CN                  /* 연수내용 */
+				,EDC_CN                     /* 교육내용 */ 
+				,REGIST_DE                  /* 등록일자 */ 
+				,UPDT_DE                    /* 수정일자 */		       	
+		        )
+         VALUES
+                (                 
+				 #{EMPMN_MANAGE_NO}
+				,#{USER_NO}
+				,#{SN}
+				,#{SDYTRN_NATION}
+				,#{SDYTRN_BEGIN_DE}
+				,#{SDYTRN_END_DE}
+				,#{SDYTRN_CN}
+				,#{EDC_CN}
+				,#{REGIST_DE}
+				,#{UPDT_DE}				 
+                )
+	</insert>
+	
+	<!-- 경력사항 등록 -->
+	<insert id="insertCaCareer">
+	INSERT INTO TB_CA_CAREER /* ProgramID=biz.tech.mapif.my.ApplyMapper.insertCmpnyIntrcnInfo */
+		        (
+		        EMPMN_MANAGE_NO				/* 채용관리번호(PK)(FK) */
+				,USER_NO                    /* 사용자번호(PK)(FK) */
+				,SN                         /* 순번(PK) */
+				,WRC_NM                     /* 직장명 */
+				,BEGIN_DE                   /* 시작일자 */ 
+				,END_DE                     /* 종료일자 */
+				,OFCPS                      /* 직위 */
+				,CHRG_JOB                   /* 담당업무 */
+				,REGIST_DE                  /* 등록일자 */ 
+				,UPDT_DE                    /* 수정일자 */ 		        
+		        )
+         VALUES
+                (                 
+				 #{EMPMN_MANAGE_NO}
+				,#{USER_NO}
+				,#{SN}
+				,#{WRC_NM}
+				,#{BEGIN_DE}
+				,#{END_DE}
+				,#{OFCPS}
+				,#{CHRG_JOB}
+				,#{REGIST_DE}
+				,#{UPDT_DE}				
+                )
+	</insert>
+	
+	<!-- 자격사항 등록 -->
+	<insert id="insertCaQualf">
+	INSERT INTO TB_CA_QUALF /* ProgramID=biz.tech.mapif.my.ApplyMapper.insertCmpnyIntrcnInfo */
+		        (
+		        EMPMN_MANAGE_NO				/* 채용관리번호(PK)(FK) */
+				,USER_NO                    /* 사용자번호(PK)(FK) */
+				,SN                         /* 순번(PK) */
+				,QUALF_NM                   /* 자격명 */
+				,GRAD                       /* 등급 */
+				,CRQFC_NO                   /* 자격증번호 */
+				,PBLICTE_INSTT              /* 발행기관 */
+				,ACQS_DE                    /* 취득일자 */
+				,REGIST_DE                  /* 등록일자 */ 
+				,UPDT_DE                    /* 수정일자 */		        		
+		        )
+         VALUES
+                (                 
+				#{EMPMN_MANAGE_NO}
+				,#{USER_NO}
+				,#{SN}
+				,#{QUALF_NM}
+				,#{GRAD}
+				,#{CRQFC_NO}
+				,#{PBLICTE_INSTT}
+				,#{ACQS_DE}
+				,#{REGIST_DE}
+				,#{UPDT_DE}				
+                )
+	</insert>
+	
+	<!-- 수상내역 등록 -->
+	<insert id="insertCaRwrpns">
+	INSERT INTO TB_CA_RWRPNS /* ProgramID=biz.tech.mapif.my.ApplyMapper.insertCmpnyIntrcnInfo */
+		        (
+		        EMPMN_MANAGE_NO				/* 채용관리번호(PK)(FK) */
+				,USER_NO                     /* 사용자번호(PK)(FK) */
+				,SN                          /* 순번(PK) */
+				,AQTC_NM                     /* 수상명 */
+				,PBLICTE_INSTT               /* 발행기관 */
+				,OCCRRNC_ON                  /* 발생일 */
+				,RM                          /* 비고 */
+				,REGIST_DE                   /* 등록일자 */ 
+				,UPDT_DE                     /* 수정일자 */ 		        		
+		        )
+         VALUES
+                (                 
+				#{EMPMN_MANAGE_NO}
+				,#{USER_NO}
+				,#{SN}
+				,#{AQTC_NM}
+				,#{PBLICTE_INSTT}
+				,#{OCCRRNC_ON}
+				,#{RM}
+				,#{REGIST_DE}
+				,#{UPDT_DE}
+                )
+	</insert>
+	
+	<!-- 채용 제목 필터 등록 -->
+	<insert id="insertTitleFilter">
+	INSERT INTO TB_EMPMN_FILTER /* ProgramId = biz.tech.mapif.my.ApplyMapper.insertTitleFilter */
+		(
+			FLTR_SE												/* 필터 구분     */
+			, FLTR_NM											/* 필터 구분명  */
+			, ATRB												/* 속성		  */
+			, APPLC_SE
+			, APPLC_NM
+		)
+	VALUES
+		(
+			'a'
+			, '채용공고 제목'
+			, #{ad_hire_word}
+			, 'a'
+			, 'b'
+		)
+	</insert>
+	
+	<!-- 채용 직종 필터 등록 -->
+	<insert id="insertJobFilter">
+	INSERT INTO TB_EMPMN_FILTER /* ProgramId = biz.tech.mapif.my.ApplyMapper.insertJobFilter */
+		(
+			FLTR_SE												/* 필터 구분     */
+			, FLTR_NM											/* 필터 구분명  */
+			, ATRB												/* 속성		  */
+			, APPLC_SE
+			, APPLC_NM
+		)
+	VALUES
+		(
+			'b'
+			, '직종'
+			, #{ad_job_word}
+			, 'b'
+			, 'b'
+		)
+	</insert>
+
+	<!-- 채용 정렬조건 등록 -->
+	<insert id="insertOrderbyFilter">
+	INSERT INTO TB_EMPMN_FILTER /* ProgramId = biz.tech.mapif.my.ApplyMapper.insertOrderbyFilter */
+		(
+			FLTR_SE												/* 필터 구분     */
+			, FLTR_NM											/* 필터 구분명  */
+			, ATRB												/* 속성		  */
+			, APPLC_SE
+			, APPLC_NM
+		)
+	VALUES
+		(
+			'c'
+			, '정렬조건'
+			, #{ad_range}
+			, 'c'
+			, 'c'
+		)
+	</insert>
+	
+	<!-- 학력사항 삭제 -->
+	<delete id="deleteCaAcdmcr">
+	DELETE 	/* ProgramID=biz.tech.mapif.my.ApplyMapper.deleteCaAcdmcr */
+	FROM 	TB_CA_ACDMCR
+	WHERE 	USER_NO   = #{USER_NO}
+ 	AND  	EMPMN_MANAGE_NO = #{EMPMN_MANAGE_NO} 	
+	</delete>	
+	
+	<!-- 교육이수내역 삭제 -->
+	<delete id="deleteCaEdc">
+	DELETE 	/* ProgramID=biz.tech.mapif.my.ApplyMapper.deleteCaEdc */
+	FROM 	TB_CA_EDC
+	WHERE 	USER_NO   = #{USER_NO}
+ 	AND  	EMPMN_MANAGE_NO = #{EMPMN_MANAGE_NO} 	
+	</delete>	
+	
+	<!-- 외국어능력 삭제 -->
+	<delete id="deleteCaFggg">
+	DELETE 	/* ProgramID=biz.tech.mapif.my.ApplyMapper.deleteCaFggg */
+	FROM 	TB_CA_FGGG
+	WHERE 	USER_NO   = #{USER_NO}
+ 	AND  	EMPMN_MANAGE_NO = #{EMPMN_MANAGE_NO} 	
+	</delete>
+	
+	<!-- 해외연수경험 삭제 -->
+	<delete id="deleteCaSdytrn">
+	DELETE 	/* ProgramID=biz.tech.mapif.my.ApplyMapper.deleteCaSdytrn */
+	FROM 	TB_CA_SDYTRN
+	WHERE 	USER_NO   = #{USER_NO}
+ 	AND  	EMPMN_MANAGE_NO = #{EMPMN_MANAGE_NO} 	
+	</delete>
+		
+	<!-- 경력사항 삭제 -->
+	<delete id="deleteCaCareer">
+	DELETE 	/* ProgramID=biz.tech.mapif.my.ApplyMapper."deleteCaCareer" */
+	FROM 	TB_CA_CAREER
+	WHERE 	USER_NO   = #{USER_NO}
+ 	AND  	EMPMN_MANAGE_NO = #{EMPMN_MANAGE_NO} 	
+	</delete>
+	
+	<!-- 자격사항 삭제 -->
+	<delete id="deleteCaQualf">
+	DELETE 	/* ProgramID=biz.tech.mapif.my.ApplyMapper.deleteCaQualf */
+	FROM 	TB_CA_QUALF
+	WHERE 	USER_NO   = #{USER_NO}
+ 	AND  	EMPMN_MANAGE_NO = #{EMPMN_MANAGE_NO} 	
+	</delete>
+
+	<!-- 수상내역 삭제 -->
+	<delete id="deleteCaRwrpns">
+	DELETE 	/* ProgramID=biz.tech.mapif.my.ApplyMapper.deleteCaRwrpns */
+	FROM 	TB_CA_RWRPNS
+	WHERE 	USER_NO   = #{USER_NO}
+ 	AND  	EMPMN_MANAGE_NO = #{EMPMN_MANAGE_NO} 	
+	</delete>
+	
+	<delete id="deleteTitleFilter">
+	DELETE 	/* ProgrmId = biz.tech.mapif.my.ApplyMapper.deleteTitleFilter */
+	FROM 	TB_EMPMN_FILTER
+	WHERE	FLTR_SE = 'a'
+	</delete>
+	
+	<delete id="deleteJobFilter">
+	DELETE 	/* ProgrmId = biz.tech.mapif.my.ApplyMapper.deleteJobFilter */
+	FROM 	TB_EMPMN_FILTER
+	WHERE	FLTR_SE = 'b'
+	</delete>
+	
+	<delete id="deleteOrderbyFilter">
+	DELETE 	/* ProgrmId = biz.tech.mapif.my.ApplyMapper.deleteOrderbyFilter */
+	FROM 	TB_EMPMN_FILTER
+	WHERE	FLTR_SE = 'c'
+	</delete>
+	
+			
+	
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

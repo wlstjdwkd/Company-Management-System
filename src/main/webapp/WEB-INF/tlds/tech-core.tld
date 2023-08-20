@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
+    version="2.0">
+
+    <description>tech Tag Library</description>
+    <tlib-version>1.1</tlib-version>
+    <short-name>tech-tld</short-name>
+    <uri>http://www.tech.kr/jsp/jstl</uri>
+    
+    <!-- Pagging Tag -->
+    <tag>
+        <description>
+        <![CDATA[
+        <pre>
+            <table /> 태그 목록에서 결과 목록이 없는 경우 메시지 및 <tr/><td/> 자동생성
+            pager : 페이징 목록 객체(Pager)
+            script : 페이징 결과 페이지 번호 클릭시 호출될 JavaScript 함수명 () 없이 명칭만
+                     기본값 : jsMovePage
+                     예: jsAlertAndMovePage
+            page : 별도 UI 사용시
+                  기본값 : pager/defaultPager.jsp.jsp (실제경로 /views/taglib/pager/defaultPager.jsp.jsp)
+
+            예 : <ap:pager pager="${pager}" colspan="6" msg="No Data in Preparation" />
+        </pre>
+        ]]>
+        </description>
+        <name>pager</name>
+        <tag-class>com.infra.taglib.include.PagerTag</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>pager</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>script</name>
+            <required>false</required>
+        </attribute>
+        <attribute>
+            <name>page</name>
+            <required>false</required>
+        </attribute>
+        <attribute>
+            <name>addJsParam</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>        
+    </tag>
+    
+    <!-- PagerParam Tag -->
+    <tag>
+        <description>
+        <![CDATA[
+        <pre>
+            script : 페이징 결과 페이지 번호 클릭시 호출될 JavaScript 함수명 () 없이 명칭만
+                     기본값 : jsSetPageParam
+                     예: jsAlertAndMovePage
+            page : 별도 UI 사용시
+                  기본값 : pager/defaultPagerParam.jsp.jsp (실제경로 /views/taglib/pager/defaultPagerParam.jsp.jsp)
+
+            예 : <ap:pagerParam />
+        </pre>
+        ]]>
+        </description>
+        <name>pagerParam</name>
+        <tag-class>com.infra.taglib.include.PagerParamTag</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>script</name>
+            <required>false</required>
+        </attribute>
+        <attribute>
+            <name>page</name>
+            <required>false</required>
+        </attribute>
+        <attribute>
+            <name>addJsRowParam</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+    
+	<tag>
+        <description>
+        <![CDATA[
+        <pre>
+        JavaScript 중 프레임워크에 직접적인 관련이 있는 것들을 관리하는 테그로
+        css와 js 파일 셋트로 제공된다.
+        이는 버전업 관리등을 일괄 적으로 적용하기 위해 사용한다.
+        (/config/commons/js-plugins.xml 파일 내용을 참조)
+
+        * type은 현재 openworks, spi 두개의 네이밍을 지원한다.
+        * items 설정되지 않는 경우 core에 해당하는 항목만 자동으로 설정된다.
+
+        사용 예 :
+        <ap:jsTag items="jquery,validate,form,blockUI" type="www" />
+        <ap:jsTag items="admin-core,validate" type="admin" />
+        </pre>
+        ]]>
+        </description>
+        <name>jsTag</name>
+        <tag-class>com.infra.taglib.include.ScriptIncludeTag</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>type</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>items</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+    
+    <tag>
+        <description>
+        <![CDATA[
+        <pre>
+            그룹 Code값으로 하위 멤버를 selectbox, checkbox, radio등으로 표시
+            예 : <ap:code id="authCdList" grpCd="1" defaultLabel="-- 선택 --" />
+        </pre>
+        ]]>
+        </description>
+        <name>code</name>
+        <tag-class>com.infra.taglib.include.CodeTag</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <description>select(default) | checkbox | radio</description>
+            <name>type</name>
+            <required>false</required>
+        </attribute>
+        <attribute>
+            <name>id</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>grpCd</name>
+            <required>true</required>
+        </attribute>        
+        <attribute>
+            <name>defaultLabel</name>
+            <required>false</required>
+        </attribute>        
+        <attribute>
+            <name>size</name>
+            <required>false</required>
+        </attribute>
+        <attribute>
+            <name>title</name>
+            <required>false</required>
+        </attribute>
+        <attribute>
+            <name>option</name>
+            <required>false</required>
+        </attribute>
+        <attribute>
+            <name>name</name>
+            <required>false</required>
+        </attribute>
+        <attribute>
+            <name>onclick</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>onchange</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>selectedCd</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>ignoreCd</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>disabled</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>includeSelect</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>       
+    </tag>
+    
+    <tag>
+        <description>
+        <![CDATA[
+        <pre>
+            임의의 jsp 페이지 include (/WEB-INF/views/taglib/ 이하 경로에 위치한 jsp)
+            page : include 대상 jsp 파일
+
+            예 : <ap:include page="pager/mgrPager.jsp" />
+        </pre>
+        ]]>
+        </description>
+        <name>include</name>
+        <tag-class>com.infra.taglib.include.IncludeTag</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>page</name>
+            <required>true</required>
+        </attribute>
+    </tag>
+    
+    <tag>
+        <description>
+        <![CDATA[
+        <pre>
+            JSP에서 GlobalConst를 선언하지 않고 바로 사용하도록 등록
+
+            예 : <ap:globalConst />
+        </pre>
+        ]]>
+        </description>
+        <name>globalConst</name>
+        <tag-class>com.infra.taglib.include.GlobalConstTag</tag-class>
+        <body-content>empty</body-content>        
+    </tag>
+    
+    
+    <tag>
+        <description>
+        <![CDATA[
+        <pre>
+            histrical trail 출력
+            pageTitle : 강제 출력할 페이지 타이틀 
+            menuNo : 현재 메뉴 번호
+
+            예 : <ap:trail menuNo="3" />
+        </pre>
+        ]]>
+        </description>
+        <name>trail</name>
+        <tag-class>com.infra.taglib.include.HistoricalTrail</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>pageTitle</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>menuNo</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>onlyTitle</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+    
+    <tag>
+        <description>
+        <![CDATA[
+        <pre>
+            PageTitle 출력
+            pageTitle : 강제 출력할 페이지 타이틀 
+            menuNo : 현재 메뉴 번호
+
+            예 : <ap:title menuNo="3" />
+        </pre>
+        ]]>
+        </description>
+        <name>title</name>
+        <tag-class>com.infra.taglib.include.PageTitle</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>menuNo</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+    
+    <tag>
+        <description>
+        <![CDATA[
+        <pre>
+            대상 객체에서 DB field 명에 해당되는 값을 출력.
+            DB Table 메타 데이터를 이용하여 VO 에서 값을 가져 오는 경우 사용.
+            예 : <ap:bean-util obj="${vo}" field="FILE_ID" />
+        </pre>
+        ]]>
+        </description>
+        <name>bean-util</name>
+        <tag-class>com.infra.taglib.include.BeanUtilTag</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>obj</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>field</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+    
+</taglib>

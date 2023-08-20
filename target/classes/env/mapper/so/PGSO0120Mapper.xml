@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="biz.tech.mapif.so.PGSO0120Mapper">
+	<!-- 대량메일관리 리스트 조회 -->
+	<select id="selectLqttEmailInfo" resultType="Map">
+		SELECT A.LQTT_EMAIL_ID
+		     , A.EMAIL_SJ
+		     , A.EMAIL_CN
+		     , A.RGSDE
+		     , A.REGISTER
+		     , (SELECT NM FROM tb_emplyr WHERE USER_NO = A.REGISTER) AS REGISTER_NM
+		     , A.UPDDE
+		     , A.UPDUSR
+		  FROM TB_LQTT_EMAIL_INFO A
+		 WHERE 1=1
+		<if test="search_word != null and search_word != ''">
+			<if test="search_type == 'EMAIL_SJ'">
+		   AND A.EMAIL_SJ LIKE CONCAT('%', #{search_word}, '%')
+			</if>
+			<if test="search_type == 'REGISTER'">
+		   AND A.REGISTER IN (SELECT USER_NO FROM tb_emplyr WHERE NM LIKE CONCAT('%', #{search_word}, '%')
+			</if>
+		</if>
+		 ORDER BY A.RGSDE DESC
+		 LIMIT #{limitFrom}, #{limitTo}
+	</select>
+
+	<!-- 대량메일관리 리스트 카운트 -->
+	<select id="selectLqttEmailInfoCount" resultType="int">
+		SELECT COUNT(*) AS totcnt
+		  FROM TB_LQTT_EMAIL_INFO
+		 WHERE 1=1
+		<if test="search_word != null and search_word != ''">
+			<if test="search_type == 'EMAIL_SJ'">
+		   AND EMAIL_SJ LIKE CONCAT('%', #{search_word}, '%')
+			</if>
+			<if test="search_type == 'REGISTER'">
+		   AND REGISTER LIKE CONCAT('%', #{search_word}, '%')
+			</if>
+		</if>
+	</select>
+	
+	<!-- 대량메일관리 상세 조회 -->
+	<select id="selectLqttEmailInfoDetail" resultType="Map">
+		SELECT LQTT_EMAIL_ID
+		     , EMAIL_SJ
+		     , EMAIL_CN
+		     , RGSDE
+		     , REGISTER
+		     , UPDDE
+		     , UPDUSR
+		  FROM TB_LQTT_EMAIL_INFO
+		 WHERE LQTT_EMAIL_ID = #{LQTT_EMAIL_ID}
+	</select>
+	
+	<!-- 대량메일관리 등록 -->
+	<insert id="insertLqttEmailInfo">
+		INSERT INTO TB_LQTT_EMAIL_INFO
+		     ( LQTT_EMAIL_ID
+		     , EMAIL_SJ
+		     , EMAIL_CN
+		     , RGSDE
+		     , REGISTER
+		     , UPDDE
+		     , UPDUSR
+		     )
+		VALUES
+		     ( #{LQTT_EMAIL_ID}
+		     , #{EMAIL_SJ}
+		     , #{EMAIL_CN}
+		     , NOW()
+		     , #{REGISTER}
+		     , NOW()
+		     , #{UPDUSR}
+		     )
+	</insert>
+	
+	<!-- 대량메일관리 수정 -->
+	<update id="updateLqttEmailInfo">
+		UPDATE TB_LQTT_EMAIL_INFO
+		   SET EMAIL_SJ = #{EMAIL_SJ}
+		     , EMAIL_CN = #{EMAIL_CN}
+		     , UPDDE = NOW()
+		     , UPDUSR = #{UPDUSR}
+		 WHERE LQTT_EMAIL_ID = #{LQTT_EMAIL_ID}
+	</update>
+	
+	<!-- 대량메일관리 삭제 -->
+	<delete id="deleteLqttEmailInfo">
+		DELETE FROM TB_LQTT_EMAIL_INFO
+		 WHERE LQTT_EMAIL_ID = #{LQTT_EMAIL_ID}
+	</delete>
+	
+	<!-- 대량메일수신자 전체삭제 -->
+	<delete id="deleteLqttEmailAllRcver">
+		DELETE FROM TB_LQTT_EMAIL_RCVER
+		 WHERE LQTT_EMAIL_ID = #{LQTT_EMAIL_ID}
+	</delete>
+	
+	<!-- 대량메일수신자 리스트 조회 -->
+	<select id="selectLqttEmailRcver" resultType="Map">
+		SELECT LQTT_EMAIL_ID
+		     , RCVER_EMAIL
+		     , RCVER_CL
+		     , CASE WHEN RCVER_CL = '1' THEN '개인'
+		            WHEN RCVER_CL = '2' THEN '기업'
+		            WHEN RCVER_CL = '3' THEN '직접입력'
+		       END AS RCVER_CL_NM
+		     , REGIST_TIME
+		     , IF(mail.SNDNG_STTUS IS NULL, '-', IF(mail.SNDNG_STTUS = 'F', '발송실패', IF(mail.SNDNG_STTUS = 'S', DATE_FORMAT(mail.TREDE, '%y-%m-%d %H:%i:%s'), '발송대기'))) AS SNDNG_TIME
+		  FROM TB_LQTT_EMAIL_RCVER rcv
+		  LEFT JOIN (SELECT RCVER_EMAIL_ADRES, SNDNG_STTUS, PARAMTR1, TREDE FROM TB_MAILSEND_MNG ORDER BY EMAIL_NO DESC) mail
+		    ON rcv.LQTT_EMAIL_ID = mail.PARAMTR1
+		   AND rcv.RCVER_EMAIL = mail.RCVER_EMAIL_ADRES
+		 WHERE rcv.LQTT_EMAIL_ID = #{LQTT_EMAIL_ID}
+		<if test="search_type != null and search_type != ''">
+			AND rcv.RCVER_CL = #{search_type}
+		</if>
+	     GROUP BY rcv.RCVER_EMAIL
+	     ORDER BY rcv.REGIST_TIME DESC, rcv.RCVER_CL ASC, rcv.RCVER_EMAIL ASC
+		 LIMIT #{limitFrom}, #{limitTo}
+	</select>
+
+	<!-- 대량메일수신자 리스트 카운트 -->
+	<select id="selectLqttEmailRcverCount" resultType="int">
+		SELECT COUNT(*) AS totcnt
+		  FROM TB_LQTT_EMAIL_RCVER
+		 WHERE LQTT_EMAIL_ID = #{LQTT_EMAIL_ID}
+		<if test="search_type != null and search_type != ''">
+			AND RCVER_CL = #{search_type}
+		</if>
+	</select>
+	
+	<!-- 대량메일수신자 삭제 -->
+	<delete id="deleteLqttEmailRcver">
+		DELETE FROM TB_LQTT_EMAIL_RCVER
+		 WHERE LQTT_EMAIL_ID = #{LQTT_EMAIL_ID}
+		   AND RCVER_EMAIL IN
+		<foreach collection="emailList" item="email" index="index" separator="," open="(" close=")">
+			#{email}
+		</foreach>
+	</delete>
+	
+	<!-- 회원 이메일 리스트 조회 -->
+	<select id="selectUserEmailList" resultType="Map">
+		SELECT DISTINCT EMAIL
+	      FROM tb_userinfo USR
+	         , tb_gnrluser GNR
+	     WHERE USR.USER_NO = GNR.USER_NO
+	       AND USR.STTUS = '01'
+	       AND GNR.EMAIL_RECPTN_AGRE = 'Y'
+	     UNION  
+	    SELECT DISTINCT EMAIL
+	      FROM tb_userinfo USR
+	         , tb_entrprsuser ENT
+	     WHERE USR.USER_NO = ENT.USER_NO
+	       AND USR.STTUS = '01'
+	       AND ENT.EMAIL_RECPTN_AGRE = 'Y'
+	</select>
+	
+	<!-- 이메일 수신거부 메일 리스트 조회 -->
+	<select id="selectRejectUserEmailList" resultType="Map">
+		SELECT DISTINCT EMAIL
+	      FROM tb_gnrluser GNR
+	     WHERE GNR.EMAIL_RECPTN_AGRE = 'N'
+	     UNION  
+	    SELECT DISTINCT EMAIL
+	      FROM tb_entrprsuser ENT
+	     WHERE ENT.EMAIL_RECPTN_AGRE = 'N'
+	</select>
+	
+	<!-- 기 등록 메일 리스트 조회 -->
+	<select id="selectDuplUserEmailList" resultType="Map">
+		SELECT DISTINCT RCVER_EMAIL AS EMAIL
+		  FROM TB_LQTT_EMAIL_RCVER
+		 WHERE LQTT_EMAIL_ID = #{LQTT_EMAIL_ID}
+	</select>
+	
+	<!-- 일반 회원 이메일 리스트 조회 -->
+	<select id="selectGnUserEmailList" resultType="Map">
+		SELECT DISTINCT EMAIL
+	      FROM tb_userinfo USR
+	         , tb_gnrluser GNR
+	     WHERE USR.USER_NO = GNR.USER_NO
+	       AND USR.STTUS = '01'
+	       AND GNR.EMAIL_RECPTN_AGRE = 'Y'
+	</select>
+	
+	<!-- 기업 회원 이메일 리스트 조회 -->
+	<select id="selectEpUserEmailList" resultType="Map">
+		SELECT DISTINCT EMAIL
+	      FROM tb_userinfo USR
+	         , tb_entrprsuser ENT
+	     WHERE USR.USER_NO = ENT.USER_NO
+	       AND USR.STTUS = '01'
+	       AND ENT.EMAIL_RECPTN_AGRE = 'Y'
+	</select>
+	
+	<!-- 대량메일수신자 등록 -->
+	<insert id="insertLqttEmailRcver">
+		INSERT INTO TB_LQTT_EMAIL_RCVER
+		     ( LQTT_EMAIL_ID
+		     , RCVER_EMAIL
+		     , RCVER_CL
+		     , REGIST_TIME
+		     )
+		VALUES
+		     ( #{LQTT_EMAIL_ID}
+		     , #{RCVER_EMAIL}
+		     , #{RCVER_CL}
+		     , NOW()
+		     )
+		    ON DUPLICATE KEY UPDATE
+		       RCVER_CL = #{RCVER_CL}
+		     , REGIST_TIME = NOW()
+	</insert>
+	
+	<!-- 전체 대량메일수신자 조회 -->
+	<select id="selectAllLqttEmailRcver" resultType="String">
+		SELECT RCVER_EMAIL
+		  FROM TB_LQTT_EMAIL_RCVER
+		 WHERE LQTT_EMAIL_ID = #{LQTT_EMAIL_ID}
+		 <if test="search_type != null and search_type != ''">
+			AND RCVER_CL = #{search_type}
+		 </if>
+	</select>
+	
+	<!-- 이메일 발송요청 등록 -->
+	<insert id="insertLqttRequestSendEmail">
+		INSERT INTO TB_MAILSEND_MNG	(
+		       PRPOS
+		     , EMAIL_SJ
+		     , EMAIL_CN
+		     , TMPLAT_USE_AT
+		     , SNDR_EMAIL_ADRES
+		     , RCVER_EMAIL_ADRES
+		     , SNDNG_STTUS
+		     , PARAMTR1
+		     , RGSDE
+		)
+		VALUES (
+		       #{PRPOS}
+		     , #{EMAIL_SJ}
+		     , #{EMAIL_CN}
+		     , #{TMPLAT_USE_AT}
+		     , #{SNDR_EMAIL_ADRES}
+		     , #{RCVER_EMAIL_ADRES}
+		     , #{SNDNG_STTUS}
+		     , #{PARAMTR1}
+		     , NOW()
+		)
+	</insert>
+</mapper>

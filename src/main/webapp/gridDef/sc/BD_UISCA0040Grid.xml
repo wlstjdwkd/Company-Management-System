@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rows> 
+	<head>
+		<beforeInit>
+			<call command="setStyle"><param>text-align:center;</param></call>
+			<call command="setImagePath"><param>../../../../script/dhtmlxSuite/codebase/imgs/</param></call>
+		</beforeInit>
+		
+		<afterInit>
+			<call command="setColumnHidden"><param>0</param><param>true</param></call>
+			<call command="setNumberFormat"><param>0,000</param><param>5</param></call>
+		</afterInit>
+		
+		<column id="exnum" width="0" type="ro" align="center" sort="int">exnum</column>
+		<column id="emnum" width="10" type="ro" align="center" sort="int">사원번호</column>  
+		<column id="hdate" width="25" type="ro" align="center" sort="str">일자</column>
+		<column id="history" width="20" type="ro" align="center" sort="str">내역</column>
+		<column id="fee" width="30" type="ro" align="center" sort="str">상호</column>
+		<column id="price" width="15" type="ron" align="center" sort="int">금액</column>
+		
+		<settings>
+			<colwidth>%</colwidth>
+		</settings>
+	</head>
+</rows>

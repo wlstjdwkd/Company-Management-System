@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<!--conf
+<sample>
+              <product version="4.0b1" edition="std"/>
+                     <modifications>
+                            <modified date="130911"/>
+                     </modifications>
+               </sample>
+-->
+<html>
+<head>
+	<title>Outer margins</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../../codebase/dhtmlx.css"/>
+	<script src="../../../../codebase/dhtmlx.js"></script>
+	<style>
+		html, body {
+			width: 100%;
+			height: 100%;
+			margin: 0px;
+			padding: 0px;
+			overflow: hidden;
+		}
+	</style>
+	<script>
+		
+		var myLayout;
+		function doOnLoad() {
+			myLayout = new dhtmlXLayoutObject({
+				parent: document.body,
+				pattern: "3L",
+				offsets: {
+					top: 20,
+					right: 5,
+					bottom: 20,
+					left: 5
+				}
+			});
+		}
+	</script>
+</head>
+<body onload="doOnLoad();">
+	
+</body>
+</html>

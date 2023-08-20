@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<!-- -->
+
+<configuration>
+	
+	<!-- Core JavaScript 관리 Configuration -->
+	<xml fileName="js-plugins.xml" encoding="UTF-8" />
+	
+	<!-- Board Configuration -->
+	<xml fileName="board-config.xml" encoding="UTF-8" />
+	
+</configuration>

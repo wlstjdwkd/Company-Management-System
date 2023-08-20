@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.comm.mapif.CodeMapper">
+
+	<resultMap id="CodeGroupListResult" type="hashmap">
+		<result property="codeGroupNo" 	column="codeGroupNo" />
+		<result property="codeGroupNm" 	column="codeGroupNm" />
+		<result property="codeGroupDc" 	column="codeGroupDc" />
+		<result property="codeCnt" 		column="codeCnt" />
+		<result property="rgsde" 		column="rgsde" />
+	</resultMap>
+	
+	<resultMap id="CodeGroupResult" type="hashmap">
+		<result property="codeGroupNm" column="codeGroupNm" />
+		<result property="codeGroupDc" column="codeGroupDc" />
+	</resultMap>
+	
+	<resultMap id="CodeListResult" type="hashmap">
+		<result property="code" 		column="code" />
+		<result property="codeNm" 		column="codeNm" />
+		<result property="codeDc" 		column="codeDc" />
+		<result property="outptOrdr" 	column="outptOrdr" />
+		<result property="useAt" 		column="useAt" />
+	</resultMap>
+
+	<!-- 공통코드 조회(코드그룹별)-->
+	<select id="findCodesByGroupNo" resultType="codeVO">
+	SELECT 	/* ProgramID=com.comm.mapif.CodeMapper.findCodesByGroupNo */
+				   code 			AS code			/* 코드 */
+				  ,code_dc			AS codeDc		/* 코드설명 */
+				  ,code_group_no	AS codeGroupNo	/* 코드그룹번호 */
+				  ,code_nm			AS codeNm		/* 코드명 */
+	  FROM		tb_cmmncode
+	 WHERE		code_group_no = #{param}
+	 	AND		use_at = 'Y'
+	 ORDER		BY outpt_ordr ASC	
+	</select>
+	
+	<!-- 공통코드그룹 목록갯수 -->
+	<select id="findCodeGroupListCnt" resultType="int">
+	SELECT	/* ProgramID=com.comm.mapif.CodeMapper.findCodeGroupListCnt */
+					COUNT(tb.code_group_no)
+	FROM (
+		SELECT 					cmg.code_group_no			
+		FROM					tb_cmmncodegroup cmg
+		LEFT OUTER JOIN		tb_cmmncode cmn 
+		ON						cmg.code_group_no = cmn.code_group_no
+	<where>
+		<!-- 검색조건 -->
+		<if test="searchKeyword != '' and searchKeyword != null and searchCondition != null and searchCondition != '' ">
+			<if test="searchCondition == 'codeGroupNm' ">AND	 cmg.code_group_nm LIKE CONCAT('%', #{searchKeyword}, '%')</if>
+			<if test="searchCondition == 'code' ">AND cmn.code LIKE CONCAT('%', #{searchKeyword}, '%')</if>
+			<if test="searchCondition == 'codeNm' ">AND cmn.code_nm LIKE CONCAT('%', #{searchKeyword}, '%')</if>
+		</if>
+	</where>
+	GROUP 		BY	cmg.code_group_no
+	) AS tb
+	</select>
+	
+	<!-- 공통코드그룹 목록조회 -->
+	<select id="findCodeGroupList" resultType="map">
+	SELECT	/* ProgramID=com.comm.mapif.CodeMapper.findCodeGroupList */
+					  cmg.code_group_no									AS codeGroupNo
+					, cmg.code_group_nm									AS codeGroupNm
+					, cmg.code_group_dc									AS codeGroupDc
+					, COUNT(cmn.code)										AS codeCnt
+					, DATE_FORMAT(cmg.rgsde, '%Y-%m-%d')		AS rgsde
+	FROM					tb_cmmncodegroup cmg
+	LEFT OUTER JOIN		tb_cmmncode cmn 
+	ON						cmg.code_group_no = cmn.code_group_no
+	<where>
+		<!-- 검색조건 -->
+		<if test="searchKeyword != '' and searchKeyword != null and searchCondition != null and searchCondition != '' ">
+			<if test="searchCondition == 'codeGroupNm' ">AND	 cmg.code_group_nm LIKE CONCAT('%', #{searchKeyword}, '%')</if>
+			<if test="searchCondition == 'code' ">AND cmn.code LIKE CONCAT('%', #{searchKeyword}, '%')</if>
+			<if test="searchCondition == 'codeNm' ">AND cmn.code_nm LIKE CONCAT('%', #{searchKeyword}, '%')</if>
+		</if>
+	</where>
+	GROUP 		BY	cmg.code_group_no
+	ORDER 		BY	cmg.rgsde DESC 
+	LIMIT			${limitFrom} , ${limitTo}
+	</select>
+	
+	<!-- 공통코드 조회 -->
+	<select id="findCodeGroup" resultType="map">
+	SELECT	/* ProgramID=com.comm.mapif.CodeMapper.findCodeGroup */
+					  code_group_nm						AS codeGroupNm
+					, code_group_dc						AS codeGroupDc
+	FROM		tb_cmmncodegroup
+	WHERE		code_group_no = #{codeGroupNo}
+	</select>
+	
+	<!--하위공통코드 갯수 조회 -->
+	<select id="findCodeListCnt" resultType="int">
+	SELECT	/* ProgramID=com.comm.mapif.CodeMapper.findCodeCnt */
+					COUNT(*)
+	FROM		tb_cmmncode
+	WHERE		code_group_no = #{codeGroupNo}
+	</select>
+	
+	<!-- 공통코드 목록 조회 -->
+	<select id="findCodeList" resultType="map">
+	SELECT	/* ProgramID=com.comm.mapif.CodeMapper.findCodeList */
+					  code									AS code
+					, code_nm								AS codeNm
+					, code_dc								AS codeDc
+					, outpt_ordr							AS outptOrdr
+					, use_at								AS useAt
+	FROM		tb_cmmncode
+	WHERE		code_group_no = #{codeGroupNo}
+	AND 		use_At = 'Y'
+	ORDER	BY	outpt_ordr ASC
+	</select>
+	
+	<!-- 코드 조회 -->
+	<select id="findCodeInfo" resultType="map">
+	SELECT	/* ProgramID=com.comm.mapif.CodeMapper.findCodeInfo */
+					  code									AS code
+					, code_nm								AS codeNm
+					, code_dc								AS codeDc
+					, outpt_ordr								AS outptOrdr
+					, use_at									AS useAt
+	FROM		tb_cmmncode
+	WHERE		code_group_no = #{codeGroupNo}
+		AND		code = #{code}
+	</select>
+	
+	<!-- 공통코드그룹 등록 -->
+	<insert id="insertCodeGroup">
+	INSERT	/* ProgramID=com.comm.mapif.CodeMapper.insertCodeGroup */
+	INTO		tb_cmmncodegroup (
+				  code_group_nm
+				, code_group_dc
+				, register
+				, rgsde
+				, updusr
+				, updde
+ 
+	) VALUES (
+				#{codeGroupNm}
+				, #{codeGroupDc}
+				, #{register}
+				, SYSDATE()
+				, #{updusr}
+				, SYSDATE()
+	)
+	</insert>
+	
+	<!-- 공통코드그룹번호 조회 -->
+	<select id="findLastCodeGroupNo" resultType="String">
+	SELECT	/* ProgramID=com.comm.mapif.CodeMapper.findLastCodeGroupNo */
+		<choose>
+			<when test="_databaseId == 'mysql'">
+				LAST_INSERT_ID()
+			</when>
+			<when test="_databaseId == 'tibero'">
+				NVL(MAX(code_group_no),0) AS CODE_GROUP_NO
+			</when>
+			<otherwise>
+				IFNULL(MAX(CODE_GROUP_NO), 0)
+			</otherwise>
+		</choose>
+		FROM tb_cmmncodegroup
+	</select>
+	
+	<!-- 공통코드 등록 -->
+	<insert id="insertCode">
+	INSERT	/* ProgramID=com.comm.mapif.CodeMapper.insertCode */
+	INTO		tb_cmmncode (
+				  code_group_no
+				, code
+				, code_nm
+				, code_dc
+				, outpt_ordr
+				, use_at
+				, register
+				, rgsde
+				, updusr
+				, updde
+ 
+	) VALUES (
+				  #{codeGroupNo}
+				, #{code}
+				, #{codeNm}
+				, #{codeDc}
+				, #{outptOrdr}
+				, #{useAt}
+				, #{register}
+		<choose>
+			<when test="_databaseId == 'mysql'">
+				, SYSDATE()
+				, #{updusr}
+				, SYSDATE()
+			</when>
+			<when test="_databaseId == 'tibero'">
+				, SYSDATE
+				, #{updusr}
+				, SYSDATE
+			</when>
+			<otherwise>
+				, SYSDATE()
+				, #{updusr}
+				, SYSDATE()
+			</otherwise>
+		</choose>
+	)
+	</insert>
+
+	<!-- 공통코드그룹 수정 -->
+	<update id="updateCodeGroup">
+	UPDATE	/* ProgramID=com.comm.mapif.CodeMapper.updateCodeGroup */
+				tb_cmmncodegroup
+	SET 
+				  code_group_nm = #{codeGroupNm}
+				, code_group_dc = #{codeGroupDc}
+				, updusr = #{updusr}
+		<if test="_databaseId == 'mysql'">
+				, updde = SYSDATE()
+		</if>
+		<if test="_databaseId == 'tibero'">
+				, updde = SYSDATE
+		</if>
+	WHERE	code_group_no = #{codeGroupNo}
+	</update>
+
+	<!-- 공통코드그룹 삭제 -->
+	<delete id="deleteCodeGroup">
+	DELETE	/* ProgramID=com.comm.mapif.CodeMapper.deleteCodeGroup */
+	FROM	tb_cmmncodegroup
+	WHERE	code_group_no = #{codeGroupNo}
+	</delete>
+
+	<!-- 공통코드 삭제 -->
+	<delete id="deleteCode">
+	DELETE	/* ProgramID=com.comm.mapif.CodeMapper.deleteCode */
+	FROM	tb_cmmncode
+	WHERE	code_group_no = #{codeGroupNo}
+	</delete>
+	
+</mapper>

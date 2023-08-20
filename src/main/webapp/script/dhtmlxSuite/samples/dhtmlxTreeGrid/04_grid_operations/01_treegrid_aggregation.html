@@ -1,0 +1,94 @@
+<!--conf
+<sample in_favorites="true">
+              <product version="1.6" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               <sampledescription><![CDATA[Use autocalculated values to do usual calculations in treegrid footer]]></sampledescription></sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Aggregation in TreeGrid</title>	
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+	<style>
+	div.gridbox div.ftr td{
+		text-align:right;
+		background-color:#E7F0FF;		
+	}
+		
+	</style>
+	
+</head>
+
+<body>
+	
+	<h1>Aggregation in TreeGrid</h1>
+	<p>
+    TreeGrid allows to calculate a sum, an average, a minimum and a maximum of each column.
+	</p>
+	
+	
+	<table style="width:835px;table-layout:fixed;">
+		<tr>
+			<td>
+				<div id="gridbox" width="320px" height="390px" style="background-color:white;"></div>
+			</td>
+            <td>
+				<div id="gridbox1" width="320px" height="390px" style="background-color:white;"></div>
+			</td>
+		</tr>
+	</table>
+
+
+
+<script>
+
+//background-color:#ffcc66;
+	mygrid = new dhtmlXGridObject('gridbox');
+	mygrid.setImagePath("../../../codebase/imgs/");
+	mygrid.setIconsPath("../common/images/");
+	mygrid.setHeader("Title,Price,Quantity");
+	mygrid.setInitWidths("200,62,*")
+	mygrid.setColAlign("left,right,right")
+	mygrid.setColTypes("tree,price,ed");
+	mygrid.setColSorting("str,int,int")
+	//mygrid.setColumnColor("#d5f1ff")
+ 
+	mygrid.init();
+	mygrid.setSkin("dhx_skyblue")
+	mygrid.loadXML("../common/treegrid_sample.xml");
+	mygrid.attachFooter('Total:,${#stat_tree_total},{#stat_tree_total}');
+	mygrid.attachFooter('Multi total:,${#stat_tree_multi_total}1:2,{#stat_tree_multi_total}1:2');
+	mygrid.attachFooter('Maximum:,${#stat_tree_max},{#stat_tree_max}');
+	mygrid.attachFooter('Minimum:,${#stat_tree_min},{#stat_tree_min}');
+	mygrid.attachFooter('Average:,${#stat_tree_average},{#stat_tree_average}');
+	mygrid.attachFooter('Count:,{#stat_tree_count},#cspan');
+	
+	mygrid1 = new dhtmlXGridObject('gridbox1');
+	mygrid1.setImagePath("../../../codebase/imgs/");
+	mygrid1.setIconsPath("../common/images/");
+	mygrid1.setHeader("Title,Price,Quantity");
+	mygrid1.setInitWidths("200,62,*")
+	mygrid1.setColAlign("left,right,right")
+	mygrid1.setColTypes("tree,price,ed");
+	mygrid1.setColSorting("str,int,int")
+	mygrid1.init();
+	mygrid1.setSkin("dhx_skyblue")
+	mygrid1.loadXML("../common/treegrid_sample.xml");
+	mygrid1.attachFooter('Total leaves:,${#stat_tree_total_leaf},{#stat_tree_total_leaf}');
+	mygrid1.attachFooter('Multi total leaves:,${#stat_tree_multi_total_leaf}1:2,{#stat_tree_multi_total_leaf}1:2');
+	mygrid1.attachFooter('Maximum leaves:,${#stat_tree_max_leaf},{#stat_tree_max_leaf}');
+	mygrid1.attachFooter('Minimum leaves:,${#stat_tree_min_leaf},{#stat_tree_min_leaf}');
+	mygrid1.attachFooter('Average leaves:,${#stat_tree_average_leaf},{#stat_tree_average_leaf}');
+	mygrid1.attachFooter('Count leaves:,{#stat_tree_count_leaf},#cspan');
+	
+	
+</script>
+
+
+</body>
+</html>

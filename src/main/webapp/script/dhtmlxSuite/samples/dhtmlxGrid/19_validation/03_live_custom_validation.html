@@ -1,0 +1,48 @@
+<!--conf
+<sample>
+               <product version="2.5" edition="pro"/>
+                       <modifications>
+                               <modified date="090818"/>
+                       </modifications>
+               </sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Live custom validation</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+</head>
+
+<body>
+	<div id="message" style="height:40px; font-weight:bold; color:red;"></div>
+	<div id="gridbox" style="width:350px;height:250px;background-color:white;overflow:hidden"></div>
+
+<script>
+	mygrid = new dhtmlXGridObject('gridbox');
+	mygrid.setImagePath('../../../codebase/imgs/');
+	mygrid.setHeader("Column A, Column B");
+	mygrid.setInitWidths("100,250")
+	mygrid.setColAlign("right,left")
+	mygrid.setColTypes("ed,ed");
+	mygrid.enableValidation(true,true)
+	mygrid.setColValidators("NotEmpty,ValidEmail");
+	mygrid.setColSorting("int,str")
+	mygrid.enableMultiselect(true)
+	mygrid.attachEvent("onLiveValidationError",function(id,ind,value){
+		document.getElementById('message').innerHTML="Error at cell ("+id+","+ind+"), value must "+(ind==0?"not be empty":"be a valid email");
+		return false;
+	})
+	mygrid.attachEvent("onLiveValidationCorrect",function(id,ind,value){
+		document.getElementById('message').innerHTML="";
+		return false;
+	})
+	mygrid.init();
+	mygrid.setSkin("dhx_skyblue")
+	mygrid.loadXML("../common/grid.xml");
+</script>
+
+</body>
+</html>

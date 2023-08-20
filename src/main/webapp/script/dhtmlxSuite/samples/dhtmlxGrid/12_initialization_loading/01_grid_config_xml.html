@@ -1,0 +1,46 @@
+<!--conf
+<sample in_favorites="false">
+              <product version="1.4" edition="std"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               </sample>
+ --> 
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Configuration from XML</title>
+	
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+</head>
+
+<body>
+	<h1>Configuration from XML</h1>
+    <p>Configuration of grid can be loaded from XML file. You need only 2-3 script commands to get the grid up and running.</p>
+	
+	<div id="gridbox" style="width:600px; height:270px; background-color:white;"></div>
+	
+	<a href='#alfa' onClick="if(mygrid.setSerializationLevel){ser();} else {alert('Available in Pro Edition only')}">Serialize grid</a>
+
+<script>
+    mygrid = new dhtmlXGridObject('gridbox');
+	mygrid.setImagePath("../../../codebase/imgs/");
+	mygrid.setSkin("dhx_skyblue")
+	mygrid.loadXML("../common/gridH.xml");
+	
+    function ser(){
+        mygrid.setSerializationLevel(false,false,true);
+        document.getElementById("alfa1").innerHTML=mygrid.serialize().replace(/\</g,"&lt;").replace(/\>/g,"&gt;").replace(/\&lt;row/g,"<br/>&lt;row");
+    }
+</script>
+
+<a name="alfa">
+<div id="alfa1"></div>
+</a>
+
+</body>
+</html>

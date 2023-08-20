@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="BatchSchdulDao">
+
+	<resultMap id="batchSchdulResult" type="batchSchdul">
+		<result property="batchSchdulId" column="batch_schdul_id" />
+		<result property="batchOpertId" column="batch_opert_id" />
+		<result property="batchOpertNm" column="batch_opert_nm" />
+		<result property="batchProgrm" column="batch_progrm" />
+		<result property="paramtr" column="paramtr" />
+		<result property="executCycle" column="execut_cycle" />
+		<result property="executCycleNm" column="execut_cycle_nm" />
+		<result property="executSchdulDe" column="execut_schdul_de" />
+		<result property="executSchdulHour" column="execut_schdul_hour" />
+		<result property="executSchdulMnt" column="execut_schdul_mnt" />
+		<result property="executSchdulSecnd" column="execut_schdul_secnd" />
+		<result property="register" column="register" />
+		<result property="rgsde" column="rgsde" />
+		<result property="updusr" column="updusr" />
+		<result property="updde" column="updde" />
+	</resultMap>
+	<resultMap id="batchSchdulDfkResult" type="batchSchdulDfk">
+		<result property="batchSchdulId" column="batch_schdul_id" />
+		<result property="executSchdulDfkSe" column="execut_schdul_dfk_se" />
+		<result property="executSchdulDfkSeNm" column="execut_schdul_dfk_se_nm" />
+	</resultMap>
+    
+	<!-- 배치스케줄 목록 조회 -->
+	<select id="selectBatchSchdulList" parameterType="batchSchdul" resultMap="batchSchdulResult">
+	SELECT	/* ProgramID=sqlmap.egovcom.bat.EgovBatchSchdulMapper.selectBatchSchdulList */
+					  a.batch_schdul_id
+					, a.batch_opert_id
+					, a.execut_cycle
+					, c.code_nm execut_cycle_nm
+					, a.execut_schdul_de
+					, a.execut_schdul_hour
+					, a.execut_schdul_mnt
+					, a.execut_schdul_secnd
+					, b.batch_opert_nm
+					, b.batch_progrm
+					, b.paramtr
+					, DATE_FORMAT(a.updde, '%Y-%m-%d %H:%i:%S') AS updde
+					, a.updusr
+					, a.register
+					, DATE_FORMAT(a.rgsde, '%Y-%m-%d %H:%i:%S') AS rgsde
+	FROM		comtnbatchschdul a, comtnbatchopert b, tb_cmmncode c
+	WHERE		a.batch_opert_id = b.batch_opert_id
+		AND		a.execut_cycle = c.code
+		AND		c.code_group_no = '6'
+		<!-- 검색조건 -->
+		<if test="searchCondition == 0">AND b.batch_opert_nm LIKE CONCAT ('%', #{searchKeyword},'%')</if>
+		<if test="searchCondition == 1">AND b.batch_progrm LIKE CONCAT ('%', #{searchKeyword},'%')</if>
+
+	ORDER BY	a.batch_schdul_id DESC
+	LIMIT			#{recordCountPerPage} OFFSET #{firstIndex}
+	</select>
+
+	<!-- 배치스케줄 목록 갯수 조회 -->
+	<select id="selectBatchSchdulListCnt" parameterType="batchSchdul" resultType="int">
+	SELECT	/* ProgramID=sqlmap.egovcom.bat.EgovBatchSchdulMapper.selectBatchSchdulListCnt */
+					COUNT(*) totcnt
+	FROM		comtnbatchschdul a, comtnbatchopert b, tb_cmmncode c
+	WHERE		a.batch_opert_id = b.batch_opert_id
+		AND		a.execut_cycle = c.code
+		AND		c.code_group_no = '6'
+		<!-- 검색조건 -->
+		<if test="searchCondition == 0">AND b.batch_opert_nm LIKE CONCAT ('%', #{searchKeyword},'%')</if>
+		<if test="searchCondition == 1">AND b.batch_progrm LIKE CONCAT ('%', #{searchKeyword},'%')</if>
+	</select>
+    
+    <!-- 배치스케줄 상세 조회 -->
+	<select id="selectBatchSchdul" parameterType="batchSchdul" resultMap="batchSchdulResult">
+	SELECT	/* ProgramID=sqlmapegovcom.bat.EgovBatchSchdulMapper.selectBatchSchdul */
+					  a.batch_schdul_id
+					, a.batch_opert_id
+					, a.execut_cycle
+					, c.code_nm execut_cycle_nm
+					, a.execut_schdul_de
+					, a.execut_schdul_hour
+					, a.execut_schdul_mnt
+					, a.execut_schdul_secnd
+					, b.batch_opert_nm
+					, b.batch_progrm
+					, b.paramtr
+					, DATE_FORMAT(a.updde, '%Y-%m-%d %H:%i:%S') AS updde
+					, a.updusr
+					, a.register
+					, DATE_FORMAT(a.rgsde, '%Y-%m-%d %H:%i:%S') AS rgsde
+	FROM		comtnbatchschdul a, comtnbatchopert b, tb_cmmncode c
+	WHERE		a.batch_opert_id = b.batch_opert_id
+		AND		a.execut_cycle = c.code
+		AND		c.code_group_no = '6'
+		AND		a.batch_schdul_id = #{batchSchdulId}
+	</select>
+
+	<!-- 신규 배치스케줄 추가 -->
+	<insert id="insertBatchSchdul" parameterType="batchSchdul">
+	INSERT	/* ProgramID=sqlmap.egovcom.sym.bat.EgovBatchSchdulMapper.insertBatchSchdul */
+	INTO			comtnbatchschdul (
+					  batch_schdul_id
+					, batch_opert_id
+					, execut_cycle
+					, execut_schdul_de
+					, execut_schdul_hour
+					, execut_schdul_mnt
+					, execut_schdul_secnd
+					, updusr
+					, updde
+					, register
+					, rgsde ) 
+	VALUES (
+					  #{batchSchdulId}
+					, #{batchOpertId}
+					, #{executCycle}
+					, #{executSchdulDe}
+					, #{executSchdulHour}
+					, #{executSchdulMnt}
+					, #{executSchdulSecnd}
+					, #{updusr}
+					, SYSDATE()
+					, #{register}
+					, SYSDATE()
+	) 
+	</insert>
+
+	<!-- 배치스케줄 상세 수정 -->
+	<update id="updateBatchSchdul" parameterType="batchSchdul">
+	UPDATE	/* ProgramID=sqlmap.egovcom.bat.EgovBatchSchdulMapper.updateBatchSchdul */
+					comtnbatchschdul
+	SET 			  batch_opert_id = #{batchOpertId}
+					, execut_cycle = #{executCycle}
+					, execut_schdul_de = #{executSchdulDe}
+					, execut_schdul_hour = #{executSchdulHour}
+					, execut_schdul_mnt = #{executSchdulMnt}
+					, execut_schdul_secnd = #{executSchdulSecnd}
+					, updusr = #{updusr}
+					, updde = SYSDATE()
+	WHERE		batch_schdul_id = #{batchSchdulId} 
+	</update>
+	
+	<!-- 배치스케줄 삭제 -->
+	<delete id="deleteBatchSchdul" parameterType="batchSchdul">
+	DELETE	/* ProgramID=sqlmap.egovcom.bat.EgovBatchSchdulMapper.deleteBatchSchdul */
+	FROM		comtnbatchschdul
+	WHERE		batch_schdul_id = #{batchSchdulId}
+	</delete>
+	
+	<!-- 배치스케줄요일 목록 조회 -->
+	<select id="selectBatchSchdulDfkList" resultMap="batchSchdulDfkResult">
+	SELECT /* ProgramID=sqlmap.egovcom.bat.EgovBatchSchdulMapper.selectBatchSchdulDfkList */
+					  a.batch_schdul_id
+					, a.execut_schdul_dfk_se
+					, b.code_nm execut_schdul_dfk_se_nm
+	FROM		comtnbatchschduldfk a, tb_cmmncode b
+	WHERE		a.batch_schdul_id = #{batchSchdulId}
+		AND		a.execut_schdul_dfk_se = b.code
+		AND		b.code_group_no = '7'
+	</select>
+	
+	<!-- 배치스케줄요일 추가 -->
+	<insert id="insertBatchSchdulDfk" parameterType="batchSchdulDfk">
+	INSERT	/* ProgramID=sqlmap.egovcom.bat.EgovBatchSchdulMapper.insertBatchSchdulDfk */
+	INTO			comtnbatchschduldfk (
+					  batch_schdul_id
+					, execut_schdul_dfk_se ) 
+	VALUES (
+					  #{batchSchdulId}
+					, #{executSchdulDfkSe}
+	) 
+	</insert>
+	
+	<!-- 배치스케줄요일 삭제 -->
+	<delete id="deleteBatchSchdulDfk">
+	DELETE	/* ProgramID=sqlmap.egovcom.bat.EgovBatchSchdulMapper.deleteBatchSchdulDfk */
+	FROM		comtnbatchschduldfk
+	WHERE		batch_schdul_id = #{batchSchdulId} 
+	</delete>
+
+</mapper>

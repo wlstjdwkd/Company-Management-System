@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ================================= 범례 ==================================== -->
+<!-- BD : Base Decorator 디자인 포함 지원 -->
+<!-- PD : Popup Decorator 팝업 페이지 디자인-->
+<!-- SD : Simple Decorator 디자인은 없으나 공통 Javascript & CSS 파일 지원 -->
+<!-- ND : No Decorator 데코레이터를 사용하지 않고 별개로 구현-->
+<!-- INC : JSP Include File 명칭 또는 Ajax 를 이용한 화면 로딩 -->
+<!-- =========================================================================== -->
+<sitemesh>
+
+	<!-- 관리자SITE -->
+	<mapping path="/WEB-INF/views/admin/**/BD_*" decorator="/WEB-INF/decorator/admin/BD_layout_sub.jsp" />
+	<mapping path="/WEB-INF/views/admin/**/PD_*" decorator="/WEB-INF/decorator/admin/PD_layout.jsp" />
+	<mapping path="/WEB-INF/views/admin/am/BD_UIAMA0001*" decorator="/WEB-INF/decorator/admin/BD_layout_main.jsp" />
+		
+	<!-- 사용자SITE -->
+	<mapping path="/WEB-INF/views/www/**/BD_*" decorator="/WEB-INF/decorator/www/BD_layout_sub.jsp" />	
+	<mapping path="/WEB-INF/views/www/**/PD_*" decorator="/WEB-INF/decorator/www/PD_layout.jsp" />
+	<mapping path="/WEB-INF/views/www/um/BD_UIUMU0001*" decorator="/WEB-INF/decorator/www/BD_layout_main.jsp" />
+	
+	<!-- 모바일SITE -->
+	<mapping path="/WEB-INF/views/mobile/mv/BD_*" decorator="/WEB-INF/decorator/mobile/BD_layout_sub.jsp" />	
+	<mapping path="/WEB-INF/views/mobile/mv/BD_UIMVU0001*" decorator="/WEB-INF/decorator/mobile/BD_layout_main.jsp" />
+	
+	<!-- error -->
+	<mapping path="/WEB-INF/views/error/*" decorator="/WEB-INF/decorator/www/PD_layout.jsp" />
+	
+	<!-- egovframework -->
+	<mapping path="/WEB-INF/views/egovframework/**/BD_*" decorator="/WEB-INF/decorator/admin/BD_layout_sub.jsp" />
+	<mapping path="/WEB-INF/views/egovframework/**/PD_*" decorator="/WEB-INF/decorator/admin/PD_layout.jsp" />
+	
+	<!-- 게시판 -->
+	<mapping path="/WEB-INF/views/egovframework/board/templates/front/**/BD_*" decorator="/WEB-INF/decorator/www/BD_layout_sub.jsp" />
+	
+	<!-- Exclude path from decoration. -->
+	<mapping path="/WEB-INF/views/egovframework/com/uss/olp/qnn/BD_EgovQustnrRespondInfoManageRegist.jsp" exclue="true"/>
+	<mapping path="/WEB-INF/views/**/ND_*" exclue="true"/>
+</sitemesh>

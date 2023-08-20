@@ -1,0 +1,75 @@
+<!--conf
+<sample in_favorites="false">
+               <product version="1.4" edition="std"/>
+                       <modifications>
+                               <modified date="070101"/>
+                       </modifications>
+               <sampledescription><![CDATA[There are some predefined skins for dhtmlxGrid which can be used to make dhtmlxGrid look more suitable for your interface. You can use one of them or create your own.]]></sampledescription></sample>
+ --> 
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Skinning</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../skins/terrace/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+</head>
+
+<script>
+	function doOnLoad(){
+		mygrid = new dhtmlXGridObject('gridbox');
+		mygrid.setImagePath("../../../codebase/imgs/");
+		mygrid.setHeader("SALES, TITLE,DESCRIPTION,PRICE");
+		mygrid.setInitWidths("80,200,*,70")
+		mygrid.setColAlign("left,left,left,left")
+		mygrid.setColTypes("dyn,ed,txt,price");
+		mygrid.setColSorting("int,str,str,int")
+		mygrid.setSkin("dhx_terrace")
+		mygrid.init();
+		mygrid.loadXML("../common/grid_big_18_styles_skins.xml", function(){
+			mygrid.selectRowById(3)
+		});
+
+		mygrid2 = new dhtmlXGridObject('gridbox2');
+		mygrid2.setImagePath("../../../codebase/imgs/");
+		mygrid2.setHeader("SALES, TITLE,#cspan,PRICE");
+		mygrid2.attachHeader("&nbsp;,#select_filter,#text_filter,#rspan");
+		if(mygrid2.attachFooter!=undefined)//pro edition functionality
+            mygrid2.attachFooter("Total:,#cspan,#cspan,#stat_count");
+		mygrid2.setInitWidths("80,200,*,70")
+		mygrid2.setColAlign("left,left,left,left")
+		mygrid2.setColTypes("dyn,ed,txt,price");
+		mygrid2.setColSorting("int,str,str,int")
+		mygrid2.setSkin("dhx_terrace")
+		mygrid2.init();
+		mygrid2.loadXML("../common/grid_big_18_styles_skins.xml", function(){
+			mygrid2.selectRowById(3)
+		});	
+
+
+		mygrid3 = new dhtmlXGridObject('gridbox3');
+		mygrid3.setImagePath("../../../codebase/imgs/");
+		mygrid3.setHeader("SALES, TITLE,#cspan,PRICE");
+		mygrid3.setInitWidths("80,200,*,70")
+		mygrid3.setColAlign("center,left,left,center")
+		mygrid3.setColTypes("ch,co,coro,ra");
+		mygrid3.setColSorting("int,str,str,int")
+		mygrid3.setSkin("dhx_terrace")
+		mygrid3.init();
+		mygrid3.loadXML("../common/grid_big_18_styles_skins.xml", function(){
+			mygrid3.selectRowById(3)
+		});	
+	}
+</script>
+<body onLoad="doOnLoad()" style="overflow:hidden">
+	
+	<div id="gridbox" style="width:100%;height:220px;background-color:white;"></div>
+	<br>
+	<div id="gridbox2" style="width:100%;height:220px;background-color:white;"></div>
+	<br>
+	<div id="gridbox3" style="width:100%;height:220px;background-color:white;"></div>
+
+</body>
+</html>

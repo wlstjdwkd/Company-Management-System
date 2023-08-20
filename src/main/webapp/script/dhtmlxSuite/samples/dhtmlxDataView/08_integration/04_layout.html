@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--conf
+<sample in_favorites="true">
+	<product version="1.0" edition="std"/>
+	<modifications>
+		<modified date="080205"/>
+	</modifications>
+<sampledescription><![CDATA[ ]]></sampledescription></sample>
+ --> 
+
+<html>
+<head>
+	<title>DataView in dhtmlxWindow</title>
+	
+
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+  
+	
+	<style type="text/css" media="screen">
+		html, body { 
+			height:100%;
+			};
+		
+	</style>
+	
+<body onload="doOnLoad()">
+	<h1>DataView in dhtmlxWindow</h1>
+
+	<script>
+		var dhxWins;
+		
+		function doOnLoad() {
+			dhxWinsParams = {
+				image_path: "../../../codebase/imgs/",
+				wins: [ {id: "w1", left: 20, top: 60, width: 476, height: 340}]
+			};
+			dhxWins = new dhtmlXWindows(dhxWinsParams);
+			data = dhxWins.window("w1").attachDataView({
+				container:"data_container1",
+				type:{
+					template:"#Package# : #Version#<br/>#Maintainer#",
+					padding:5,
+					height:40
+				},
+				drag:true,
+				select:true
+			});
+			data.load("../common/data.xml");
+		};
+
+		
+		
+	</script>
+</body>
+</html>
+

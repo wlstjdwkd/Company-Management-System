@@ -1,0 +1,1258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="biz.tech.mapif.im.IssueStatusMngMapper">
+	<sql id="orderIssueTaskMng">
+	ORDER BY B.RCEPT_DE DESC
+	</sql>
+	
+	<sql id="whereIssueTaskMng">
+	<where>
+		<if test="INCLS_TMPR_SAVE == null and INCLS_TMPR_SAVE != 'Y'.toString()">
+			B.REQST_SE <![CDATA[<>]]> 'AK0' /* 신청구분:임시저장 */
+		</if>
+		<if test="ONLY_SPLEMNT != null and ONLY_SPLEMNT == 'Y'.toString()">
+			AND (B.SE_CODE_S = 'PS2'
+			     OR B.SE_CODE_S = 'PS3'
+			     OR B.SE_CODE_S = 'PS4')
+		</if>
+		<if test="REQST_SE != null" >
+			<!-- AND B.REQST_SE = #{REQST_SE} -->
+			AND B.REQST_SE IN 
+			<foreach collection="REQST_SE" item="strarr1" open="(" close=")" separator=",">
+				#{strarr1}
+			</foreach>
+		</if>
+		<if test="SE_CODE_S != null" >
+			<!-- AND B.SE_CODE_S = #{SE_CODE_S} -->
+			AND B.SE_CODE_S IN 
+			<foreach collection="SE_CODE_S" item="strarr2" open="(" close=")" separator=",">
+				#{strarr2}
+			</foreach>
+		</if>
+		<if test="SE_CODE_R != null" >
+			<!-- AND B.SE_CODE_R = #{SE_CODE_R} -->
+			AND B.SE_CODE_R IN 
+			<foreach collection="SE_CODE_R" item="strarr3" open="(" close=")" separator=",">
+				#{strarr3}
+			</foreach>
+		</if>
+		<if test="JDGMNT_CODE != null and JDGMNT_CODE !=''" >
+			AND B.JDGMNT_CODE = #{JDGMNT_CODE}
+		</if>
+		<if test="CONFM_TARGET_YY != null" >
+			<!-- AND B.CONFM_TARGET_YY = #{CONFM_TARGET_YY} -->
+			AND B.CONFM_TARGET_YY IN 
+			<foreach collection="CONFM_TARGET_YY" item="strarr4" open="(" close=")" separator=",">
+				#{strarr4}
+			</foreach>
+		</if>
+		<if test="JDGMNT_REQST_YEAR != null and JDGMNT_REQST_YEAR !=''" >
+			AND B.JDGMNT_REQST_YEAR = #{JDGMNT_REQST_YEAR}
+		</if>
+		<!-- 
+		<if test="JURIRNO != null and JURIRNO !=''" >
+			AND B.JURIRNO = #{JURIRNO}
+		</if>
+		<if test="ENTRPRS_NM != null and ENTRPRS_NM !=''" >
+			AND B.ENTRPRS_NM LIKE CONCAT('%', #{ENTRPRS_NM}, '%')
+		</if>
+		<if test="ISSU_NO != null and ISSU_NO !=''" >
+			AND B.ISSU_NO = #{ISSU_NO}
+		</if> 
+		-->
+		<if test="(JURIRNO != null and JURIRNO !='') and (ENTRPRS_NM != null and ENTRPRS_NM !='') and (ISSU_NO != null and ISSU_NO !='')" >
+			AND (B.JURIRNO LIKE CONCAT('%', #{JURIRNO}, '%') OR B.ENTRPRS_NM LIKE CONCAT('%', #{ENTRPRS_NM}, '%') OR B.ISSU_NO LIKE CONCAT('%', #{ISSU_NO}, '%'))
+		</if>
+		<if test="(JURIRNO != null and JURIRNO !='') and (ENTRPRS_NM != null and ENTRPRS_NM !='') and (ISSU_NO == null or ISSU_NO =='')" >
+			AND (B.JURIRNO LIKE CONCAT('%', #{JURIRNO}, '%') OR B.ENTRPRS_NM LIKE CONCAT('%', #{ENTRPRS_NM}, '%'))
+		</if>
+		<if test="(ENTRPRS_NM != null and ENTRPRS_NM !='') and (ISSU_NO != null and ISSU_NO !='') and (JURIRNO == null or JURIRNO =='')" >
+			AND (B.ENTRPRS_NM LIKE CONCAT('%', #{ENTRPRS_NM}, '%') OR B.ISSU_NO LIKE CONCAT('%', #{ISSU_NO}, '%'))
+		</if>
+		<if test="(ISSU_NO != null and ISSU_NO !='') and (JURIRNO != null and JURIRNO !='') and (ENTRPRS_NM == null or ENTRPRS_NM =='')" >
+			AND (B.ISSU_NO LIKE CONCAT('%', #{ISSU_NO}, '%') OR B.JURIRNO LIKE CONCAT('%', #{JURIRNO}, '%'))
+		</if>
+		<if test="(JURIRNO != null and JURIRNO !='') and (ENTRPRS_NM == null or ENTRPRS_NM =='') and (ISSU_NO == null or ISSU_NO =='')" >
+			AND B.JURIRNO LIKE CONCAT('%', #{JURIRNO}, '%')
+		</if>
+		<if test="(ENTRPRS_NM != null and ENTRPRS_NM !='') and (ISSU_NO == null or ISSU_NO =='') and (JURIRNO == null or JURIRNO =='')" >
+			AND B.ENTRPRS_NM LIKE CONCAT('%', #{ENTRPRS_NM}, '%')
+		</if>
+		<if test="(ISSU_NO != null and ISSU_NO !='') and (JURIRNO == null or JURIRNO =='') and (ENTRPRS_NM == null or ENTRPRS_NM =='')" >
+			AND B.ISSU_NO LIKE CONCAT('%', #{ISSU_NO}, '%')
+		</if> 
+		<if test="RCEPT_DE_ALL != null and RCEPT_DE_ALL == 'N'.toString()" >
+			AND DATE_FORMAT(B.RCEPT_DE,'%Y-%m-%d') <![CDATA[>=]]> #{RCEPT_DE_FROM}
+			AND DATE_FORMAT(B.RCEPT_DE,'%Y-%m-%d') <![CDATA[<=]]> #{RCEPT_DE_TO}
+		</if>
+		<if test="ISSU_DE_ALL != null and ISSU_DE_ALL == 'N'.toString()" >
+			AND DATE_FORMAT(B.ISSU_DE,'%Y-%m-%d') <![CDATA[>=]]> #{ISSU_DE_FROM}
+			AND DATE_FORMAT(B.ISSU_DE,'%Y-%m-%d') <![CDATA[<=]]> #{ISSU_DE_TO}
+		</if>
+		<if test="EXCPT_TRGET_AT != null and EXCPT_TRGET_AT != ''" >
+			<!-- AND B.EXCPT_TRGET_AT = #{EXCPT_TRGET_AT} -->
+			AND B.EXCPT_TRGET_AT IN 
+			<foreach collection="EXCPT_TRGET_AT" item="strarr5" open="(" close=")" separator=",">
+				#{strarr5}
+			</foreach>
+		</if>
+	</where>
+	</sql>
+
+	<sql id="whereIssueTaskMng2">
+	<where>
+		<if test="INCLS_TMPR_SAVE == null and INCLS_TMPR_SAVE != 'Y'.toString()">
+			A.REQST_SE <![CDATA[<>]]> 'AK0' /* 신청구분:임시저장 */
+		</if>
+		<if test="ONLY_SPLEMNT != null and ONLY_SPLEMNT == 'Y'.toString()">
+			AND (A.SE_CODE_S = 'PS2'
+			     OR A.SE_CODE_S = 'PS3'
+			     OR A.SE_CODE_S = 'PS4')
+		</if>
+		<if test="REQST_SE != null" >
+			<!-- AND A.REQST_SE = #{REQST_SE} -->
+			AND A.REQST_SE IN 
+			<foreach collection="REQST_SE" item="strarr1" open="(" close=")" separator=",">
+				#{strarr1}
+			</foreach>
+		</if>
+		<if test="SE_CODE_S != null" >
+			<!-- AND A.SE_CODE_S = #{SE_CODE_S} -->
+			AND A.SE_CODE_S IN 
+			<foreach collection="SE_CODE_S" item="strarr2" open="(" close=")" separator=",">
+				#{strarr2}
+			</foreach>
+		</if>
+		<if test="SE_CODE_R != null" >
+			<!-- AND A.SE_CODE_R = #{SE_CODE_R} -->
+			AND A.SE_CODE_R IN 
+			<foreach collection="SE_CODE_R" item="strarr3" open="(" close=")" separator=",">
+				#{strarr3}
+			</foreach>
+		</if>
+		<if test="JDGMNT_CODE != null and JDGMNT_CODE !=''" >
+			AND A.JDGMNT_CODE = #{JDGMNT_CODE}
+		</if>
+		<if test="CONFM_TARGET_YY != null" >
+			<!-- AND A.CONFM_TARGET_YY = #{CONFM_TARGET_YY} -->
+			AND A.CONFM_TARGET_YY IN 
+			<foreach collection="CONFM_TARGET_YY" item="strarr4" open="(" close=")" separator=",">
+				#{strarr4}
+			</foreach>
+		</if>
+		<if test="JDGMNT_REQST_YEAR != null and JDGMNT_REQST_YEAR !=''" >
+			AND A.JDGMNT_REQST_YEAR = #{JDGMNT_REQST_YEAR}
+		</if>
+		<!-- 
+		<if test="JURIRNO != null and JURIRNO !=''" >
+			AND A.JURIRNO = #{JURIRNO}
+		</if>
+		<if test="ENTRPRS_NM != null and ENTRPRS_NM !=''" >
+			AND A.ENTRPRS_NM LIKE CONCAT('%', #{ENTRPRS_NM}, '%')
+		</if>
+		<if test="ISSU_NO != null and ISSU_NO !=''" >
+			AND A.ISSU_NO = #{ISSU_NO}
+		</if> 
+		-->
+		<if test="(JURIRNO != null and JURIRNO !='') and (ENTRPRS_NM != null and ENTRPRS_NM !='') and (ISSU_NO != null and ISSU_NO !='')" >
+			AND (A.JURIRNO LIKE CONCAT('%', #{JURIRNO}, '%') OR A.ENTRPRS_NM LIKE CONCAT('%', #{ENTRPRS_NM}, '%') OR A.ISSU_NO LIKE CONCAT('%', #{ISSU_NO}, '%'))
+		</if>
+		<if test="(JURIRNO != null and JURIRNO !='') and (ENTRPRS_NM != null and ENTRPRS_NM !='') and (ISSU_NO == null or ISSU_NO =='')" >
+			AND (A.JURIRNO LIKE CONCAT('%', #{JURIRNO}, '%') OR A.ENTRPRS_NM LIKE CONCAT('%', #{ENTRPRS_NM}, '%'))
+		</if>
+		<if test="(ENTRPRS_NM != null and ENTRPRS_NM !='') and (ISSU_NO != null and ISSU_NO !='') and (JURIRNO == null or JURIRNO =='')" >
+			AND (A.ENTRPRS_NM LIKE CONCAT('%', #{ENTRPRS_NM}, '%') OR A.ISSU_NO LIKE CONCAT('%', #{ISSU_NO}, '%'))
+		</if>
+		<if test="(ISSU_NO != null and ISSU_NO !='') and (JURIRNO != null and JURIRNO !='') and (ENTRPRS_NM == null or ENTRPRS_NM =='')" >
+			AND (A.ISSU_NO LIKE CONCAT('%', #{ISSU_NO}, '%') OR A.JURIRNO LIKE CONCAT('%', #{JURIRNO}, '%'))
+		</if>
+		<if test="(JURIRNO != null and JURIRNO !='') and (ENTRPRS_NM == null or ENTRPRS_NM =='') and (ISSU_NO == null or ISSU_NO =='')" >
+			AND A.JURIRNO LIKE CONCAT('%', #{JURIRNO}, '%')
+		</if>
+		<if test="(ENTRPRS_NM != null and ENTRPRS_NM !='') and (ISSU_NO == null or ISSU_NO =='') and (JURIRNO == null or JURIRNO =='')" >
+			AND A.ENTRPRS_NM LIKE CONCAT('%', #{ENTRPRS_NM}, '%')
+		</if>
+		<if test="(ISSU_NO != null and ISSU_NO !='') and (JURIRNO == null or JURIRNO =='') and (ENTRPRS_NM == null or ENTRPRS_NM =='')" >
+			AND A.ISSU_NO LIKE CONCAT('%', #{ISSU_NO}, '%')
+		</if> 
+		<if test="RCEPT_DE_ALL != null and RCEPT_DE_ALL == 'N'.toString()" >
+			AND DATE_FORMAT(A.RCEPT_DE,'%Y-%m-%d') <![CDATA[>=]]> #{RCEPT_DE_FROM}
+			AND DATE_FORMAT(A.RCEPT_DE,'%Y-%m-%d') <![CDATA[<=]]> #{RCEPT_DE_TO}
+		</if>
+		<if test="ISSU_DE_ALL != null and ISSU_DE_ALL == 'N'.toString()" >
+			AND DATE_FORMAT(A.ISSU_DE,'%Y-%m-%d') <![CDATA[>=]]> #{ISSU_DE_FROM}
+			AND DATE_FORMAT(A.ISSU_DE,'%Y-%m-%d') <![CDATA[<=]]> #{ISSU_DE_TO}
+		</if>
+		<if test="EXCPT_TRGET_AT != null and EXCPT_TRGET_AT != ''" >
+			<!-- AND A.EXCPT_TRGET_AT = #{EXCPT_TRGET_AT} -->
+			AND A.EXCPT_TRGET_AT IN 
+			<foreach collection="EXCPT_TRGET_AT" item="strarr5" open="(" close=")" separator=",">
+				#{strarr5}
+			</foreach>
+		</if>
+	</where>
+	</sql>
+	
+	<sql id="tablesIssueTaskMng">
+	FROM
+		(
+		SELECT A.RCEPT_NO
+			 , A.CONFM_TARGET_YY				
+			 , A.EXCPT_TRGET_AT
+		     , A.JDGMNT_REQST_YEAR	
+		     , A.RCEPT_DE			
+		     , A.UPPER_RCEPT_NO		
+		     , A.REQST_SE			
+		     , A.UPDT_AT				
+		     , A.PARTCLR_MATTER		
+		     , A.ISGN_AT
+		     , A.ISSU_NO
+		     , A.ISSU_DE
+		     , A.CREAT_DE
+		     , A.JDGMNT_CODE
+		     , A.VALID_PD_BEGIN_DE
+		     , A.VALID_PD_END_DE
+		     , A.CONFM_SE
+		     , A.JURIRNO 
+		     , A.ENTRPRS_NM 
+		     , case when STTUS_CODE is null then null else 'S' end  AS RESN_SE_S
+		     , A.STTUS_CODE AS SE_CODE_S
+		     , case when RESULT_CODE is null then null else 'R' end  AS RESN_SE_R
+		     , A.RESULT_CODE AS SE_CODE_R
+		     , A.MN_INDUTY_CODE
+		  FROM
+		     (
+		       SELECT MASTER_A.RCEPT_NO		
+		       		, MASTER_A.CONFM_TARGET_YY	
+		       		, MASTER_A.EXCPT_TRGET_AT
+		            , MASTER_A.JDGMNT_REQST_YEAR	
+		            , MASTER_A.RCEPT_DE			
+		            , MASTER_A.UPPER_RCEPT_NO		
+		            , MASTER_A.REQST_SE			
+		            , MASTER_A.UPDT_AT				
+		            , MASTER_A.PARTCLR_MATTER		
+		            , MASTER_A.ISGN_AT
+		            , MASTER_A.STTUS_CODE
+		            , MASTER_A.RESULT_CODE
+		            , MASTER_A.CREAT_DE
+		            , BASE_A.ISSU_NO
+		            , BASE_A.ISSU_DE
+		            , BASE_A.JDGMNT_CODE
+		            , BASE_A.VALID_PD_BEGIN_DE
+		            , BASE_A.VALID_PD_END_DE
+		            , BASE_A.CONFM_SE
+		            , MAIN_A.JURIRNO 
+		            , MAIN_A.ENTRPRS_NM   
+		            , MAIN_A.MN_INDUTY_CODE 
+		         FROM
+		            (
+		              SELECT RCEPT_NO
+		              	   , CONFM_TARGET_YY
+		              	   , EXCPT_TRGET_AT
+		                   , JDGMNT_REQST_YEAR	
+		                   , RCEPT_DE			
+		                   , UPPER_RCEPT_NO		
+		                   , REQST_SE			
+		                   , UPDT_AT				
+		                   , PARTCLR_MATTER	
+		                   , STTUS_CODE
+		                   , RESULT_CODE	
+		                   , ISGN_AT
+		                   , CREAT_DE				
+		                FROM TB_APPLY_MASTER
+		               WHERE UPPER_RCEPT_NO IS NULL
+		                  OR TRIM(UPPER_RCEPT_NO) = ''
+		            ) AS MASTER_A
+		       LEFT JOIN (SELECT RCEPT_NO
+                ,ISSU_NO
+		            , ISSU_DE
+		            , JDGMNT_CODE
+		            , VALID_PD_BEGIN_DE
+		            , VALID_PD_END_DE
+		            , CONFM_SE
+                FROM TB_ISSU_BSIS_INFO) AS BASE_A
+		              ON MASTER_A.RCEPT_NO = BASE_A.RCEPT_NO
+		       LEFT JOIN 
+		            (
+		               SELECT RCEPT_NO
+		                    , JURIRNO
+		            	    , ENTRPRS_NM
+		            	    , MN_INDUTY_CODE
+		                FROM TB_REQST_RCPY_LIST
+		               WHERE ENTRPRS_SE = 'O'
+		            ) AS MAIN_A
+		       	   ON MASTER_A.RCEPT_NO = MAIN_A.RCEPT_NO 
+		       
+		       UNION ALL
+		       
+		       SELECT MASTER_B.RCEPT_NO			
+		       		, MASTER_B.CONFM_TARGET_YY
+		       		, MASTER_B.EXCPT_TRGET_AT
+		            , MASTER_B.JDGMNT_REQST_YEAR	
+		            , MASTER_B.RCEPT_DE			
+		            , MASTER_B.UPPER_RCEPT_NO		
+		            , MASTER_B.REQST_SE			
+		            , MASTER_B.UPDT_AT				
+		            , MASTER_B.PARTCLR_MATTER		
+		            , MASTER_B.ISGN_AT
+		            , MASTER_B.STTUS_CODE
+		            , MASTER_B.RESULT_CODE
+		            , MASTER_B.CREAT_DE
+		            , BASE_B.ISSU_NO
+		            , BASE_B.ISSU_DE
+		            , BASE_B.JDGMNT_CODE
+		            , BASE_B.VALID_PD_BEGIN_DE
+		            , BASE_B.VALID_PD_END_DE
+		            , BASE_B.CONFM_SE
+		            , MAIN_B.JURIRNO 
+		            , MAIN_B.ENTRPRS_NM
+		            , MAIN_B.MN_INDUTY_CODE
+		         FROM
+		            (
+		              SELECT RCEPT_NO
+		              	   , CONFM_TARGET_YY
+		              	   , EXCPT_TRGET_AT
+		                   , JDGMNT_REQST_YEAR	
+		            	   , RCEPT_DE			
+		            	   , UPPER_RCEPT_NO		
+		            	   , REQST_SE			
+		            	   , UPDT_AT				
+		            	   , PARTCLR_MATTER
+		            	   , STTUS_CODE
+		                   , RESULT_CODE	
+		            	   , ISGN_AT
+		            	   , CREAT_DE				
+		                FROM TB_APPLY_MASTER
+		               WHERE UPPER_RCEPT_NO IS NOT NULL
+		                 AND TRIM(UPPER_RCEPT_NO) <![CDATA[<>]]> ''
+		            ) AS MASTER_B
+		       LEFT JOIN (SELECT RCEPT_NO
+                ,ISSU_NO
+		            , ISSU_DE
+		            , JDGMNT_CODE
+		            , VALID_PD_BEGIN_DE
+		            , VALID_PD_END_DE
+		            , CONFM_SE
+                FROM TB_ISSU_BSIS_INFO) AS BASE_B
+		              ON MASTER_B.UPPER_RCEPT_NO = BASE_B.RCEPT_NO
+		       LEFT JOIN 
+		            (
+		              SELECT RCEPT_NO
+		                   , JURIRNO
+		                   , ENTRPRS_NM
+		                   , MN_INDUTY_CODE
+		                FROM TB_REQST_RCPY_LIST
+		               WHERE ENTRPRS_SE = 'O'
+		            ) AS MAIN_B
+		       	   ON MASTER_B.UPPER_RCEPT_NO = MAIN_B.RCEPT_NO 
+		     ) AS A
+		) AS B
+		<if test="isExcel != null and isExcel == 'Y'.toString()">
+			LEFT JOIN tb_entrprsuser ENT
+	       	ON B.JURIRNO = ENT.JURIRNO
+	       	LEFT JOIN (select JURIRNO,
+	       					case when LCLAS_CD = 'C' then concat(LCLAS_CD, MLSFC_CD)
+	       						  when LCLAS_CD != 'C' then LCLAS_CD
+	       					end LCLAS_CD
+	       				 from VW_HPE_ALL_FNNR) C
+	       	ON B.JURIRNO = C.JURIRNO
+		</if>
+	</sql>
+	
+	<sql id="tablesIssueTaskMng2">
+	FROM
+		(
+		SELECT A.RCEPT_NO
+			 , A.CONFM_TARGET_YY				
+			 , A.EXCPT_TRGET_AT
+		     , A.JDGMNT_REQST_YEAR	
+		     , A.RCEPT_DE			
+		     , A.UPPER_RCEPT_NO		
+		     , A.REQST_SE			
+		     , A.UPDT_AT				
+		     , A.PARTCLR_MATTER		
+		     , A.ISGN_AT
+		     , A.ISSU_NO
+		     , A.ISSU_DE
+		     , A.CREAT_DE
+		     , A.JDGMNT_CODE
+		     , A.VALID_PD_BEGIN_DE
+		     , A.VALID_PD_END_DE
+		     , A.CONFM_SE
+		     , A.JURIRNO 
+		     , A.ENTRPRS_NM 
+		     , case when SE_CODE_S is null then null else 'S' end  AS RESN_SE_S
+		     , A.SE_CODE_S AS SE_CODE_S
+		     , case when SE_CODE_R is null then null else 'R' end  AS RESN_SE_R
+		     , A.SE_CODE_R AS SE_CODE_R
+		     , A.MN_INDUTY_CODE
+		     <if test="isExcel != null and isExcel == 'Y'.toString()">
+		     , A.CHK_RECEPDSK
+		     , A.RECEPDSK
+		     , CASE WHEN A.CPR_REGIST_SE = 'L' THEN '국내'
+                    WHEN A.CPR_REGIST_SE = 'F' THEN '해외'
+               ELSE A.CPR_REGIST_SE
+               END AS CPR_REGIST_SE
+             , A.ENT_NM
+             , A.HEDOFC_ADRES
+             , A.CRNCY_CODE
+      	 	 , A.RCPY_DIV
+      	 	 , A.BIZRNO
+		     </if>
+		  FROM
+		     (
+		       SELECT MASTER_A.RCEPT_NO		
+		       		, MASTER_A.CONFM_TARGET_YY	
+		       		, MASTER_A.EXCPT_TRGET_AT
+		            , MASTER_A.JDGMNT_REQST_YEAR	
+		            , MASTER_A.RCEPT_DE			
+		            , MASTER_A.UPPER_RCEPT_NO		
+		            , MASTER_A.REQST_SE			
+		            , MASTER_A.UPDT_AT				
+		            , MASTER_A.PARTCLR_MATTER		
+		            , MASTER_A.ISGN_AT
+		            , MASTER_A.STTUS_CODE AS SE_CODE_S
+		            , MASTER_A.RESULT_CODE AS SE_CODE_R
+		            , MASTER_A.CREAT_DE
+		            , BASE_A.ISSU_NO
+		            , BASE_A.ISSU_DE
+		            , BASE_A.JDGMNT_CODE
+		            , BASE_A.VALID_PD_BEGIN_DE
+		            , BASE_A.VALID_PD_END_DE
+		            , BASE_A.CONFM_SE
+		            , MAIN_A.JURIRNO 
+		            , MAIN_A.ENTRPRS_NM   
+		            , MAIN_A.MN_INDUTY_CODE 
+		            <if test="isExcel != null and isExcel == 'Y'.toString()">
+		            , BASE_A.CHK_RECEPDSK
+		     		, BASE_A.RECEPDSK
+		     		, BASE_A.HEDOFC_ADRES
+		     		, MAIN_A.CPR_REGIST_SE
+		     		, MAIN_A.BIZRNO
+		     		, MAIN_A_R.ENTRPRS_NM AS ENT_NM
+		     		, MAIN_A_R.CRNCY_CODE
+      	 	 		, MAIN_A_R.RCPY_DIV
+		     		</if>
+		         FROM
+		            (
+		              SELECT RCEPT_NO
+		              	   , CONFM_TARGET_YY
+		              	   , EXCPT_TRGET_AT
+		                   , JDGMNT_REQST_YEAR	
+		                   , RCEPT_DE			
+		                   , UPPER_RCEPT_NO		
+		                   , REQST_SE			
+		                   , UPDT_AT				
+		                   , PARTCLR_MATTER	
+		                   , STTUS_CODE
+		                   , RESULT_CODE	
+		                   , ISGN_AT
+		                   , CREAT_DE				
+		                FROM TB_APPLY_MASTER
+		               WHERE UPPER_RCEPT_NO IS NULL
+		                  OR TRIM(UPPER_RCEPT_NO) = ''
+		            ) AS MASTER_A
+		       LEFT JOIN (SELECT RCEPT_NO
+                ,ISSU_NO
+		            , ISSU_DE
+		            , JDGMNT_CODE
+		            , VALID_PD_BEGIN_DE
+		            , VALID_PD_END_DE
+		            , CONFM_SE
+		            <if test="isExcel != null and isExcel == 'Y'.toString()">
+		            , CHK_RECEPDSK
+		     		, RECEPDSK
+		     		, HEDOFC_ADRES
+		     		</if>
+                FROM TB_ISSU_BSIS_INFO) AS BASE_A
+		              ON MASTER_A.RCEPT_NO = BASE_A.RCEPT_NO
+		       LEFT JOIN 
+		            (
+		               SELECT RCEPT_NO
+		                    , JURIRNO
+		            	    , ENTRPRS_NM
+		            	    , MN_INDUTY_CODE
+		            	    , CPR_REGIST_SE
+		            	    , BIZRNO
+		                FROM TB_REQST_RCPY_LIST
+		               WHERE ENTRPRS_SE = 'O'
+		            ) AS MAIN_A
+		       	   ON MASTER_A.RCEPT_NO = MAIN_A.RCEPT_NO 
+		       <if test="isExcel != null and isExcel == 'Y'.toString()">
+		            LEFT JOIN 
+		            (
+		               SELECT RCEPT_NO
+		               		  , ENTRPRS_NM
+		               		  , CRNCY_CODE
+      	 	 				  , RCPY_DIV
+		                FROM TB_REQST_RCPY_LIST
+		               WHERE ENTRPRS_SE = 'R'
+		               GROUP BY RCEPT_NO
+		            ) AS MAIN_A_R
+		       	   ON MASTER_A.RCEPT_NO = MAIN_A_R.RCEPT_NO 
+	     		</if>
+		       
+		       UNION ALL
+		       
+		       SELECT MASTER_B.RCEPT_NO			
+		       		, MASTER_B.CONFM_TARGET_YY
+		       		, MASTER_B.EXCPT_TRGET_AT
+		            , MASTER_B.JDGMNT_REQST_YEAR	
+		            , MASTER_B.RCEPT_DE			
+		            , MASTER_B.UPPER_RCEPT_NO		
+		            , MASTER_B.REQST_SE			
+		            , MASTER_B.UPDT_AT				
+		            , MASTER_B.PARTCLR_MATTER		
+		            , MASTER_B.ISGN_AT
+		            , MASTER_B.STTUS_CODE AS SE_CODE_S
+		            , MASTER_B.RESULT_CODE AS SE_CODE_R
+		            , MASTER_B.CREAT_DE
+		            , BASE_B.ISSU_NO
+		            , BASE_B.ISSU_DE
+		            , BASE_B.JDGMNT_CODE
+		            , BASE_B.VALID_PD_BEGIN_DE
+		            , BASE_B.VALID_PD_END_DE
+		            , BASE_B.CONFM_SE
+		            , MAIN_B.JURIRNO 
+		            , MAIN_B.ENTRPRS_NM
+		            , MAIN_B.MN_INDUTY_CODE
+		            <if test="isExcel != null and isExcel == 'Y'.toString()">
+		            , BASE_B.CHK_RECEPDSK
+		     		, BASE_B.RECEPDSK
+		     		, BASE_B.HEDOFC_ADRES
+		     		, MAIN_B.CPR_REGIST_SE
+		     		, MAIN_B.BIZRNO
+		     		, MAIN_B_R.ENTRPRS_NM AS ENT_NM
+		     		, MAIN_B_R.CRNCY_CODE
+      	 	 		, MAIN_B_R.RCPY_DIV
+		     		</if>
+		         FROM
+		            (
+		              SELECT RCEPT_NO
+		              	   , CONFM_TARGET_YY
+		              	   , EXCPT_TRGET_AT
+		                   , JDGMNT_REQST_YEAR	
+		            	   , RCEPT_DE			
+		            	   , UPPER_RCEPT_NO		
+		            	   , REQST_SE			
+		            	   , UPDT_AT				
+		            	   , PARTCLR_MATTER
+		            	   , STTUS_CODE
+		                   , RESULT_CODE	
+		            	   , ISGN_AT
+		            	   , CREAT_DE				
+		                FROM TB_APPLY_MASTER
+		               WHERE UPPER_RCEPT_NO IS NOT NULL
+		                 AND TRIM(UPPER_RCEPT_NO) <![CDATA[<>]]> ''
+		            ) AS MASTER_B
+		       LEFT JOIN (SELECT RCEPT_NO
+                ,ISSU_NO
+		            , ISSU_DE
+		            , JDGMNT_CODE
+		            , VALID_PD_BEGIN_DE
+		            , VALID_PD_END_DE
+		            , CONFM_SE
+		            <if test="isExcel != null and isExcel == 'Y'.toString()">
+		            , CHK_RECEPDSK
+		     		, RECEPDSK
+		     		, HEDOFC_ADRES
+		     		</if>
+                FROM TB_ISSU_BSIS_INFO) AS BASE_B
+		              ON MASTER_B.UPPER_RCEPT_NO = BASE_B.RCEPT_NO
+		       LEFT JOIN 
+		            (
+		              SELECT RCEPT_NO
+		                   , JURIRNO
+		                   , ENTRPRS_NM
+		                   , MN_INDUTY_CODE
+		                   , CPR_REGIST_SE
+		                   , BIZRNO
+		                FROM TB_REQST_RCPY_LIST
+		               WHERE ENTRPRS_SE = 'O'
+		            ) AS MAIN_B
+		       	   ON MASTER_B.UPPER_RCEPT_NO = MAIN_B.RCEPT_NO 
+		        <if test="isExcel != null and isExcel == 'Y'.toString()">
+		            LEFT JOIN 
+		            (
+		               SELECT RCEPT_NO
+		               		  , ENTRPRS_NM
+		               		  , CRNCY_CODE
+      	 	 				  , RCPY_DIV
+		                FROM TB_REQST_RCPY_LIST
+		               WHERE ENTRPRS_SE = 'R'
+		            	GROUP BY RCEPT_NO
+		            ) AS MAIN_B_R
+		       	   ON MASTER_B.UPPER_RCEPT_NO = MAIN_B_R.RCEPT_NO 
+	     		</if>
+		       	   
+		     ) AS A
+			
+		    <include refid="whereIssueTaskMng2" />
+			GROUP BY RCEPT_NO
+			ORDER BY A.RCEPT_DE DESC
+			LIMIT #{limitFrom}, #{limitTo}
+		) AS B
+		<if test="isExcel != null and isExcel == 'Y'.toString()">
+			LEFT JOIN tb_entrprsuser ENT
+	       	ON B.JURIRNO = ENT.JURIRNO
+		</if>
+	</sql>
+
+	<!-- 발급업무관리 조회 -->
+	<select id="selectIssueTaskMng" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.im.IssueStatusMngMapper.selectIssueTaskMng */
+	       B.RCEPT_NO													/* 접수번호 			*/
+	     , B.CONFM_TARGET_YY											/* 확인서대상년도		*/  
+	     , B.EXCPT_TRGET_AT											    /* 특례대상여부 		*/  
+	     , B.JDGMNT_REQST_YEAR											/* 판정신쳥년도			*/
+	     , DATE_FORMAT(B.RCEPT_DE, '%Y-%m-%d') AS RCEPT_DE				/* 접수일자 			*/
+	     , B.UPPER_RCEPT_NO												/* 상위접수번호 		*/
+	     , B.REQST_SE													/* 신청구분 			*/
+	     , FN_CD2CDNM(20, B.REQST_SE) AS REQST_SE_NM					/* 신청구분명 			*/
+	     , B.UPDT_AT													/* 갱신여부 			*/
+	     , B.PARTCLR_MATTER												/* 특이사항				*/
+	     , B.ISGN_AT													/* 재발급여부 			*/
+	     , B.ISSU_NO													/* 발급번호 			*/
+	     , B.ISSU_DE													/* 발급일자 			*/
+	     , B.JDGMNT_CODE												/* 판정코드 			*/
+	     , FN_CD2CDNM(16, B.JDGMNT_CODE) AS JDGMNT_CODE_NM				/* 판정코드명 	*/
+	     , B.VALID_PD_BEGIN_DE											/* 유효기간시작일자 	*/
+	     , B.VALID_PD_END_DE											/* 유효기간종료일자 	*/
+	     , B.CONFM_SE                                                   /* 확인서 구분          */
+	     , B.JURIRNO													/* 법인번호 			*/
+	     , replace(B.ENTRPRS_NM, <![CDATA['&amp;']]>, <![CDATA['&']]>) AS ENTRPRS_NM	/* 기업명 				*/
+	     <!-- , B.HIST_SN_S -->													/* 진행상태 이력순번 	*/
+	     , B.RESN_SE_S													/* 진행상태 사유구분 	*/
+	     , B.SE_CODE_S													/* 진행상태 구분코드 	*/
+	     , FN_CD2CDNM(18, B.SE_CODE_S) AS SE_CODE_NM_S					/* 진행상태 구분코드명 	*/
+	     <!-- , B.HIST_SN_R -->													/* 진행결과 이력순번 	*/
+	     , B.RESN_SE_R													/* 진행결과 사유구분	*/
+	     , B.SE_CODE_R													/* 진행결과 구분코드 	*/
+	     , FN_CD2CDNM(38,B.SE_CODE_R) AS SE_CODE_NM_R					/* 진행결과 구분코드명 	*/
+		 , DATE_FORMAT(B.CREAT_DE, '%Y-%m-%d') AS CREAT_DE				/* 생성일자 			*/
+		 , (B.VALID_PD_BEGIN_DE <![CDATA[<=]]> NOW() 
+		     	AND NOW() <![CDATA[<=]]> B.VALID_PD_END_DE) AS ISVALID	/* 유효기간여부 		*/
+		 , (SELECT RESN 
+          FROM TB_RESN_MANAGE AS RESN
+          WHERE RESN.RCEPT_NO = B.RCEPT_NO
+          AND RESN.SE_CODE = B.SE_CODE_R
+          AND RESN.RESN_SE = 'R'
+          AND RESN.RESN_OCCRRNC_DE = (SELECT max(RESN_OCCRRNC_DE) 
+          							FROM TB_RESN_MANAGE 
+          							WHERE RCEPT_NO = B.RCEPT_NO
+          							AND RESN_SE = 'R')
+          					 	) AS RESN									/* 진행결과 사유 		*/
+         , (SELECT EMP.NM
+          FROM TB_RESN_MANAGE AS RESN
+             , tb_emplyr AS EMP
+          WHERE RESN.USER_NO = EMP.USER_NO
+          AND RESN.RCEPT_NO = B.RCEPT_NO
+          AND RESN.RESN_SE = 'R'
+          AND RESN.SE_CODE = 'RC1'
+          AND RESN.RESN_OCCRRNC_DE = (SELECT max(RESN_OCCRRNC_DE) 
+          							FROM TB_RESN_MANAGE 
+          							WHERE RCEPT_NO = B.RCEPT_NO
+          							AND RESN_SE = 'R')) AS NM									/* 진행결과 처리자명 		*/
+         <if test="isExcel != null and isExcel == 'Y'.toString()">
+         , ENT.CHARGER_NM
+         , ENT.TELNO
+         , ENT.EMAIL
+         , concat(substring(FN_MAPPING_MN_INDCD_YY(B.MN_INDUTY_CODE, CONFM_TARGET_YY), 1, 1), substring(B.MN_INDUTY_CODE, 1, 2)) as LCLAS_CD
+         , ENT.CHARGER_DEPT
+         , ENT.OFCPS
+         , B.CHK_RECEPDSK
+		 , B.RECEPDSK
+         </if> 					 	 
+		<include refid="tablesIssueTaskMng2" /> 
+		<!-- <include refid="whereIssueTaskMng" />
+		GROUP BY RCEPT_NO
+		ORDER BY B.RCEPT_DE DESC
+		LIMIT #{limitFrom}, #{limitTo} -->
+		<!-- <include refid="orderIssueTaskMng" /> -->
+	</select>
+	
+	<!-- 발급업무관리 엑셀 다운 -->
+	<select id="selectIssueTaskMngExcel" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.im.IssueStatusMngMapper.selectIssueTaskMngExcel */
+	       B.CONFM_TARGET_YY											/* 확인서대상년도		*/  
+	     , B.ISSU_NO													/* 발급번호 			*/
+	     , B.ISSU_DE													/* 발급일자 			*/
+	     , B.JDGMNT_CODE												/* 판정코드 			*/
+	     , B.JURIRNO													/* 법인번호 			*/
+	     , replace(B.ENTRPRS_NM, <![CDATA['&amp;']]>, <![CDATA['&']]>) AS ENTRPRS_NM	/* 기업명 				*/
+		 , B.CPR_REGIST_SE
+		 , B.ENT_NM
+		 , B.HEDOFC_ADRES
+		 , concat(substring(FN_MAPPING_MN_INDCD_YY(B.MN_INDUTY_CODE, CONFM_TARGET_YY), 1, 1), substring(B.MN_INDUTY_CODE, 1, 2)) as LCLAS_CD
+		 , ENT.CHARGER_NM
+         , ENT.CHARGER_DEPT
+         , ENT.OFCPS
+         , ENT.TELNO
+         , ENT.EMAIL
+	     , B.PARTCLR_MATTER												/* 특이사항				*/
+         , B.CHK_RECEPDSK AS PRPOS
+		 , B.RECEPDSK
+		 , B.VALID_PD_BEGIN_DE											/* 유효기간시작일자 	*/
+	     , B.VALID_PD_END_DE											/* 유효기간종료일자 	*/
+	     , B.REQST_SE													/* 신청구분 			*/
+	     , B.RCEPT_NO													/* 접수번호 			*/
+	     , DATE_FORMAT(B.RCEPT_DE, '%Y-%m-%d') AS RCEPT_DE				/* 접수일자 			*/
+	     , B.SE_CODE_S													/* 진행상태 구분코드 	*/
+	     , B.SE_CODE_R													/* 진행결과 구분코드 	*/
+	     , FN_CD2CDNM(48, B.CRNCY_CODE) AS CRNCY_CODE
+      	 , FN_CD2CDNM(49, B.RCPY_DIV) AS RCPY_DIV
+   
+   		 , FN_CD2CDNM(16, B.JDGMNT_CODE) AS JDGMNT_CODE_NM				/* 판정코드명 	*/
+   		 , FN_CD2CDNM(20, B.REQST_SE) AS REQST_SE_NM 					/* 신청구분명	*/
+   		 , FN_CD2CDNM(18, B.SE_CODE_S) AS SE_CODE_NM_S					/* 진행상태 구분코드명 	*/
+   		 , FN_CD2CDNM(38,B.SE_CODE_R) AS SE_CODE_NM_R					/* 진행결과 구분코드명 	*/
+   		 
+      	 , B.EXCPT_TRGET_AT											    /* 특례대상여부 		*/
+      	 , B.JDGMNT_REQST_YEAR											/* 판정신쳥년도			*/
+      	 , (SELECT RPRSNTV_NM FROM TB_ISGN_BSIS_INFO WHERE RCEPT_NO = B.RCEPT_NO )
+      	 , B.BIZRNO
+      	 , (SELECT GROUP_CONCAT(BIZRNO SEPARATOR ',') FROM TB_ADD_BIZRNO_MANAGE WHERE RCEPT_NO=B.RCEPT_NO) AS BIZRNO_SUB
+      	 
+      	 
+<!-- 	       
+	     , B.UPPER_RCEPT_NO												/* 상위접수번호 		*/
+	     , FN_CD2CDNM(20, B.REQST_SE) AS REQST_SE_NM					/* 신청구분명 			*/
+	     , B.UPDT_AT													/* 갱신여부 			*/
+	     , B.ISGN_AT													/* 재발급여부 			*/
+	     , FN_CD2CDNM(16, B.JDGMNT_CODE) AS JDGMNT_CODE_NM				/* 판정코드명 	*/
+	     , B.CONFM_SE                                                   /* 확인서 구분          */
+	     , B.HIST_SN_S													/* 진행상태 이력순번 	*/
+	     , B.RESN_SE_S													/* 진행상태 사유구분 	*/
+	     , FN_CD2CDNM(18, B.SE_CODE_S) AS SE_CODE_NM_S					/* 진행상태 구분코드명 	*/
+	     , B.RESN_SE_R													/* 진행결과 사유구분	*/
+	     , FN_CD2CDNM(38,B.SE_CODE_R) AS SE_CODE_NM_R					/* 진행결과 구분코드명 	*/
+		 , DATE_FORMAT(B.CREAT_DE, '%Y-%m-%d') AS CREAT_DE				/* 생성일자 			*/
+		 , (B.VALID_PD_BEGIN_DE <![CDATA[<=]]> NOW() 
+		     	AND NOW() <![CDATA[<=]]> B.VALID_PD_END_DE) AS ISVALID	/* 유효기간여부 		*/
+		 , (SELECT RESN 
+          FROM TB_RESN_MANAGE AS RESN
+          WHERE RESN.RCEPT_NO = B.RCEPT_NO
+          AND RESN.SE_CODE = B.SE_CODE_R
+          AND RESN.RESN_SE = 'R'
+          AND RESN.RESN_OCCRRNC_DE = (SELECT max(RESN_OCCRRNC_DE) 
+          							FROM TB_RESN_MANAGE 
+          							WHERE RCEPT_NO = B.RCEPT_NO
+          							AND RESN_SE = 'R')
+          					 	) AS RESN									/* 진행결과 사유 		*/
+         , (SELECT EMP.NM
+          FROM TB_RESN_MANAGE AS RESN
+             , tb_emplyr AS EMP
+          WHERE RESN.USER_NO = EMP.USER_NO
+          AND RESN.RCEPT_NO = B.RCEPT_NO
+          AND RESN.RESN_SE = 'R'
+          AND RESN.SE_CODE = 'RC1'
+          AND RESN.RESN_OCCRRNC_DE = (SELECT max(RESN_OCCRRNC_DE) 
+          							FROM TB_RESN_MANAGE 
+          							WHERE RCEPT_NO = B.RCEPT_NO
+          							AND RESN_SE = 'R')) AS NM									/* 진행결과 처리자명 		*/
+ -->
+		<include refid="tablesIssueTaskMng2" /> 
+		<!-- <include refid="whereIssueTaskMng" />
+		GROUP BY RCEPT_NO
+		ORDER BY B.RCEPT_DE DESC
+		LIMIT #{limitFrom}, #{limitTo} -->
+		<!-- <include refid="orderIssueTaskMng" /> -->
+		GROUP BY RCEPT_NO
+	</select>
+
+	<!-- 발급내역 엑셀 다운 -->
+	<select id="selectIssueTaskMngHisExcel" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.im.IssueStatusMngMapper.selectIssueTaskMng */
+	       FN_CD2CDNM(20, B.REQST_SE) AS REQST_SE_NM					/* 신청구분명 			*/
+	     , B.CONFM_TARGET_YY											/* 확인서대상년도		*/  
+	     , B.JDGMNT_REQST_YEAR											/* 판정신쳥년도			*/
+	     , B.ISSU_NO													/* 발급번호 			*/
+	     , B.ISSU_DE													/* 발급일자 			*/
+	     , B.VALID_PD_BEGIN_DE											/* 유효기간시작일자 	*/
+	     , B.VALID_PD_END_DE											/* 유효기간종료일자 	*/
+	     , FN_CD2CDNM(16, B.JDGMNT_CODE) AS JDGMNT_CODE_NM				/* 판정코드명 	*/
+	     , replace(B.ENTRPRS_NM, <![CDATA['&amp;']]>, <![CDATA['&']]>) AS ENTRPRS_NM	/* 기업명 				*/
+	     , B.JURIRNO													/* 법인번호 			*/
+         , concat(substring(FN_MAPPING_MN_INDCD_YY(B.MN_INDUTY_CODE, CONFM_TARGET_YY), 1, 1), substring(B.MN_INDUTY_CODE, 1, 2)) as LCLAS_CD
+         , ENT.CHARGER_NM
+	     , ENT.TELNO
+         , ENT.EMAIL
+         , ENT.CHARGER_DEPT
+         , ENT.OFCPS
+	     , B.SE_CODE_S													/* 진행상태 구분코드 	*/
+	     , B.SE_CODE_R													/* 진행결과 구분코드 	*/
+	     , B.REQST_SE													/* 신청구분 			*/
+         <!-- 
+	     , DATE_FORMAT(B.RCEPT_DE, '%Y-%m-%d') AS RCEPT_DE				/* 접수일자 			*/
+	     , B.RCEPT_NO													/* 접수번호 			*/
+	     , B.EXCPT_TRGET_AT											    /* 특례대상여부 		*/  
+	     , B.UPPER_RCEPT_NO												/* 상위접수번호 		*/
+	     , B.UPDT_AT													/* 갱신여부 			*/
+	     , B.PARTCLR_MATTER												/* 특이사항				*/
+	     , B.ISGN_AT													/* 재발급여부 			*/
+	     , B.JDGMNT_CODE												/* 판정코드 			*/
+	     , B.CONFM_SE                                                   /* 확인서 구분          */
+	     , B.HIST_SN_S													/* 진행상태 이력순번 	*/
+	     , B.RESN_SE_S													/* 진행상태 사유구분 	*/
+	     , FN_CD2CDNM(18, B.SE_CODE_S) AS SE_CODE_NM_S					/* 진행상태 구분코드명 	*/
+	     , B.HIST_SN_R													/* 진행결과 이력순번 	*/
+	     , B.RESN_SE_R													/* 진행결과 사유구분	*/
+	     , FN_CD2CDNM(38,B.SE_CODE_R) AS SE_CODE_NM_R					/* 진행결과 구분코드명 	*/
+		 , DATE_FORMAT(B.CREAT_DE, '%Y-%m-%d') AS CREAT_DE				/* 생성일자 			*/
+		 , (B.VALID_PD_BEGIN_DE <![CDATA[<=]]> NOW() 
+		     	AND NOW() <![CDATA[<=]]> B.VALID_PD_END_DE) AS ISVALID	/* 유효기간여부 		*/
+		 , (SELECT RESN 
+          FROM TB_RESN_MANAGE AS RESN
+          WHERE RESN.RCEPT_NO = B.RCEPT_NO
+          AND RESN.SE_CODE = B.SE_CODE_R
+          AND RESN.RESN_SE = 'R'
+          AND RESN.RESN_OCCRRNC_DE = (SELECT max(RESN_OCCRRNC_DE) 
+          							FROM TB_RESN_MANAGE 
+          							WHERE RCEPT_NO = B.RCEPT_NO
+          							AND RESN_SE = 'R')
+          					 	) AS RESN									/* 진행결과 사유 		*/
+         , (SELECT EMP.NM
+          FROM TB_RESN_MANAGE AS RESN
+             , tb_emplyr AS EMP
+          WHERE RESN.USER_NO = EMP.USER_NO
+          AND RESN.RCEPT_NO = B.RCEPT_NO
+          AND RESN.RESN_SE = 'R'
+          AND RESN.SE_CODE = 'RC1'
+          AND RESN.RESN_OCCRRNC_DE = (SELECT max(RESN_OCCRRNC_DE) 
+          							FROM TB_RESN_MANAGE 
+          							WHERE RCEPT_NO = B.RCEPT_NO
+          							AND RESN_SE = 'R')) AS NM									/* 진행결과 처리자명 		*/
+         <if test="isExcel != null and isExcel == 'Y'.toString()">
+         
+         , B.CHK_RECEPDSK
+		 , B.RECEPDSK
+         </if> 		 -->			 	 
+		<include refid="tablesIssueTaskMngHis" /> 
+		GROUP BY RCEPT_NO
+	</select>
+	
+	<sql id="tablesIssueTaskMngHis">
+	FROM
+		(
+		SELECT A.RCEPT_NO
+			 , A.CONFM_TARGET_YY				
+			 , A.EXCPT_TRGET_AT
+		     , A.JDGMNT_REQST_YEAR	
+		     , A.RCEPT_DE			
+		     , A.UPPER_RCEPT_NO		
+		     , A.REQST_SE			
+		     , A.UPDT_AT				
+		     , A.PARTCLR_MATTER		
+		     , A.ISGN_AT
+		     , A.ISSU_NO
+		     , A.ISSU_DE
+		     , A.CREAT_DE
+		     , A.JDGMNT_CODE
+		     , A.VALID_PD_BEGIN_DE
+		     , A.VALID_PD_END_DE
+		     , A.CONFM_SE
+		     , A.JURIRNO 
+		     , A.ENTRPRS_NM 
+		     , case when SE_CODE_S is null then null else 'S' end  AS RESN_SE_S
+		     , A.SE_CODE_S AS SE_CODE_S
+		     , case when SE_CODE_R is null then null else 'R' end  AS RESN_SE_R
+		     , A.SE_CODE_R AS SE_CODE_R
+		     , A.MN_INDUTY_CODE
+		     <if test="isExcel != null and isExcel == 'Y'.toString()">
+		     , A.CHK_RECEPDSK
+		     , A.RECEPDSK
+		     , CASE WHEN A.CPR_REGIST_SE = 'L' THEN '국내'
+                    WHEN A.CPR_REGIST_SE = 'F' THEN '해외'
+               ELSE A.CPR_REGIST_SE
+               END AS CPR_REGIST_SE
+             , A.ENT_NM
+             , A.HEDOFC_ADRES
+             , A.CRNCY_CODE
+      	 	 , A.RCPY_DIV
+		     </if>
+		  FROM
+		     (
+		       SELECT MASTER_A.RCEPT_NO		
+		       		, MASTER_A.CONFM_TARGET_YY	
+		       		, MASTER_A.EXCPT_TRGET_AT
+		            , MASTER_A.JDGMNT_REQST_YEAR	
+		            , MASTER_A.RCEPT_DE			
+		            , MASTER_A.UPPER_RCEPT_NO		
+		            , MASTER_A.REQST_SE			
+		            , MASTER_A.UPDT_AT				
+		            , MASTER_A.PARTCLR_MATTER		
+		            , MASTER_A.ISGN_AT
+		            , MASTER_A.STTUS_CODE AS SE_CODE_S
+		            , MASTER_A.RESULT_CODE AS SE_CODE_R
+		            , MASTER_A.CREAT_DE
+		            , BASE_A.ISSU_NO
+		            , BASE_A.ISSU_DE
+		            , BASE_A.JDGMNT_CODE
+		            , BASE_A.VALID_PD_BEGIN_DE
+		            , BASE_A.VALID_PD_END_DE
+		            , BASE_A.CONFM_SE
+		            , MAIN_A.JURIRNO 
+		            , MAIN_A.ENTRPRS_NM   
+		            , MAIN_A.MN_INDUTY_CODE 
+		            <if test="isExcel != null and isExcel == 'Y'.toString()">
+		            , BASE_A.CHK_RECEPDSK
+		     		, BASE_A.RECEPDSK
+		     		, BASE_A.HEDOFC_ADRES
+		     		, MAIN_A.CPR_REGIST_SE
+		     		, MAIN_A_R.ENTRPRS_NM AS ENT_NM
+		     		, MAIN_A_R.CRNCY_CODE
+      	 	 		, MAIN_A_R.RCPY_DIV
+		     		</if>
+		         FROM
+		            (
+		              SELECT RCEPT_NO
+		              	   , CONFM_TARGET_YY
+		              	   , EXCPT_TRGET_AT
+		                   , JDGMNT_REQST_YEAR	
+		                   , RCEPT_DE			
+		                   , UPPER_RCEPT_NO		
+		                   , REQST_SE			
+		                   , UPDT_AT				
+		                   , PARTCLR_MATTER	
+		                   , STTUS_CODE
+		                   , RESULT_CODE	
+		                   , ISGN_AT
+		                   , CREAT_DE				
+		                FROM TB_APPLY_MASTER
+		               WHERE UPPER_RCEPT_NO IS NULL
+		                  OR TRIM(UPPER_RCEPT_NO) = ''
+		            ) AS MASTER_A
+		       LEFT JOIN (SELECT RCEPT_NO
+                ,ISSU_NO
+		            , ISSU_DE
+		            , JDGMNT_CODE
+		            , VALID_PD_BEGIN_DE
+		            , VALID_PD_END_DE
+		            , CONFM_SE
+		            <if test="isExcel != null and isExcel == 'Y'.toString()">
+		            , CHK_RECEPDSK
+		     		, RECEPDSK
+		     		, HEDOFC_ADRES
+		     		</if>
+                FROM TB_ISSU_BSIS_INFO) AS BASE_A
+		              ON MASTER_A.RCEPT_NO = BASE_A.RCEPT_NO
+		       LEFT JOIN 
+		            (
+		               SELECT RCEPT_NO
+		                    , JURIRNO
+		            	    , ENTRPRS_NM
+		            	    , MN_INDUTY_CODE
+		            	    , CPR_REGIST_SE
+		                FROM TB_REQST_RCPY_LIST
+		               WHERE ENTRPRS_SE = 'O'
+		            ) AS MAIN_A
+		       	   ON MASTER_A.RCEPT_NO = MAIN_A.RCEPT_NO 
+		       <if test="isExcel != null and isExcel == 'Y'.toString()">
+		            LEFT JOIN 
+		            (
+		               SELECT RCEPT_NO
+		               		  , ENTRPRS_NM
+		               		  , CRNCY_CODE
+      	 	 				  , RCPY_DIV
+		                FROM TB_REQST_RCPY_LIST
+		               WHERE ENTRPRS_SE = 'R'
+		               GROUP BY RCEPT_NO
+		            ) AS MAIN_A_R
+		       	   ON MASTER_A.RCEPT_NO = MAIN_A_R.RCEPT_NO 
+	     		</if>
+		       
+		       UNION ALL
+		       
+		       SELECT MASTER_B.RCEPT_NO			
+		       		, MASTER_B.CONFM_TARGET_YY
+		       		, MASTER_B.EXCPT_TRGET_AT
+		            , MASTER_B.JDGMNT_REQST_YEAR	
+		            , MASTER_B.RCEPT_DE			
+		            , MASTER_B.UPPER_RCEPT_NO		
+		            , MASTER_B.REQST_SE			
+		            , MASTER_B.UPDT_AT				
+		            , MASTER_B.PARTCLR_MATTER		
+		            , MASTER_B.ISGN_AT
+		            , MASTER_B.STTUS_CODE AS SE_CODE_S
+		            , MASTER_B.RESULT_CODE AS SE_CODE_R
+		            , MASTER_B.CREAT_DE
+		            , BASE_B.ISSU_NO
+		            , BASE_B.ISSU_DE
+		            , BASE_B.JDGMNT_CODE
+		            , BASE_B.VALID_PD_BEGIN_DE
+		            , BASE_B.VALID_PD_END_DE
+		            , BASE_B.CONFM_SE
+		            , MAIN_B.JURIRNO 
+		            , MAIN_B.ENTRPRS_NM
+		            , MAIN_B.MN_INDUTY_CODE
+		            <if test="isExcel != null and isExcel == 'Y'.toString()">
+		            , BASE_B.CHK_RECEPDSK
+		     		, BASE_B.RECEPDSK
+		     		, BASE_B.HEDOFC_ADRES
+		     		, MAIN_B.CPR_REGIST_SE
+		     		, MAIN_B_R.ENTRPRS_NM AS ENT_NM
+		     		, MAIN_B_R.CRNCY_CODE
+      	 	 		, MAIN_B_R.RCPY_DIV
+		     		</if>
+		         FROM
+		            (
+		              SELECT RCEPT_NO
+		              	   , CONFM_TARGET_YY
+		              	   , EXCPT_TRGET_AT
+		                   , JDGMNT_REQST_YEAR	
+		            	   , RCEPT_DE			
+		            	   , UPPER_RCEPT_NO		
+		            	   , REQST_SE			
+		            	   , UPDT_AT				
+		            	   , PARTCLR_MATTER
+		            	   , STTUS_CODE
+		                   , RESULT_CODE	
+		            	   , ISGN_AT
+		            	   , CREAT_DE				
+		                FROM TB_APPLY_MASTER
+		               WHERE UPPER_RCEPT_NO IS NOT NULL
+		                 AND TRIM(UPPER_RCEPT_NO) <![CDATA[<>]]> ''
+		            ) AS MASTER_B
+		       LEFT JOIN (SELECT RCEPT_NO
+                ,ISSU_NO
+		            , ISSU_DE
+		            , JDGMNT_CODE
+		            , VALID_PD_BEGIN_DE
+		            , VALID_PD_END_DE
+		            , CONFM_SE
+		            <if test="isExcel != null and isExcel == 'Y'.toString()">
+		            , CHK_RECEPDSK
+		     		, RECEPDSK
+		     		, HEDOFC_ADRES
+		     		</if>
+                FROM TB_ISSU_BSIS_INFO) AS BASE_B
+		              ON MASTER_B.UPPER_RCEPT_NO = BASE_B.RCEPT_NO
+		       LEFT JOIN 
+		            (
+		              SELECT RCEPT_NO
+		                   , JURIRNO
+		                   , ENTRPRS_NM
+		                   , MN_INDUTY_CODE
+		                   , CPR_REGIST_SE
+		                FROM TB_REQST_RCPY_LIST
+		               WHERE ENTRPRS_SE = 'O'
+		            ) AS MAIN_B
+		       	   ON MASTER_B.UPPER_RCEPT_NO = MAIN_B.RCEPT_NO 
+		        <if test="isExcel != null and isExcel == 'Y'.toString()">
+		            LEFT JOIN 
+		            (
+		               SELECT RCEPT_NO
+		               		  , ENTRPRS_NM
+		               		  , CRNCY_CODE
+      	 	 				  , RCPY_DIV
+		                FROM TB_REQST_RCPY_LIST
+		               WHERE ENTRPRS_SE = 'R'
+		            	GROUP BY RCEPT_NO
+		            ) AS MAIN_B_R
+		       	   ON MASTER_B.UPPER_RCEPT_NO = MAIN_B_R.RCEPT_NO 
+	     		</if>
+		       	   
+		     ) AS A
+			
+		    <include refid="whereIssueTaskMng2" />
+			GROUP BY RCEPT_NO
+			ORDER BY A.RCEPT_DE DESC
+			LIMIT #{limitFrom}, #{limitTo}
+		) AS B
+		<if test="isExcel != null and isExcel == 'Y'.toString()">
+			LEFT JOIN tb_entrprsuser ENT
+	       	ON B.JURIRNO = ENT.JURIRNO
+	       	LEFT JOIN (select JURIRNO,
+	       					case when LCLAS_CD = 'C' then concat(LCLAS_CD, MLSFC_CD)
+	       						  when LCLAS_CD != 'C' then LCLAS_CD
+	       					end LCLAS_CD
+	       				 from VW_HPE_ALL_FNNR) C
+	       	ON B.JURIRNO = C.JURIRNO
+		</if>
+	</sql>
+	
+	<!-- 발급업무관리 총 개수 조회 -->
+	<select id="selectIssueTaskMngTotCnt" resultType="int">
+	SELECT /* ProgramID=biz.tech.mapif.im.IssueStatusMngMapper.selectIssueTaskMngTotCnt */
+	       COUNT(*)
+	<include refid="tablesIssueTaskMng" /> 
+	<include refid="whereIssueTaskMng" />
+	</select>
+	
+	<!-- 신청담당자정보 조회 -->
+	<select id="selectChargerInfo" resultType="Map">
+	   SELECT /* ProgramID=biz.tech.mapif.im.IssueStatusMngMapper.selectChargerInfo */
+		       APPLY.RCEPT_NO		/* 접수번호 	*/
+		     , ENT.JURIRNO			/* 법인등록번호 */
+		     , ENT.CHARGER_NM		/* 담당자명 	*/
+		     , ENT.CHARGER_DEPT		/* 부서 		*/
+		     , ENT.OFCPS			/* 직위 		*/
+		     , ENT.TELNO			/* 대표전화 		*/
+		     , ENT.TELNO2			/* 담당자전화 		*/
+		     , ENT.MBTLNUM			/* 핸드폰 		*/
+		     , ENT.FXNUM			/* 팩스 		*/
+		     , ENT.HEDOFC_ADRES		/* 주소 		*/
+		     , ENT.EMAIL			/* 이메일 		*/
+		  FROM TB_APPLY_MASTER 		AS APPLY
+	INNER JOIN TB_REQST_RCPY_LIST	AS RCPY
+	 		ON APPLY.RCEPT_NO 	= RCPY.RCEPT_NO
+	INNER JOIN tb_entrprsuser		AS ENT
+			ON RCPY.JURIRNO		= ENT.JURIRNO
+		 WHERE UPPER(RCPY.ENTRPRS_SE) = 'O'
+		   AND ENT.JURIRNO = #{JURIRNO}
+		 LIMIT 1
+	</select>
+	
+	<!-- 최종상태이력관리 조회 -->
+	<select id="selectLastestResn" resultType="Map">
+		SELECT /* ProgramID=biz.tech.mapif.im.IssueStatusMngMapper.selectLastestResn */
+			   HIST_SN			/* 이력순번		*/
+		     , RCEPT_NO 		/* 접수번호     */
+			 , RESN_SE  		/* 사유구분 	*/
+			 , SE_CODE   		/* 구분코드 	*/
+			 , RESN 			/* 사유 		*/
+			 , (SELECT RESN FROM TB_RESN_MANAGE WHERE RCEPT_NO = #{RCEPT_NO} AND SE_CODE = 'PS3' AND RESN IS NOT NULL ORDER BY RESN_OCCRRNC_DE DESC LIMIT 1) RESN2 			/* 보완신청, 보완접수에서 보여줄 보완요청 사유 */
+			 , USER_NO 			/* 사용자번호 	*/
+			 , RESN_OCCRRNC_DE 	/* 사유발생일자 */
+			 , CASE RESN_SE
+				WHEN 'S' THEN
+					(SELECT CODE_NM 
+						FROM tb_cmmncode C 
+						WHERE CODE_GROUP_NO = '18' 
+						AND CODE = SE_CODE)
+				WHEN 'R' THEN
+					(SELECT CODE_NM 
+						FROM tb_cmmncode C 
+						WHERE CODE_GROUP_NO = '38'
+						AND CODE = SE_CODE)
+			  	END AS SE_CODE_NM	/* 구분코드명 */
+		  FROM TB_RESN_MANAGE
+		 WHERE RCEPT_NO = #{RCEPT_NO}
+	<if test="RESN_SE != null and RESN_SE.toString() != ''">
+	       AND RESN_SE 	= #{RESN_SE}
+	</if>
+	<if test="SE_CODE != null and SE_CODE.toString() != ''">
+	       AND SE_CODE 	= #{SE_CODE}
+	</if>
+	  <!-- ORDER BY HIST_SN DESC -->
+	  ORDER BY RESN_OCCRRNC_DE DESC
+		 LIMIT 1
+	</select>
+	
+	<!-- 신청접수특이사항 조회 -->
+	<select id="selectPartclrMatter" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.im.IssueStatusMngMapper.selectPartclrMatter */
+		   RCEPT_NO				/* 접수번호 */
+		 , PARTCLR_MATTER		/* 특이사항 */	     
+	  FROM TB_APPLY_MASTER
+	 WHERE RCEPT_NO = #{RCEPT_NO}
+	</select>	
+	
+	<!-- 신청접수특이사항 수정 -->
+	<update id="updatePartclrMatter">
+	UPDATE TB_APPLY_MASTER /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.updatePartclrMatter */
+	   SET PARTCLR_MATTER = #{PARTCLR_MATTER}	/* 특이사항 */
+	 WHERE RCEPT_NO = #{RCEPT_NO}
+	</update>
+	
+	<!-- 특례대상여부 수정 -->
+	<update id="updateExcpt">
+	UPDATE TB_APPLY_MASTER /* ProgramID=biz.tech.mapif.im.IssueStatusMngMapper.updateExcpt */
+	   SET UPDT_DE 				= NOW()							/* 수정일자 */
+	   	 , EXCPT_TRGET_AT       = #{EXCPT_FLAG}					/* 특례대상여부 */
+	 WHERE RCEPT_NO = #{RCEPT_NO}
+	</update>
+	
+	<!-- 판정 조회 -->
+	<select id="selectJudgment" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.im.IssueStatusMngMapper.selectJudgment */
+	       RCEPT_NO				/* 접수번호 */
+	     , ISSU_NO				/* 발급번호 */
+	     , ISSU_DE				/* 발급일자 */
+	     , JDGMNT_CODE			/* 판정코드 */
+	     , VALID_PD_BEGIN_DE	/* 유효기간시작일자 */
+	     , VALID_PD_END_DE		/* 유효기간종료일자 */
+	     , CONFM_SE             /* 확인서구분 */
+	  FROM TB_ISSU_BSIS_INFO
+	 WHERE RCEPT_NO = #{RCEPT_NO}   
+	</select>
+	
+	<!-- 판정 등록 -->
+	<update id="updateJudgment">
+	UPDATE TB_ISSU_BSIS_INFO /* ProgramID=biz.tech.mapif.im.IssueStatusMngMapper.updateJudgment */
+	   SET UPDT_DE 				= NOW()							/* 수정일자 */
+	   	 , JDGMNT_CODE 			= #{JDGMNT_CODE}				/* 판정코드 */
+	   	 <if test="ISSU_NO != null and ISSU_NO != ''">
+	     , ISSU_NO 			 	= #{ISSU_NO}					/* 발급번호 */
+	     , ISSU_DE 				= DATE_FORMAT(NOW(),'%Y%m%d')	/* 발급일자 */
+	     , VALID_PD_BEGIN_DE 	= #{VALID_PD_BEGIN_DE}			/* 유효기간시작일자 */
+	     , VALID_PD_END_DE 		= #{VALID_PD_END_DE}			/* 유효기간종료일자 */
+	     , CONFM_SE             = #{CONFM_SE}		        	/* 확인서구분 */
+	     </if>
+	 WHERE RCEPT_NO = #{RCEPT_NO}
+	</update>
+	
+	<!-- 판정 유효기간 및 확인서구분 수정 -->
+	<update id="updateJudgmentForRC1">
+	UPDATE TB_ISSU_BSIS_INFO /* ProgramID=biz.tech.mapif.im.IssueStatusMngMapper.updateJudgmentForRC1 */
+	   SET UPDT_DE 				= NOW()							/* 수정일자 */
+	     , VALID_PD_BEGIN_DE 	= #{VALID_PD_BEGIN_DE}			/* 유효기간시작일자 */
+	     , VALID_PD_END_DE 		= #{VALID_PD_END_DE}			/* 유효기간종료일자 */
+	     , CONFM_SE             = #{CONFM_SE}		        	/* 확인서구분 */
+	 WHERE RCEPT_NO = #{RCEPT_NO}
+	</update>
+
+	<!-- 발급일련번호 수정 -->
+	<update id="updateIssuSn">
+	UPDATE TB_SN_MNG /* ProgramID=biz.tech.mapif.im.IssueStatusMngMapper.updateIssuSn */
+	   SET ISSU_SN = #{ISSU_SN}	/* 발급일련번호 */
+	 WHERE YEAR = #{YEAR}
+	</update>
+	
+	<!-- 신용평가사 수집데이터(재무) 조회 -->
+	<select id="selectEntprsFnnrData" resultType="Map">
+	   SELECT /* ProgramID=biz.tech.mapif.im.IssueStatusMngMapper.selectEntprsFnnrData */
+		      ENT.STDYY 				    /* 기준년					 */
+	        , ENT.JURIRNO 				    /* 법인등록번호				 */
+	        , ENT.BIZRNO 				    /* 사업자등록번호			 */
+	        , ENT.ENTRPRS_NM 			    /* 기업명					 */
+	        , ENT.RPRSNTV_NM 			    /* 대표자명					 */
+	        , ENT.FOND_DE 				    /* 설립일자					 */
+	        , ENT.PSACNT 				    /* 결산일					 */
+	        , ENT.HEDOFC_ADRES 			    /* 본사주소					 */
+	        , ENT.REPRSNT_TLPHON 		    /* 대표전화					 */
+	        , ENT.DTLDTLCLFC_CD 		    /* 세세분류코드				 */
+	        , (SELECT KOREAN_NM FROM TB_IND_CD WHERE INDUTY_CODE = ENT.DTLDTLCLFC_CD) AS DTLDTLCLFC_CD_NM	/* 세세분류코드명 */
+	        , FNNR.SELNG_AM 				/* 매출액 					 */
+	        , FNNR.CAPL 					/* 자본금 					 */
+	        , FNNR.CAPL_SM 					/* 자본총계 				 */
+	        , FNNR.ASSETS_SM 				/* 자산총계 				 */
+	        , FNNR.CLPL 					/* 자본잉여금 				 */
+	     FROM TB_ENTPRS_INFO 	AS ENT 	    /* 기업정보 */
+	LEFT JOIN TB_FNNR_DATA 		AS FNNR	    /* 재무재표 */
+	       ON ENT.STDYY 	= FNNR.STDYY
+	      AND ENT.HPE_CD 	= FNNR.HPE_CD
+	    WHERE ENT.JURIRNO 	= #{JURIRNO}
+	      AND ENT.BIZRNO	= #{BIZRNO}
+	      AND ENT.STDYY 	<![CDATA[<=]]> #{STDYY_END}
+	      AND ENT.STDYY 	<![CDATA[>=]]> #{STDYY_START}
+     ORDER BY ENT.STDYY DESC
+	</select>
+	
+	<!-- 보완요청, 보완접수 시 기업명 조회 -->
+	<select id="selectEntrprsNm" resultType="Map">
+		SELECT /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.selectEntrprsNm */
+		<if test="reqstChk == 1 ">
+		   ENTRPRS_NM
+	       from TB_REQST_RCPY_LIST
+		   WHERE RCEPT_NO = #{RCEPT_NO}
+		   and ENTRPRS_SE = 'O'
+		</if>
+		<if test="reqstChk == 2 ">
+		   ENTRPS_NM
+	       from TB_ISGN_BSIS_INFO
+	       WHERE RCEPT_NO = #{RCEPT_NO}
+		</if>
+	</select>
+	
+</mapper>

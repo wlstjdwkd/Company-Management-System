@@ -1,0 +1,1102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="biz.tech.mapif.ic.HpeCnfirmReqstMapper">
+	
+	<!-- 임시신청접수 조회 -->
+	<select id="selectTempApplyMaster" resultType="Map">
+		SELECT /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.selectTempApplyMaster */
+		       APPLY.RCEPT_NO			/* 접수번호 */
+		     , APPLY.CONFM_TARGET_YY	/* 확인서대상년도 */  
+		     , RCPY.JURIRNO				/* 법인등록번호 */
+		  FROM TB_APPLY_MASTER 		AS APPLY
+	 LEFT JOIN TB_REQST_RCPY_LIST	AS RCPY
+	 		ON APPLY.RCEPT_NO = RCPY.RCEPT_NO 	   
+		 WHERE UPPER(RCPY.ENTRPRS_SE) = 'O'
+		   AND RCPY.JURIRNO = #{JURIRNO}
+		   AND APPLY.REQST_SE = 'AK0'
+		 LIMIT 1
+	</select>
+	
+	<!-- 신청접수 조회(법인번호) -->
+	<select id="selectApplyMasterByJurirno" resultType="Map">
+		SELECT /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.selectApplyMasterByJurirno */
+		       APPLY.RCEPT_NO		/* 접수번호 */
+		     , RCPY.JURIRNO			/* 법인등록번호 */
+		  FROM TB_APPLY_MASTER 		AS APPLY
+	 LEFT JOIN TB_REQST_RCPY_LIST	AS RCPY
+	 		ON APPLY.RCEPT_NO = RCPY.RCEPT_NO 	   
+		 WHERE UPPER(RCPY.ENTRPRS_SE) = 'O'
+		   AND RCPY.JURIRNO = #{JURIRNO}
+	</select>
+	
+	<!-- 대상년도 발급 신청건 조회(법인번호) -->
+	<select id="selectApplyMasterReqstYear" resultType="Map">
+		SELECT /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.selectApplyMasterReqstYear */
+		       APPLY.RCEPT_NO		/* 접수번호 */
+		     , RCPY.JURIRNO			/* 법인등록번호 */
+		FROM TB_APPLY_MASTER 		AS APPLY
+	 	LEFT JOIN TB_REQST_RCPY_LIST	AS RCPY
+	 	ON APPLY.RCEPT_NO = RCPY.RCEPT_NO
+	 	WHERE UPPER(RCPY.ENTRPRS_SE) = 'O'
+	 	AND RCPY.JURIRNO = #{JURIRNO}
+	 	AND APPLY.JDGMNT_REQST_YEAR = #{JDGMNT_REQST_YEAR}
+	 	AND APPLY.REQST_SE = 'AK1'
+	 	AND (APPLY.STTUS_CODE IN('PS1','PS2','PS3','PS4','PS5') OR APPLY.RESULT_CODE = 'RC1')
+	 	LIMIT 1
+	</select>
+	
+	<!-- 일련번호관리 조회 -->
+	<select id="selectSnMng" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.selectSnMng */
+	       YEAR      /* 년도(PK)     */
+		 , RCEPT_SN  /* 접수일련번호 */
+		 , ISSU_SN   /* 발급일련번호 */
+	  FROM TB_SN_MNG
+	 WHERE YEAR = #{YEAR}
+	   FOR UPDATE
+	</select>
+	
+	<!-- 신청접수 조회 -->
+	<select id="selectApplyMaster" resultType="Map">
+		SELECT /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.selectApplyMaster */
+		       APPLY.RCEPT_NO           /* 접수번호(PK) */
+		     , APPLY.CONFM_TARGET_YY	/* 확인서대상년도 */
+		     , APPLY.EXCPT_TRGET_AT     /* 특례대상여부 */
+		     , APPLY.JDGMNT_REQST_YEAR  /* 판정신청년도 */
+		     , APPLY.RCEPT_DE           /* 접수일자     */
+		     , APPLY.UPPER_RCEPT_NO     /* 상위접수번호 */
+		     , APPLY.REQST_SE           /* 신청구분     */
+		     , APPLY.UPDT_AT            /* 갱신여부     */
+		     , APPLY.ISGN_AT			/* 재발급여부	*/
+		     , APPLY.CREAT_DE           /* 생성일자     */
+		     , APPLY.UPDT_DE            /* 수정일자     */
+		     , RCPY.JURIRNO				/* 법인번호		*/
+		  FROM TB_APPLY_MASTER 		AS APPLY
+	 LEFT JOIN TB_REQST_RCPY_LIST 	AS RCPY
+	 		ON APPLY.RCEPT_NO = RCPY.RCEPT_NO
+	 		AND UPPER(RCPY.ENTRPRS_SE) = 'O'
+		 WHERE APPLY.RCEPT_NO = #{RCEPT_NO}
+	</select>
+	
+	<!-- 상태이력관리 조회 -->
+	<select id="selectResnManage" resultType="Map">
+		SELECT /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.selectResnManage */
+			   MASTER.RCEPT_NO       /* 접수번호		*/
+			 , MASTER.REQST_SE 		 /* 신청구분 		*/
+			 , (SELECT CODE_NM 
+			      FROM tb_cmmncode
+				 WHERE CODE_GROUP_NO = '20' 
+				   AND CODE = MASTER.REQST_SE)	AS REQST_SE_NM	/* 신청구분명 */
+			 , RESN.HIST_SN			 /* 이력 순번		*/	      	 
+		  	 , RESN.RESN_SE          /* 사유구분		*/
+		     , RESN.SE_CODE          /* 구분코드		*/
+		     , RESN.RESN             /* 사유        	*/
+		     , RESN.USER_NO          /* 사용자번호  	*/
+		     , (SELECT EMPLYR_TY 
+			      FROM tb_userinfo
+				 WHERE USER_NO = RESN.USER_NO) AS EMPLYR_TY	/* 사용자유형 */				   
+		     , RESN.RESN_OCCRRNC_DE  /* 사유발생일자	*/
+			 , CASE RESN.RESN_SE
+			   WHEN 'S' THEN
+				    (SELECT CODE_NM 
+					   FROM tb_cmmncode
+					  WHERE CODE_GROUP_NO = '18' 
+					    AND CODE = RESN.SE_CODE)
+			   WHEN 'R' THEN
+					(SELECT CODE_NM 
+					   FROM tb_cmmncode
+				      WHERE CODE_GROUP_NO = '38'
+						AND CODE = RESN.SE_CODE)
+			   END AS SE_CODE_NM	 /* 구분코드명 */
+			 , MAIL.EMAIL_NO  						/* 이메일번호 */
+			 , MAIL.TREDE AS EMAIL_SENT_DT			/* 이메일 전송시간 */
+			 , SMS.MT_REFKEY						/* SMS 참조번호*/
+			 , SMS.DATE_MT_SENT AS SMS_SENT_DT  	/* SMS 전송시간 */
+		  FROM TB_APPLY_MASTER	AS MASTER
+	INNER JOIN TB_RESN_MANAGE 	AS RESN
+			ON MASTER.RCEPT_NO 	= RESN.RCEPT_NO
+	 LEFT JOIN TB_MAILSEND_MNG  AS MAIL
+	 		ON RESN.HIST_SN = MAIL.PARAMTR1
+	 	   AND MAIL.PRPOS = 'C'
+	 	   AND MAIL.SNDNG_STTUS = 'S'
+	 	   AND MAIL.RCVER_NM != ''
+	 LEFT JOIN (
+		       SELECT MT_REFKEY, DATE_MT_SENT 
+		       FROM EMMA_DB.em_smt_tran
+		       UNION
+		       SELECT MT_REFKEY, DATE_MT_SENT 
+		       FROM EMMA_DB.em_smt_log_table
+	   		) AS SMS
+   	 		ON CONCAT('EP', RESN.HIST_SN) = SMS.MT_REFKEY
+		 WHERE MASTER.RCEPT_NO 	= #{RCEPT_NO}
+		   AND MASTER.REQST_SE	<![CDATA[<>]]> 'AK0'
+		 GROUP BY HIST_SN
+	</select>
+	
+	<!-- 신청기업기초정보 조회 -->
+	<select id="selectIssuBsisInfo" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.selectIssuBsisInfo */
+	       RCEPT_NO           /* 접수번호(PK)(FK) */
+	     , RPRSNTV_NM         /* 대표자명         */
+	     , HEDOFC_ADRES       /* 본사주소         */
+	     , ZIP                /* 우편번호         */
+	     , REPRSNT_TLPHON     /* 대표전화         */
+	     , FXNUM              /* 팩스번호         */
+	     , PRPOS              /* 용도             */
+	     , RECEPDSK           /* 제출처           */
+	     , CHK_RECEPDSK 	  /* 용도 체크박스    */
+	     , PAPERS_RM          /* 서류비고         */
+	     , ISSU_NO            /* 발급번호         */
+	     , ISSU_DE            /* 발급일자         */
+	     , JDGMNT_CODE        /* 판정코드         */
+	     , VALID_PD_BEGIN_DE  /* 유효기간시작일자 */
+	     , VALID_PD_END_DE    /* 유효기간종료일자 */
+	  FROM TB_ISSU_BSIS_INFO
+	 WHERE RCEPT_NO = #{RCEPT_NO}   
+	</select>
+
+
+	<!-- 신청기업및관계기업주요정보 조회 -->
+	<select id="selectReqstRcpyList" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.selectReqstRcpyList */
+	       RCEPT_NO        /* 접수번호(PK)(FK) */
+	     , ENTRPRS_SE      /* 기업구분         */
+	     , SN              /* 순번             */
+	     , JURIRNO         /* 법인등록번호(PK) */
+	     , CPR_REGIST_SE   /* 법인등록구분     */
+	     , CRNCY_CODE      /* 통화코드         */
+	     , RCPY_DIV        /* 관계기업구분     */
+	     , QOTA_RT         /* 지분율           */
+	     , ENTRPRS_NM      /* 기업명           */
+	     , RPRSNTV_NM      /* 대표자명           */
+	     , CRP_CD          /* 공시시스템코드   */
+	     , BIZRNO          /* 사업자등록번호   */
+	     , MN_INDUTY_NM    /* 주업종명         */
+	     , MN_INDUTY_CODE  /* 주업종코드       */
+	     , PSACNT          /* 결산일           */
+	     , FOND_DE         /* 설립일자         */
+	     , PARTCLR_MATTER  /* 특이사항         */
+	     , CREAT_DE        /* 생성일자         */
+	     , UPDT_DE         /* 수정일자         */
+	     , (SELECT CODE_NM 
+				FROM tb_cmmncode C 
+				WHERE CODE_GROUP_NO = '49'
+				AND CODE = RCPY_DIV) AS RCPY_DIV_NM 		/* 관계기업구분명 */
+		 , (SELECT CODE_NM 
+				FROM tb_cmmncode C 
+				WHERE CODE_GROUP_NO = '48'
+				AND CODE = CRNCY_CODE) AS CRNCY_CODE_NM 	/* 통화코드명 */
+		 , DATE_FORMAT(FOND_DE, '%Y-%m-%d') AS FMT_FOND_DE  /* 설립일자 날짜포맷 */			  	
+	  FROM TB_REQST_RCPY_LIST
+	 WHERE RCEPT_NO 	= #{RCEPT_NO}
+	   AND ENTRPRS_SE 	= #{ENTRPRS_SE}
+	</select>
+	
+	
+	<!-- 신청정보_지분소유 조회 -->
+	<select id="selectReqstInfoQotaPosesn" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.selectReqstInfoQotaPosesn */
+	       RCEPT_NO      /* 접수번호(PK)(FK)     */
+	     , ENTRPRS_SE    /* 기업구분             */
+	     , SN            /* 순번                 */
+	     , SHRHOLDR_NM1  /* 주주명1              */
+	     , QOTA_RT1      /* 지분율1              */
+	     , SHRHOLDR_NM2  /* 주주명2              */
+	     , QOTA_RT2      /* 지분율2              */
+	     , SHRHOLDR_NM3  /* 주주명3              */
+	     , QOTA_RT3      /* 지분율3              */
+	     , CREAT_DE      /* 생성일자             */
+	  FROM TB_REQST_INFO_QOTA_POSESN
+	 WHERE RCEPT_NO 	= #{RCEPT_NO}
+	   AND ENTRPRS_SE 	= #{ENTRPRS_SE}
+	<if test="SN != null and SN.toString() != ''">
+	   AND SN 			= #{SN}
+	</if>
+	</select>
+	
+	
+	<!-- 신청정보_재무 조회 -->
+	<select id="selectReqstFnnrData" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.selectReqstFnnrData */
+	       RCEPT_NO        /* 접수번호(PK)(FK) */
+	     , ENTRPRS_SE      /* 기업구분         */
+	     , SN              /* 순번             */
+	     , BSNS_YEAR       /* 사업년도(PK)     */
+	     , SELNG_AM        /* 매출액           */
+	     , CAPL            /* 자본금           */
+	     , CLPL            /* 자본잉여금       */
+	     , CAPL_SM         /* 자본총계         */
+	     , ASSETS_TOTAMT   /* 자산총액         */
+	     , ORDTM_LABRR_CO  /* 상시근로자수     */
+	     , Y3SUM_SELNG_AM  /* 3년합계매출액    */
+	     , Y3AVG_SELNG_AM  /* 3년평균매출액    */
+	     , SELNG_AM_1Y     /* 1년전매출액      */
+	     , SELNG_AM_2Y     /* 2년전매출액      */
+	     , SELNG_AM_3Y     /* 3년전매출액      */
+	     , SELNG_AM_4Y     /* 4년전매출액      */
+	     , AMOUNT_UNIT	   /* 금액단위 		   */
+	     , APPLC_EHGT	   /* 적용환율 		   */
+	     , CREAT_DE        /* 생성일자         */
+	  FROM TB_REQST_FNNR_DATA
+	 WHERE RCEPT_NO 	= #{RCEPT_NO}
+	   AND ENTRPRS_SE 	= #{ENTRPRS_SE}
+	<if test="SN != null and SN.toString() != ''">
+	   AND SN 			= #{SN}
+	</if>	   
+	ORDER BY BSNS_YEAR DESC   
+	</select>
+	
+	
+	<!-- 신청정보_상시근로자수 조회 -->
+	<select id="selectReqstOrdtmLabrr" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.selectReqstOrdtmLabrr */
+	       RCEPT_NO          /* 접수번호(PK)(FK) */
+	     , ENTRPRS_SE        /* 기업구분         */
+	     , SN                /* 순번             */
+	     , BSNS_YEAR         /* 사업년도(PK)     */
+	     , ORDTM_LABRR_CO    /* 상시근로자수     */
+	     , ORDTM_LABRR_CO_SM /* 상시근로자수합계 */
+	     , ORDTM_LABRR_CO1   /* 상시근로자수1    */
+	     , ORDTM_LABRR_CO2   /* 평상시근로자2    */
+	     , ORDTM_LABRR_CO3   /* 상시근로자수3    */
+	     , ORDTM_LABRR_CO4   /* 상시근로자수4    */
+	     , ORDTM_LABRR_CO5   /* 상시근로자수5    */
+	     , ORDTM_LABRR_CO6   /* 상시근로자수6    */
+	     , ORDTM_LABRR_CO7   /* 상시근로자수7    */
+	     , ORDTM_LABRR_CO8   /* 상시근로자수8    */
+	     , ORDTM_LABRR_CO9   /* 상시근로자수9    */
+	     , ORDTM_LABRR_CO10  /* 상시근로자수10   */
+	     , ORDTM_LABRR_CO11  /* 상시근로자수11   */
+	     , ORDTM_LABRR_CO12  /* 상시근로자수12   */
+	     , CREAT_DE          /* 생성일자         */
+	  FROM TB_REQST_ORDTM_LABRR
+	 WHERE RCEPT_NO 	= #{RCEPT_NO}
+	   AND ENTRPRS_SE 	= #{ENTRPRS_SE}	
+	<if test="SN != null and SN.toString() != ''">
+	   AND SN 			= #{SN}
+	</if>	    
+	</select>
+	
+	<!-- 첨부파일 조회 -->
+	<select id="selectReqstFile" resultType="Map">
+		SELECT /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.selectReqstFile */
+	           RFILE.RCEPT_NO    /* 접수번호(PK)(FK) */
+	         , RFILE.SN          /* 순번(PK)(FK)     */
+	         , RFILE.ENTRPRS_SE  /* 기업구분(PK)(FK) */
+	         , RFILE.FILE_KND    /* 파일종류(PK)     */
+	         , RFILE.YEAR        /* 년도(PK)         */
+	         , RFILE.FILE_NM     /* 파일명           */
+	         , RFILE.FILE_SEQ    /* 파일순번         */
+	         , RFILE.CREAT_DE    /* 생성일자         */
+	         , RFILE.UPDT_DE     /* 수정일자         */	         
+	         , OFILE.FILE_ID     /* 파일ID(PK)     	 */
+	         , OFILE.ORDER_NO    /* 정렬순서       	 */
+	         , OFILE.LOCAL_NM    /* 원본파일이름   	 */
+	         , OFILE.SERVER_NM   /* 저장파일이름   	 */
+	         , OFILE.FILE_URL    /* 파일경로WEB    	 */
+	         , OFILE.FILE_SIZE   /* 파일크기       	 */
+	         , OFILE.FILE_TYPE   /* 파일유형       	 */
+	         , OFILE.FILE_EXT    /* 파일확장자     	 */
+	         , OFILE.FILE_DESC   /* 파일설명       	 */
+	         , OFILE.INPUT_NM    /* 폼변수이름     	 */
+	         , OFILE.DOWN_CNT    /* 다운로드수     	 */
+	         , OFILE.FILE_BSIZE  /* 파일크기_BYTE  	 */
+	    <!-- , OFILE.ENCPT_AT    /* 암호화여부     	 */ -->
+		  FROM TB_REQST_FILE 	AS RFILE
+	INNER JOIN OP_FILE			AS OFILE
+	 		ON RFILE.FILE_SEQ 	= OFILE.FILE_SEQ
+		 WHERE RFILE.RCEPT_NO	= #{RCEPT_NO}
+		   AND RFILE.ENTRPRS_SE	= #{ENTRPRS_SE}
+	<if test="SN != null and SN.toString() != ''">
+	       AND RFILE.SN 	 	= #{SN}
+	</if>
+	</select>
+	
+	<!-- 최근재발급접수 조회 -->
+	<select id="selectRecentApply" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.selectRecentApply */
+		 MASTER.RCEPT_NO				/* 접수번호 */
+		,MASTER.JDGMNT_REQST_YEAR		/* 판정신청년도 */
+		,MASTER.RCEPT_DE				/* 접수일자 */
+		,MASTER.UPPER_RCEPT_NO			/* 상위접수번호 */			
+	FROM TB_APPLY_MASTER MASTER
+	LEFT JOIN TB_RESN_MANAGE RESN
+	ON MASTER.RCEPT_NO = RESN.RCEPT_NO
+	WHERE MASTER.UPPER_RCEPT_NO = #{UPPER_RCEPT_NO}
+	AND RESN.SE_CODE = 'RC1'
+	ORDER BY MASTER.RCEPT_DE DESC
+	LIMIT 1;
+	</select>
+	
+	<!-- 상태별 상태 이력 조회 -->
+	<select id="selectResnMngBySeCode" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.selectResnMngBySeCode */
+		 HIST_SN
+		 ,RCEPT_NO
+		 ,RESN_SE
+		 ,SE_CODE
+		 ,RESN
+		 ,USER_NO
+		 ,RESN_OCCRRNC_DE
+	FROM TB_RESN_MANAGE
+	WHERE RCEPT_NO = #{RCEPT_NO}
+	AND RESN_SE = #{RESN_SE}
+	AND SE_CODE = #{SE_CODE}
+	LIMIT 1
+	</select>
+	
+	<!-- 재발급기초정보 조회 -->
+	<select id="selectIsgnBsisInfo" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.selectIsgnBsisInfo */
+		 RCEPT_NO					  /* 접수번호(PK)(FK) */
+		,ENTRPS_NM                    /* 업체명 */ 
+		,RPRSNTV_NM                   /* 대표자명 */
+		,ZIP                          /* 우편번호 */
+		,HEDOFC_ADRES                 /* 본사주소 */
+		,ENTRPRS_NM_CHANGE_AT         /* 기업명변경여부 */ 
+		,QY_CPTL_AT                   /* 양수도여부 */
+		,BIZRNO_ADIT_AT               /* 사업자번호추가여부 */ 
+		,REPRSNT_TLPHON               /* 대표전화 */
+		,FXNUM                        /* 팩스번호 */
+		,FILE_NM1                     /* 파일명1 */ 
+		,FILE_SEQ1                    /* 파일순번1 */
+		,FILE_NM2                     /* 파일명2 */ 
+		,FILE_SEQ2                    /* 파일순번2 */
+		,CREAT_DE                     /* 생성일자 */
+		,UPDT_DE                      /* 수정일자 */ 		
+	FROM TB_ISGN_BSIS_INFO
+	WHERE RCEPT_NO = #{RCEPT_NO}
+	</select>
+	
+	<!-- 복수사업자번호관리 조회 - 재발급 -->
+	<select id="selectCompnoBizrnoManage" resultType="String">
+	SELECT /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.selectCompnoBizrnoManage */
+		 BIZRNO					  /* 사업자등록번호 */		 	
+	FROM TB_COMPNO_BIZRNO_MANAGE
+	WHERE RCEPT_NO = #{RCEPT_NO}
+	</select>
+	
+	<!-- 복수사업자번호관리 조회 - 신규 -->
+	<select id="selectAddBizrnoManage" resultType="String">
+	SELECT /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.selectAddBizrnoManage */
+		 BIZRNO					  /* 사업자등록번호 */		 	
+	FROM TB_ADD_BIZRNO_MANAGE
+	WHERE RCEPT_NO = #{RCEPT_NO}
+	  AND BIZRNO NOT IN (SELECT BIZRNO FROM TB_REQST_RCPY_LIST WHERE RCEPT_NO = #{RCEPT_NO})
+	</select>
+	
+	<!-- 기업기본통계조회 -->
+	<select id="selectEntBaseSts" resultType="Map">		
+	SELECT  /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.selectEntBaseSts */
+			IFNULL(TRUNCATE(SELNG_AM / 100000, 0), 0) AS SELNG_AM
+	      , IFNULL(TRUNCATE(BSN_PROFIT / 100000, 0), 0) AS BSN_PROFIT
+	      , IFNULL(TRUNCATE(THSTRM_NTPF / 100000, 0), 0) AS THSTRM_NTPF
+	      , IFNULL(ORDTM_LABRR_CO, 0) AS ORDTM_LABRR_CO
+	      , IFNULL(TRUNCATE((RSRCH_DEVLOP_CT / SELNG_AM) * 100, 2), 0) AS RND_CCTRR
+	      , 0 AS ENTRPRS_CO
+	      , SUM(FNNR.STDYY)
+	FROM TB_FNNR_DATA FNNR, TB_ENTPRS_INFO ENT
+	WHERE FNNR.HPE_CD = #{HPE_CD}
+	AND FNNR.HPE_CD = ENT.HPE_CD
+	AND FNNR.STDYY = ENT.STDYY
+	AND FNNR.STDYY = #{STDYY}
+	UNION
+	SELECT  IFNULL(TRUNCATE(SUM(SELNG_AM) / SUM(ENTRPRS_CO) / 100000, 0), 0) AS SELNG_AM				/* 평균매출액 */
+	      , IFNULL(TRUNCATE(SUM(BSN_PROFIT) / SUM(ENTRPRS_CO) / 100000, 0), 0) AS BSN_PROFIT			/* 평균영업이익 */
+	      , IFNULL(TRUNCATE(SUM(THSTRM_NTPF) / SUM(ENTRPRS_CO) / 100000, 0), 0) AS THSTRM_NTPF			/* 평균당기순이익 */
+	      , IFNULL(TRUNCATE(SUM(ORDTM_LABRR_CO) / SUM(ENTRPRS_CO), 0), 0) AS ORDTM_LABRR_CO			/* 평균고용 */
+	      , IFNULL(TRUNCATE((RSRCH_DEVLOP_CT / SELNG_AM) * 100, 2), 0) AS RND_CCTRR					/* RD집약도 */
+	      , IFNULL(SUM(ENTRPRS_CO), 0) AS ENTRPRS_CO													/* 기업수 */
+	      ,SUM(STDYY_DO)
+	FROM STS_ENTCLS STS
+	WHERE STS.STDYY_DO = #{STDYY}
+	AND STS.ENTCLS = 'EA2'
+	AND STS.INDUTY_CODE = #{INDUTY_CODE}
+<!-- 	UNION
+	SELECT IFNULL(TRUNCATE(SUM(SELNG_AM) / SUM(ENTRPRS_CO) / 100000, 0), 0)
+	      , IFNULL(TRUNCATE(SUM(BSN_PROFIT) / SUM(ENTRPRS_CO) / 100000, 0), 0)
+	      , IFNULL(TRUNCATE(SUM(THSTRM_NTPF) / SUM(ENTRPRS_CO) / 100000, 0), 0)
+	      , IFNULL(TRUNCATE(SUM(ORDTM_LABRR_CO) / SUM(ENTRPRS_CO), 0), 0)
+	      , IFNULL(TRUNCATE((RSRCH_DEVLOP_CT / SELNG_AM) * 100, 2), 0)
+	      , IFNULL(SUM(ENTRPRS_CO), 0) AS ENTRPRS_CO
+	FROM STS_ENTCLS STS
+	WHERE STS.STDYY_DO = #{STDYY}
+	AND STS.ENTCLS = 'EA2' -->
+	</select>
+	
+	<!-- 상위업체평균통계 조회 -->
+	<select id="selectUpperCmpnAvgSts" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.selectUpperCmpnAvgSts */
+	TRUNCATE(AVG(SELNG_AM) / 100000, 0) AS SELNG_AM
+	,TRUNCATE(AVG(BSN_PROFIT) / 100000, 0) AS BSN_PROFIT
+	,TRUNCATE(AVG(THSTRM_NTPF) / 100000, 0) AS THSTRM_NTPF
+	,TRUNCATE(AVG(ORDTM_LABRR_CO),0) AS ORDTM_LABRR_CO
+	,TRUNCATE(AVG(RSRCH_DEVLOP_CT / SELNG_AM * 100), 2) AS RND_CCTRR
+	FROM
+	(
+	  SELECT 
+		  SELNG_AM
+		  ,BSN_PROFIT
+		  ,THSTRM_NTPF  
+		  ,ORDTM_LABRR_CO
+		  ,RSRCH_DEVLOP_CT
+	  FROM TB_ENTPRS_INFO A, TB_FNNR_DATA B
+	  WHERE A.HPE_CD = B.HPE_CD
+	  AND A.STDYY = B.STDYY
+	  AND B.STDYY = #{STDYY}
+	  AND A.DCSN_HPE_AT = 'Y'
+	  AND A.LCLAS_CD = #{LCLAS_CD}
+	  <if test="MLSFC_CD != null and MLSFC_CD.toString() != ''">
+	  AND A.MLSFC_CD = #{MLSFC_CD}
+	  </if>
+	  ORDER BY B.SELNG_AM DESC 
+	  LIMIT #{LIMIT}
+	) K  ;
+	</select>
+	
+	<!-- 기업정보 조회 -->
+	<select id="selectEntprsInfo" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.selectEntprsInfo */
+		  HPE_CD														/* 기업관리코드 */
+		, ENTRPRS_NM													/* 기업명 */
+		, LCLAS_CD														/* 업종대분류코드 */
+		, MLSFC_CD														/* 업종중분류코드 */
+		, DTLDTLCLFC_CD													/* 세세분류코드 */
+		, (SELECT KOREAN_NM 
+			FROM TB_IND_CD IND
+			WHERE IND.INDUTY_CODE = DTLDTLCLFC_CD) AS INDUTY_NM			/* 세세분류명 */
+	FROM TB_ENTPRS_INFO
+	WHERE JURIRNO = #{JURIRNO}
+	AND STDYY = #{STDYY}
+	</select>
+	
+	<!-- 상호출자제한기업 조회 -->
+	<select id="selectMutualInvestLimit" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.selectMutualInvestLimit */
+		  JURIRNO
+		  ,PRESNATN_DE
+		  ,ENTRPRS_RANK
+		  ,ENTRPRS_NM
+		  ,KMBNT_NM
+		  ,FNCBIZ_AT
+		  ,CREAT_DE
+	FROM TB_MUTUAL_INVEST_LIMIT
+	WHERE JURIRNO = #{JURIRNO}
+	AND DATE_FORMAT(PRESNATN_DE, '%Y%m') = #{STD_DE}
+	</select>
+	
+	<!-- 업종 대 분류 전체 조회 -->
+	<select id="selectLargeGroup" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.selectLargeGroup */
+		KOREAN_NM					AS koreanNm			/* 대분류 업종 이름	*/
+		, INDUTY_CODE				AS indutyCode		/*	업종 코드		*/
+		, LCLAS_CD					AS lclasCd			/*	중분류 코드		*/
+	FROM TB_IND_CD
+	WHERE SE = 1
+	</select>
+	
+	<!-- 업종 대 분류 검색 -->
+	<select id="selectLargeOne" resultType = "Map">
+	SELECT	/* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.selectLargeOne */
+		LCLAS_CD					AS lclasCd			/*	중분류 코드		*/
+	FROM TB_IND_CD
+	WHERE SE = 2
+	AND	INDUTY_CODE = #{indutyCode}
+	</select> 
+	
+	<!-- 업종 중 분류 조회 -->
+	<select id="selectSmallGroup" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.selectSmallGroup */
+		KOREAN_NM					AS koreanNm			/* 중분류 업종 이름	*/
+		, INDUTY_CODE				AS indutyCode		/*	업종 코드		*/
+	FROM TB_IND_CD
+	WHERE LCLAS_CD = #{lclasCd}
+	AND	  SE = 2
+	</select>
+	
+	<!-- 중소기업확인 -->
+	<select id="selectSmbaList" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.selectSmbaList */
+		  COLCT_DE
+		  ,JURIRNO
+		  ,BIZRNO
+		  ,SE
+		  ,PROCESS_DE
+		  ,VALID_PD_BEGIN_DE
+		  ,VALID_PD_END_DE
+	FROM TB_SMBA_LIST
+	WHERE JURIRNO = #{JURIRNO}
+	AND SE = 1
+	AND VALID_PD_BEGIN_DE <![CDATA[<=]]> #{TODAY}
+	AND VALID_PD_END_DE <![CDATA[>=]]> #{TODAY}
+	</select>
+	
+	<!-- 일련번호관리 등록 -->
+	<insert id="insertSnMng">
+	INSERT INTO TB_SN_MNG /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.insertSnMng */
+	          (
+			    YEAR      /* 년도(PK)     */
+			  , RCEPT_SN  /* 접수일련번호 */
+			  , ISSU_SN   /* 발급일련번호 */   
+	          )
+	   VALUES
+	          (                 
+			   	#{YEAR}
+			  ,	#{RCEPT_SN}
+			  ,	#{ISSU_SN}		  
+	          )       
+	</insert>
+	
+	<!-- 접수일련번호 수정 -->
+	<update id="updateRceptSn">
+	UPDATE TB_SN_MNG /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.updateRceptSn */
+	   SET RCEPT_SN = #{RCEPT_SN}	/* 접수일련번호 */
+	 WHERE YEAR = #{YEAR}
+	</update>
+	
+	<!-- 신청접수 재발급여부 수정 -->
+	<update id="updateIsgnAt">
+	UPDATE TB_APPLY_MASTER /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.updateIsgnAt */
+	   SET ISGN_AT = #{ISGN_AT}	/* 재발급여부 */
+	 WHERE RCEPT_NO = #{RCEPT_NO}
+	</update>
+
+	<!-- 신청접수 등록 -->
+	<insert id="insertApplyMaster">
+	INSERT INTO TB_APPLY_MASTER /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.insertApplyMaster */
+	          (
+			    RCEPT_NO           /* 접수번호(PK) */
+			  , CONFM_TARGET_YY	   /* 확인신청년도 */
+			  , EXCPT_TRGET_AT     /* 특례대상여부 */
+			  , JDGMNT_REQST_YEAR  /* 판정신청년도 */
+			  , RCEPT_DE           /* 접수일자     */
+			  , UPPER_RCEPT_NO     /* 상위접수번호 */
+			  , REQST_SE           /* 신청구분     */
+			  , UPDT_AT            /* 갱신여부     */
+			  , CREAT_DE           /* 생성일자     */
+			  , UPDT_DE            /* 수정일자     */           
+	          )
+	     VALUES
+	          (                 
+			   	#{RCEPT_NO}
+			  , #{CONFM_TARGET_YY}
+			  , #{EXCPT_TRGET_AT}
+			  ,	#{JDGMNT_REQST_YEAR}
+			<choose>
+			<when test="REQST_SE == 'AK0'">
+			  , NULL	
+			</when>       
+			<otherwise>
+			  , NOW()
+			</otherwise>
+		    </choose>			  
+			  ,	#{UPPER_RCEPT_NO}
+			  ,	#{REQST_SE}
+			  ,	#{UPDT_AT}
+			  ,	NOW()
+			  ,	#{UPDT_DE}            
+	          )
+             ON DUPLICATE KEY            
+         UPDATE CONFM_TARGET_YY	   = #{CONFM_TARGET_YY}		/* 확인신청년도 */
+         	  ,	JDGMNT_REQST_YEAR  = #{JDGMNT_REQST_YEAR}	/* 판정신청년도 */
+			<choose>
+			<when test="REQST_SE == 'AK0'">
+			  , RCEPT_DE 		   = NULL					/* 접수일자     */
+			</when>       
+			<otherwise>
+			  , RCEPT_DE 		   = NOW()					/* 접수일자     */
+			</otherwise>
+			</choose>
+			  , UPPER_RCEPT_NO     = #{UPPER_RCEPT_NO}		/* 상위접수번호 */
+			  , REQST_SE           = #{REQST_SE}			/* 신청구분     */
+			  , UPDT_AT            = #{UPDT_AT}				/* 갱신여부     */
+			  , UPDT_DE            = NOW() 					/* 수정일자     */  
+
+	</insert>
+	
+	<!-- 신청기업기초정보 등록 -->
+	<insert id="insertIssuBsisInfo">
+	INSERT INTO TB_ISSU_BSIS_INFO /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.insertIssuBsisInfo */
+	          (
+			    RCEPT_NO           /* 접수번호(PK)(FK) */
+			  , RPRSNTV_NM         /* 대표자명         */
+			  , HEDOFC_ADRES       /* 본사주소         */
+			  , ZIP                /* 우편번호         */
+			  , REPRSNT_TLPHON     /* 대표전화         */
+			  , FXNUM              /* 팩스번호         */
+			  , PRPOS              /* 용도             */
+			  , RECEPDSK           /* 제출처           */
+			  , PAPERS_RM          /* 서류비고         */
+			  , ISSU_NO            /* 발급번호         */
+			  , ISSU_DE            /* 발급일자         */
+			  , JDGMNT_CODE        /* 판정코드         */
+			  , VALID_PD_BEGIN_DE  /* 유효기간시작일자 */
+			  , VALID_PD_END_DE    /* 유효기간종료일자 */     
+			  , CHK_RECEPDSK   
+	          )
+	   VALUES
+	          (                 
+			    #{RCEPT_NO}
+			  , #{RPRSNTV_NM}
+			  , #{HEDOFC_ADRES}
+			  , #{ZIP}
+			  , #{REPRSNT_TLPHON}
+			  , #{FXNUM}
+			  , #{PRPOS}
+			  , #{RECEPDSK}
+			  , #{PAPERS_RM}
+			  , #{ISSU_NO}
+			  , #{ISSU_DE}
+			  , #{JDGMNT_CODE}
+			  , #{VALID_PD_BEGIN_DE}
+			  , #{VALID_PD_END_DE}   
+			  , #{CHK_RECEPDSK}
+			  )       
+	</insert>
+	
+	<!-- 신청기업및관계기업주요정보 등록 -->
+	<insert id="insertReqstRcpyList">
+	INSERT INTO TB_REQST_RCPY_LIST /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.insertReqstRcpyList */
+	          (
+			    RCEPT_NO        /* 접수번호(PK)(FK) */
+			  , SN              /* 순번             */
+			  , ENTRPRS_SE      /* 기업구분         */			  
+			  , JURIRNO         /* 법인등록번호(PK) */			  
+			  , CPR_REGIST_SE   /* 법인등록구분     */			  
+			  , CRNCY_CODE      /* 통화코드         */
+			  , RCPY_DIV        /* 관계기업구분     */
+			  , QOTA_RT         /* 지분율           */
+			  , ENTRPRS_NM      /* 기업명           */
+			  , RPRSNTV_NM      /* 대표자명           */
+			  , CRP_CD          /* 공시시스템코드   */
+			  , BIZRNO          /* 사업자등록번호   */
+			  , MN_INDUTY_NM    /* 주업종명         */
+			  , MN_INDUTY_CODE  /* 주업종코드       */
+			  , PSACNT          /* 결산일           */
+			  , FOND_DE         /* 설립일자         */
+			  , PARTCLR_MATTER  /* 특이사항         */
+			  , CREAT_DE        /* 생성일자         */
+			  , UPDT_DE         /* 수정일자         */      
+	          )
+	   VALUES
+	          (                 
+			    #{RCEPT_NO}
+			  , #{SN}
+			  , #{ENTRPRS_SE}			  
+			  , #{JURIRNO}
+			  , #{CPR_REGIST_SE}			  
+			  , #{CRNCY_CODE}
+			  , #{RCPY_DIV}
+			  , #{QOTA_RT}
+			  , #{ENTRPRS_NM}
+			  , #{RPRSNTV_NM}
+			  , #{CRP_CD}
+			  , #{BIZRNO}
+			  , #{MN_INDUTY_NM}
+			  , #{MN_INDUTY_CODE}
+			  , #{PSACNT}
+			  , #{FOND_DE}
+			  , #{PARTCLR_MATTER}
+			  , NOW()
+			  , #{UPDT_DE}         
+			  )       
+	</insert>
+	
+	<!-- 신청정보_지분소유 등록 -->
+	<insert id="insertReqstInfoQotaPosesn">
+	INSERT INTO TB_REQST_INFO_QOTA_POSESN /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.insertReqstInfoQotaPosesn */
+	          (
+			    RCEPT_NO      /* 접수번호(PK)(FK)     */
+			  , SN			  /* 순번				  */
+			  , ENTRPRS_SE    /* 기업구분             */
+			  , SHRHOLDR_NM1  /* 주주명1              */
+			  , QOTA_RT1      /* 지분율1              */
+			  , SHRHOLDR_NM2  /* 주주명2              */
+			  , QOTA_RT2      /* 지분율2              */
+			  , SHRHOLDR_NM3  /* 주주명3              */
+			  , QOTA_RT3      /* 지분율3              */
+			  , CREAT_DE      /* 생성일자             */     
+	          )
+	   VALUES
+	          (                 
+			    #{RCEPT_NO}
+			  , #{SN}
+			  , #{ENTRPRS_SE}
+			  , #{SHRHOLDR_NM1}
+			  , #{QOTA_RT1}
+			  , #{SHRHOLDR_NM2}
+			  , #{QOTA_RT2}
+			  , #{SHRHOLDR_NM3}
+			  , #{QOTA_RT3}
+			  , NOW()
+			  )       
+	</insert>
+	
+	<!-- 신청정보_재무 등록 -->
+	<insert id="insertReqstFnnrData">
+	INSERT INTO TB_REQST_FNNR_DATA /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.insertReqstFnnrData */
+	          (
+	            RCEPT_NO		/* 접수번호    	    */
+			  , SN				/* 순번				*/
+			  , ENTRPRS_SE      /* 기업구분         */			  			   
+			  , BSNS_YEAR       /* 사업년도(PK)     */
+			  , SELNG_AM        /* 매출액           */
+			  , CAPL            /* 자본금           */
+			  , CLPL            /* 자본잉여금       */
+			  , CAPL_SM         /* 자본총계         */
+			  , ASSETS_TOTAMT   /* 자산총액         */
+			  , ORDTM_LABRR_CO  /* 상시근로자수     */
+			  , Y3SUM_SELNG_AM	/* 3년합계매출액 	*/
+			  , Y3AVG_SELNG_AM  /* 3년평균매출액    */
+			  , SELNG_AM_1Y     /* 1년전매출액      */
+			  , SELNG_AM_2Y     /* 2년전매출액      */
+			  , SELNG_AM_3Y     /* 3년전매출액      */
+			  , SELNG_AM_4Y     /* 4년전매출액      */
+			  , AMOUNT_UNIT		/* 금액단위 		*/
+			  , APPLC_EHGT		/* 적용환율			*/
+			  , CREAT_DE        /* 생성일자         */ 
+	          )
+	   VALUES
+	          (
+	          	#{RCEPT_NO}                 
+			  , #{SN}
+			  , #{ENTRPRS_SE}			  
+			  , #{BSNS_YEAR}
+			  , #{SELNG_AM}
+			  , #{CAPL}
+			  , #{CLPL}
+			  , #{CAPL_SM}
+			  , #{ASSETS_TOTAMT}
+			  , #{ORDTM_LABRR_CO}
+			  , #{Y3SUM_SELNG_AM}
+			  , #{Y3AVG_SELNG_AM}
+			  , #{SELNG_AM_1Y}
+			  , #{SELNG_AM_2Y}
+			  , #{SELNG_AM_3Y}
+			  , #{SELNG_AM_4Y}
+			  , #{AMOUNT_UNIT}
+			  , (SELECT FN_GET_AVG_NATNL_EHGT(#{confmYear}, #{CRNCY_CODE}))
+			  , NOW()
+			  )       
+	</insert>
+	
+	<!-- 신청정보_상시근로자수 등록 -->
+	<insert id="insertReqstOrdtmLabrr">
+	INSERT INTO TB_REQST_ORDTM_LABRR /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.insertReqstOrdtmLabrr */
+	          (
+ 				RCEPT_NO		  /* 접수번호    	  */
+ 			  , SN				  /* 순번			  */
+			  , ENTRPRS_SE        /* 기업구분         */ 							    
+			  , BSNS_YEAR         /* 사업년도(PK)     */
+			  , ORDTM_LABRR_CO    /* 상시근로자수     */
+	     	  , ORDTM_LABRR_CO_SM /* 상시근로자수합계 */
+			  , ORDTM_LABRR_CO1   /* 상시근로자수1    */
+			  , ORDTM_LABRR_CO2   /* 평상시근로자2    */
+			  , ORDTM_LABRR_CO3   /* 상시근로자수3    */
+			  , ORDTM_LABRR_CO4   /* 상시근로자수4    */
+			  , ORDTM_LABRR_CO5   /* 상시근로자수5    */
+			  , ORDTM_LABRR_CO6   /* 상시근로자수6    */
+			  , ORDTM_LABRR_CO7   /* 상시근로자수7    */
+			  , ORDTM_LABRR_CO8   /* 상시근로자수8    */
+			  , ORDTM_LABRR_CO9   /* 상시근로자수9    */
+			  , ORDTM_LABRR_CO10  /* 상시근로자수10   */
+			  , ORDTM_LABRR_CO11  /* 상시근로자수11   */
+			  , ORDTM_LABRR_CO12  /* 상시근로자수12   */
+			  , CREAT_DE          /* 생성일자         */
+	          )
+	   VALUES
+	          (                 
+			    #{RCEPT_NO}
+			  , #{SN}
+			  , #{ENTRPRS_SE}			       
+			  , #{BSNS_YEAR}
+			  , #{ORDTM_LABRR_CO}
+			  , #{ORDTM_LABRR_CO_SM}
+			  , #{ORDTM_LABRR_CO1}
+			  , #{ORDTM_LABRR_CO2}
+			  , #{ORDTM_LABRR_CO3}
+			  , #{ORDTM_LABRR_CO4}
+			  , #{ORDTM_LABRR_CO5}
+			  , #{ORDTM_LABRR_CO6}
+			  , #{ORDTM_LABRR_CO7}
+			  , #{ORDTM_LABRR_CO8}
+			  , #{ORDTM_LABRR_CO9}
+			  , #{ORDTM_LABRR_CO10}
+			  , #{ORDTM_LABRR_CO11}
+			  , #{ORDTM_LABRR_CO12}
+			  , NOW()
+			  )       
+	</insert>
+	
+	<!-- 상태이력관리 등록 -->
+	<insert id="insertResnManage" useGeneratedKeys="true" keyProperty="HIST_SN"  keyColumn="HIST_SN">
+	INSERT INTO TB_RESN_MANAGE /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.insertResnManage */
+	          (
+			    RCEPT_NO         /* 접수번호(PK)(FK) */
+			  , RESN_SE          /* 사유구분(PK)     */
+			  , SE_CODE          /* 구분코드(PK)     */
+			  , RESN             /* 사유             */
+			  , USER_NO          /* 사용자번호       */
+			  , RESN_OCCRRNC_DE  /* 사유발생일자     */
+	          )
+	   VALUES
+	          (                 
+			    #{RCEPT_NO}
+			  , #{RESN_SE}
+			  , #{SE_CODE}
+			  , #{RESN}
+			  , #{USER_NO}
+			  , NOW()
+			  )       
+	</insert>
+	
+	<!-- 첨부파일 등록 -->
+	<insert id="insertReqstFile">
+	INSERT INTO TB_REQST_FILE /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.insertReqstFile */
+	          (
+			    RCEPT_NO    /* 접수번호(PK)(FK) */
+			  , SN          /* 순번(PK)(FK)     */
+			  , ENTRPRS_SE  /* 기업구분(PK)(FK) */
+			  , FILE_KND    /* 파일종류(PK)     */
+			  , YEAR        /* 년도(PK)         */
+			  , FILE_NM     /* 파일명           */
+			  , FILE_SEQ    /* 파일순번         */
+			  , CREAT_DE    /* 생성일자         */
+			  , UPDT_DE     /* 수정일자         */
+	          )
+	   VALUES
+	          (                 
+		  	    #{RCEPT_NO}
+		  	  , #{SN}
+		  	  , #{ENTRPRS_SE}
+		  	  , #{FILE_KND}
+		  	  , #{YEAR}
+		  	  , #{FILE_NM}
+		  	  , #{FILE_SEQ}
+		  	  , NOW()
+		  	  , #{UPDT_DE}
+			  )       
+	</insert>
+	
+	<!-- 재발급기초정보 등록 -->
+	<insert id="insertIsgnBsisInfo">
+	INSERT INTO TB_ISGN_BSIS_INFO /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.insertIsgnBsisInfo */
+	          (
+			    RCEPT_NO					/* 접수번호(PK)(FK) */				
+				,ENTRPS_NM                  /* 업체명 */ 
+				,RPRSNTV_NM                 /* 대표자명 */
+				,ZIP						/* 우편번호 */
+				,HEDOFC_ADRES               /* 본사주소 */
+				,ENTRPRS_NM_CHANGE_AT       /* 기업명변경여부 */ 
+				,QY_CPTL_AT                 /* 양수도여부 */
+				,BIZRNO_ADIT_AT             /* 사업자번호추가여부 */ 
+				,REPRSNT_TLPHON             /* 대표전화 */
+				,FXNUM                      /* 팩스번호 */
+				,FILE_NM1                   /* 파일명1 */ 
+				,FILE_SEQ1                  /* 파일순번1 */
+				,FILE_NM2                   /* 파일명2 */ 
+				,FILE_SEQ2                  /* 파일순번2 */
+				,CREAT_DE                   /* 생성일자 */
+				,UPDT_DE                    /* 수정일자 */         
+	          )
+	   VALUES
+	          (                 
+			    #{RCEPT_NO}				
+				,#{ENTRPS_NM}
+				,#{RPRSNTV_NM}
+				,#{ZIP}
+				,#{HEDOFC_ADRES}
+				,#{ENTRPRS_NM_CHANGE_AT}
+				,#{QY_CPTL_AT}
+				,#{BIZRNO_ADIT_AT}
+				,#{REPRSNT_TLPHON}
+				,#{FXNUM}
+				,#{FILE_NM1}
+				,#{FILE_SEQ1}
+				,#{FILE_NM2}
+				,#{FILE_SEQ2}
+				,NOW()
+				,#{UPDT_DE}          
+			  )
+			  ON DUPLICATE KEY
+		UPDATE 	ENTRPS_NM 				= #{ENTRPS_NM}
+				, RPRSNTV_NM 			= #{RPRSNTV_NM}
+				, ZIP 					= #{ZIP}
+				, HEDOFC_ADRES 			= #{HEDOFC_ADRES}
+				, ENTRPRS_NM_CHANGE_AT 	= #{ENTRPRS_NM_CHANGE_AT}
+				, QY_CPTL_AT 			= #{QY_CPTL_AT}
+				, BIZRNO_ADIT_AT 		= #{BIZRNO_ADIT_AT}
+				, REPRSNT_TLPHON 		= #{REPRSNT_TLPHON}
+				, FXNUM 				= #{FXNUM}
+				<if test="FILE_SEQ1 != null and FILE_SEQ1 != ''">
+				, FILE_NM1 				= #{FILE_NM1}
+				, FILE_SEQ1 			= #{FILE_SEQ1}
+				</if>
+				<if test="FILE_SEQ2 != null and FILE_SEQ2 != ''">
+				, FILE_NM2 				= #{FILE_NM2}
+				, FILE_SEQ2				= #{FILE_SEQ2}
+				</if>
+				, UPDT_DE 				= NOW()
+	</insert>
+	
+	<!-- 재발급기초정보 업데이트 -->
+	<update id="updateIsgnBsisInfo">
+	UPDATE TB_ISGN_BSIS_INFO SET
+		ENTRPS_NM		= #{ENTRPS_NM}			/* 기업명 */
+	  , RPRSNTV_NM   	= #{RPRSNTV_NM} 		/* 대표자명 */ 
+	  , HEDOFC_ADRES 	= #{HEDOFC_ADRES} 		/* 본사주소 */ 
+	  , ZIP 		 	= #{ZIP} 				/* 우편번호 */ 
+	  , REPRSNT_TLPHON  = #{REPRSNT_TLPHON} 	/* 대표전화 */ 
+	  , FXNUM 			= #{FXNUM} 				/* 팩스번호 */ 
+	 WHERE RCEPT_NO 	= #{RCEPT_NO}
+	</update>
+	
+	<!-- 복수사업자번호관리 등록 - 재발급 -->
+	<insert id="insertCompnoBizrnoManage">
+	INSERT INTO TB_COMPNO_BIZRNO_MANAGE /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.insertCompnoBizrnoManage */
+	          (
+			    BIZRNO 			/* 사업자등록번호 */
+			    ,RCEPT_NO  		/* 접수번호 */			    
+	          )
+	   VALUES
+	          (                 			    
+			    #{BIZRNO}
+			    ,#{RCEPT_NO}			    
+			  )
+	</insert>
+	
+	<!-- 복수사업자번호관리 등록 - 신규 -->
+	<insert id="insertAddBizrnoManage">
+	INSERT INTO TB_ADD_BIZRNO_MANAGE /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.insertAddBizrnoManage */
+	          (
+			    BIZRNO 			/* 사업자등록번호 */
+			    ,RCEPT_NO  		/* 접수번호 */			    
+	          )
+	   VALUES
+	          (                 			    
+			    #{BIZRNO}
+			    ,#{RCEPT_NO}			    
+			  )
+	</insert>
+	
+	<!-- 복수사업자번호관리 삭제 - 재발급 -->
+	<delete id="deleteCompnoBizrnoManage">
+	DELETE /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.deleteCompnoBizrnoManage */
+	  FROM TB_COMPNO_BIZRNO_MANAGE
+	 WHERE RCEPT_NO = #{RCEPT_NO}	/* 접수번호(PK)(FK) */
+	</delete>
+
+	<!-- 복수사업자번호관리 삭제 - 신규 -->
+	<delete id="deleteAddBizrnoManage">
+	DELETE /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.deleteAddBizrnoManage */		 	
+	  FROM TB_ADD_BIZRNO_MANAGE
+	 WHERE RCEPT_NO = #{RCEPT_NO}	/* 접수번호(PK)(FK) */
+	</delete>
+	
+	<!-- 산업기업기초정보 삭제 -->
+	<delete id="deleteIssuBsisInfo">
+	DELETE /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.deleteIssuBsisInfo */
+	  FROM TB_ISSU_BSIS_INFO
+	 WHERE RCEPT_NO = #{RCEPT_NO}	/* 접수번호(PK)(FK) */
+	</delete>
+
+	<!-- 신청기업및관계기업주요정보 삭제 -->
+	<delete id="deleteReqstRcpyList">
+	DELETE /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.deleteReqstRcpyList */
+	  FROM TB_REQST_RCPY_LIST
+	 WHERE RCEPT_NO 	= #{RCEPT_NO}		/* 접수번호(PK)(FK) */
+	   AND ENTRPRS_SE 	= #{ENTRPRS_SE}		/* 기업구분         */
+	</delete>
+
+	<!-- 신청정보_재무 삭제 -->
+	<delete id="deleteReqstFnnrData">
+	DELETE /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.deleteReqstFnnrData */
+	  FROM TB_REQST_FNNR_DATA
+	 WHERE RCEPT_NO 	= #{RCEPT_NO}		/* 접수번호(PK)(FK) */
+	   AND ENTRPRS_SE 	= #{ENTRPRS_SE} 	/* 기업구분         */  
+	</delete>
+
+	<!-- 신청정보_지분소유 삭제 -->
+	<delete id="deleteReqstInfoQotaPosesn">
+	DELETE /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.deleteReqstInfoQotaPosesn */
+	  FROM TB_REQST_INFO_QOTA_POSESN
+	 WHERE RCEPT_NO 	= #{RCEPT_NO}		/* 접수번호(PK)(FK) */
+	   AND ENTRPRS_SE 	= #{ENTRPRS_SE} 	/* 기업구분         */
+	</delete>
+
+	<!-- 신청정보_상시근로자수 삭제 -->
+	<delete id="deleteReqstOrdtmLabrr">
+	DELETE /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.deleteReqstOrdtmLabrr */
+	  FROM TB_REQST_ORDTM_LABRR
+	 WHERE RCEPT_NO 	= #{RCEPT_NO}		/* 접수번호(PK)(FK) */
+	   AND ENTRPRS_SE 	= #{ENTRPRS_SE}  	/* 기업구분         */ 
+	</delete>
+
+	<!-- 첨부파일 삭제 -->
+	<delete id="deleteReqstFile">
+	DELETE /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.deleteReqstFile */
+	  FROM TB_REQST_FILE
+	 WHERE RCEPT_NO 	= #{RCEPT_NO}		/* 접수번호(PK)(FK) */
+	   AND ENTRPRS_SE 	= #{ENTRPRS_SE}  	/* 기업구분         */ 
+	</delete>	
+	
+	<!-- 첨부파일 삭제(파일순번)-->
+	<delete id="deleteReqstFileBySeq">
+	DELETE /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.deleteReqstFileBySeq */
+	  FROM TB_REQST_FILE
+	 WHERE FILE_SEQ 	= #{FILE_SEQ}		/* 파일순번 */	   
+	</delete>
+	
+	<!-- 기업 자가진단 -->
+	<select id="callSelfDiagnosis" statementType="CALLABLE" resultType="Map">
+	{
+    	call sp_JUDGE_HPE_SYS_ONE(#{RCEPT_NO, mode=IN}, '1') 
+	}
+	</select>
+	
+	<!-- 재발급기초정보 첨부파일1 정보 삭제 -->
+	<update id="updateDelAttFileSeq1">
+	UPDATE TB_ISGN_BSIS_INFO /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.updateDelAttFileSeq1 */
+	   SET FILE_NM1 = NULL	/* 파일명1 */
+	   , FILE_SEQ1 = NULL	/* 파일순번1 */
+	 WHERE RCEPT_NO = #{RCEPT_NO}
+	</update>
+	
+	<!-- 재발급기초정보 첨부파일2 정보 삭제 -->
+	<update id="updateDelAttFileSeq2">
+	UPDATE TB_ISGN_BSIS_INFO /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.updateDelAttFileSeq2 */
+	   SET FILE_NM2 = NULL	/* 파일명2 */
+	   , FILE_SEQ2 = NULL	/* 파일순번2 */
+	 WHERE RCEPT_NO = #{RCEPT_NO}
+	</update>
+	
+	<!-- 재발급중복신청 조회 -->
+	<select id="selectIsgnDplctReqst" resultType="Map">
+		SELECT /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.selectIsgnDplctReqst */
+		 RCEPT_NO				/* 접수번호 */
+		,JDGMNT_REQST_YEAR		/* 판정신청년도 */
+		,REQST_SE				/* 신청구분 */
+		,UPPER_RCEPT_NO			/* 상위접수번호 */
+		,STTUS_CODE				/* 상태코드 */
+		,RESULT_CODE			/* 결과코드 */
+		FROM TB_APPLY_MASTER
+		WHERE UPPER_RCEPT_NO = #{UPPER_RCEPT_NO}
+		AND REQST_SE = 'AK2'
+		AND STTUS_CODE IN ('PS1','PS2','PS3','PS4','PS5')
+		LIMIT 1
+	</select>
+	
+	<!-- 발급중복신청 조회 -->
+	<select id="selectIssuDplctReqst" resultType="Map">
+		SELECT /* ProgramID=biz.tech.mapif.ic.HpeCnfirmReqstMapper.selectIsgnDplctReqst */
+		 RCEPT_NO				/* 접수번호 */
+		,JDGMNT_REQST_YEAR		/* 판정신청년도 */
+		,REQST_SE				/* 신청구분 */
+		,UPPER_RCEPT_NO			/* 상위접수번호 */
+		,STTUS_CODE				/* 상태코드 */
+		,RESULT_CODE			/* 결과코드 */
+		FROM TB_APPLY_MASTER
+		WHERE RCEPT_NO = #{RCEPT_NO}
+		AND RESULT_CODE = 'RC1'
+	</select>
+</mapper>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="biz.tech.mapif.sp.PGSP0070Mapper">
+
+	<!-- 갤러리 게스판 리스트 카운트 -->
+	<select id="selectGalleryBoardCount" resultType="int">
+		SELECT COUNT(*) AS totcnt
+		  FROM GALLERY_BOARD
+		 WHERE TYPE = 2
+		<!-- <if test="search_word != null and search_word != ''">
+			<if test="search_type == 'EMAIL_SJ'">
+		   AND EMAIL_SJ LIKE CONCAT('%', #{search_word}, '%')
+			</if>
+			<if test="search_type == 'REGISTER'">
+		   AND REGISTER LIKE CONCAT('%', #{search_word}, '%')
+			</if>
+		</if> -->
+	</select>
+	
+	<!-- 갤러리 게시판 리스트 조회 -->
+	<select id="selectGalleryBoardInfo" resultType="Map">
+		SELECT A.SEQ
+			 , A.SUBJ_BOARD
+		     , A.DATE_BOARD
+		     , A.IMG_FILE
+		     , A.URL_BOARD
+		     , A.TYPE
+		     , A.LAST_MODIFY_DATE
+		  FROM GALLERY_BOARD A
+		 WHERE TYPE = 2
+		<!-- <if test="search_word != null and search_word != ''">
+			<if test="search_type == 'EMAIL_SJ'">
+		   AND A.EMAIL_SJ LIKE CONCAT('%', #{search_word}, '%')
+			</if>
+			<if test="search_type == 'REGISTER'">
+		   AND A.REGISTER IN (SELECT USER_NO FROM tb_emplyr WHERE NM LIKE CONCAT('%', #{search_word}, '%')
+			</if>
+		</if> -->
+		 ORDER BY A.DATE_BOARD DESC
+	</select>
+	
+</mapper>

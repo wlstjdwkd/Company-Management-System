@@ -1,0 +1,74 @@
+<!--conf
+<sample in_favorites="true">
+              <product version="1.4" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               <sampledescription><![CDATA[By default dhtmlxTreeGrid had no visual connectors for nodes. Starting from v.1.5 you can choose either to turn connection lines for nodes on or off.]]></sampledescription></sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>TreeGrid lines</title>	
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+	
+	
+</head>
+<style type="text/css" media="screen">
+	/* this style can be used to remove lines between rows */
+	.gridbox .obj div, .gridbox .obj td{
+		aheight:18px !important;
+	}
+</style>
+<body onload="init()">
+	<h1>TreeGrid lines</h1>
+	<p>
+        You can set tree lines in treegrid by enableTreeGridLines method
+	</p>
+
+
+	<table width="600">
+		<tr>
+			<td>
+				<div id="gridbox" width="100%" height="250px" style="background-color:white;"></div>
+			</td>
+		</tr>
+		<tr>
+			<td>
+<div id="gridtbl1" width="100%" height="200px" style="background-color:white;"></div>
+<br><br>
+<div><a href="#" onclick="mygrid.addRow((new Date()).valueOf(),['new row','text','text',1,0],0)">Add new row</a></div>
+<div><a href="#" onclick="var z=mygrid.getRowId(this.nextSibling.value); if (z) mygrid.addRow((new Date()).valueOf(),['new row','text','text',1,1],0,z)">Add new row at child of node at position</a><input></div>
+<div><a href="#" onclick="var z=mygrid.getSelectedId(); if (z) mygrid.addRow((new Date()).valueOf(),['new row','text','text',1,1],0,z)">Add new row as child of selected</a></div>
+<div>&nbsp;</div>
+<div><a href="#" onclick="var z=mygrid.getRowId(this.nextSibling.value); if (z) mygrid.deleteRow(z)">Delete row at position</a><input></div>
+<div><a href="#" onclick="mygrid.deleteSelectedItem()">Delete selected rows</a></div>
+            </td>
+		</tr>
+	</table>
+<hr>
+<div><a href="#" onclick="alert(mygrid.getRowIndex(mygrid.getSelectedId()))">Index of selected</a></div>
+<div><a href="#" onclick="mygrid.expandAll()">Expand all</a></div>
+<div><a href="#" onclick="mygrid.collapseAll()">Collapse all</a></div>
+
+
+<script>
+	function init(){
+		mygrid = new dhtmlXGridObject('gridbox');
+		mygrid.setImagePath("../../../codebase/imgs/");
+		mygrid.enableTreeGridLines();
+		mygrid.enableMultiselect(true);
+		mygrid.enableAutoHeigth(true);
+		mygrid.init();
+		mygrid.setSkin("dhx_skyblue")
+	   	mygrid.loadXML("../common/treegrid.xml");
+	   	
+   	}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!--conf
+<sample>
+               <product version="1.6" edition="pro"/>
+                       <modifications>
+                               <modified date="080512"/>
+                       </modifications>
+               </sample>
+ --> 
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Setting custom attributes</title>
+	
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+</head>
+
+<body>
+	
+	<h1>Setting custom attributes</h1>
+<p>Grid allows to set custom attributes for rows by the xml or using setRowAttribute grid method. To get attributes use getRowAttribute method.</p>	
+<table>
+<tr>
+<td valign="top">
+<select id="sel">
+	<option value="price">price</option>
+	<option value="date">date of publication</option>
+</select>
+<input type="button" name="a2" value="show attribute" onclick="showAttribute();" />
+</td>
+</tr>
+<tr>
+<td  valign="top">
+	<div id="gridbox" style="width:600px; height:270px; background-color:white;"></div></td>
+</tr>
+<tr>
+<td valign="top">
+Name: <input type="text" id="val" size="18"> Value: <input type="text" id="txt" size="18">&nbsp; 
+
+<input type="button" name="a2" value="add attribute to selected" onclick="addAttribute();" /></td> 
+</td>
+</tr>
+</table>	
+					
+<a href="javascript:void(0)" onclick="mygrid.xml.row_attrs.push('price');mygrid.xml.row_attrs.push('date');alert(mygrid.serialize())">serialize</a>
+
+<script>
+	mygrid = new dhtmlXGridObject('gridbox');
+	mygrid.setImagePath("../../../codebase/imgs/");
+	mygrid.setHeader("Sales, Book Title, Author");
+	mygrid.setInitWidths("100,250,*")
+	mygrid.setColAlign("right,left")
+	mygrid.setColTypes("ed,ed,ed");
+	mygrid.setColSorting("int,str")
+	mygrid.init();
+	mygrid.setSerializationLevel(false,true)
+	mygrid.setSkin("dhx_skyblue")
+	mygrid.loadXML("../common/grid_attr.xml");
+	
+	function addAttribute(){
+		var val = document.getElementById('val').value;
+		var txt = document.getElementById('txt').value;
+		if (!val) return; 
+		addAttrToSelect(val); 
+		
+		//add attribute
+		mygrid.setRowAttribute(mygrid.getSelectedId(),val,txt); 
+		//register attribute for serialization
+		mygrid.xml.row_attrs.push(val);
+	}
+	function showAttribute(){
+		alert(mygrid.getRowAttribute(mygrid.getSelectedId(),document.getElementById('sel').value));
+	}
+	function addAttrToSelect(value){
+		 var z = document.createElement('option');
+		 z.value=value;
+		 z.appendChild(document.createTextNode(value))  
+		 document.getElementById("sel").appendChild(z);
+		 z.selected = true;
+	}
+</script>
+
+</body>
+</html>

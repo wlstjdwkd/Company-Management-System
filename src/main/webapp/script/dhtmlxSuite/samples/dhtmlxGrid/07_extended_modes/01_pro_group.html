@@ -1,0 +1,70 @@
+<!--conf
+<sample in_favorites="true">
+              <product version="1.5" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               <sampledescription><![CDATA[Grouppng is new functioality for dhtmlxGrid v.1.5. Try it and you'll see how flexible it is and how useful it can be for users of your application.]]></sampledescription></sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Grouping rows by column</title>
+	
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+	
+</head>
+
+<body>
+	
+	<h1>Grouping rows by column</h1>
+	<p>Grid provides grouping rows by column.</p>
+	<table width="600px">
+		<tr>
+			<td>
+				<input type="button" name="a2" value="ungroup" onclick="mygrid.unGroup();">&nbsp;&nbsp;
+				<input type="button"  name="q1" value="regroup by" onclick='mygrid.groupBy(document.getElementById("sel").value);'>
+				<select id="sel">
+					<option value="0">Sales</option>
+					<option value="1">Book title</option>
+					<option value="2">Author</option>
+					<option value="3">Price</option>
+					<option value="4">In Store</option>
+					<option value="5">Shipping</option>
+					<option value="6">Bestseller</option>
+					<option value="7">Date of Publication</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<div id="gridbox" style="width:100%;height:250px;background-color:white;"></div>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<a href="javascript:void(0)" onclick="if(mygrid._groups['John Grisham']) mygrid.expandGroup('John Grisham'); else alert('There is no such group!');">expand </a>/<a href="javascript:void(0)" onclick="if(mygrid._groups['John Grisham']) mygrid.collapseGroup('John Grisham'); else alert('There is no such group!')"> colapse</a> 'John Grisham'<br/>
+				<a href="javascript:void(0)" onclick="mygrid.expandAllGroups()">expand </a>/<a href="javascript:void(0)" onclick="mygrid.collapseAllGroups()"> colapse</a> all groups<br/>
+            	<a href="javascript:void(0)" onclick="mygrid.addRow((new Date()).valueOf(),[1,'The King of Torts','John Grisham',3,1,1,1,0],-1)">add </a>/<a href="javascript:void(0)" onclick="if (mygrid.getSelectedId()) mygrid.deleteRow(mygrid.getSelectedId())"> delete selected</a>
+			</td>
+		</tr>
+	</table>
+<script>
+	mygrid = new dhtmlXGridObject('gridbox');
+	mygrid.setImagePath("../../../codebase/imgs/");
+	mygrid.setHeader("Sales,Book Title,Author,Price,In Store,Shipping,Bestseller,Date of Publication");
+	mygrid.setInitWidths("50,150,100,80,80,80,80,200")
+	mygrid.setColAlign("right,left,left,right,center,left,center,center")
+	mygrid.setColTypes("dyn,edtxt,ed,price,ch,co,ra,ro");
+	mygrid.setColSorting("na,str,str,int,int,int,na,na")
+	mygrid.init();
+	mygrid.setSkin("dhx_skyblue")
+	mygrid.loadXML("../common/grid.xml",function(){
+		mygrid.groupBy(2);
+	});
+</script>
+</body>
+</html>

@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="biz.tech.mapif.em.PGEM0020Mapper">
+	
+	<!-- 문서 검색 -->
+	<select id="docusearch" resultType="hashmap">
+	SELECT EXPTOP.*,  tb_cmmncode.CODE_NM AS DEPT_NM
+	FROM EXPTOP
+	LEFT JOIN tb_cmmncode
+	ON EXPTOP.DEPART= tb_cmmncode.CODE
+	WHERE 1=1
+	<if test="search_date1 !='' and search_date1 !=null">
+		AND DATE BETWEEN 
+			LAST_DAY(#{search_date1} - INTERVAL 1 MONTH) + INTERVAL 1 DAY 
+			AND LAST_DAY(#{search_date2})
+	</if>
+	<if test="ad_search_word !='' and ad_search_word !=null">
+		AND EMP_NM LIKE CONCAT ('%', #{ad_search_word}, '%') 
+	</if>
+	<if test="department !='' and department !=null">
+		AND DEPART = #{department}
+	</if>
+	ORDER BY DOCU_NO ASC	
+		<if test="limitTo != '' and limitTo != null">LIMIT ${limitFrom} , ${limitTo}</if>
+	</select>
+	
+	<!-- 수정/삭제 view 띄우기 위한 검색1  -->
+	<select id="modifydocuinfoTOP" resultType="hashmap">
+	SELECT /* EMP_NO=biz.tech.mapif.em.PGEM0020Mapper.modifydocuinfoTOP */
+			  DOCU_NO				/* 문서 번호 */
+			, DEPART				/* 담당 부서 */
+			, DATE					/* 작성 날짜 */
+			, PRICE					/* 결제 금액 */	
+			, EMP_NM 				/* 담당 사원 */
+	FROM 	EXPTOP
+	<where>
+	 DOCU_NO = #{addocno}
+	</where>
+	</select>
+	
+	<!-- 수정/삭제 view 띄우기 위한 검색2  -->
+	<select id="modifydocuinfoBOT" resultType="hashmap">
+	SELECT /* EMP_NO=biz.tech.mapif.em.PGEM0020Mapper.modifydocuinfoBOT */
+			  DOCU_NO				/* 문서 번호 */
+			, DATE					/* 작성 날짜 */
+			, ITEM					/* 결제 품목 */
+			, SHOP					/* 상 호  */
+			, PRICE					/* 결제 금액 */	
+			, NOTE					/* 비    고 */
+	FROM 	EXPBOT
+	<where>
+	 DOCU_NO LIKE CONCAT (#{shdocno},'%')
+	</where>
+	</select>
+	
+	<!-- 공통코드 목록 조회 -->
+	<select id="findCmmnCode" resultType="map">
+	SELECT	/* ID=biz.tech.mapif.pm.PGEM0020Mapper.findCmmnCode */
+					  code									AS code
+					, code_nm								AS codeNm
+					, code_dc								AS codeDc
+					, outpt_ordr							AS outptOrdr
+					, use_at								AS useAt
+	FROM		tb_cmmncode
+	WHERE		code_group_no = #{codeGroupNo}
+	AND code = #{code}
+	AND 		use_At = 'Y'
+	ORDER	BY	outpt_ordr ASC
+	</select>
+	
+	<!-- 공통코드 목록 조회2 -->
+	<select id="findCmmnCodebyname" resultType="map">
+	SELECT	/* ID=biz.tech.mapif.pm.PGEM0020Mapper.findCmmnCode */
+					  code									AS code
+					, code_nm								AS codeNm
+					, code_dc								AS codeDc
+					, outpt_ordr							AS outptOrdr
+					, use_at								AS useAt
+	FROM		tb_cmmncode
+	WHERE		code_group_no = #{codeGroupNo}
+	AND code_nm = #{code_nm}
+	AND 		use_At = 'Y'
+	ORDER	BY	outpt_ordr ASC
+	</select>
+	
+	<!-- 품의서 윗단 insert -->
+	<insert id="insertTOP">
+	INSERT INTO EXPTOP(	
+			DOCU_NO
+			, DEPART
+			, EMP_NM
+			, DATE
+			, PRICE
+	)VALUES(
+			#{ad_docno}
+			, #{department}
+			, #{ad_empnm}
+			, #{ad_date}
+			, #{tot_price}
+	)
+	</insert>
+	
+	<!-- 품의서 아랫단 insert -->
+	<insert id="insertBOT">
+	INSERT INTO EXPBOT(	
+			DOCU_NO
+			, DATE
+			, ITEM
+			, SHOP
+			, PRICE
+			, NOTE
+	)VALUES(
+			#{exp_no}
+			, #{exp_date}
+			, #{ad_item}
+			, #{ad_shop}
+			, #{ad_price}
+			, #{ad_note}
+	)
+	</insert>
+	
+	<!-- 품의서 윗단 insert||update -->
+	<insert id="upsertTOP">
+	INSERT INTO EXPTOP(	
+			DOCU_NO
+			, DEPART
+			, EMP_NM
+			, DATE
+			, PRICE
+	)VALUES(
+			#{ad_docno}
+			, #{department}
+			, #{ad_empnm}
+			, #{ad_date}
+			, #{tot_price}
+	)
+	ON DUPLICATE KEY UPDATE DEPART	= #{department},
+							EMP_NM	= #{ad_empnm},
+							DATE	= #{ad_date},
+							PRICE	= #{tot_price}
+	</insert>
+	
+	<!-- 품의서 아랫단 insert||update -->
+	<insert id="upsertBOT">
+	INSERT INTO EXPBOT(	
+			DOCU_NO
+			, DATE
+			, ITEM
+			, SHOP
+			, PRICE
+			, NOTE
+	)VALUES(
+			#{exp_no}
+			, #{exp_date}
+			, #{ad_item}
+			, #{ad_shop}
+			, #{ad_price}
+			, #{ad_note}
+	)
+	ON DUPLICATE KEY UPDATE DATE	= #{exp_date},
+							ITEM	= #{ad_item},
+							SHOP	= #{ad_shop},
+							PRICE	= #{ad_price},
+							NOTE	= #{ad_note}
+	</insert>
+		
+	<delete id="deleteBOTrow">
+	DELETE FROM EXPBOT
+	<where>DOCU_NO= #{bot_docuno}
+	</where>
+	</delete>
+	
+	<delete id="deleteTOP">
+	DELETE FROM EXPTOP
+	<where>DOCU_NO= #{top_docuno}
+	</where>
+	</delete>
+	
+	<delete id="deleteBOT">
+	DELETE FROM EXPBOT
+	<where>DOCU_NO LIKE CONCAT (#{top_docuno},'%')
+	</where>
+	</delete>
+	
+</mapper>

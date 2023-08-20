@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="biz.tech.mapif.ps.PGPS0065Mapper">
+
+	<sql id="dynamicWhere">
+     <trim>
+        <if test="sel_target_year != null and sel_target_year != '' ">
+			AND CONVERT(STDYY, signed)=#{sel_target_year}
+		</if>
+		<if test="searchCondition != null and searchCondition != '' ">
+			<if test="searchCondition == 'EA1' "></if>
+			<if test="searchCondition == 'EA2' ">AND MNGMT_STLE LIKE '%기업(일반)%'</if>
+			<if test="searchCondition == 'EA3' ">AND MNGMT_STLE LIKE '%관계기업%'</if>
+			<if test="searchCondition == 'EA4' ">AND MNGMT_STLE LIKE '%후보기업%'</if>
+			<if test="searchCondition == 'EA5' ">AND MNGMT_STLE LIKE '%가젤형%'</if>
+		</if>
+		<if test="multiSelectGrid1 != null and multiSelectGrid1 != '' ">
+			${multiSelectGrid1}
+		</if>
+     </trim>
+     </sql>
+     
+    <!-- 테마별업종 조회(코드그룹별) -->
+	<select id="findCodesByGroupNo" resultType="MAP">
+	SELECT 	/* ProgramID=biz.tech.mapif.ps.PGPS0065Mapper.findCodesByGroupNo */
+				   code 			AS code			/* 코드 */
+				  ,code_dc			AS codeDc		/* 코드설명 */
+				  ,code_group_no	AS codeGroupNo	/* 코드그룹번호 */
+				  ,code_nm			AS codeNm		/* 코드명 */
+	  FROM		tb_cmmncode
+	 WHERE		code_group_no = #{param}
+	 	AND		use_at = 'Y'
+	 ORDER		BY outpt_ordr ASC	
+	</select>
+     
+	<!-- 주요지표-현황 목록 개수 조회-->
+	<select id="findTotalIdxInfoRowCnt" resultType="int">
+	SELECT 	/* ProgramID=biz.tech.mapif.ps.PGPS0065Mapper.findTotalIdxInfoRowCnt */
+	count(1) from (
+		SELECT
+		'구분' COL0
+		,1234 COL1
+		,1234 COL2
+		,1234 COL3
+		,1234 COL4
+		,1234 COL5
+		,1234 COL6
+		from TB_ENTPRS_INFO
+		where 1=1
+		<!-- 검색조건 시작 -->
+			<include refid="dynamicWhere"/>
+	 	<!-- 검색조건 끝 -->
+		and rtrim(substr(HEDOFC_ADRES, 1, 3)) is not null
+	) A
+	</select>
+	
+	<!-- 후보기업 성장분석 > 분류요인-규모기준 -->
+	<select id="selectSttus" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.ps.PGPS0065Mapper.selectSttus */ * FROM (
+		SELECT '규모기준' AS COL0, '제조' AS COL1, 1234 AS COL2, 1234 AS COL3 FROM DUAL UNION ALL
+		SELECT '규모기준' AS COL0, '비제조' AS COL1, 1234 AS COL2, 1234 AS COL3 FROM DUAL UNION ALL
+		SELECT '상한기준' AS COL0, '제조' AS COL1, 1234 AS COL2, 1234 AS COL3 FROM DUAL UNION ALL
+		SELECT '상한기준' AS COL0, '비제조' AS COL1, 1234 AS COL2, 1234 AS COL3 FROM DUAL UNION ALL
+		SELECT '독립성기준' AS COL0, '제조' AS COL1, 1234 AS COL2, 1234 AS COL3 FROM DUAL UNION ALL
+		SELECT '독립성기준' AS COL0, '비제조' AS COL1, 1234 AS COL2, 1234 AS COL3 FROM DUAL
+	) A
+	ORDER BY COL0, COL1 DESC
+	</select>
+	
+	<!-- 후보기업 성장분석 > 진입기준별 중견 후보기업현황 -->
+	<select id="selectSttus2" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.ps.PGPS0065Mapper.selectSttus2 */ * FROM (
+	SELECT '성장가능성기업' AS COL0, 1234 AS COL1, 1234 AS COL2, 1234 AS COL3 FROM DUAL UNION ALL
+	SELECT '혁신기업' AS COL0, 1234 AS COL1, 1234 AS COL2, 1234 AS COL3 FROM DUAL UNION ALL
+	SELECT '유예기업' AS COL0, 1234 AS COL1, 1234 AS COL2, 1234 AS COL3 FROM DUAL UNION ALL
+	SELECT '합계' AS COL0, 1234 AS COL1, 1234 AS COL2, 1234 AS COL3 FROM DUAL
+	) A
+	ORDER BY COL0, COL1 DESC
+	</select>
+	
+</mapper>
+

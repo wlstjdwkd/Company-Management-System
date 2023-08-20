@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="biz.tech.mapif.pm.PGPMJS0010Mapper">
+	<!-- 직원 조회의 갯수 -->
+	<select id="findUsermemberlist" resultType="int">
+	SELECT COUNT(*)
+	FROM tb_member_info
+	</select>
+	
+	<!-- 직원 조회 emp table -->
+	<select id="membersearch" resultType="hashmap">
+	SELECT EMP_NO					/* 직원번호 */
+				, EMP_NM					/* 이름 */
+				, WRK_TP					/* 근무형태 */
+				, POS_CD					/* 직급코드 */
+				, DEPT_CD					/* 부서코드 */
+				, CURR_YN					/* 재직여부 */
+				, CIZ_NO					/* 주민번호 */
+				, DEAL_BNK					/* 거래은행 */
+				, ACCT_NO					/* 계좌번호 */
+				, INCO_DT					/* 입사일자 */
+				, OUTCO_DT					/* 퇴사일자 */
+				, ADJ_YR					/* 조정년 */
+				, ADJ_MON					/* 조정월 */
+				, RMRK						/* 비고 */
+				, BDT						/* 생년월일 */
+				, MOB_TEL					/* 휴대전화번호 */
+				, HM_TEL					/* 집전화번호 */
+				, LSED						/* 최종학력 */
+				, DPT						/* 학과 */
+				, DGR						/* 인정학력 */
+				, GRA_YR					/* 졸업년 */
+				, GRA_MN					/* 졸업월 */
+				, PER_MAIL					/* 개인메일 */
+				, COM_MAIL					/* 회사메일 */
+				, ADDR						/* 주소 */
+				, MRG						/* 혼인여부 */
+				, MRG_DT					/* 결혼기념일 */
+				, PAY_IN_DAY				/* 급여지급일 */
+				, DC_RT						/* 공제세율 */
+				, MOD_DT					/* 수정일 */
+				, ENRT_DT					/* 등록일 */
+	
+				, b.CODE					/* 거래은행코드 */
+				, b.CODE_NM					/* 거래은행명 */
+	FROM		TB_PAY_EMP
+	LEFT OUTER JOIN (
+					SELECT
+						CODE
+						, CODE_NM
+					FROM	tb_cmmncode
+					) b
+	ON			DEAL_BNK = CODE
+		<where>
+			<if test="ad_search_word != '' and ad_search_word != null">
+				EMP_NM=#{ad_search_word}
+			</if>
+		</where>
+	ORDER BY EMP_NO ASC
+		<!-- <if ></if> -->
+	</select>
+</mapper>

@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+	수정일		수정자					수정내용
+  =========     =======    =================================================
+  2011.8.24   	이기하     	 	테이블 표준화에 따른 수정사항 반영
+  							QUSTNR_TMPLAT_ID 를			 	QESTNR_TMPLAT_ID 로 변경
+							FRST_REGIST_PNTTM 를			FRST_REGISTER_PNTTM 로 변경
+							QUSTNR_QESITM_ID 를				QESTNR_QESITM_ID 로 변경
+							QUSTNR_SJ 를					QESTNR_SJ 로 변경
+							QUSTNR_TRGET 를					QESTNR_TRGET 로 변경
+  2011.10.05	정진오		보안 취약점 점검사항에 따른 수정사항 반영
+  							${searchKeyword}를	 #{searchKeyword} 로 변경
+  							${searchCondition}는 <isEqual property="searchCondition" compareValue="선택조건명">으로 수정
+-->
+<mapper namespace="QustnrQestnManage">
+
+	<!-- 설문문항순번 중복체크 -->
+	<select id="selectQustnrQestnSNCnt" parameterType="java.util.Map" resultType="int">
+	SELECT /* ProgramID=sqlmap.egovcom.olp.EgovQustnrQestnManageMapper.selectQustnrQestnSNCnt */
+					COUNT(QESTN_SN) cnt
+	FROM 		comtnqustnrqesitm
+	WHERE		QESTNR_ID = #{qestnrId}
+		AND		QUSTNR_TMPLAT_ID = #{qestnrTmplatId}
+		AND		QESTN_SN = #{qestnSn}
+		<if test="qestnrQesitmId != null and qestnrQesitmId != '' ">
+		AND		QUSTNR_QESITM_ID != #{qestnrQesitmId}
+		</if>
+	</select>
+	
+	<!-- 설문문항:: 객관식 통계  -->
+	<select id="selectQustnrManageStatistics" parameterType="java.util.Map" resultType="egovMap">
+	SELECT	/* ProgramID=sqlmap.egovcom.olp.EgovQustnrQestnManageMapper.selectQustnrManageStatistics */
+					(	SELECT IEM_CN 
+						FROM comtnqustnriem
+						WHERE 1=1
+			  				AND	QUSTNR_IEM_ID = A.QUSTNR_IEM_ID ) IEM_CN,
+					COUNT(A.QUSTNR_IEM_ID) QUSTNR_IEM_ID_CNT,
+					ROUND((100/(SELECT COUNT(*) CNT
+									FROM comtnqustnrrspnsresult
+									WHERE QUSTNR_QESITM_ID = #{qestnrQesitmId})) * COUNT(A.QUSTNR_IEM_ID)
+					) QUSTNR_PERCENT
+	FROM		comtnqustnrrspnsresult A
+	WHERE		1=1
+		AND		A.QUSTNR_QESITM_ID = #{qestnrQesitmId}
+	GROUP BY	A.QUSTNR_IEM_ID
+	</select>
+
+	<!-- 설문문항:: 응답자답변내용 결과/기타답변내용 결과 통계  -->
+	<select id="selectQustnrManageStatistics2" parameterType="java.util.Map" resultType="egovMap">
+	SELECT	/* ProgramID=sqlmap.egovcom.olp.EgovQustnrQestnManageMapper.selectQustnrManageStatistics2 */
+					RESPOND_ANSWER_CN,
+					ETC_ANSWER_CN
+	FROM		comtnqustnrrspnsresult A
+	WHERE		1=1
+		AND		A.QUSTNR_QESITM_ID = #{qestnrQesitmId}
+	</select>
+
+	<!-- 설문문항:: 설문지 제목 검색  -->
+	<select id="selectQustnrManageQestnrSj" parameterType="java.util.Map" resultType="egovMap">
+	SELECT	/* ProgramID=sqlmap.egovcom.olp.EgovQustnrQestnManageMapper.selectQustnrManageQestnrSj */
+					QUSTNR_SJ
+	FROM		comtnqestnrinfo
+	WHERE		QESTNR_ID = #{qestnrId}
+	</select>
+
+	<!-- 설문조사(설문결과) 삭제 -->
+	<delete id="deleteQustnrRespondInfo">
+	DELETE 	/* ProgramID=sqlmap.egovcom.olp.EgovQustnrQestnManageMapper.deleteQustnrRespondInfo */
+	FROM		comtnqustnrrspnsresult
+	WHERE		QUSTNR_QESITM_ID = #{qestnrQesitmId}
+	</delete>
+	
+	<!-- 설문항목 삭제 -->
+	<delete id="deleteQustnrItemManage">
+	DELETE	/* ProgramID=sqlmap.egovcom.olp.EgovQustnrQestnManageMapper.deleteQustnrItemManage */
+	FROM		comtnqustnriem
+	WHERE		QUSTNR_QESITM_ID = #{qestnrQesitmId}
+	</delete>
+
+	<!-- 설문문항::삭제  -->
+	<delete id="deleteQustnrQestnManage">
+	DELETE	/* ProgramID=sqlmap.egovcom.olp.EgovQustnrQestnManageMapper.deleteQustnrQestnManage */
+	FROM		comtnqustnrqesitm
+	WHERE		QUSTNR_QESITM_ID = #{qestnrQesitmId}
+		
+	</delete>
+
+	<!-- 설문문항::수정  -->
+	<update id="updateQustnrQestnManage">
+	UPDATE	/* ProgramID=sqlmap.egovcom.olp.EgovQustnrQestnManageMapper.updateQustnrQestnManage */
+					comtnqustnrqesitm
+	SET
+					QESTN_SN=#{qestnSn},
+					QESTN_TY_CODE=#{qestnTyCode},
+					QESTN_CN=#{qestnCn},
+					MXMM_CHOISE_CO=#{mxmmChoiseCo},
+					UPDDE = sysdate(),
+					UPDUSR = #{updusr}
+	WHERE		QUSTNR_QESITM_ID = #{qestnrQesitmId}
+	</update>
+
+	<!-- 설문문항::상세보기 -->
+	<select id="selectQustnrQestnManageDetail" parameterType="QustnrQestnManageVO" resultType="egovMap">
+	SELECT	/* ProgramID=sqlmap.egovcom.olp.EgovQustnrQestnManageMapper.selectQustnrQestnManageDetail */
+					A.QUSTNR_QESITM_ID    QESTNR_QESITM_ID,
+					A.QESTNR_ID,
+					(SELECT QUSTNR_SJ FROM comtnqestnrinfo WHERE QESTNR_ID=A.QESTNR_ID) QESTNR_SJ,
+					A.QESTN_SN,
+					A.QESTN_TY_CODE,
+					(SELECT code_nm FROM tb_cmmncode WHERE code_group_no = '10' AND code = A.QESTN_TY_CODE) QESTN_TY_NM, 
+					A.QESTN_CN		,
+					A.MXMM_CHOISE_CO,
+					A.QUSTNR_TMPLAT_ID QESTNR_TMPLAT_ID,
+					DATE_FORMAT(A.RGSDE,'%Y-%m-%d %H%:i:%s') RGSDE,
+					A.REGISTER,
+					DATE_FORMAT(A.UPDDE,'%Y-%m-%d %H%:i:%s') UPDDE,
+					A.UPDUSR
+	FROM		comtnqustnrqesitm A
+	WHERE		1=1
+		AND		QUSTNR_QESITM_ID = #{qestnrQesitmId}
+
+	</select>
+
+	<!-- 설문문항::목록조회_게시물정보 -->
+	<select id="selectQustnrQestnManage" parameterType="comDefaultVO" resultType="egovMap">
+	SELECT	/* ProgramID=sqlmap.egovcom.olp.EgovQustnrQestnManageMapper.selectQustnrQestnManage */
+					A.QUSTNR_QESITM_ID	    QESTNR_QESITM_ID,
+					A.QESTNR_ID,
+					IF(CHAR_LENGTH(B.QUSTNR_SJ) > 20, CONCAT(SUBSTR(B.QUSTNR_SJ, 1, 18),'...'), B.QUSTNR_SJ)		QUSTNR_SJ,
+					A.QESTN_SN,
+					A.QESTN_TY_CODE,
+					IF(CHAR_LENGTH(A.QESTN_CN) > 40, CONCAT(SUBSTR(A.QESTN_CN, 1, 38),'...'), A.QESTN_CN)		QESTN_CN,
+					A.MXMM_CHOISE_CO,
+					A.QUSTNR_TMPLAT_ID		 QESTNR_TMPLAT_ID,
+					DATE_FORMAT(A.RGSDE,'%Y-%m-%d') RGSDE,
+					A.REGISTER,
+					C.NM 							REGISTER_NM,
+					DATE_FORMAT(A.UPDDE,'%Y-%m-%d') UPDDE,
+					A.UPDUSR
+	FROM		comtnqustnrqesitm A, comtnqestnrinfo B, tb_emplyr C
+	WHERE		B.QESTNR_ID=A.QESTNR_ID
+			AND	C.USER_NO = A.REGISTER
+		<if test="searchKeyword != null and searchKeyword != '' ">
+			<if test="searchCondition == 'QUSTNR_SJ'">
+			AND		B.QUSTNR_SJ LIKE CONCAT('%', #{searchKeyword}, '%')
+			</if>
+			<if test="searchCondition == 'QESTN_CN'">
+			AND		A.QESTN_CN LIKE CONCAT('%', #{searchKeyword}, '%')
+			</if>
+			<if test="searchCondition == 'REGISTER'">
+			AND		C.NM LIKE CONCAT('%', #{searchKeyword}, '%')
+			</if>
+			<if test="searchCondition == 'QESTNR_ID'">
+			AND		A.QESTNR_ID = #{searchKeyword}
+			</if>
+		</if>
+	ORDER BY	<if test="searchCondition != 'QESTNR_ID'">B.RGSDE DESC,</if> A.QESTN_SN ASC
+	LIMIT			#{recordCountPerPage} OFFSET #{firstIndex}
+	
+	</select>
+
+	<!-- 설문문항::목록조회_게시물 총갯수  -->
+	<select id="selectQustnrQestnManageCnt" parameterType="comDefaultVO" resultType="int">
+	SELECT	/* ProgramID=sqlmap.egovcom.olp.EgovQustnrQestnManageMapper.selectQustnrQestnManageCnt */
+					COUNT(*) totcnt
+	FROM		comtnqustnrqesitm A, comtnqestnrinfo B, tb_emplyr C
+	WHERE		B.QESTNR_ID=A.QESTNR_ID
+			AND	C.USER_NO = A.REGISTER
+		<if test="searchKeyword != null and searchKeyword != '' ">
+			<if test="searchCondition == 'QUSTNR_SJ'">
+			AND		B.QUSTNR_SJ LIKE CONCAT('%', #{searchKeyword}, '%')
+			</if>
+			<if test="searchCondition == 'QESTN_CN'">
+			AND		A.QESTN_CN LIKE CONCAT('%', #{searchKeyword}, '%')
+			</if>
+			<if test="searchCondition == 'REGISTER'">
+			AND		C.NM LIKE CONCAT('%', #{searchKeyword}, '%')
+			</if>
+			<if test="searchCondition == 'QESTNR_ID'">
+			AND		A.QESTNR_ID = #{searchKeyword}
+			</if>
+		</if>
+	</select>
+
+	<!-- 설문문항::입력  -->
+	<insert id="insertQustnrQestnManage">
+	INSERT	/* ProgramID=sqlmap.egovcom.olp.EgovQustnrQestnManageMapper.insertQustnrQestnManage */
+	INTO			comtnqustnrqesitm (
+					QUSTNR_QESITM_ID,
+					QESTNR_ID,
+					QESTN_SN,
+					QESTN_TY_CODE,
+					QESTN_CN,
+					MXMM_CHOISE_CO,
+					QUSTNR_TMPLAT_ID,
+					RGSDE,
+					REGISTER,
+					UPDDE,
+					UPDUSR )
+	VALUES (
+					#{qestnrQesitmId},
+					#{qestnrId},
+					#{qestnSn},
+					#{qestnTyCode},
+					#{qestnCn},
+					#{mxmmChoiseCo},
+					#{qestnrTmplatId},
+					sysdate(),
+					#{register},
+					sysdate(),
+					#{updusr}
+	)
+	</insert>
+
+</mapper>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="biz.tech.mapif.ps.PGPS0130Mapper">
+
+	<!-- 기준년도 목록 조회 -->
+	<delete id="deleteUserInfo">
+	DELETE FROM comtnqestnrinfo
+	WHERE QESTNR_ID IN 
+	<foreach item="item" collection="selectedID" open="(" separator="," close=")">
+		#{item}
+	</foreach>
+	</delete>
+
+
+	
+</mapper>

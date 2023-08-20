@@ -1,0 +1,56 @@
+<!--conf
+<sample>
+              <product version="1.4" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               </sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Custom sorting routine</title>
+	
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+	
+</head>
+
+<body>
+	
+	<h1>Custom sorting routine</h1>
+	<p>
+        Use your own comparator function to sort rows in grid in some special way.
+        <br/>
+        The second column in the sample below is sorted by number of symbols in the text.
+	But you have opportunity to set any custom criteria of sorting.</p>
+		<div id="gridbox" style="width:600px;height:270px;background-color:white;"></div>
+<br>
+<script>
+    function sort_custom(a,b,order){
+        var n=a.length;
+        var m=b.length;
+	if(order=="asc")
+		return n>m?1:-1;
+	else
+		return n<m?1:-1;
+    }
+
+	mygrid = new dhtmlXGridObject('gridbox');
+	mygrid.setImagePath("../../../codebase/imgs/");
+	mygrid.setHeader("Sales,Book Title,Author,Price,In Store,Shipping,Bestseller,Date of Publication");
+	mygrid.setInitWidths("50,150,100,80,80,80,80,200")
+	mygrid.setColAlign("right,left,left,right,center,left,center,center")
+	mygrid.setColTypes("dyn,ed,ed,price,ch,co,ra,ro");
+    mygrid.getCombo(5).put(2,2);
+	mygrid.setColSorting("int,sort_custom,str,int,str,str,str,date")
+    mygrid.setCustomSorting(sort_custom,2);
+	mygrid.init();      
+	mygrid.setSkin("dhx_skyblue");
+	mygrid.loadXML("../common/grid_16_rows_columns_manipulations.xml");
+</script>
+
+</body>
+</html>

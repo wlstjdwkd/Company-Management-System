@@ -1,0 +1,66 @@
+<!--conf
+<sample in_favorites="true">
+              <product version="1.4" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               <sampledescription><![CDATA[You can export dhtmlxTreeGrid content into XML string any time calling just one method.  ]]></sampledescription></sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>TreeGrid serialization</title>
+	
+</head>
+
+<body>
+	
+	<h1>TreeGrid serialization</h1>
+	<p>
+    Serialization for dhtmlxTreeGrid gives you actual state of the content in xml format. 
+	<br>
+		Math formulas can be serialized as formulas or as values.
+	</p>	
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+
+	<table width="835">
+		<tr>
+			<td width="600px">
+				<div id="gridbox" width="100%" height="250px" style="background-color:white;"></div>
+			</td>
+            <td valign="top">
+                <textarea style='width:300px; height:230px;'></textarea><div><a href="#" onclick="this.parentNode.previousSibling.value=mygrid.serialize()">Serialize TreeGrid</a></div>
+
+            </td>
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+		</tr>
+	</table>
+
+
+
+<script>
+	mygrid = new dhtmlXGridObject('gridbox');
+	mygrid.setImagePath("../../../codebase/imgs/");
+	mygrid.setIconPath("../common/images/");
+	mygrid.setHeader("Title,Price,Quantity,Total");
+	mygrid.setInitWidths("250,100,80,100")
+	mygrid.setColAlign("left,right,right,right")
+	mygrid.setColTypes("tree,price,ed[=sum],price[=sum]");
+	mygrid.setColSorting("str,int,int,int")
+    mygrid.setMathRound(2);
+	mygrid.init();
+	mygrid.setSkin("dhx_skyblue")
+	mygrid.loadXML("../common/treegrid_sample_06_serialization.xml");
+</script>
+<div><a href="#" onclick="mygrid.deleteSelectedItem()">Delete selected rows</a></div>
+<div><a href="#" onclick="mygrid.addRowBefore((new Date()).valueOf(),['new row','text','text',1,0],mygrid.getSelectedId())">addRowBefore selected rows</a></div>
+<div><a href="#" onclick="mygrid.addRowAfter((new Date()).valueOf(),['new row','text','text',1,0],mygrid.getSelectedId())">addRowAfter selected rows</a></div>
+
+
+</body>
+</html>

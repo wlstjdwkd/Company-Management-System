@@ -1,0 +1,65 @@
+<!--conf
+<sample>
+              <product version="1.4" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               </sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Smart Rendering with dynamic loading and buffering</title>
+	
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+    
+</head>
+
+<body>
+	
+	<h1>Smart Rendering with dynamic loading and buffering</h1>
+    <p> To increase grid performance working with large amount of data you can enable <strong>Smart Rendering</strong> with dynamical loading of rows from server (already loaded rows remain on client side).
+		<br><br>
+		To do this you need to add the following javascript command:
+		<br>
+		<code>yourGrid.enableSmartRendering(mode,totalRows,bufferSize);</code>
+		<br><br> 
+		- and make your server side output records based on incoming parameters: <br>
+		<li>posStart -the first row in portion</li>
+		<li>count - number of rows to return</li><br/>and the total number of rows which is set by total_count attribute in the <rows> tag
+	</p>
+	<div style="height:20px">
+        <div id="a_1" style="color:red;">Loading portion of data</div>
+    </div>
+	
+	<div id="gridbox" style="width:600px; height:250px; background-color:white;overflow:hidden"></div>
+			<p style="color:gray;">
+				* - in the current sample total number of rows is 2,000
+				** - server response is showed down to inform you when new portion loaded
+			</p>
+
+<script>
+	mygrid = new dhtmlXGridObject('gridbox');
+	mygrid.setImagePath("../../../codebase/imgs/");
+	mygrid.setHeader("Sales,Book Title,Author,Price,In Store,Shipping,Bestseller,Date of Publication");
+	mygrid.setInitWidths("50,150,120,80,80,80,80,200")
+	mygrid.setColAlign("right,left,left,right,center,left,center,center")
+	mygrid.setColTypes("ed,ed,ed,price,ch,co,ro,ro");
+
+    mygrid.getCombo(5).put(2,2);
+
+
+    mygrid.attachEvent("onXLS",function(){ document.getElementById("a_1").style.display="block"; });
+    mygrid.attachEvent("onXLE",function(){ document.getElementById("a_1").style.display="none"; });
+
+	mygrid.init();
+	mygrid.setSkin("dhx_skyblue");
+    mygrid.enableSmartRendering(true,50);
+    mygrid.loadXML("php/dynload_slow.php");
+</script>
+
+</body>
+</html>

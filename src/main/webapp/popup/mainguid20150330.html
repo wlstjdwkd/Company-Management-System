@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<title>기업정보</title>
+
+<link rel="stylesheet" type="text/css" href="/css/ucm.css" />
+<script type="text/javascript">
+
+
+function eventDisablePopup1(choice) {	
+
+	var ExpDate = new Date();
+	
+	if(choice == "day") {
+		ExpDate.setTime(ExpDate.getTime() + 1000*60*60*24);
+	}
+	else {
+		ExpDate.setTime(ExpDate.getTime() + 1000*60*60*24*7);
+
+	}
+	document.cookie = "mainguid20150330=1234; path=/; expires="+ ExpDate.toGMTString() + ";"; 
+	window.close();
+}
+
+</script>
+</head>
+<body>
+	<div id="eventPopup" style="top: 250px; left: 483px; ">
+		<table cellpadding="0" cellspacing="0" border="0" style="width: 220px;">
+			<tr>
+				<td><img id="eventPopupImage1" src="/images/um/mainPopup2.jpg" width="483" height="384" usemap="#eventImageMap" alt="" /> 
+					<map name="eventImageMap">
+						 <area shape="rect" coords="264,324,461,367" href="/download/확인서_신청_매뉴얼.pdf" target="_blank" alt="Sun">
+					</map>
+					
+					<input class = "ml5" id="eventPopupNomore1" type="checkbox" onfocus="this.blur();" onclick="eventDisablePopup1('day');" /> 
+					<a href="#none"><label for="eventPopupNomore1">하루 동안 이 창을 열지않음</label></a>
+					<!-- 
+					<input class = "ml5" id="eventPopupNomore2" type="checkbox" onfocus="this.blur();" onclick="eventDisablePopup1('week');" /> 
+					<a href="#none"><label for="eventPopupNomore2">7일 동안 이 창을 열지않음</label></a> 
+					//-->
+					<a href="#none" class="ml85"  onclick = "window.close();"><span>창닫기</span></a></td>
+			</tr>
+		</table>
+	</div>
+</body>
+</html>

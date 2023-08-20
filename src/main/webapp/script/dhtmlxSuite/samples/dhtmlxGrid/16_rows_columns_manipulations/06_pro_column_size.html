@@ -1,0 +1,70 @@
+<!--conf
+<sample in_favorites="false">
+              <product version="1.4" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               </sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Adjust column size</title>
+	
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+</head>
+
+<body>
+	<h1>Adjust column size</h1>
+	<p>Double clicking on any header (or using dropdown below the grid) allows you to adjust column size according to cell value size.</p>
+	<table width="600">
+		<tr>
+			<td width="50%" valign="top">
+				<div id="gridbox" style="width:100%;height:270px;background-color:white;"></div>
+			</td>
+
+		</tr>
+		<tr>
+			<td>
+                <div><input id='z1' type="button"  onclick='mygrid.adjustColumnSize(this.nextSibling.value)' value="Adjust column" /><select><option value="0">Sales
+					<option value="1">Book title
+					<option value="2">Author
+					<option value="3">Price
+					<option value="4">In store
+					<option value="5">Shipping
+					<option value="6">Bestseller
+					<option value="7">Date
+				</select></div>
+			</td>
+		</tr>
+	</table>
+<p><br>
+  
+</p>
+<script>
+
+    function m_f2(id){
+        document.getElementById("a_1").innerHTML="Selected row: "+id;
+    }
+    function doIt(){
+        mygrid.enableEditEvents(document.getElementById('z1').checked,document.getElementById('z2').checked,document.getElementById('z3').checked);
+    }
+	mygrid = new dhtmlXGridObject('gridbox');
+	mygrid.setImagePath("../../../codebase/imgs/");
+	mygrid.setHeader("Sales,Book Title,Author,Price,In Store,Shipping,Bestseller,Date of Publication");
+	mygrid.setInitWidths("50,50,50,50,50,50,50,50")
+	mygrid.setColAlign("right,left,left,right,center,left,center,center")
+	mygrid.setColTypes("dyn,ed,ed,price,ch,co,ra,ro");
+    mygrid.getCombo(5).put(2,2);
+	mygrid.setColSorting("na,na,na,na,na,na,na,na")
+	mygrid.enableColumnAutoSize(true);
+	mygrid.init();
+	mygrid.setSkin("dhx_skyblue");
+   	mygrid.loadXML("../common/grid_16_rows_columns_manipulations.xml");
+
+</script>
+</body>
+</html>

@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+
+	<!-- 요청로그 -->
+	<bean name="webRequestLogIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="aframe.dataSource" />
+		<property name="strategy"   ref="WebRequestLogStrategy" />
+		<property name="blockSize"  value="10"/>
+		<property name="table"	   	value="comtecopseq"/>
+		<property name="tableName"	value="RQST_ID"/>
+	</bean>
+	<bean name="WebRequestLogStrategy" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+		<property name="prefix"   value="RQST_" />
+		<property name="cipers"   value="13" />
+		<property name="fillChar" value="0" />
+	</bean>
+	
+    <!--  배치작업 ID -->
+    <bean name="egovBatchOpertIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
+        <property name="dataSource" ref="aframe.dataSource" />
+        <property name="strategy"   ref="batchOpertIdStrategy" />
+        <property name="blockSize"  value="1"/>
+        <property name="table"      value="comtecopseq"/>
+        <property name="tableName"  value="BATCH_OPERT_ID"/>
+    </bean>
+    <bean name="batchOpertIdStrategy" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+        <property name="prefix"   value="BAT" />
+        <property name="cipers"   value="17" />
+        <property name="fillChar" value="0" />
+    </bean> 
+    <!-- 배치작업 ID -->
+    
+    <!-- 배치스케줄 ID -->
+    <bean name="egovBatchSchdulIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
+        <property name="dataSource" ref="aframe.dataSource" />
+        <property name="strategy"   ref="batchSchdulIdStrategy" />
+        <property name="blockSize"  value="1"/>
+        <property name="table"      value="comtecopseq"/>
+        <property name="tableName"  value="BATCH_SCHDUL_ID"/>
+    </bean>
+    <bean name="batchSchdulIdStrategy" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+        <property name="prefix"   value="BSC" />
+        <property name="cipers"   value="17" />
+        <property name="fillChar" value="0" />
+    </bean> 
+    <!-- 배치스케줄 ID -->     
+
+    <!-- 배치결과 ID -->
+    <bean name="egovBatchResultIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
+        <property name="dataSource" ref="aframe.dataSource" />
+        <property name="strategy"   ref="batchResultIdStrategy" />
+        <property name="blockSize"  value="1"/>
+        <property name="table"      value="comtecopseq"/>
+        <property name="tableName"  value="BATCH_RESULT_ID"/>
+    </bean>
+    <bean name="batchResultIdStrategy" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+        <property name="prefix"   value="BRT" />
+        <property name="cipers"   value="17" />
+        <property name="fillChar" value="0" />
+    </bean> 
+    <!-- 배치결과 ID -->   
+
+	<!-- 설문템플릿 -->	
+	<bean name="egovQustnrTmplatManageIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="aframe.dataSource" />
+		<property name="strategy"   ref="QustnrTmplatManageInfotrategy" />
+		<property name="blockSize"  value="1"/>
+		<property name="table"	   	value="comtecopseq"/>
+		<property name="tableName"	value="QUSTNRTMPLA_ID"/>
+	</bean>
+	<bean name="QustnrTmplatManageInfotrategy" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+		<property name="prefix"   value="QTMPLA_" />
+		<property name="cipers"   value="13" />
+		<property name="fillChar" value="0" />
+	</bean>
+	
+	<!-- 설문관리 -->
+	<bean name="egovQustnrManageIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="aframe.dataSource" />
+		<property name="strategy"   ref="QustnrManageInfotrategy" />
+		<property name="blockSize"  value="1"/>
+		<property name="table"	   	value="comtecopseq"/>
+		<property name="tableName"	value="QUSTNRTMPLA_ID"/>
+	</bean>
+	<bean name="QustnrManageInfotrategy" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+		<property name="prefix"   value="QMANAGE_" />
+		<property name="cipers"   value="12" />
+		<property name="fillChar" value="0" />
+	</bean>
+	
+	<!-- 설문문항  -->
+	<bean name="egovQustnrQestnManageIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="aframe.dataSource" />
+		<property name="strategy"   ref="QustnrQestnManageInfotrategy" />
+		<property name="blockSize"  value="1"/>
+		<property name="table"	   	value="comtecopseq"/>
+		<property name="tableName"	value="QUSTNRQESTN_ID"/>
+	</bean>
+	<bean name="QustnrQestnManageInfotrategy" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+		<property name="prefix"   value="QQESTN_" />
+		<property name="cipers"   value="13" />
+		<property name="fillChar" value="0" />
+	</bean>
+	
+	<!-- 설문항목 -->
+	<bean name="egovQustnrItemManageIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="aframe.dataSource" />
+		<property name="strategy"   ref="QustnrItemManageInfotrategy" />
+		<property name="blockSize"  value="1"/>
+		<property name="table"	   	value="comtecopseq"/>
+		<property name="tableName"	value="QESTNR_QESITM_ID"/>
+	</bean>
+	<bean name="QustnrItemManageInfotrategy" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+		<property name="prefix"   value="QESITM_" />
+		<property name="cipers"   value="13" />
+		<property name="fillChar" value="0" />
+	</bean>
+	
+	<!-- 설문조사 -->
+	<bean name="qustnrRespondInfoIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="aframe.dataSource" />
+		<property name="strategy"   ref="QustnrRespondInfotrategy" />
+		<property name="blockSize"  value="10"/>
+		<property name="table"	   	value="comtecopseq"/>
+		<property name="tableName"	value="QESRSPNS_ID"/>
+	</bean>
+	<bean name="QustnrRespondInfotrategy" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+		<property name="prefix"   value="QRSPNS_" />
+		<property name="cipers"   value="13" />
+		<property name="fillChar" value="0" />
+	</bean>
+	
+	<!-- 파일업로드 -->
+	<bean name="fileUploadIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="aframe.dataSource" />
+		<property name="strategy"   ref="FileUploadInfotrategy" />
+		<property name="blockSize"  value="10"/>
+		<property name="table"	   	value="comtecopseq"/>
+		<property name="tableName"	value="FILEUP_ID"/>		
+	</bean>
+	<bean name="FileUploadInfotrategy" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">		
+		<property name="cipers"   value="13" />		
+	</bean>
+
+	<!-- 기업판정기준순번(규모) -->
+	<bean name="judgeStdrScaleGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="aframe.dataSource" />
+		<property name="strategy"   ref="JudgeStdrScaleStrategy" />
+		<property name="blockSize"  value="3"/>
+		<property name="table"	   	value="comtecopseq"/>
+		<property name="tableName"	value="TB_JUDGE_STDR_SCALE"/>		
+	</bean>
+	<bean name="JudgeStdrScaleStrategy" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+		<property name="prefix"   value="" />
+		<property name="cipers"   value="5" />
+	</bean>
+	
+	<!-- 기업판정기준순번(상한) -->
+	<bean name="judgeStdrUplmtGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="aframe.dataSource" />
+		<property name="strategy"   ref="JudgeStdrUplmtStrategy" />
+		<property name="blockSize"  value="3"/>
+		<property name="table"	   	value="comtecopseq"/>
+		<property name="tableName"	value="TB_JUDGE_STDR_UPLMT"/>		
+	</bean>
+	<bean name="JudgeStdrUplmtStrategy" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+		<property name="prefix"   value="" />
+		<property name="cipers"   value="5" />
+	</bean>
+	
+	<!-- 기업판정기준순번(독립성) -->
+	<bean name="judgeStdrIndpnGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="aframe.dataSource" />
+		<property name="strategy"   ref="JudgeStdrInpdnStrategy" />
+		<property name="blockSize"  value="3"/>
+		<property name="table"	   	value="comtecopseq"/>
+		<property name="tableName"	value="TB_JUDGE_STDR_INDPN"/>		
+	</bean>
+	<bean name="JudgeStdrInpdnStrategy" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+		<property name="prefix"   value="" />		
+		<property name="cipers"   value="5" />
+	</bean>
+	
+	<!-- 대량메일관리 -->
+	<bean name="egovLqttEmailIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="aframe.dataSource" />
+		<property name="strategy"   ref="LqttEmailInfoStrategy" />
+		<property name="blockSize"  value="1"/>
+		<property name="table"	   	value="comtecopseq"/>
+		<property name="tableName"	value="TB_LQTT_EMAIL_INFO"/>
+	</bean>
+	<bean name="LqttEmailInfoStrategy" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+		<property name="prefix"   value="LQTT_" />
+		<property name="cipers"   value="12" />
+		<property name="fillChar" value="0" />
+	</bean>
+	
+</beans>

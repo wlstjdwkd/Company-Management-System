@@ -1,0 +1,65 @@
+<!--conf-->
+
+<!--conf
+<sample in_favorites="false">
+              <product version="1.5" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               </sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Icon size</title>
+</head>
+
+<body>
+	<h1>Icon size</h1>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+	<table>
+		<tr>
+			<td valign="top">
+				<div id="treeboxbox_tree" style="width:250px; height:218px;background-color:#f5f5f5;border :1px solid Silver;"></div>
+			</td>
+			<td rowspan="2" style="padding-left:25" valign="top">
+			
+			Width:<input type="text" id="w_1" value="18">&nbsp;&nbsp;Height:<input type="text" id="h_1" value="18"><br>
+            <p>Before clicking on the action link, you should select an item the icon size of which you want to change and set its size in the width/height boxes.<p>
+			<a href="javascript:void(0);" onClick="action_1();">Set size of selected item's icon</a><br>
+			<a href="javascript:void(0);" onClick="action_2();">Set new icon size for tree</a><br><br>
+			
+			</td>
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+		</tr>
+	</table>
+	
+
+	<script>
+			tree=new dhtmlXTreeObject("treeboxbox_tree","100%","100%",0);
+
+			tree.setSkin('dhx_skyblue');
+			tree.setImagePath("../../../codebase/imgs/dhxtree_skyblue/");
+			tree.enableTreeLines(false);
+			tree.loadXML("../common/tree.xml");
+			
+			function action_1(){
+				tree.setIconSize(document.getElementById("w_1").value,document.getElementById("h_1").value,tree.getSelectedItemId());
+			}
+			
+			function action_2(){
+				tree.setIconSize(document.getElementById("w_1").value,document.getElementById("h_1").value);
+				tree.deleteChildItems(0);
+				tree.loadXML("../common/tree.xml");
+			}
+								
+	</script>
+<br><br>
+
+</body>
+</html>

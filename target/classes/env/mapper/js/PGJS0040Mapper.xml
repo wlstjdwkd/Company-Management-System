@@ -1,0 +1,1234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="biz.tech.mapif.js.PGJS0040Mapper">
+	<!-- 기준년도 목록 조회 -->
+	<select id="selectStdyyList" resultType="egovMap">
+		SELECT		/* ProgramID=biz.tech.mapif.js.PGJS0040Mapper.selectStdyyList */
+		DISTINCT	STDYY
+		FROM		TB_ENTPRS_COLCT
+		<if test="stdyy != null and stdyy != '' ">
+			WHERE		STDYY <![CDATA[<=]]> #{stdyy}
+		</if>
+		ORDER BY	STDYY DESC
+	</select>
+	
+	<!-- 관계기업판정 수집내역 조회 -->
+	<select id="selectTbRcpyJdgmntColct" resultType="egovMap">
+		SELECT		/* ProgramID=biz.tech.mapif.js.PGJS0040Mapper.selectTbRcpyJdgmntColct */
+					STDYY
+					, UPLOAD_DE
+					, APPLC_DE
+					, TRGET_ENTRPRS_CO
+					, PROCESS_STTUS
+					, CREAT_DE
+		FROM		TB_RCPY_JDGMNT_COLCT
+		WHERE		STDYY = #{stdyy}
+	</select>
+	
+	<!-- 관계기업판정관리 조회 -->
+	<select id="selectTbRcpyJdgmntManage" resultType="egovMap">
+		SELECT		/* ProgramID=biz.tech.mapif.js.PGJS0040Mapper.selectTbRcpyJdgmntManage */
+					STDYY
+					, ENTRPRS_CO
+					, RCPY_JDGMNT_CO
+					, RCPY_JDGMNT_DE
+					, CREAT_DE
+		FROM		TB_RCPY_JDGMNT_MANAGE
+		WHERE		STDYY = #{stdyy}
+	</select>
+	
+	<!-- 관계기업판정관리 삭제(엑셀 파일 업로드) -->
+	<delete id="deleteTbRcpyJdgmntManage">
+		DELETE		/* ProgramID=biz.tech.mapif.js.PGJS0040Mapper.deleteTbRcpyJdgmntManage */
+		FROM		TB_RCPY_JDGMNT_MANAGE
+		WHERE		STDYY = #{stdyy}
+	</delete>
+	
+	<!-- 관계기업판정 수집내역 삭제(엑셀 파일 업로드) -->
+	<delete id="deleteTbRcpyJdgmntColct">
+		DELETE		/* ProgramID=biz.tech.mapif.js.PGJS0040Mapper.deleteTbRcpyJdgmntColct */
+		FROM		TB_RCPY_JDGMNT_COLCT
+		WHERE		STDYY = #{stdyy}
+	</delete>
+	
+	<!-- 관계기업판정결과 삭제(엑셀 파일 업로드) -->
+	<delete id="deleteTbRcpyJdgmntResult">
+		DELETE		/* ProgramID=biz.tech.mapif.js.PGJS0040Mapper.deleteTbRcpyJdgmntResult */
+		FROM		TB_RCPY_JDGMNT_RESULT
+		WHERE		STDYY = #{stdyy}
+	</delete>
+	
+	<!-- 임시관계기업판정결과 삭제(엑셀 파일 업로드) -->
+	<delete id="deleteTmpRcpyJdgmntResult">
+		DELETE		/* ProgramID=biz.tech.mapif.js.PGJS0040Mapper.deleteTmpRcpyJdgmntResult */
+		FROM		TMP_RCPY_JDGMNT_RESULT
+	</delete>
+	
+	<!-- 관계기업판정기업정보 삭제(엑셀 파일 업로드) -->
+	<delete id="deleteTbRcpyJdgmntEntrprsInfo">
+		DELETE		/* ProgramID=biz.tech.mapif.js.PGJS0040Mapper.deleteTbRcpyJdgmntEntrprsInfo */
+		FROM		TB_RCPY_JDGMNT_ENTRPRS_INFO
+		WHERE		STDYY = #{stdyy}
+	</delete>
+	
+	<!-- 관계기업판정자료 삭제(엑셀 파일 업로드) -->
+	<delete id="deleteTbRcpyJdgmntDta">
+		DELETE		/* ProgramID=biz.tech.mapif.js.PGJS0040Mapper.deleteTbRcpyJdgmntDta */
+		FROM		TB_RCPY_JDGMNT_DTA
+		WHERE		STDYY = #{stdyy}
+	</delete>
+	
+	<!-- 임시관계기업판정업로드자료 삭제(엑셀 파일 업로드) -->
+	<delete id="deleteTmpRcpyJdgmntUploadDta">
+		DELETE		/* ProgramID=biz.tech.mapif.js.PGJS0040Mapper.deleteTmpRcpyJdgmntUploadDta */
+		FROM		TMP_RCPY_JDGMNT_UPLOAD_DTA
+	</delete>
+	
+	<!-- 임시관계기업판정업로드자료 추가(엑셀 파일 업로드) -->
+	<insert id="insertTmpRcpyJdgmntUploadDta">
+		INSERT		/* ProgramID=biz.tech.mapif.js.PGJS0040Mapper.insertTmpRcpyJdgmntUploadDta */
+		INTO		TMP_RCPY_JDGMNT_UPLOAD_DTA
+					( TRGET_ENTRPRS_JURIRNO
+					, TRGET_ENTRPRS_NM
+					, TRGET_ENTRPRS_CODE_NICE
+					, TRGET_ENTRPRS_INDUTY_CODE
+					, TRGET_ENTRPRS_FOND_DE
+					, TRGET_ENTRPRS_PSACNT
+					, TRGET_ENTRPRS_ASSETS_TOTAMT
+					, TRGET_ENTRPRS_SELNG_AM1
+					, TRGET_ENTRPRS_SELNG_AM2
+					, TRGET_ENTRPRS_SELNG_AM3
+					, TRGET_ENTRPRS_SELNG_AM4
+					, TRGET_ENTRPRS_SELNG_AM5
+					, TRGET_ENTRPRS_SELNG_AM6
+					, QOTA_RELATE_ENTRPRS_JURIRNO
+					, QOTA_RELATE_ENTRPRS_NM
+					, QOTA_RELATE_ENTRPRS_FOND_DE
+					, QOTA_RELATE_ENTRPRS_INDUTY_CODE
+					, QOTA_RELATE_ENTRPRS_QOTA_RT
+					, QOTA_RELATE_ENTRPRS_FRNP_AT
+					, QOTA_RELATE_ENTRPRS_ASSETS_TOTAMT
+					, QOTA_RELATE_ENTRPRS_SELNG_AM1
+					, QOTA_RELATE_ENTRPRS_SELNG_AM2
+					, QOTA_RELATE_ENTRPRS_SELNG_AM3
+					, QOTA_RELATE_ENTRPRS_SELNG_AM4
+					, QOTA_RELATE_ENTRPRS_SELNG_AM5
+					, QOTA_RELATE_ENTRPRS_SELNG_AM6
+					)
+		VALUES
+					( #{TRGET_ENTRPRS_JURIRNO}
+					, #{TRGET_ENTRPRS_NM}
+					, #{TRGET_ENTRPRS_CODE_NICE}
+					, #{TRGET_ENTRPRS_INDUTY_CODE}
+					, #{TRGET_ENTRPRS_FOND_DE}
+					, #{TRGET_ENTRPRS_PSACNT}
+					, #{TRGET_ENTRPRS_ASSETS_TOTAMT}
+					, #{TRGET_ENTRPRS_SELNG_AM1}
+					, #{TRGET_ENTRPRS_SELNG_AM2}
+					, #{TRGET_ENTRPRS_SELNG_AM3}
+					, #{TRGET_ENTRPRS_SELNG_AM4}
+					, #{TRGET_ENTRPRS_SELNG_AM5}
+					, #{TRGET_ENTRPRS_SELNG_AM6}
+					, #{QOTA_RELATE_ENTRPRS_JURIRNO}
+					, #{QOTA_RELATE_ENTRPRS_NM}
+					, #{QOTA_RELATE_ENTRPRS_FOND_DE}
+					, #{QOTA_RELATE_ENTRPRS_INDUTY_CODE}
+					, #{QOTA_RELATE_ENTRPRS_QOTA_RT}
+					, #{QOTA_RELATE_ENTRPRS_FRNP_AT}
+					, #{QOTA_RELATE_ENTRPRS_ASSETS_TOTAMT}
+					, #{QOTA_RELATE_ENTRPRS_SELNG_AM1}
+					, #{QOTA_RELATE_ENTRPRS_SELNG_AM2}
+					, #{QOTA_RELATE_ENTRPRS_SELNG_AM3}
+					, #{QOTA_RELATE_ENTRPRS_SELNG_AM4}
+					, #{QOTA_RELATE_ENTRPRS_SELNG_AM5}
+					, #{QOTA_RELATE_ENTRPRS_SELNG_AM6}
+					)
+	</insert>
+	
+	<!-- 관계기업판정자료 추가(엑셀 파일 업로드) -->
+	<insert id="insertTbRcpyJdgmntDta">
+		INSERT		/* ProgramID=biz.tech.mapif.js.PGJS0040Mapper.insertTbRcpyJdgmntDta */
+		INTO		TB_RCPY_JDGMNT_DTA
+					( STDYY
+					, TRGET_ENTRPRS_JURIRNO
+					, TRGET_ENTRPRS_NM
+					, TRGET_ENTRPRS_CODE_NICE
+					, TRGET_ENTRPRS_INDUTY_CODE
+					, TRGET_ENTRPRS_FOND_DE
+					, TRGET_ENTRPRS_PSACNT
+					, TRGET_ENTRPRS_ASSETS_TOTAMT
+					, TRGET_ENTRPRS_SELNG_AM1
+					, TRGET_ENTRPRS_SELNG_AM2
+					, TRGET_ENTRPRS_SELNG_AM3
+					, TRGET_ENTRPRS_SELNG_AM4
+					, TRGET_ENTRPRS_SELNG_AM5
+					, TRGET_ENTRPRS_SELNG_AM6
+					, QOTA_RELATE_ENTRPRS_JURIRNO
+					, QOTA_RELATE_ENTRPRS_NM
+					, QOTA_RELATE_ENTRPRS_FOND_DE
+					, QOTA_RELATE_ENTRPRS_INDUTY_CODE
+					, QOTA_RELATE_ENTRPRS_QOTA_RT
+					, QOTA_RELATE_ENTRPRS_FRNP_AT
+					, QOTA_RELATE_ENTRPRS_ASSETS_TOTAMT
+					, QOTA_RELATE_ENTRPRS_SELNG_AM1
+					, QOTA_RELATE_ENTRPRS_SELNG_AM2
+					, QOTA_RELATE_ENTRPRS_SELNG_AM3
+					, QOTA_RELATE_ENTRPRS_SELNG_AM4
+					, QOTA_RELATE_ENTRPRS_SELNG_AM5
+					, QOTA_RELATE_ENTRPRS_SELNG_AM6
+					, CREAT_DE
+					)
+		SELECT		#{stdyy}
+					, TRGET_ENTRPRS_JURIRNO
+					, TRGET_ENTRPRS_NM
+					, TRGET_ENTRPRS_CODE_NICE
+					, TRGET_ENTRPRS_INDUTY_CODE
+					, TRGET_ENTRPRS_FOND_DE
+					, TRGET_ENTRPRS_PSACNT
+					, CASE WHEN TRIM(TRGET_ENTRPRS_ASSETS_TOTAMT) = ''
+						THEN NULL
+						ELSE TRGET_ENTRPRS_ASSETS_TOTAMT
+						END AS TRGET_ENTRPRS_ASSETS_TOTAMT
+					, CASE WHEN TRIM(TRGET_ENTRPRS_SELNG_AM1) = ''
+						THEN NULL
+						ELSE TRGET_ENTRPRS_SELNG_AM1
+						END AS TRGET_ENTRPRS_SELNG_AM1
+					, CASE WHEN TRIM(TRGET_ENTRPRS_SELNG_AM2) = ''
+						THEN NULL
+						ELSE TRGET_ENTRPRS_SELNG_AM2
+						END AS TRGET_ENTRPRS_SELNG_AM2
+					, CASE WHEN TRIM(TRGET_ENTRPRS_SELNG_AM3) = ''
+						THEN NULL
+						ELSE TRGET_ENTRPRS_SELNG_AM3
+						END AS TRGET_ENTRPRS_SELNG_AM3
+					, CASE WHEN TRIM(TRGET_ENTRPRS_SELNG_AM4) = ''
+						THEN NULL
+						ELSE TRGET_ENTRPRS_SELNG_AM4
+						END AS TRGET_ENTRPRS_SELNG_AM4
+					, CASE WHEN TRIM(TRGET_ENTRPRS_SELNG_AM5) = ''
+						THEN NULL
+						ELSE TRGET_ENTRPRS_SELNG_AM5
+						END AS TRGET_ENTRPRS_SELNG_AM5
+					, CASE WHEN TRIM(TRGET_ENTRPRS_SELNG_AM6) = ''
+						THEN NULL
+						ELSE TRGET_ENTRPRS_SELNG_AM6
+						END AS TRGET_ENTRPRS_SELNG_AM6
+					, QOTA_RELATE_ENTRPRS_JURIRNO
+					, QOTA_RELATE_ENTRPRS_NM
+					, QOTA_RELATE_ENTRPRS_FOND_DE
+					, QOTA_RELATE_ENTRPRS_INDUTY_CODE
+					, CASE WHEN TRIM(QOTA_RELATE_ENTRPRS_QOTA_RT) = ''
+						THEN NULL
+						ELSE QOTA_RELATE_ENTRPRS_QOTA_RT
+						END AS QOTA_RELATE_ENTRPRS_QOTA_RT
+					, QOTA_RELATE_ENTRPRS_FRNP_AT
+					, CASE WHEN TRIM(QOTA_RELATE_ENTRPRS_ASSETS_TOTAMT) = ''
+						THEN NULL
+						ELSE QOTA_RELATE_ENTRPRS_ASSETS_TOTAMT
+						END AS QOTA_RELATE_ENTRPRS_ASSETS_TOTAMT
+					, CASE WHEN TRIM(QOTA_RELATE_ENTRPRS_SELNG_AM1) = ''
+						THEN NULL
+						ELSE QOTA_RELATE_ENTRPRS_SELNG_AM1
+						END AS QOTA_RELATE_ENTRPRS_SELNG_AM1
+					, CASE WHEN TRIM(QOTA_RELATE_ENTRPRS_SELNG_AM2) = ''
+						THEN NULL
+						ELSE QOTA_RELATE_ENTRPRS_SELNG_AM2
+						END AS QOTA_RELATE_ENTRPRS_SELNG_AM2
+					, CASE WHEN TRIM(QOTA_RELATE_ENTRPRS_SELNG_AM3) = ''
+						THEN NULL
+						ELSE QOTA_RELATE_ENTRPRS_SELNG_AM3
+						END AS QOTA_RELATE_ENTRPRS_SELNG_AM3
+					, CASE WHEN TRIM(QOTA_RELATE_ENTRPRS_SELNG_AM4) = ''
+						THEN NULL
+						ELSE QOTA_RELATE_ENTRPRS_SELNG_AM4
+						END AS QOTA_RELATE_ENTRPRS_SELNG_AM4
+					, CASE WHEN TRIM(QOTA_RELATE_ENTRPRS_SELNG_AM5) = ''
+						THEN NULL
+						ELSE QOTA_RELATE_ENTRPRS_SELNG_AM5
+						END AS QOTA_RELATE_ENTRPRS_SELNG_AM5
+					, CASE WHEN TRIM(QOTA_RELATE_ENTRPRS_SELNG_AM6) = ''
+						THEN NULL
+						ELSE QOTA_RELATE_ENTRPRS_SELNG_AM6
+						END AS QOTA_RELATE_ENTRPRS_SELNG_AM6
+					, NOW()
+		FROM		TMP_RCPY_JDGMNT_UPLOAD_DTA
+		WHERE		TRGET_ENTRPRS_JURIRNO <![CDATA[<>]]> ''
+		AND			TRGET_ENTRPRS_JURIRNO IS NOT NULL
+		ORDER BY	TRGET_ENTRPRS_JURIRNO
+	</insert>
+	
+	<!-- 관계기업판정기업정보 추가(엑셀 파일 업로드) -->
+	<insert id="insertTbRcpyJdgmntEntrprsInfo">
+		INSERT		/* ProgramID=biz.tech.mapif.js.PGJS0040Mapper.insertTbRcpyJdgmntEntrprsInfo */
+		INTO		TB_RCPY_JDGMNT_ENTRPRS_INFO
+					( STDYY
+					, ENTRPRS_JURIRNO
+					, UPPER_ENTRPRS_JURIRNO
+					, TRGET_ENTRPRS_AT
+					, ENTRPRS_NM
+					, ENTRPRS_CODE_NICE
+					, ENTRPRS_INDUTY_CODE
+					, ENTRPRS_FOND_DE
+					, ENTRPRS_PSACNT
+					, UPPER_ENTRPRS_QOTA_RT
+					, UPPER_ENTRPRS_FRNP_AT
+					, ENTRPRS_ASSETS_TOTAMT
+					, ENTRPRS_SELNG_AM1
+					, ENTRPRS_SELNG_AM2
+					, ENTRPRS_SELNG_AM3
+					, ENTRPRS_SELNG_AM4
+					, ENTRPRS_SELNG_AM5
+					, ENTRPRS_SELNG_AM6
+					, CREAT_DE
+					)
+		SELECT		T1.STDYY
+					, T1.ENTRPRS_JURIRNO
+					, T1.UPPER_ENTRPRS_JURIRNO
+					, T1.TRGET_ENTRPRS_AT
+					, T1.ENTRPRS_NM
+					, T1.ENTRPRS_CODE_NICE
+					, T1.ENTRPRS_INDUTY_CODE
+					, T1.ENTRPRS_FOND_DE
+					, T1.ENTRPRS_PSACNT
+					, T1.UPPER_ENTRPRS_QOTA_RT
+					, T1.UPPER_ENTRPRS_FRNP_AT
+					, T1.ENTRPRS_ASSETS_TOTAMT
+					, T1.ENTRPRS_SELNG_AM1
+					, T1.ENTRPRS_SELNG_AM2
+					, T1.ENTRPRS_SELNG_AM3
+					, T1.ENTRPRS_SELNG_AM4
+					, T1.ENTRPRS_SELNG_AM5
+					, T1.ENTRPRS_SELNG_AM6
+					, NOW()
+					FROM	(SELECT	STDYY													AS STDYY
+									, TRGET_ENTRPRS_JURIRNO									AS ENTRPRS_JURIRNO
+									, QOTA_RELATE_ENTRPRS_JURIRNO							AS UPPER_ENTRPRS_JURIRNO
+									, 'Y'													AS TRGET_ENTRPRS_AT
+									, TRGET_ENTRPRS_NM										AS ENTRPRS_NM
+									, TRGET_ENTRPRS_CODE_NICE								AS ENTRPRS_CODE_NICE
+									, TRGET_ENTRPRS_INDUTY_CODE								AS ENTRPRS_INDUTY_CODE
+									, TRGET_ENTRPRS_FOND_DE									AS ENTRPRS_FOND_DE
+									, TRGET_ENTRPRS_PSACNT									AS ENTRPRS_PSACNT
+								    , QOTA_RELATE_ENTRPRS_INDUTY_CODE        			    AS UPPER_ENTRPRS_INDUTY_CODE
+									, QOTA_RELATE_ENTRPRS_QOTA_RT							AS UPPER_ENTRPRS_QOTA_RT
+									, QOTA_RELATE_ENTRPRS_FRNP_AT							AS UPPER_ENTRPRS_FRNP_AT
+									, TRGET_ENTRPRS_ASSETS_TOTAMT							AS ENTRPRS_ASSETS_TOTAMT
+									, TRGET_ENTRPRS_SELNG_AM1								AS ENTRPRS_SELNG_AM1
+									, TRGET_ENTRPRS_SELNG_AM2								AS ENTRPRS_SELNG_AM2
+									, TRGET_ENTRPRS_SELNG_AM3								AS ENTRPRS_SELNG_AM3
+									, TRGET_ENTRPRS_SELNG_AM4								AS ENTRPRS_SELNG_AM4
+									, TRGET_ENTRPRS_SELNG_AM5								AS ENTRPRS_SELNG_AM5
+									, TRGET_ENTRPRS_SELNG_AM6								AS ENTRPRS_SELNG_AM6
+							FROM		TB_RCPY_JDGMNT_DTA
+							WHERE		STDYY = #{stdyy}
+							AND			TRGET_ENTRPRS_JURIRNO <![CDATA[<>]]> ''
+							AND			TRGET_ENTRPRS_JURIRNO IS NOT NULL
+							AND			QOTA_RELATE_ENTRPRS_JURIRNO <![CDATA[<>]]> ''
+							AND			QOTA_RELATE_ENTRPRS_JURIRNO IS NOT NULL
+							GROUP BY	STDYY
+										, TRGET_ENTRPRS_JURIRNO
+										, QOTA_RELATE_ENTRPRS_JURIRNO
+							UNION ALL
+							SELECT	STDYY													AS STDYY
+									, QOTA_RELATE_ENTRPRS_JURIRNO							AS ENTRPRS_JURIRNO
+									, '9999999999999'										AS UPPER_ENTRPRS_JURIRNO
+									, 'N'													AS TRGET_ENTRPRS_AT
+									, QOTA_RELATE_ENTRPRS_NM								AS ENTRPRS_NM
+									, ''													AS ENTRPRS_CODE_NICE
+									, QOTA_RELATE_ENTRPRS_INDUTY_CODE						AS ENTRPRS_INDUTY_CODE
+									, QOTA_RELATE_ENTRPRS_FOND_DE							AS ENTRPRS_FOND_DE
+									, ''													AS ENTRPRS_PSACNT
+									, ''		                            				AS UPPER_ENTRPRS_INDUTY_CODE									
+									, 0														AS UPPER_ENTRPRS_QOTA_RT
+									, ''													AS UPPER_ENTRPRS_FRNP_AT
+									, QOTA_RELATE_ENTRPRS_ASSETS_TOTAMT						AS ENTRPRS_ASSETS_TOTAMT
+									, QOTA_RELATE_ENTRPRS_SELNG_AM1							AS ENTRPRS_SELNG_AM1
+									, QOTA_RELATE_ENTRPRS_SELNG_AM2							AS ENTRPRS_SELNG_AM2
+									, QOTA_RELATE_ENTRPRS_SELNG_AM3							AS ENTRPRS_SELNG_AM3
+									, QOTA_RELATE_ENTRPRS_SELNG_AM4							AS ENTRPRS_SELNG_AM4
+									, QOTA_RELATE_ENTRPRS_SELNG_AM5							AS ENTRPRS_SELNG_AM5
+									, QOTA_RELATE_ENTRPRS_SELNG_AM6							AS ENTRPRS_SELNG_AM6
+							FROM		TB_RCPY_JDGMNT_DTA
+							WHERE		STDYY = #{stdyy}
+							AND			QOTA_RELATE_ENTRPRS_JURIRNO <![CDATA[<>]]> ''
+							AND			QOTA_RELATE_ENTRPRS_JURIRNO IS NOT NULL
+							AND			QOTA_RELATE_ENTRPRS_JURIRNO NOT IN (
+																			SELECT		TRGET_ENTRPRS_JURIRNO
+																			FROM		TB_RCPY_JDGMNT_DTA
+																			WHERE		STDYY = #{stdyy}
+																			AND			TRGET_ENTRPRS_JURIRNO <![CDATA[<>]]> ''
+																			AND			TRGET_ENTRPRS_JURIRNO IS NOT NULL
+																			AND			QOTA_RELATE_ENTRPRS_JURIRNO <![CDATA[<>]]> ''
+																			AND			QOTA_RELATE_ENTRPRS_JURIRNO IS NOT NULL
+																			GROUP BY	STDYY
+																						, TRGET_ENTRPRS_JURIRNO
+																						, QOTA_RELATE_ENTRPRS_JURIRNO
+																			)
+							GROUP BY  	STDYY
+										, QOTA_RELATE_ENTRPRS_JURIRNO
+							ORDER BY 	STDYY
+										, ENTRPRS_JURIRNO
+										, UPPER_ENTRPRS_JURIRNO
+							) AS T1
+	</insert>
+	
+	<!-- 관계기업판정기업정보 갱신(기업데이터 업종코드로 변경)(엑셀 파일 업로드) -->
+	<update id="updateTbRcpyJdgmntEntrprsInfo">
+		UPDATE		/* ProgramID=biz.tech.mapif.js.PGJS0040Mapper.updateTbRcpyJdgmntEntrprsInfo */
+					TB_RCPY_JDGMNT_ENTRPRS_INFO AS T1
+		,			(	SELECT	STDYY
+								, JURIRNO
+								, LCLAS_CD
+								, MLSFC_CD
+								<!-- , DTLDTLCLFC_CD -->
+						FROM	TB_ENTPRS_INFO
+						WHERE	STDYY = #{stdyy}
+						AND		LCLAS_CD <![CDATA[<>]]> ''
+						AND		LCLAS_CD IS NOT NULL
+					) AS T2
+<!-- 		SET			T1.ENTRPRS_INDUTY_CODE = CONCAT(T2.LCLAS_CD, T2.DTLDTLCLFC_CD) -->
+		SET			T1.ENTRPRS_INDUTY_CODE = CONCAT(T2.LCLAS_CD, T2.MLSFC_CD)
+		WHERE		T1.STDYY = T2.STDYY
+		AND			T1.ENTRPRS_JURIRNO = T2.JURIRNO
+	</update>
+	
+	<!-- 관계기업판정기업정보 갱신(3년평균매출액1 계산)(엑셀 파일 업로드) -->
+	<update id="updateTbRcpyJdgmntEntrprsInfo2">
+		UPDATE		/* ProgramID=biz.tech.mapif.js.PGJS0040Mapper.updateTbRcpyJdgmntEntrprsInfo2 */
+					TB_RCPY_JDGMNT_ENTRPRS_INFO AS T1
+		,			(	SELECT	STDYY
+								, ENTRPRS_JURIRNO
+								, TRUNCATE(AVG(SELNG_AM), 0) AS Y3AVG_SELNG_AM1
+						FROM	(	SELECT	STDYY
+											, ENTRPRS_JURIRNO
+											, CASE WHEN IFNULL(ENTRPRS_SELNG_AM1, '') = ''
+												THEN NULL
+												ELSE ENTRPRS_SELNG_AM1
+												END AS SELNG_AM
+									FROM	TB_RCPY_JDGMNT_ENTRPRS_INFO
+									WHERE	STDYY = #{stdyy}
+									UNION ALL
+									SELECT	STDYY
+											, ENTRPRS_JURIRNO
+											, CASE WHEN IFNULL(ENTRPRS_SELNG_AM2, '') = ''
+												THEN NULL
+												ELSE ENTRPRS_SELNG_AM2
+												END AS SELNG_AM
+									FROM	TB_RCPY_JDGMNT_ENTRPRS_INFO
+									WHERE	STDYY = #{stdyy}
+									UNION ALL
+									SELECT	STDYY
+											, ENTRPRS_JURIRNO
+											, CASE WHEN IFNULL(ENTRPRS_SELNG_AM3, '') = ''
+												THEN NULL
+												ELSE ENTRPRS_SELNG_AM3
+												END AS SELNG_AM
+									FROM	TB_RCPY_JDGMNT_ENTRPRS_INFO
+									WHERE	STDYY = #{stdyy}
+								) A
+						GROUP BY ENTRPRS_JURIRNO
+					) AS T2
+		SET			T1.Y3AVG_SELNG_AM1 = T2.Y3AVG_SELNG_AM1
+		WHERE		T1.STDYY = T2.STDYY
+		AND			T1.ENTRPRS_JURIRNO = T2.ENTRPRS_JURIRNO
+	</update>
+	
+	<!-- 관계기업판정기업정보 갱신(3년평균매출액2 계산)(엑셀 파일 업로드) -->
+	<update id="updateTbRcpyJdgmntEntrprsInfo3">
+		UPDATE		/* ProgramID=biz.tech.mapif.js.PGJS0040Mapper.updateTbRcpyJdgmntEntrprsInfo3 */
+					TB_RCPY_JDGMNT_ENTRPRS_INFO AS T1
+		,			(	SELECT	STDYY
+								, ENTRPRS_JURIRNO
+								, TRUNCATE(AVG(SELNG_AM), 0) AS Y3AVG_SELNG_AM2
+						FROM	(	SELECT	STDYY
+											, ENTRPRS_JURIRNO
+											, CASE WHEN IFNULL(ENTRPRS_SELNG_AM2, '') = ''
+												THEN NULL
+												ELSE ENTRPRS_SELNG_AM2
+												END AS SELNG_AM
+									FROM	TB_RCPY_JDGMNT_ENTRPRS_INFO
+									WHERE	STDYY = #{stdyy}
+									UNION ALL
+									SELECT	STDYY
+											, ENTRPRS_JURIRNO
+											, CASE WHEN IFNULL(ENTRPRS_SELNG_AM3, '') = ''
+												THEN NULL
+												ELSE ENTRPRS_SELNG_AM3
+												END AS SELNG_AM
+									FROM	TB_RCPY_JDGMNT_ENTRPRS_INFO
+									WHERE	STDYY = #{stdyy}
+									UNION ALL
+									SELECT	STDYY
+											, ENTRPRS_JURIRNO
+											, CASE WHEN IFNULL(ENTRPRS_SELNG_AM4, '') = ''
+												THEN NULL
+												ELSE ENTRPRS_SELNG_AM4
+												END AS SELNG_AM
+									FROM	TB_RCPY_JDGMNT_ENTRPRS_INFO
+									WHERE	STDYY = #{stdyy}
+								) A
+						GROUP BY ENTRPRS_JURIRNO
+					) AS T2
+		SET			T1.Y3AVG_SELNG_AM2 = T2.Y3AVG_SELNG_AM2
+		WHERE		T1.STDYY = T2.STDYY
+		AND			T1.ENTRPRS_JURIRNO = T2.ENTRPRS_JURIRNO
+	</update>
+	
+	<!-- 관계기업판정기업정보 갱신(3년평균매출액3 계산)(엑셀 파일 업로드) -->
+	<update id="updateTbRcpyJdgmntEntrprsInfo4">
+		UPDATE		/* ProgramID=biz.tech.mapif.js.PGJS0040Mapper.updateTbRcpyJdgmntEntrprsInfo4 */
+					TB_RCPY_JDGMNT_ENTRPRS_INFO AS T1
+		,			(	SELECT	STDYY
+								, ENTRPRS_JURIRNO
+								, TRUNCATE(AVG(SELNG_AM), 0) AS Y3AVG_SELNG_AM3
+						FROM	(	SELECT	STDYY
+											, ENTRPRS_JURIRNO
+											, CASE WHEN IFNULL(ENTRPRS_SELNG_AM3, '') = ''
+												THEN NULL
+												ELSE ENTRPRS_SELNG_AM3
+												END AS SELNG_AM
+									FROM	TB_RCPY_JDGMNT_ENTRPRS_INFO
+									WHERE	STDYY = #{stdyy}
+									UNION ALL
+									SELECT	STDYY
+											, ENTRPRS_JURIRNO
+											, CASE WHEN IFNULL(ENTRPRS_SELNG_AM4, '') = ''
+												THEN NULL
+												ELSE ENTRPRS_SELNG_AM4
+												END AS SELNG_AM
+									FROM	TB_RCPY_JDGMNT_ENTRPRS_INFO
+									WHERE	STDYY = #{stdyy}
+									UNION ALL
+									SELECT	STDYY
+											, ENTRPRS_JURIRNO
+											, CASE WHEN IFNULL(ENTRPRS_SELNG_AM5, '') = ''
+												THEN NULL
+												ELSE ENTRPRS_SELNG_AM5
+												END AS SELNG_AM
+									FROM	TB_RCPY_JDGMNT_ENTRPRS_INFO
+									WHERE	STDYY = #{stdyy}
+								) A
+						GROUP BY ENTRPRS_JURIRNO
+					) AS T2
+		SET			T1.Y3AVG_SELNG_AM3 = T2.Y3AVG_SELNG_AM3
+		WHERE		T1.STDYY = T2.STDYY
+		AND			T1.ENTRPRS_JURIRNO = T2.ENTRPRS_JURIRNO
+	</update>
+	
+	<!-- 관계기업판정기업정보 갱신(3년평균매출액4 계산)(엑셀 파일 업로드) -->
+	<update id="updateTbRcpyJdgmntEntrprsInfo5">
+		UPDATE		/* ProgramID=biz.tech.mapif.js.PGJS0040Mapper.updateTbRcpyJdgmntEntrprsInfo5 */
+					TB_RCPY_JDGMNT_ENTRPRS_INFO AS T1
+		,			(	SELECT	STDYY
+								, ENTRPRS_JURIRNO
+								, TRUNCATE(AVG(SELNG_AM), 0) AS Y3AVG_SELNG_AM4
+						FROM	(	SELECT	STDYY
+											, ENTRPRS_JURIRNO
+											, CASE WHEN IFNULL(ENTRPRS_SELNG_AM4, '') = ''
+												THEN NULL
+												ELSE ENTRPRS_SELNG_AM4
+												END AS SELNG_AM
+									FROM	TB_RCPY_JDGMNT_ENTRPRS_INFO
+									WHERE	STDYY = #{stdyy}
+									UNION ALL
+									SELECT	STDYY
+											, ENTRPRS_JURIRNO
+											, CASE WHEN IFNULL(ENTRPRS_SELNG_AM5, '') = ''
+												THEN NULL
+												ELSE ENTRPRS_SELNG_AM5
+												END AS SELNG_AM
+									FROM	TB_RCPY_JDGMNT_ENTRPRS_INFO
+									WHERE	STDYY = #{stdyy}
+									UNION ALL
+									SELECT	STDYY
+											, ENTRPRS_JURIRNO
+											, CASE WHEN IFNULL(ENTRPRS_SELNG_AM6, '') = ''
+												THEN NULL
+												ELSE ENTRPRS_SELNG_AM6
+												END AS SELNG_AM
+									FROM	TB_RCPY_JDGMNT_ENTRPRS_INFO
+									WHERE	STDYY = #{stdyy}
+								) A
+						GROUP BY ENTRPRS_JURIRNO
+					) AS T2
+		SET			T1.Y3AVG_SELNG_AM4 = T2.Y3AVG_SELNG_AM4
+		WHERE		T1.STDYY = T2.STDYY
+		AND			T1.ENTRPRS_JURIRNO = T2.ENTRPRS_JURIRNO
+	</update>
+	
+	<!-- 관계기업판정 수집내역 추가(엑셀 파일 업로드) -->
+	<insert id="insertTbRcpyJdgmntColct">
+		INSERT		/* ProgramID=biz.tech.mapif.js.PGJS0040Mapper.insertTbRcpyJdgmntColct */
+		INTO		TB_RCPY_JDGMNT_COLCT
+					( STDYY
+					, UPLOAD_DE
+					, APPLC_DE
+					, TRGET_ENTRPRS_CO
+					, PROCESS_STTUS
+					, CREAT_DE
+					)
+		VALUES
+					( #{stdyy}
+					, now()
+					, now()
+					, #{trgetEntrprsCo}
+					, '2'
+					, now()
+					)
+	</insert>
+	
+	<!-- 관계기업판정관리 추가(엑셀 파일 업로드) -->
+	<insert id="insertTbRcpyJdgmntManage">
+		INSERT		/* ProgramID=biz.tech.mapif.js.PGJS0040Mapper.insertTbRcpyJdgmntManage */
+		INTO		TB_RCPY_JDGMNT_MANAGE
+					( STDYY
+					, ENTRPRS_CO
+					, CREAT_DE
+					)
+		VALUES
+					( #{stdyy}
+					, (SELECT COUNT(*) FROM (SELECT * FROM TB_RCPY_JDGMNT_ENTRPRS_INFO WHERE STDYY = #{stdyy} GROUP BY STDYY, ENTRPRS_JURIRNO) T1)
+					, now()
+					)
+	</insert>
+	
+	<!-- 관계기업 판정 -->	 
+	<select id="callRcpyJdgmnt" statementType="CALLABLE" resultType="int">
+		/* ProgramID=biz.tech.mapif.js.PGJS0040Mapper.callRcpyJdgmnt */
+		{
+    		CALL sp_RCPY_JDGMNT(#{stdyy})
+		}
+	</select>
+	
+	<!-- 관계기업판정기업정보 조회(목록) -->
+	<select id="selectTbRcpyJdgmntEntrprsInfoList" resultType="egovMap">
+		SELECT		/* ProgramID=biz.tech.mapif.js.PGJS0040Mapper.selectTbRcpyJdgmntEntrprsInfoList */
+					T1.STDYY									AS STDYY
+					, T1.ENTRPRS_JURIRNO						AS ENTRPRS_JURIRNO
+					, T1.ENTRPRS_NM								AS ENTRPRS_NM
+					, CASE  WHEN SUBSTRING(T1.ENTRPRS_INDUTY_CODE , 1, 1 )= 'K'
+							THEN '금융업'
+							ELSE '-'
+						END										AS ENTRPRS_K
+					, CASE	WHEN T2.RCPY_SCALE_YN = 'Y'
+							THEN '적합'
+							WHEN T2.RCPY_SCALE_YN = 'N'
+							THEN '부적합'
+							WHEN T2.RCPY_SCALE_YN = 'A'
+							THEN '업종없음'
+							ELSE '판정안함'
+						END										AS RCPY_SCALE_YN
+					, CASE	WHEN T3.DCSN_HPE_AT = 'Y'
+							THEN '적합'
+							ELSE '부적합'
+						END										AS DCSN_HPE_AT1
+					, CASE	WHEN T4.DCSN_HPE_AT = 'Y'
+							THEN '적합'
+							ELSE '부적합'
+						END										AS DCSN_HPE_AT2
+					, CASE	WHEN T5.DCSN_HPE_AT = 'Y'
+							THEN '적합'
+							ELSE '부적합'
+						END										AS DCSN_HPE_AT3
+					, CASE	WHEN T6.DCSN_HPE_AT = 'Y'
+							THEN '적합'
+							ELSE '부적합'
+						END										AS DCSN_HPE_AT4
+		FROM		(	SELECT		STDYY
+									, ENTRPRS_JURIRNO
+									, ENTRPRS_NM
+									, ENTRPRS_INDUTY_CODE
+						FROM		TB_RCPY_JDGMNT_ENTRPRS_INFO
+						GROUP BY	STDYY
+									, ENTRPRS_JURIRNO
+						ORDER BY	STDYY
+									, ENTRPRS_JURIRNO) AS T1
+		LEFT JOIN	(	SELECT	STDYY
+								, ENTRPRS_JURIRNO
+								, RCPY_SCALE_YN
+						FROM	TB_RCPY_JDGMNT_RESULT) AS T2
+		ON			T1.STDYY = T2.STDYY
+		AND			T1.ENTRPRS_JURIRNO = T2.ENTRPRS_JURIRNO
+		LEFT JOIN	(	SELECT		STDYY
+									, HPE_CD
+									, JURIRNO
+									, DCSN_HPE_AT
+						FROM		TB_ENTPRS_INFO
+						WHERE		STDYY = #{stdyy}
+						AND			DCSN_HPE_AT = 'Y'
+						GROUP BY	JURIRNO) AS T3
+		ON			T1.ENTRPRS_JURIRNO = T3.JURIRNO
+		LEFT JOIN	(	SELECT		STDYY
+									, HPE_CD
+									, JURIRNO
+									, DCSN_HPE_AT
+						FROM		TB_ENTPRS_INFO
+						WHERE		STDYY = #{stdyy} - 1
+						AND			DCSN_HPE_AT = 'Y'
+						GROUP BY	JURIRNO) AS T4
+		ON			T1.ENTRPRS_JURIRNO = T4.JURIRNO
+		LEFT JOIN	(	SELECT		STDYY
+									, HPE_CD
+									, JURIRNO
+									, DCSN_HPE_AT
+						FROM		TB_ENTPRS_INFO
+						WHERE		STDYY = #{stdyy} - 2
+						AND			DCSN_HPE_AT = 'Y'
+						GROUP BY	JURIRNO) AS T5
+		ON			T1.ENTRPRS_JURIRNO = T5.JURIRNO
+		LEFT JOIN	(	SELECT		STDYY
+									, HPE_CD
+									, JURIRNO
+									, DCSN_HPE_AT
+						FROM		TB_ENTPRS_INFO
+						WHERE		STDYY = #{stdyy} - 3
+						AND			DCSN_HPE_AT = 'Y'
+						GROUP BY	JURIRNO) AS T6
+		ON			T1.ENTRPRS_JURIRNO = T6.JURIRNO
+		WHERE		T1.STDYY = #{stdyy}
+		<if test="searchCondition != '' and searchKeyword != ''" >			
+			<choose>
+				<when test="searchCondition == 'entrprsNm'">
+					AND	T1.ENTRPRS_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+				<when test="searchCondition == 'entrprsJurirno'">
+					AND	T1.ENTRPRS_JURIRNO LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+			</choose>
+		</if>
+		<if test='searchGubun == "Y"'>
+			AND T2.RCPY_SCALE_YN = 'Y'
+		</if>
+		<if test='searchGubun == "N"'>
+			AND T2.RCPY_SCALE_YN = 'N'
+		</if>
+		<if test='searchGubun == "A"'>
+			AND T2.RCPY_SCALE_YN = 'A'
+		</if>
+		LIMIT		#{limitFrom}, #{limitTo}
+	</select>
+	
+	<!-- 관계기업판정기업정보 조회(개수) -->
+	<select id="selectTbRcpyJdgmntEntrprsInfoCnt" resultType="int">
+		SELECT		/* ProgramID=biz.tech.mapif.js.PGJS0040Mapper.selectTbRcpyJdgmntEntrprsInfoCnt */
+					COUNT(*)
+		FROM		(	SELECT		STDYY
+									, ENTRPRS_JURIRNO
+									, ENTRPRS_NM
+						FROM		TB_RCPY_JDGMNT_ENTRPRS_INFO
+						GROUP BY	STDYY
+									, ENTRPRS_JURIRNO
+						ORDER BY	STDYY
+									, ENTRPRS_JURIRNO) AS T1
+		LEFT JOIN	(	SELECT	STDYY
+								, ENTRPRS_JURIRNO
+								, RCPY_SCALE_YN
+						FROM	TB_RCPY_JDGMNT_RESULT) AS T2
+		ON			T1.STDYY = T2.STDYY
+		AND			T1.ENTRPRS_JURIRNO = T2.ENTRPRS_JURIRNO
+		WHERE		T1.STDYY = #{stdyy}
+		<if test="searchCondition != '' and searchKeyword != ''" >			
+			<choose>
+				<when test="searchCondition == 'entrprsNm'">
+					AND	T1.ENTRPRS_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+				<when test="searchCondition == 'entrprsJurirno'">
+					AND	T1.ENTRPRS_JURIRNO LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+			</choose>
+		</if>
+		<if test='searchGubun == "Y"'>
+			AND T2.RCPY_SCALE_YN = 'Y'
+		</if>
+		<if test='searchGubun == "N"'>
+			AND T2.RCPY_SCALE_YN = 'N'
+		</if>
+		<if test='searchGubun == "A"'>
+			AND T2.RCPY_SCALE_YN = 'A'
+		</if>
+	</select>
+	
+	<!-- 관계기업판정기업정보 조회(상세) -->
+	<select id="selectTbRcpyJdgmntDetail" resultType="egovMap">
+		SELECT		/* ProgramID=biz.tech.mapif.js.PGJS0040Mapper.selectTbRcpyJdgmntDetail */
+					T1.STDYY						AS STDYY
+					, T1.ENTRPRS_JURIRNO			AS ENTRPRS_JURIRNO
+					, T1.ENTRPRS_NM					AS ENTRPRS_NM
+					, T1.ENTRPRS_INDUTY_CODE		AS ENTRPRS_INDUTY_CODE
+					, T1.ENTRPRS_ASSETS_TOTAMT		AS ENTRPRS_ASSETS_TOTAMT
+					, T1.ENTRPRS_SELNG_AM1			AS ENTRPRS_SELNG_AM1
+					, T1.ENTRPRS_SELNG_AM2			AS ENTRPRS_SELNG_AM2
+					, T1.ENTRPRS_SELNG_AM3			AS ENTRPRS_SELNG_AM3
+					, T1.ENTRPRS_SELNG_AM4			AS ENTRPRS_SELNG_AM4
+					, T1.ENTRPRS_SELNG_AM5			AS ENTRPRS_SELNG_AM5
+					, T1.ENTRPRS_SELNG_AM6			AS ENTRPRS_SELNG_AM6
+					, T1.Y3AVG_SELNG_AM1			AS Y3AVG_SELNG_AM1
+					, T1.Y3AVG_SELNG_AM2			AS Y3AVG_SELNG_AM2
+					, T1.Y3AVG_SELNG_AM3			AS Y3AVG_SELNG_AM3
+					, T1.Y3AVG_SELNG_AM4			AS Y3AVG_SELNG_AM4
+					, T2.RCPY_SCALE_YN				AS RCPY_SCALE_YN
+					, T2.JDGMNT_INDUTY_CODE			AS JDGMNT_INDUTY_CODE
+					, T2.ADUP_SELNG_AM				AS ADUP_SELNG_AM
+		FROM		TB_RCPY_JDGMNT_ENTRPRS_INFO			AS T1
+					, TB_RCPY_JDGMNT_RESULT				AS T2
+		WHERE		T1.STDYY = #{stdyy}
+		AND			T1.ENTRPRS_JURIRNO = #{entrprsJurirno}
+		AND			T1.STDYY = T2.STDYY
+		AND			T1.ENTRPRS_JURIRNO = T2.ENTRPRS_JURIRNO
+		GROUP BY	T1.STDYY
+					, T1.ENTRPRS_JURIRNO
+	</select>
+	
+	<!-- 관계기업판정기업정보 상위그룹 조회(상세) -->
+	<select id="selectTbRcpyJdgmntUpperDetail" resultType="egovMap">
+		SELECT		/* ProgramID=biz.tech.mapif.js.PGJS0040Mapper.selectTbRcpyJdgmntUpperDetail */
+					T1.STDYY						AS STDYY
+					, T1.ENTRPRS_JURIRNO			AS LEV1_JURIRNO
+					, T1.ENTRPRS_NM					AS LEV1_ENTRPRS_NM
+					, T1.ENTRPRS_INDUTY_CODE		AS LEV1_INDUTY_CODE
+					, T1.Y3AVG_SELNG_AM1			AS LEV1_Y3AVG_SELNG_AM1
+					, T2.ENTRPRS_JURIRNO			AS LEV2_JURIRNO
+					, T2.ENTRPRS_NM					AS LEV2_ENTRPRS_NM
+					, T1.UPPER_ENTRPRS_QOTA_RT		AS LEV2_QOTA_RT
+					, T2.ENTRPRS_INDUTY_CODE		AS LEV2_INDUTY_CODE
+					, T2.Y3AVG_SELNG_AM1			AS LEV2_Y3AVG_SELNG_AM1
+					, T3.ENTRPRS_JURIRNO			AS LEV3_JURIRNO
+					, T3.ENTRPRS_NM					AS LEV3_ENTRPRS_NM
+					, T2.UPPER_ENTRPRS_QOTA_RT		AS LEV3_QOTA_RT
+					, T3.ENTRPRS_INDUTY_CODE		AS LEV3_INDUTY_CODE
+					, T3.Y3AVG_SELNG_AM1			AS LEV3_Y3AVG_SELNG_AM1
+		FROM		TB_RCPY_JDGMNT_ENTRPRS_INFO			AS T1
+		LEFT JOIN	TB_RCPY_JDGMNT_ENTRPRS_INFO			AS T2
+ 		ON			T1.STDYY = T2.STDYY
+ 		AND			T1.UPPER_ENTRPRS_JURIRNO = T2.ENTRPRS_JURIRNO
+		LEFT JOIN	TB_RCPY_JDGMNT_ENTRPRS_INFO			AS T3
+		ON			T2.STDYY = T3.STDYY
+		AND			T2.UPPER_ENTRPRS_JURIRNO = T3.ENTRPRS_JURIRNO
+		WHERE		T1.STDYY = #{stdyy}
+		AND			T1.ENTRPRS_JURIRNO = #{entrprsJurirno}
+		AND			T2.ENTRPRS_JURIRNO <![CDATA[<>]]> ''
+		AND			T2.ENTRPRS_JURIRNO  IS NOT NULL
+		ORDER BY	T1.STDYY
+					, T1.ENTRPRS_JURIRNO
+					, T2.ENTRPRS_JURIRNO
+					, T3.ENTRPRS_JURIRNO
+	</select>
+	
+	<!-- 관계기업판정기업정보 하위그룹 조회(상세) -->
+	<select id="selectTbRcpyJdgmntLwprtDetail" resultType="egovMap">
+		SELECT		/* ProgramID=biz.tech.mapif.js.PGJS0040Mapper.selectTbRcpyJdgmntLwprtDetail */
+					T1.STDYY						AS STDYY
+					, T1.ENTRPRS_JURIRNO			AS LEV1_JURIRNO
+					, T1.ENTRPRS_NM					AS LEV1_ENTRPRS_NM
+					, T1.ENTRPRS_INDUTY_CODE		AS LEV1_INDUTY_CODE
+					, T1.Y3AVG_SELNG_AM1			AS LEV1_Y3AVG_SELNG_AM1
+					, T2.ENTRPRS_JURIRNO			AS LEV2_JURIRNO
+					, T2.ENTRPRS_NM					AS LEV2_ENTRPRS_NM
+					, T2.UPPER_ENTRPRS_QOTA_RT		AS LEV2_QOTA_RT
+					, T2.ENTRPRS_INDUTY_CODE		AS LEV2_INDUTY_CODE
+					, T2.Y3AVG_SELNG_AM1			AS LEV2_Y3AVG_SELNG_AM1
+					, T3.ENTRPRS_JURIRNO			AS LEV3_JURIRNO
+					, T3.ENTRPRS_NM					AS LEV3_ENTRPRS_NM
+					, T3.UPPER_ENTRPRS_QOTA_RT		AS LEV3_QOTA_RT
+					, T3.ENTRPRS_INDUTY_CODE		AS LEV3_INDUTY_CODE
+					, T3.Y3AVG_SELNG_AM1			AS LEV3_Y3AVG_SELNG_AM1
+		FROM		(SELECT STDYY
+                    	    , ENTRPRS_JURIRNO
+                    	    , ENTRPRS_NM
+                    	    , ENTRPRS_INDUTY_CODE
+                    	    , Y3AVG_SELNG_AM1
+		            FROM    TB_RCPY_JDGMNT_ENTRPRS_INFO)			AS T1
+		LEFT JOIN	(SELECT ENTRPRS_JURIRNO
+		                    , ENTRPRS_NM
+		                    , UPPER_ENTRPRS_QOTA_RT
+		                    , ENTRPRS_INDUTY_CODE
+		                    , Y3AVG_SELNG_AM1
+		                    , STDYY
+		                    , UPPER_ENTRPRS_JURIRNO
+                    FROM	TB_RCPY_JDGMNT_ENTRPRS_INFO)			AS T2
+ 		ON			T1.STDYY = T2.STDYY
+ 		AND			T1.ENTRPRS_JURIRNO = T2.UPPER_ENTRPRS_JURIRNO
+		LEFT JOIN	(SELECT ENTRPRS_JURIRNO
+		                    , ENTRPRS_NM
+		                    , UPPER_ENTRPRS_QOTA_RT
+		                    , ENTRPRS_INDUTY_CODE
+		                    , Y3AVG_SELNG_AM1
+		                    , STDYY
+		                    , UPPER_ENTRPRS_JURIRNO
+                    FROM	TB_RCPY_JDGMNT_ENTRPRS_INFO)			AS T3
+		ON			T2.STDYY = T3.STDYY
+		AND			T2.ENTRPRS_JURIRNO = T3.UPPER_ENTRPRS_JURIRNO
+		WHERE		T1.STDYY = #{stdyy}
+		AND			T1.ENTRPRS_JURIRNO = #{entrprsJurirno}
+		AND			T2.ENTRPRS_JURIRNO <![CDATA[<>]]> ''
+		AND			T2.ENTRPRS_JURIRNO  IS NOT NULL
+		ORDER BY	T1.STDYY
+					, T1.ENTRPRS_JURIRNO
+					, T2.ENTRPRS_JURIRNO
+					, T3.ENTRPRS_JURIRNO
+	</select>
+	
+	<!-- 관계기업판정기업정보 조회(목록, 엑셀다운로드) -->
+	<select id="selectTbRcpyJdgmntEntrprsInfoListExcel" resultType="egovMap">
+		SELECT		/* ProgramID=biz.tech.mapif.js.PGJS0040Mapper.selectTbRcpyJdgmntEntrprsInfoListExcel */
+					T1.STDYY									AS STDYY
+					, T1.ENTRPRS_JURIRNO						AS ENTRPRS_JURIRNO
+					, T1.ENTRPRS_NM								AS ENTRPRS_NM
+					, CASE  WHEN SUBSTRING(T1.ENTRPRS_INDUTY_CODE , 1, 1 )= 'K'
+							THEN '금융업'
+							ELSE '-'
+						END										AS ENTRPRS_K
+					, CASE	WHEN T2.RCPY_SCALE_YN = 'Y'
+							THEN '적합'
+							WHEN T2.RCPY_SCALE_YN = 'N'
+							THEN '부적합'
+							WHEN T2.RCPY_SCALE_YN = 'A'
+							THEN '업종없음'
+							ELSE '판정안함'
+						END										AS RCPY_SCALE_YN
+					, CASE	WHEN T3.DCSN_HPE_AT = 'Y'
+							THEN '적합'
+							ELSE '부적합'
+						END										AS DCSN_HPE_AT1
+					, CASE	WHEN T4.DCSN_HPE_AT = 'Y'
+							THEN '적합'
+							ELSE '부적합'
+						END										AS DCSN_HPE_AT2
+					, CASE	WHEN T5.DCSN_HPE_AT = 'Y'
+							THEN '적합'
+							ELSE '부적합'
+						END										AS DCSN_HPE_AT3
+					, CASE	WHEN T6.DCSN_HPE_AT = 'Y'
+							THEN '적합'
+							ELSE '부적합'
+						END										AS DCSN_HPE_AT4
+					, T1.ENTRPRS_CODE_NICE						AS ENTRPRS_CODE_NICE
+					, T1.ENTRPRS_INDUTY_CODE					AS ENTRPRS_INDUTY_CODE
+					, T1.ENTRPRS_SELNG_AM1						AS ENTRPRS_SELNG_AM1
+					, T1.ENTRPRS_SELNG_AM2						AS ENTRPRS_SELNG_AM2
+					, T1.ENTRPRS_SELNG_AM3						AS ENTRPRS_SELNG_AM3
+					, T1.ENTRPRS_SELNG_AM4						AS ENTRPRS_SELNG_AM4
+					, T1.ENTRPRS_SELNG_AM5						AS ENTRPRS_SELNG_AM5
+					, T1.ENTRPRS_SELNG_AM6						AS ENTRPRS_SELNG_AM6
+					, T1.Y3AVG_SELNG_AM1						AS Y3AVG_SELNG_AM1
+					, T1.Y3AVG_SELNG_AM2						AS Y3AVG_SELNG_AM2
+					, T1.Y3AVG_SELNG_AM3						AS Y3AVG_SELNG_AM3
+					, T1.Y3AVG_SELNG_AM4						AS Y3AVG_SELNG_AM4
+					, T2.JDGMNT_INDUTY_CODE						AS JDGMNT_INDUTY_CODE
+					, T2.ADUP_SELNG_AM							AS ADUP_SELNG_AM
+					, T7.LEV2_GUBUN								AS LEV2_GUBUN
+					, T7.LEV2_JURIRNO							AS LEV2_JURIRNO
+					, T7.LEV2_NM								AS LEV2_NM
+					, T7.LEV2_QOTA_RT							AS LEV2_QOTA_RT
+					, T7.LEV2_INDUTY_CODE						AS LEV2_INDUTY_CODE
+					, T7.LEV2_Y3AVG_SELNG_AM1					AS LEV2_Y3AVG_SELNG_AM1
+					, T7.LEV3_GUBUN								AS LEV3_GUBUN
+					, T7.LEV3_JURIRNO							AS LEV3_JURIRNO
+					, T7.LEV3_NM								AS LEV3_NM
+					, T7.LEV3_QOTA_RT							AS LEV3_QOTA_RT
+					, T7.LEV3_INDUTY_CODE						AS LEV3_INDUTY_CODE
+					, T7.LEV3_Y3AVG_SELNG_AM1					AS LEV3_Y3AVG_SELNG_AM1
+		FROM		(	SELECT		*
+						FROM		TB_RCPY_JDGMNT_ENTRPRS_INFO
+						GROUP BY	STDYY
+									, ENTRPRS_JURIRNO
+									) AS T1
+		LEFT JOIN	(SELECT RCPY_SCALE_YN
+                    , JDGMNT_INDUTY_CODE
+                    , ADUP_SELNG_AM
+                    , STDYY
+                    , ENTRPRS_JURIRNO
+                 FROM TB_RCPY_JDGMNT_RESULT) AS T2
+		ON			T1.STDYY = T2.STDYY
+		AND			T1.ENTRPRS_JURIRNO = T2.ENTRPRS_JURIRNO
+		LEFT JOIN	(	SELECT		STDYY
+									, JURIRNO
+									, DCSN_HPE_AT
+						FROM		TB_ENTPRS_INFO
+						WHERE		STDYY = #{stdyy}
+						AND			DCSN_HPE_AT = 'Y'
+						GROUP BY	JURIRNO) AS T3
+		ON			T1.ENTRPRS_JURIRNO = T3.JURIRNO
+		LEFT JOIN	(	SELECT		STDYY
+									, JURIRNO
+									, DCSN_HPE_AT
+						FROM		TB_ENTPRS_INFO
+						WHERE		STDYY = #{stdyy} - 1
+						AND			DCSN_HPE_AT = 'Y'
+						GROUP BY	JURIRNO) AS T4
+		ON			T1.ENTRPRS_JURIRNO = T4.JURIRNO
+		LEFT JOIN	(	SELECT		STDYY
+									, JURIRNO
+									, DCSN_HPE_AT
+						FROM		TB_ENTPRS_INFO
+						WHERE		STDYY = #{stdyy} - 2
+						AND			DCSN_HPE_AT = 'Y'
+						GROUP BY	JURIRNO) AS T5
+		ON			T1.ENTRPRS_JURIRNO = T5.JURIRNO
+		LEFT JOIN	(	SELECT		STDYY
+									, JURIRNO
+									, DCSN_HPE_AT
+						FROM		TB_ENTPRS_INFO
+						WHERE		STDYY = #{stdyy} - 3
+						AND			DCSN_HPE_AT = 'Y'
+						GROUP BY	JURIRNO) AS T6
+		ON			T1.ENTRPRS_JURIRNO = T6.JURIRNO
+		LEFT JOIN	(	SELECT		A.STDYY								AS STDYY
+									, A.ENTRPRS_JURIRNO					AS LEV1_JURIRNO
+									, '상위'							AS LEV2_GUBUN
+									, B.ENTRPRS_JURIRNO					AS LEV2_JURIRNO
+									, B.ENTRPRS_NM						AS LEV2_NM
+									, A.UPPER_ENTRPRS_QOTA_RT			AS LEV2_QOTA_RT
+									, B.ENTRPRS_INDUTY_CODE				AS LEV2_INDUTY_CODE
+									, B.Y3AVG_SELNG_AM1					AS LEV2_Y3AVG_SELNG_AM1
+									, '최상위'							AS LEV3_GUBUN
+									, C.ENTRPRS_JURIRNO					AS LEV3_JURIRNO
+									, C.ENTRPRS_NM						AS LEV3_NM
+									, B.UPPER_ENTRPRS_QOTA_RT			AS LEV3_QOTA_RT
+									, C.ENTRPRS_INDUTY_CODE				AS LEV3_INDUTY_CODE
+									, C.Y3AVG_SELNG_AM1					AS LEV3_Y3AVG_SELNG_AM1
+						FROM		(SELECT STDYY
+                          , ENTRPRS_JURIRNO
+                          , UPPER_ENTRPRS_JURIRNO
+                          , UPPER_ENTRPRS_QOTA_RT
+                       FROM TB_RCPY_JDGMNT_ENTRPRS_INFO)							AS A
+						LEFT JOIN	(SELECT STDYY
+                            , UPPER_ENTRPRS_JURIRNO
+                            , ENTRPRS_JURIRNO
+                            , ENTRPRS_NM
+                            , UPPER_ENTRPRS_QOTA_RT
+                            , ENTRPRS_INDUTY_CODE
+                            , Y3AVG_SELNG_AM1
+                         FROM TB_RCPY_JDGMNT_ENTRPRS_INFO)							AS B
+						ON			A.STDYY = B.STDYY
+						AND			A.UPPER_ENTRPRS_JURIRNO = B.ENTRPRS_JURIRNO
+						LEFT JOIN	(SELECT STDYY
+                            , UPPER_ENTRPRS_JURIRNO
+                            , ENTRPRS_JURIRNO
+                            , ENTRPRS_NM
+                            , UPPER_ENTRPRS_QOTA_RT
+                            , ENTRPRS_INDUTY_CODE
+                            , Y3AVG_SELNG_AM1
+                         FROM TB_RCPY_JDGMNT_ENTRPRS_INFO)							AS C
+						ON			B.STDYY = C.STDYY
+						AND			B.UPPER_ENTRPRS_JURIRNO = C.ENTRPRS_JURIRNO
+						WHERE		A.STDYY = #{stdyy}
+						AND			B.ENTRPRS_JURIRNO <![CDATA[<>]]> ''
+						AND			B.ENTRPRS_JURIRNO  IS NOT NULL
+						UNION ALL
+						SELECT		A.STDYY								AS STDYY
+									, A.ENTRPRS_JURIRNO					AS LEV1_JURIRNO
+									, '하위'							AS LEV2_GUBUN
+									, B.ENTRPRS_JURIRNO					AS LEV2_JURIRNO
+									, B.ENTRPRS_NM						AS LEV2_NM
+									, B.UPPER_ENTRPRS_QOTA_RT			AS LEV2_QOTA_RT
+									, B.ENTRPRS_INDUTY_CODE				AS LEV2_INDUTY_CODE
+									, B.Y3AVG_SELNG_AM1					AS LEV2_Y3AVG_SELNG_AM1
+									, '최하위'							AS LEV3_GUBUN
+									, C.ENTRPRS_JURIRNO					AS LEV3_JURIRNO
+									, C.ENTRPRS_NM						AS LEV3_NM
+									, C.UPPER_ENTRPRS_QOTA_RT			AS LEV3_QOTA_RT
+									, C.ENTRPRS_INDUTY_CODE				AS LEV3_INDUTY_CODE
+									, C.Y3AVG_SELNG_AM1					AS LEV3_Y3AVG_SELNG_AM1
+						FROM		(SELECT STDYY
+                          , ENTRPRS_JURIRNO
+                       FROM TB_RCPY_JDGMNT_ENTRPRS_INFO)							AS A
+						LEFT JOIN	(SELECT STDYY
+                            , UPPER_ENTRPRS_JURIRNO
+                            , ENTRPRS_JURIRNO
+                            , ENTRPRS_NM
+                            , UPPER_ENTRPRS_QOTA_RT
+                            , ENTRPRS_INDUTY_CODE
+                            , Y3AVG_SELNG_AM1
+                         FROM TB_RCPY_JDGMNT_ENTRPRS_INFO)							AS B
+						ON			A.STDYY = B.STDYY
+						AND			A.ENTRPRS_JURIRNO = B.UPPER_ENTRPRS_JURIRNO
+						LEFT JOIN	(SELECT STDYY
+                            , UPPER_ENTRPRS_JURIRNO
+                            , ENTRPRS_JURIRNO
+                            , ENTRPRS_NM
+                            , UPPER_ENTRPRS_QOTA_RT
+                            , ENTRPRS_INDUTY_CODE
+                            , Y3AVG_SELNG_AM1
+                         FROM TB_RCPY_JDGMNT_ENTRPRS_INFO)							AS C
+						ON			B.STDYY = C.STDYY
+						AND			B.ENTRPRS_JURIRNO = C.UPPER_ENTRPRS_JURIRNO
+						WHERE		A.STDYY = #{stdyy}
+						AND			B.ENTRPRS_JURIRNO <![CDATA[<>]]> ''
+						AND			B.ENTRPRS_JURIRNO IS NOT NULL) AS T7
+		ON			T1.STDYY = T7.STDYY
+		AND			T1.ENTRPRS_JURIRNO = T7.LEV1_JURIRNO
+		WHERE		T1.STDYY = #{stdyy}
+		ORDER BY	STDYY
+					, ENTRPRS_JURIRNO
+					, LEV2_GUBUN
+					, LEV2_JURIRNO
+					, LEV3_GUBUN
+					, LEV3_JURIRNO
+	</select>
+	
+	<!-- 관계기업판정기업정보 조회(목록, 엑셀다운로드) -->
+	<select id="selectTbRcpyJdgmntEntrprsInfoListGBExcel" resultType="egovMap">
+		SELECT		/* ProgramID=biz.tech.mapif.js.PGJS0040Mapper.selectTbRcpyJdgmntEntrprsInfoListExcel */
+					T1.STDYY									AS STDYY
+					, T1.ENTRPRS_JURIRNO						AS ENTRPRS_JURIRNO
+					, T1.ENTRPRS_NM								AS ENTRPRS_NM
+					, CASE  WHEN SUBSTRING(T1.ENTRPRS_INDUTY_CODE , 1, 1 )= 'K'
+							THEN '금융업'
+							ELSE '-'
+						END										AS ENTRPRS_K
+					, CASE	WHEN T2.RCPY_SCALE_YN = 'Y'
+							THEN '적합'
+							WHEN T2.RCPY_SCALE_YN = 'N'
+							THEN '부적합'
+							WHEN T2.RCPY_SCALE_YN = 'A'
+							THEN '업종없음'
+							ELSE '판정안함'
+						END										AS RCPY_SCALE_YN
+					, CASE	WHEN T3.DCSN_HPE_AT = 'Y'
+							THEN '적합'
+							ELSE '부적합'
+						END										AS DCSN_HPE_AT1
+					, CASE	WHEN T4.DCSN_HPE_AT = 'Y'
+							THEN '적합'
+							ELSE '부적합'
+						END										AS DCSN_HPE_AT2
+					, CASE	WHEN T5.DCSN_HPE_AT = 'Y'
+							THEN '적합'
+							ELSE '부적합'
+						END										AS DCSN_HPE_AT3
+					, CASE	WHEN T6.DCSN_HPE_AT = 'Y'
+							THEN '적합'
+							ELSE '부적합'
+						END										AS DCSN_HPE_AT4
+					, T1.ENTRPRS_INDUTY_CODE					AS ENTRPRS_INDUTY_CODE
+					, T1.ENTRPRS_SELNG_AM1						AS ENTRPRS_SELNG_AM1
+					, T1.ENTRPRS_SELNG_AM2						AS ENTRPRS_SELNG_AM2
+					, T1.ENTRPRS_SELNG_AM3						AS ENTRPRS_SELNG_AM3
+					, T1.ENTRPRS_SELNG_AM4						AS ENTRPRS_SELNG_AM4
+					, T1.ENTRPRS_SELNG_AM5						AS ENTRPRS_SELNG_AM5
+					, T1.ENTRPRS_SELNG_AM6						AS ENTRPRS_SELNG_AM6
+					, T1.Y3AVG_SELNG_AM1						AS Y3AVG_SELNG_AM1
+					, T1.Y3AVG_SELNG_AM2						AS Y3AVG_SELNG_AM2
+					, T1.Y3AVG_SELNG_AM3						AS Y3AVG_SELNG_AM3
+					, T1.Y3AVG_SELNG_AM4						AS Y3AVG_SELNG_AM4
+					, T2.JDGMNT_INDUTY_CODE						AS JDGMNT_INDUTY_CODE
+					, T2.ADUP_SELNG_AM							AS ADUP_SELNG_AM
+					<!-- , T7.LEV2_GUBUN								AS LEV2_GUBUN
+					, T7.LEV2_JURIRNO							AS LEV2_JURIRNO
+					, T7.LEV2_NM								AS LEV2_NM
+					, T7.LEV2_QOTA_RT							AS LEV2_QOTA_RT
+					, T7.LEV2_INDUTY_CODE						AS LEV2_INDUTY_CODE
+					, T7.LEV2_Y3AVG_SELNG_AM1					AS LEV2_Y3AVG_SELNG_AM1
+					, T7.LEV3_GUBUN								AS LEV3_GUBUN
+					, T7.LEV3_JURIRNO							AS LEV3_JURIRNO
+					, T7.LEV3_NM								AS LEV3_NM
+					, T7.LEV3_QOTA_RT							AS LEV3_QOTA_RT
+					, T7.LEV3_INDUTY_CODE						AS LEV3_INDUTY_CODE
+					, T7.LEV3_Y3AVG_SELNG_AM1					AS LEV3_Y3AVG_SELNG_AM1 -->
+		FROM		(	SELECT		*
+						FROM		TB_RCPY_JDGMNT_ENTRPRS_INFO
+						GROUP BY	STDYY
+									, ENTRPRS_JURIRNO) AS T1
+		LEFT JOIN	(SELECT RCPY_SCALE_YN
+                    , JDGMNT_INDUTY_CODE
+                    , ADUP_SELNG_AM
+                    , STDYY
+                    , ENTRPRS_JURIRNO
+                 FROM TB_RCPY_JDGMNT_RESULT) AS T2
+		ON			T1.STDYY = T2.STDYY
+		AND			T1.ENTRPRS_JURIRNO = T2.ENTRPRS_JURIRNO
+		LEFT JOIN	(	SELECT		STDYY
+									, JURIRNO
+									, DCSN_HPE_AT
+						FROM		TB_ENTPRS_INFO
+						WHERE		STDYY = #{stdyy}
+						AND			DCSN_HPE_AT = 'Y'
+						GROUP BY	JURIRNO) AS T3
+		ON			T1.ENTRPRS_JURIRNO = T3.JURIRNO
+		LEFT JOIN	(	SELECT		STDYY
+									, JURIRNO
+									, DCSN_HPE_AT
+						FROM		TB_ENTPRS_INFO
+						WHERE		STDYY = #{stdyy} - 1
+						AND			DCSN_HPE_AT = 'Y'
+						GROUP BY	JURIRNO) AS T4
+		ON			T1.ENTRPRS_JURIRNO = T4.JURIRNO
+		LEFT JOIN	(	SELECT		STDYY
+									, JURIRNO
+									, DCSN_HPE_AT
+						FROM		TB_ENTPRS_INFO
+						WHERE		STDYY = #{stdyy} - 2
+						AND			DCSN_HPE_AT = 'Y'
+						GROUP BY	JURIRNO) AS T5
+		ON			T1.ENTRPRS_JURIRNO = T5.JURIRNO
+		LEFT JOIN	(	SELECT		STDYY
+									, JURIRNO
+									, DCSN_HPE_AT
+						FROM		TB_ENTPRS_INFO
+						WHERE		STDYY = #{stdyy} - 3
+						AND			DCSN_HPE_AT = 'Y'
+						GROUP BY	JURIRNO) AS T6
+		ON			T1.ENTRPRS_JURIRNO = T6.JURIRNO
+		LEFT JOIN	(	SELECT		A.STDYY								AS STDYY
+									, A.ENTRPRS_JURIRNO					AS LEV1_JURIRNO
+									, '상위'							AS LEV2_GUBUN
+									, B.ENTRPRS_JURIRNO					AS LEV2_JURIRNO
+									, '최상위'							AS LEV3_GUBUN
+									, C.ENTRPRS_JURIRNO					AS LEV3_JURIRNO
+						FROM		(SELECT STDYY
+                          , ENTRPRS_JURIRNO
+                          , UPPER_ENTRPRS_JURIRNO
+                       FROM TB_RCPY_JDGMNT_ENTRPRS_INFO)							AS A
+						LEFT JOIN	(SELECT ENTRPRS_JURIRNO
+                            , STDYY
+                            , UPPER_ENTRPRS_JURIRNO
+                         FROM TB_RCPY_JDGMNT_ENTRPRS_INFO)							AS B
+						ON			A.STDYY = B.STDYY
+						AND			A.UPPER_ENTRPRS_JURIRNO = B.ENTRPRS_JURIRNO
+						LEFT JOIN	(SELECT ENTRPRS_JURIRNO
+                            , STDYY
+                         FROM TB_RCPY_JDGMNT_ENTRPRS_INFO)							AS C
+						ON			B.STDYY = C.STDYY
+						AND			B.UPPER_ENTRPRS_JURIRNO = C.ENTRPRS_JURIRNO
+						WHERE		A.STDYY = #{stdyy}
+						AND			B.ENTRPRS_JURIRNO <![CDATA[<>]]> ''
+						AND			B.ENTRPRS_JURIRNO  IS NOT NULL
+						UNION ALL
+						SELECT		A.STDYY								AS STDYY
+									, A.ENTRPRS_JURIRNO					AS LEV1_JURIRNO
+									, '하위'							AS LEV2_GUBUN
+									, B.ENTRPRS_JURIRNO					AS LEV2_JURIRNO
+									, '최하위'							AS LEV3_GUBUN
+									, C.ENTRPRS_JURIRNO					AS LEV3_JURIRNO
+						FROM		(SELECT STDYY
+                          , ENTRPRS_JURIRNO
+                       FROM TB_RCPY_JDGMNT_ENTRPRS_INFO)							AS A
+						LEFT JOIN	(SELECT ENTRPRS_JURIRNO
+                            , STDYY
+                            , UPPER_ENTRPRS_JURIRNO
+                         FROM TB_RCPY_JDGMNT_ENTRPRS_INFO)							AS B
+						ON			A.STDYY = B.STDYY
+						AND			A.ENTRPRS_JURIRNO = B.UPPER_ENTRPRS_JURIRNO
+						LEFT JOIN	(SELECT ENTRPRS_JURIRNO
+                            , STDYY
+                            , UPPER_ENTRPRS_JURIRNO
+                         FROM TB_RCPY_JDGMNT_ENTRPRS_INFO)							AS C
+						ON			B.STDYY = C.STDYY
+						AND			B.ENTRPRS_JURIRNO = C.UPPER_ENTRPRS_JURIRNO
+						WHERE		A.STDYY = #{stdyy}
+						AND			B.ENTRPRS_JURIRNO <![CDATA[<>]]> ''
+						AND			B.ENTRPRS_JURIRNO IS NOT NULL) AS T7
+		ON			T1.STDYY = T7.STDYY
+		AND			T1.ENTRPRS_JURIRNO = T7.LEV1_JURIRNO
+		WHERE		T1.STDYY = #{stdyy}
+		GROUP BY	STDYY
+					, ENTRPRS_JURIRNO
+		ORDER BY	STDYY
+					, ENTRPRS_JURIRNO
+					, LEV2_GUBUN
+					, LEV2_JURIRNO
+					, LEV3_GUBUN
+					, LEV3_JURIRNO
+	</select>
+</mapper>

@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--conf
+<sample>
+	<product version="1.0" edition="std"/>
+	<modifications>
+		<modified date="080205"/>
+	</modifications>
+<sampledescription><![CDATA[ ]]></sampledescription></sample>
+ --> 
+
+<html>
+<head>
+	<title>Drag HTML element in DataView</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+  
+	<style type="text/css">
+		body{
+			-webkit-user-select:none;
+			-moz-user-select:none;
+			user-select:none;
+		}
+	</style>
+<body class="dhx_noselect" >
+	<h1>Drag HTML element in DataView</h1>
+	<table border="0" cellspacing="5" cellpadding="5">
+		<tr><td>
+			<div id="data_container1" style="border:1px solid #A4BED4; background-color:white;width:400px;height:396px;"></div>				
+		</td><td>
+			
+		</td><td>
+			<div id="data_container2" style="border:1px solid #A4BED4; background-color:white;width:400px;height:396px;">
+				
+	<div package="DragPackage" version="1.0" maintainer="dhtmlx Team" id="drag_1" style='width:150px; height:50px; color:white; background-color:navy;'>
+		Drag me into the dataview
+	</div>
+	
+			</div>				
+		</td></tr>				
+	</table>
+
+	<script>
+		data = new dhtmlXDataView({
+			container:"data_container1",
+			type:{
+				template:"#Package# : #Version#<br/>#Maintainer#",
+				padding:5,
+				height:40
+			},
+			drag:true
+		});
+		data.load("../common/data.xml");
+		data.attachEvent("onBeforeDrop",function(context){
+			if (context.from == dhtmlx.DragControl){
+				this.add({
+					Package:context.source.getAttribute("package"),
+					Version:context.source.getAttribute("version"),
+					Maintainer:context.source.getAttribute("maintainer")
+				},this.indexById(context.target||this.first()));
+				return false;
+			}
+			return true;
+		});
+		
+		dhtmlx.DragControl.addDrag("drag_1");
+	</script>
+	
+</body>
+</html>
+

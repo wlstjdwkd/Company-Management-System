@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="biz.tech.mapif.pm.PGPM0040Mapper">
+	<!-- 급여 항목 확인 -->
+	<select id="chkPayMnt" resultType="map">
+	SELECT	/* ID=biz.tech.mapif.pm.PGPM0040Mapper.chkPayMnt */
+			AA.*
+				
+	FROM	TB_PAY_MNT_LST AA, TB_PAY_ITM_MST BB
+	
+	WHERE	EMP_NO = #{empNo}
+		AND	AA.PAY_ITM_CD = #{payItmCd}
+		AND	BB.PAY_ITM_CD = #{payItmCd}
+		AND	PAY_YM LIKE CONCAT(#{payYm}, '%')
+	</select>
+	
+	<!-- 특정 기간 재직 사원 목록 조회 -->
+	<select id="findCurrEmpList" resultType="map">
+	SELECT	/* ID=biz.tech.mapif.pm.PGPM0030Mapper.findCurrEmpList */
+				  EMP_NO					as empNo				/* 직원번호 */
+				, EMP_NM					as empNm				/* 이름 */
+				, WRK_TP					as wrkTp				/* 근무형태 */
+				, POS_CD					as posCd				/* 직급코드 */
+				, DEPT_CD					as deptCd				/* 부서코드 */
+				, CURR_YN					as currYn				/* 재직여부 */
+				, CIZ_NO					as cizNo				/* 주민번호 */
+				, DEAL_BNK					as dealBnk				/* 거래은행 */
+				, ACCT_NO					as acctNo				/* 계좌번호 */
+				, INCO_DT					as inCoDt				/* 입사일자 */
+				, OUTCO_DT					as outCoDt				/* 퇴사일자 */
+				, ADJ_YR					as adjYr				/* 조정년 */
+				, ADJ_MON					as adjMon				/* 조정월 */
+				, RMRK						as rmk 					/* 비고 */
+				, BDT						as bdt 					/* 생년월일 */
+				, MOB_TEL					as mobTel 				/* 휴대전화번호 */
+				, HM_TEL					as hmTel 				/* 집전화번호 */
+				, LSED						as lsed 				/* 최종학력 */
+				, DPT						as dpt 					/* 학과 */
+				, DGR						as dgr 					/* 인정학력 */
+				, GRA_YR					as graYr 				/* 졸업년 */
+				, GRA_MN					as graMn 				/* 졸업월 */
+				, PER_MAIL					as perMail 				/* 개인메일 */
+				, COM_MAIL					as comMail 				/* 회사메일 */
+				, ADDR						as addr 				/* 주소 */
+				, MRG						as mrg 					/* 혼인여부 */
+				, MRG_DT					as mrgDt				/* 결혼기념일 */
+				, PAY_IN_DAY				as payInDay 			/* 급여지급일 */
+				, DC_RT						as dcRt 				/* 공제세율 */
+				, MOD_DT					as modDt 				/* 수정일 */
+				, ENRT_DT					as enrtDt 				/* 등록일 */
+				
+	FROM		TB_PAY_EMP
+				<!-- 입사 이후이고 재직 중이거나 퇴직일이 지나지 않았을 때 -->
+	WHERE		TIMESTAMPDIFF(MONTH, DATE_SUB(INCO_DT, INTERVAL (DAY(INCO_DT)-1) DAY), #{payDate}) <![CDATA[ >= ]]>  0
+		AND		( CURR_YN = 'Y' 
+			OR    TIMESTAMPDIFF(MONTH, DATE_SUB(OUTCO_DT, INTERVAL (DAY(OUTCO_DT)-1) DAY), #{payDate}) <![CDATA[ <= ]]> 0 )
+	ORDER BY	EMP_NO
+	</select>
+	
+	<!-- 사용 급여 항목 -->
+	<!-- 특정 사원의 TB_PAY_ITM_MST와 TB_PAY_ITM_LST에서 사용여부가 둘다 Y인 항목 -->
+	<select id="selectUseEmpPayList" resultType="map">
+	SELECT	/* ID=biz.tech.mapif.pm.PGPM0040Mapper.selectUseEmpPayList */
+			  AA.EMP_NO			as empNo		<!-- 사원번호 -->
+			, AA.PAY_ITM_CD		as payItmCd		<!-- 급여항목코드 -->
+			, AA.ITM_BAS_AMT	as itmBasAmt	<!-- 항목금액 -->
+			, AA.USE_YN			as useYn		<!-- 사용여부 -->
+			, AA.RMRK			as rmrk			<!-- 비고 -->
+			, AA.MOD_DT			as modDt		<!-- 수정일자 -->
+			, AA.ENRT_DT		as enrtDt		<!-- 등록일자 -->
+				
+	FROM	  TB_PAY_ITM_LST AA
+		LEFT OUTER JOIN TB_PAY_ITM_MST BB
+		ON AA.PAY_ITM_CD = BB.PAY_ITM_CD
+			LEFT OUTER JOIN TB_PAY_EMP CC
+			ON AA.EMP_NO = CC.EMP_NO
+	
+	WHERE	  AA.EMP_NO = #{empNo}
+		<!-- 입사 이후이고 재직 중이거나 퇴직일이 지나지 않았을 때 -->
+		AND	  TIMESTAMPDIFF(MONTH, DATE_SUB(CC.INCO_DT, INTERVAL (DAY(CC.INCO_DT)-1) DAY), #{payDate}) <![CDATA[ >= ]]>  0
+		AND	  ( CC.CURR_YN = 'Y' 
+			OR	TIMESTAMPDIFF(MONTH, DATE_SUB(CC.OUTCO_DT, INTERVAL (DAY(CC.OUTCO_DT)-1) DAY), #{payDate}) <![CDATA[ <= ]]> 0 )
+		<!-- MST와 개인항목에서 사용여부에 Y일때 -->
+		AND	  AA.USE_YN = 'Y'
+		AND	  BB.USE_YN = 'Y'
+			
+	ORDER BY BB.ITM_SEQ
+	</select>
+	
+	<!-- 사원별 급여 항목 -->
+	<!-- 특정 사원의 TB_PAY_ITM_MST와 TB_PAY_ITM_LST에서 사용여부가 둘다 Y인 항목 -->
+	<select id="selectIndvEmpPayList" resultType="map">
+	SELECT	/* ID=biz.tech.mapif.pm.PGPM0040Mapper.selectIndvEmpPayList */
+				  FF.*
+				,
+	<foreach collection="empList" item="emp" index="i" separator="+">
+				  emp#{i} <!-- #{emp.empNo} -->
+	</foreach>
+							AS empTot
+			
+	FROM (
+		SELECT	  DD.PAY_ITM_CD AS payItmCd
+				, DD.PAY_ITM_NM AS payItmNm
+				, DD.UP_ITM_CD AS upItmCd
+				, EE.*
+				
+		FROM	  TB_PAY_ITM_MST DD
+	  		LEFT OUTER JOIN (
+	    		SELECT    CC.PAY_ITM_CD AS PAY_ITM_CD_PLACEHOLD
+	    		<foreach collection="empList" item="emp" index="i">
+						, SUM(CC.EMP_AMT_#{i}) AS emp#{i} <!-- #{emp.empNo} -->
+				</foreach>
+				
+	    		FROM (
+	      			SELECT	  AA.PAY_ITM_CD
+	      			<foreach collection="empList" item="item2" index="i" >
+							, CASE
+								WHEN BB.EMP_NUM = #{i} 
+								THEN IFNULL(AA.ITM_AMT, 0)
+								ELSE 0 
+							  END AS EMP_AMT_#{i}
+					</foreach>
+					 		
+	      			FROM	  TB_PAY_MNT_LST AA
+	        			LEFT OUTER JOIN (
+		        			SELECT	  ROW_NUMBER() OVER (ORDER BY EMP_NO) - 1 AS EMP_NUM
+									, EMP_NO
+									
+							FROM	  TB_PAY_EMP
+							
+							<!-- 입사 이후이고 재직 중이거나 퇴직일이 지나지 않았을 때 -->
+							WHERE	  TIMESTAMPDIFF(MONTH, DATE_SUB(INCO_DT, INTERVAL (DAY(INCO_DT)-1) DAY), #{payDate}) <![CDATA[ >= ]]>  0
+								AND   ( CURR_YN = 'Y'
+									OR	TIMESTAMPDIFF(MONTH, DATE_SUB(OUTCO_DT, INTERVAL (DAY(OUTCO_DT)-1) DAY), #{payDate}) <![CDATA[ <= ]]> 0 )
+	        			) BB
+	        			ON AA.EMP_NO = BB.EMP_NO
+	        			
+	      			WHERE	  PAY_YM = #{payYm}
+	    		) CC
+	    		
+	    		GROUP BY CC.PAY_ITM_CD
+	  		) EE
+			ON	DD.PAY_ITM_CD = EE.PAY_ITM_CD_PLACEHOLD
+	) FF
+  		
+  	<!-- WHERE	  DD.USE_YN = 'Y' -->
+	</select>
+	
+	<!-- 조회 사원 목록 -->
+	<select id="selectIndvEmpList" resultType="map">
+	SELECT	/* ID=biz.tech.mapif.pm.PGPM0040Mapper.selectIndvEmpList */
+			  ROW_NUMBER() OVER (ORDER BY EMP_NO)-1 AS empNum
+			, EMP_NO	as empNo
+			, EMP_NM	as empNm
+			
+	FROM	  TB_PAY_EMP
+	
+	<!-- 입사 이후이고 재직 중이거나 퇴직일이 지나지 않았을 때 -->
+	WHERE	  TIMESTAMPDIFF(MONTH, DATE_SUB(INCO_DT, INTERVAL (DAY(INCO_DT)-1) DAY), #{payDate}) <![CDATA[ >= ]]>  0
+		AND   ( CURR_YN = 'Y'
+			OR	TIMESTAMPDIFF(MONTH, DATE_SUB(OUTCO_DT, INTERVAL (DAY(OUTCO_DT)-1) DAY), #{payDate}) <![CDATA[ <= ]]> 0 )
+	</select>
+	
+	<!-- 월별 급여 지급 등록 -->
+	<insert id="insertPayMnt">
+	INSERT	/* ID=biz.tech.mapif.pm.PGPM0040Mapper.insertPayMnt */
+	INTO		TB_PAY_MNT_LST (
+	
+				  PAY_YM
+				, EMP_NO
+				, PAY_ITM_CD
+				, ITM_AMT
+				, RMRK
+				, ENRT_DT
+ 
+	) VALUES (
+				  #{payYm}
+				, #{empNo}
+				, #{payItmCd}
+				, #{itmAmt}
+				, #{rmrk}
+		<choose>
+			<when test="_databaseId == 'mysql'">
+				, SYSDATE()
+			</when>
+			<when test="_databaseId == 'tibero'">
+				, SYSDATE
+			</when>
+			<otherwise>
+				, SYSDATE()
+			</otherwise>
+		</choose>
+	)
+	</insert>
+	
+	<!-- 월별 급여 지급 수정 -->
+	<update id="updatePayMnt">
+	UPDATE	/* ID=biz.tech.mapif.pm.PGPM0040Mapper.updatePayMnt */
+				TB_PAY_MNT_LST
+	SET 
+				  PAY_YM = #{payYm}
+				, EMP_NO = #{empNo}
+				, PAY_ITM_CD = #{payItmCd}
+				, ITM_AMT = #{itmAmt}
+		<if test="rmrk != null">
+				, RMRK = #{rmrk}
+		</if>
+		
+		<choose>
+			<when test="_databaseId == 'mysql'">
+				, MOD_DT = SYSDATE()
+			</when>
+			<when test="_databaseId == 'tibero'">
+				, MOD_DT = SYSDATE
+			</when>
+			<otherwise>
+				, MOD_DT = SYSDATE()
+			</otherwise>
+		</choose>
+	WHERE		PAY_YM = #{payYm} 
+			AND	EMP_NO = #{empNo}
+			AND	PAY_ITM_CD = #{payItmCd}
+	</update>
+</mapper>

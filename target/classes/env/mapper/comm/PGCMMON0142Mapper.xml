@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.comm.mapif.PGCMMON0142Mapper">
+
+	<!-- 요청로그 등록 -->
+	<insert id="insertRequestLog" parameterType="hashmap">
+	INSERT	/* ProgramID=com.comm.mapif.PGCMMON0142Mapper.insertRequestLog */
+	INTO			tb_requstlog (
+					  log_id
+					, progrm_id
+					, method_nm
+					, process_div
+					, rqester_no
+					, rqester_ip
+					, begin_tm
+					, end_tm
+					, rgsde ) 
+	VALUES (
+					  #{logId}
+                    , #{pgmId}
+                    , #{methodNm}
+                    , #{processDiv}
+                    , #{rqesterNo}
+                    , #{rqesterIp}
+                    , #{beginTm}
+                    , #{endTm}
+                    , SYSDATE()
+	)
+	</insert>
+	
+<!-- 접속 로그 정보 갯수 -->
+<select id = "findJoinLogCnt" resultType = "int" >
+	SELECT 	COUNT(*)
+	FROM		tb_requstlog a
+	LEFT	OUTER JOIN (
+			SELECT 	  PROGRM_NM
+						, PROGRM_ID
+			FROM	tb_progrminfo
+	)	b
+	ON	a.PROGRM_ID	= b.PROGRM_ID
+	LEFT OUTER JOIN (
+			SELECT 	  LOGIN_ID
+						, USER_NO
+			FROM tb_userinfo
+	) c
+	ON	a.RQESTER_NO = c.USER_NO
+	<where>
+	<if test = "searchSelect != 1 and searchSelect != '' and searchSelect != null and searchWrd != '' and searchWrd != null " >
+		<if test = "searchSelect == 2">
+			AND c.LOGIN_ID LIKE CONCAT('%', #{searchWrd}, '%')
+		</if>
+		<if test = "searchSelect ==3">
+			AND a.RQESTER_IP LIKE CONCAT ('%', #{searchWrd},'%')
+		</if>
+		<if test = "searchSelect== 4">
+			AND	b.PROGRM_NM LIKE CONCAT ('%',#{searchWrd},'%')
+		</if>
+	</if>
+	<if test = "searchDate != null and searchDate != '' ">
+			AND a.BEGIN_TM LIKE CONCAT ('%',#{searchDate},'%')
+	</if>
+	</where>
+</select>
+
+
+<!-- 접속 로그 찾기  -->
+<select id="findJoinLog" resultType = "Map">
+	SELECT 
+					a.RQESTER_IP				AS rqesterIp
+					, a.BEGIN_TM				AS beginTm
+					, SEC_TO_TIME(unix_timestamp(a.END_TM) - unix_timestamp(a.BEGIN_TM))		AS dTime
+					, c.LOGIN_ID				AS loginId
+					, b.PROGRM_NM			AS progrmNm
+	FROM		tb_requstlog a
+	LEFT	OUTER JOIN (
+			SELECT 	  PROGRM_NM
+						, PROGRM_ID
+			FROM	tb_progrminfo
+	)	b
+	ON	a.PROGRM_ID	= b.PROGRM_ID
+	LEFT OUTER JOIN (
+			SELECT 	  LOGIN_ID
+						, USER_NO
+			FROM tb_userinfo
+	) c
+	ON	a.RQESTER_NO = c.USER_NO
+
+	<where>
+	<if test = "searchSelect != 1 and searchSelect != '' and searchSelect != null and searchWrd != '' and searchWrd != null " >
+		<if test = "searchSelect == 2">
+			AND c.LOGIN_ID LIKE CONCAT('%', #{searchWrd}, '%')
+		</if>
+		<if test = "searchSelect ==3">
+			AND a.RQESTER_IP LIKE CONCAT ('%', #{searchWrd},'%')
+		</if>
+		<if test = "searchSelect== 4">
+			AND	b.PROGRM_NM LIKE CONCAT ('%',#{searchWrd},'%')
+		</if>
+	</if>
+	<if test = "searchDate != null and searchDate != '' ">
+			AND a.BEGIN_TM LIKE CONCAT ('%',#{searchDate},'%')
+	</if>
+	</where>
+	ORDER BY LOG_ID DESC
+	LIMIT ${limitFrom}, ${limitTo}
+</select>
+</mapper>

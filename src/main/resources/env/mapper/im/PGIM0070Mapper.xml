@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="biz.tech.mapif.im.PGIM0070Mapper">
+
+	<!-- 기업직간접소유현황 수집내역 조회 -->
+	<select id="findrelPossessionMgrList" resultType="map">
+		SELECT	/* ProgramID=biz.tech.mapif.im.PGIM0070Mapper.findrelPossessionMgrList */
+				STDYY					AS	stdYy			/* 기준년도(PK)년  */
+				,REGIST_SUCCES_CO		AS 	successCnt		/* 등록성공건수 */		
+				,REGIST_FAILR_CO		AS 	failCnt			/* 등록실패건수 */		
+				,(
+					CASE PROCESS_STTUS
+						WHEN 	'1'	 	THEN '시작'
+						WHEN 	'2' 	THEN '오류'
+						WHEN 	'3'		THEN '성공'
+						ELSE	'N/A'
+					END
+				)	AS    proSatus											/* 처리상태(1,2,3)*/
+				,DATE_FORMAT(EXC_TIME , '%Y-%m-%d %H:%m')  AS 	runTm		/* 수행일시 */
+				,(
+					CASE WHEN EXC_TIME IS NOT NULL
+						THEN  ROUND(TIMESTAMPDIFF(SECOND, CREAT_DE, EXC_TIME ) / 60)
+					END
+				)	AS 	diffMin
+				,(
+					CASE WHEN EXC_TIME IS NOT NULL
+						THEN MOD( TIMESTAMPDIFF(SECOND, CREAT_DE, EXC_TIME ) ,60)
+					END
+				)	AS 	diffSec
+		FROM	TB_REL_POSSESSION_DTLS
+		<where>
+			<!-- 검색조건  -->
+			<if test="fromstdYy != null and fromstdYy != ''" >
+				AND		STDYY  <![CDATA[>=]]>  #{fromstdYy}
+			</if>
+			<if test="tostdYy != null and tostdYy != ''" >
+				AND 	STDYY  <![CDATA[<=]]> #{tostdYy}
+			</if>
+		</where>
+		ORDER BY	stdYy DESC
+	</select>
+
+	<!-- 기업직간접소유현황 수집내역 오류 조회 -->
+	<select id="findErrMsg" resultType="String">
+		SELECT	/* ProgramID=biz.tech.mapif.im.PGIM0070Mapper.findErrMsg */
+				ERROR_MSSAGE	AS	errMsg		/* 기준년(PK)  */
+		FROM	TB_REL_POSSESSION_DTLS
+		<where> 
+			<!-- 검색조건  -->
+			STDYY  = #{stdYy}
+		</where>
+	</select>
+	
+	<!-- 기업직간접소유현황수집 정보 내용 조회 -->
+	<select id="findrelPossessionList" resultType="map">
+		SELECT	/* ProgramID=biz.tech.mapif.im.PGIM0070Mapper.findrelPossessionList */
+				STDYY					AS 		stdYy              		/* 기준년 */
+				,JURIRNO				AS		jurirNo             	/* 법인등록번호 */
+				,BIZRNO					AS		bizrNo            		/* 사업자등록번호 */
+				,ENTRPRS_NM				AS		entrprsNm         		/* 기업명 */
+				,RM						AS		Rm                		/* 비고 */
+				,DRPOS_JURIRNO			AS		drposjurirNo      		/* 직접소유법인등록번호 */
+				,DRPOS_ENTRPRS_NM		AS		drposentrprsNm      	/* 직접소유기업명  */
+				,DRPOS_QOTA_RT			AS		drposqotaRt       		/* 직접소유지분율  */
+				,DRPOS_RM				AS		drposRm           		/* 직접소유기업비고  */
+				,NDRPOS_JURIRNO1		AS		ndrposjurirNo1    		/* 간접소유법인등록번호1  */
+				,NDRPOS_ENTRPRS_NM1		AS		ndrposentrprsNm1  		/* 간접소유기업명1  */
+				,NDRPOS_QOTA_RT1		AS		ndrposqotaRt1    		/* 간접소유지분율1  */
+				,NDRPOS_RM1				AS		ndrposRm1	  			/* 간접소유비고1  */
+				,NDRPOS_JURIRNO2		AS		ndrposjurirNo2    		/* 간접소유법인등록번호2  */
+				,NDRPOS_ENTRPRS_NM2		AS		ndrposentrprsNm2  		/* 간접소유기업명2  */
+				,NDRPOS_QOTA_RT2		AS		ndrposqotaRt2    		/* 간접소유지분율2  */
+				,NDRPOS_RM2				AS		ndrposRm2	  			/* 간접소유비고2  */
+		FROM	TB_REL_POSSESSION
+		<where>
+			<!-- 검색조건  -->
+			<if test="stdYy != null and stdYy != ''" >
+				AND		STDYY  = #{stdYy}
+			</if>
+			<if test="selectCondType != null and selectCondType != '' and  selectCondType != 'all'" >
+				<if test="selectCondType == 'entrprsNm'">
+					<if test="searchKeyword != null and searchKeyword != ''">
+						AND		ENTRPRS_NM  LIKE CONCAT('%', #{searchKeyword}, '%')
+					</if>
+				</if>
+				<if test="selectCondType == 'drposentrprsNm'">
+					<if test="searchKeyword != null and searchKeyword != ''">
+						AND 	DRPOS_ENTRPRS_NM  LIKE CONCAT('%', #{searchKeyword}, '%')
+					</if>
+				</if>
+				<if test="selectCondType == 'ndrposentrprsNm'">
+					<if test="searchKeyword != null and searchKeyword != ''">
+						AND 	( NDRPOS_ENTRPRS_NM1  LIKE CONCAT('%', #{searchKeyword}, '%') OR NDRPOS_ENTRPRS_NM2  LIKE CONCAT('%', #{searchKeyword}, '%') )
+					</if>
+				</if>
+			</if>
+		</where>
+		ORDER BY	jurirNo, bizrNo
+		LIMIT		${limitFrom}, ${limitTo}
+	</select>
+
+	<!--기업직간접소유현황 정보 Count 조회 -->
+	<select id="findrelPossessionListCnt" resultType="int" >
+		SELECT	/* ProgramID=biz.tech.mapif.im.PGIM0070Mapper.findrelPossessionListCnt */
+				COUNT(*)	
+		FROM	TB_REL_POSSESSION
+		<where>
+			<!-- 검색조건 -->
+			<if test="stdYy != null and stdYy != ''" >
+				AND		STDYY  = #{stdYy}
+			</if>
+			<if test="selectCondType != null and selectCondType != '' and  selectCondType != 'all'" >
+				<if test="selectCondType == 'entrprsNm'">
+					<if test="searchKeyword != null and searchKeyword != ''">
+						AND 	ENTRPRS_NM  LIKE CONCAT('%', #{searchKeyword}, '%')
+					</if>
+				</if>
+				<if test="selectCondType == 'drposentrprsNm'">
+					<if test="searchKeyword != null and searchKeyword != ''">
+						AND 	DRPOS_ENTRPRS_NM  LIKE CONCAT('%', #{searchKeyword}, '%')
+					</if>
+				</if>
+				<if test="selectCondType == 'ndrposentrprsNm'">
+					<if test="searchKeyword != null and searchKeyword != ''">
+						AND 	( NDRPOS_ENTRPRS_NM1  LIKE CONCAT('%', #{searchKeyword}, '%') OR NDRPOS_ENTRPRS_NM2  LIKE CONCAT('%', #{searchKeyword}, '%') )
+					</if>
+				</if>
+			</if>
+		</where>
+	</select>
+	
+	<!-- 기업직간접소유현황 정보 삭제 -->
+	<delete id="deletrelPossessionList">
+		DELETE	/* ProgramID=biz.tech.mapif.im.PGIM0070Mapper.deletrelPossessionList */
+		FROM	TB_REL_POSSESSION
+		<where>
+			<!-- 검색조건 -->
+			STDYY  = #{stdYy}
+		</where>
+	</delete>
+		
+	<!-- 기업직간접소유현황 수집내역 삭제 -->
+	<delete id="deletrelPossessionMgr">
+		DELETE	/* ProgramID=biz.tech.mapif.im.PGIM0070Mapper.deletrelPossessionMgr */
+		FROM	TB_REL_POSSESSION_DTLS
+		<where>
+			<!-- 검색조건 -->
+			STDYY  = #{stdYy}
+		</where>
+	</delete>
+	
+	<!-- 기업직간접소유현황 수집내역 입력 -->
+	<insert id="insertrelPossessionMgr">
+		INSERT	/* ProgramID=biz.tech.mapif.im.PGIM0070Mapper."insertrelPossessionMgr" */
+		INTO 	TB_REL_POSSESSION_DTLS (
+					STDYY						/* 기준년 */
+					,RCDCNT						/* 레코드건수 */
+					,REGIST_SUCCES_CO			/* 등록성공건수 */
+					,REGIST_FAILR_CO			/* 등록실패건수 */
+					,PROCESS_STTUS				/* 처리상태 */
+					,EXC_TIME					/* 수행시간 */
+					,CREAT_DE					/* 생성시간 */
+		)
+ 		VALUES(
+ 					#{stdYy}
+ 					,#{rowCnt}
+ 					,#{rowCnt}
+ 					,0
+ 					,3
+ 					,#{endDate}
+ 					,#{startDate}
+ 		)
+	</insert>
+	
+	<!-- 기업직간접소유현황 정보 입력 -->
+	<insert id="intsertrelPossession">
+		INSERT	/* ProgramID=biz.tech.mapif.im.PGIM0070Mapper.intsertrelPossession */
+		INTO	TB_REL_POSSESSION (
+					STDYY						/* 기준년 */
+					,JURIRNO					/* 법인등록번호 */
+					,BIZRNO						/* 사업자등록번호 */
+					,ENTRPRS_NM					/* 기업명 */
+					,RM							/* 비고 */
+					,DRPOS_JURIRNO				/* 직접소유법인등록번호 */
+					,DRPOS_ENTRPRS_NM			/* 직접소유기업명  */
+					,DRPOS_QOTA_RT				/* 직접소유지분율  */
+					,DRPOS_RM					/* 직접소유기업비고  */
+					,NDRPOS_JURIRNO1			/* 간접소유법인등록번호1  */
+					,NDRPOS_ENTRPRS_NM1			/* 간접소유기업명1  */
+					,NDRPOS_QOTA_RT1			/* 간접소유지분율1  */
+					,NDRPOS_RM1					/* 간접소유비고1  */
+					,NDRPOS_JURIRNO2			/* 간접소유법인등록번호2  */
+					,NDRPOS_ENTRPRS_NM2			/* 간접소유기업명2  */
+					,NDRPOS_QOTA_RT2			/* 간접소유지분율2  */
+					,NDRPOS_RM2					/*  간접소유비고2  */
+					,CREAT_DE					/* 생성일자 */
+		)
+ 		VALUES(
+	 				#{stdYy}
+			 		,#{jurirNo}
+			  		,#{bizrNo}
+			  		,#{entrprsNm}
+			  		,#{Rm}
+			  		,#{drposjurirNo}
+			 		,#{drposentrprsNm}
+			  		,#{drposqotaRt}
+			  		,#{drposRm}
+			  		,#{ndrposjurirNo1}
+			  		,#{ndrposentrprsNm1}
+			  		,#{	ndrposqotaRt1}
+			  		,#{	ndrposRm1}	  		
+			  		,#{ndrposjurirNo2}
+			  		,#{ndrposentrprsNm2}
+			  		,#{	ndrposqotaRt2}
+			  		,#{	ndrposRm2}	  		
+			  		,now()
+ 		)
+ 	</insert>
+	
+</mapper>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<!--conf
+<sample in_favorites="false">
+              <product version="1.4" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               </sample>
+ --> 
+<html>
+<head>
+	<title>Paging in status bar</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<link rel="stylesheet" type="text/css" href="../../../skins/web/dhtmlx.css"/>
+	<link rel="stylesheet" type="text/css" href="../../../skins/terrace/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+	<style>
+		div#tabbarObj {
+			position: relative;
+			margin-top: 20px;
+			margin-left: 20px;
+			width: 650px;
+			height: 400px;
+		}
+		div#controls {
+			margin-top: 20px;
+			margin-left: 20px;
+		}
+		/* skyblue */
+		.dhxtabbar_base_dhx_skyblue div.dhx_cell_tabbar div.dhx_cell_statusbar_def div.dhx_cell_statusbar_text {
+			padding: 0px; /* status bar padding */
+		}
+		.dhxtabbar_base_dhx_skyblue div.dhx_cell_tabbar div.dhx_cell_statusbar_def div.dhx_cell_statusbar_text div#pagingArea {
+			border: 0px solid white !important; /* this is paging toolbar's parent container, remove border */
+		}
+		
+		/* web */
+		.dhxtabbar_base_dhx_web div.dhx_cell_tabbar div.dhx_cell_statusbar_def div.dhx_cell_statusbar_text {
+			/* remove extra paddings and borders inside status bar */
+			padding: 0px;
+			border: 0px solid white;
+		}
+		/* web */
+		.dhxtabbar_base_dhx_terrace div.dhx_cell_tabbar div.dhx_cell_statusbar_def div.dhx_cell_statusbar_text {
+			padding: 6px 6px 0px 6px;
+		}
+		.dhxtabbar_base_dhx_terrace div.dhx_cell_tabbar div.dhx_cell_statusbar_def div.dhx_cell_statusbar_text .dhx_toolbar_dhx_terrace {
+			background-color: inherit;
+		}
+	</style>
+	<script>
+		var myTabbar, myGrid;
+		function doOnLoad(skin) {
+			if (myTabbar != null) myTabbar.unload();
+			if (skin == null) skin = "dhx_skyblue";
+			// init tabbar
+			myTabbar = new dhtmlXTabBar({
+				parent: "tabbarObj",
+				skin: skin,
+				tabs: [
+					{id: "a1", text: "dhtmlxGrid", active: true},
+					{id: "a2", text: "Tab 2"},
+					{id: "a3", text: "Tab 3"}
+				]
+			});
+			// attach status bar
+			myTabbar.tabs("a1").attachStatusBar({
+				height: {dhx_skyblue:30, dhx_web: 31, dhx_terrace: 40}[skin],
+				text: "<div id='pagingArea'></div>"
+			});
+			// init grid
+			myGrid = myTabbar.tabs("a1").attachGrid();
+			myGrid.setImagePath("../../../codebase/imgs/")
+			myGrid.enablePaging(true, 10, 3, "pagingArea");
+			myGrid.setPagingSkin("toolbar");
+			myGrid.loadXML("../common/grid_layout.xml?etc="+new Date().getTime());
+		}
+	</script>
+</head>
+<body onload="doOnLoad();">
+	<div id="tabbarObj"></div>
+	<br>
+	<div id="controls">
+		<input type="button" value="skyblue" onclick="doOnLoad('dhx_skyblue');">
+		<input type="button" value="web" onclick="doOnLoad('dhx_web');">
+		<input type="button" value="terrace" onclick="doOnLoad('dhx_terrace');">
+	</div>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!--conf
+<sample>
+               <product version="1.6" edition="std"/>
+                       <modifications>
+                               <modified date="080512"/>
+                       </modifications>
+               </sample>
+ --> 
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Loading from XML</title>
+	
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+	<script  src="../common/data.js"></script>	
+</head>
+
+<body>
+	
+	<h1>Loading from XML</h1>
+	<p>There is an opportunity to load data from xml file or string</p>
+	
+		<div id="gridbox" style="width:400px; height:270px; background-color:white;"></div>
+	
+	<br>
+	<a href="javascript:void(0)" onClick="mygrid.clearAll();mygrid.parse(document.getElementById('str_xml').value);">Reload from XML string</a><br/>
+	
+	<textarea id="str_xml" style="display:none;"><rows>
+   <row id="1">
+      <cell>0</cell>
+      <cell>loaded from xml string</cell>
+   </row>
+   <row id="2">
+      <cell>1</cell>
+     <cell>loaded from xml string</cell>
+   </row>
+   <row id="3" selected="1">
+      <cell>2</cell>
+      <cell>loaded from xml string</cell>
+   </row>
+   <row id="4">
+      <cell>3</cell>
+      <cell>loaded from xml string</cell>
+   </row>
+   <row id="5">
+      <cell>4</cell>
+     <cell>loaded from xml string</cell>
+   </row>
+   <row id="6">
+      <cell>5</cell>
+       <cell>loaded from xml string</cell>
+   </row>
+   <row id="7">
+      <cell>6</cell>
+      <cell>loaded from xml string</cell>
+   </row>
+   <row id="8">
+      <cell>7</cell>
+      <cell>loaded from xml string</cell>
+   </row>
+   <row id="9">
+      <cell>8</cell>
+      <cell>loaded from xml string</cell>
+   </row>
+   <row id="10">
+      <cell>9</cell>
+       <cell>loaded from xml string</cell>
+   </row>
+   <row id="11">
+      <cell>10</cell>
+       <cell>loaded from xml string</cell>
+   </row>
+</rows></textarea>
+
+<script>
+	mygrid = new dhtmlXGridObject('gridbox');
+	mygrid.setImagePath("../../../codebase/imgs/");
+	mygrid.setHeader("Column A,Column B");
+   	mygrid.setInitWidths("100,*")
+   	mygrid.setColAlign("right,right")
+   	mygrid.setColTypes("ed,ed");
+	mygrid.init();
+	mygrid.setSkin("dhx_skyblue")
+	mygrid.load("php/xml.php","xml");
+
+</script>
+	
+</body>
+</html>

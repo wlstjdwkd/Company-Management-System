@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<title>Intergration with dhtmlxEditor</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+  
+
+<body>
+	<h1>Intergration with dhtmlxEditor</h1>
+	
+	<div id="data_container" style="border:1px solid #A4BED4; background-color:white;width:860px;height:396px;position:relative"></div>
+	<script>
+	
+	    dhtmlx.image_path = "codebase/imgs/";
+		
+		data = new dhtmlXDataView({
+			container:"data_container",
+			type:{
+				template:"<p><b>#author#: #title#</b></p>#desc#<p>Price: <b>#lprice#</b></p>",
+				height:200,
+				template_edit:"<div id='editorObj' style='width: 100%; height: 100%;'></div>",
+				width:400
+			},
+			edit:true
+		});
+		data.load("../common/books.xml");
+		
+		
+		data.attachEvent("onAfterEditStart",function(id){
+		   editor = new dhtmlXEditor("editorObj");
+		    editor.setContent(data.get(id).desc); 
+		}) 
+		data.attachEvent("onBeforeEditStop",function(id){
+		    data.get(id).desc = editor.getContent();
+		}) 
+				
+	</script>
+
+</body>
+</html>
+
+

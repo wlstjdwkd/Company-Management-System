@@ -1,0 +1,61 @@
+<!--conf
+<sample>
+              <product version="1.6" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               </sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+   <title>Loading from CSV</title>
+</head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+<body>
+   <h1>Loading from CSV</h1>
+   <p>This type of loading tree data presupposes that the user should have CSV represented as a string or a file.</p>
+   <table>
+     <tr>
+         <td>
+            <div id="treeboxbox_tree" style="width:250px; height:218px;background-color:#f5f5f5;border :1px solid Silver;; overflow:auto;"/>
+         </td>
+         <td rowspan="2" style="padding-left:25" valign="top">
+<textarea id="a12" rows="8" cols="40">1,0,1111
+2,0,2222
+3,0,3333
+4,2,child</textarea>
+<br/>
+   <a href="javascript:void(0)" onClick="tree.deleteChildItems(0);  tree.loadCSVString(document.getElementById('a12').value);">
+reload from CSV string (textarea, make sure that items are separated with CRs)
+</a>         <br/>
+<a href="javascript:void(0)" onClick="tree.deleteChildItems(0); tree.loadCSV('../common/data.csv');">
+load from external CSV file
+</a>
+         </td>
+      </tr>
+   </table>
+       
+
+
+
+	<script>
+var tree = new dhtmlXTreeObject('treeboxbox_tree', '100%', '100%', 0); 
+tree.setSkin('dhx_skyblue');
+tree.setImagePath("../../../codebase/imgs/dhxtree_skyblue/");
+tree.enableDragAndDrop(true);
+tree.loadCSVString("1,0,1111\n2,0,2222\n3,0,3333\n4,2,child")
+	</script>
+	
+
+	
+	<p>Format of CSV. 
+		<br>A tree item is represented with three values - id, parent_id, text. The order of rows in CSV doesn't matter.</br></p>
+
+
+</body>
+</html>
+

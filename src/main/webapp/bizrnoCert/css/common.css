@@ -1,0 +1,18 @@
+
+textarea  {
+    width:100%;
+}
+table.custom {
+    table-layout:fixed;
+    overflow:hidden;
+    word-break:break-all;
+    font-size:10pt;
+}
+
+
+.scrollable-data {
+    max-height:400px;
+    overflow-y:scroll;
+}
+
+

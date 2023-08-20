@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="biz.tech.mapif.sc.PGSC0020Mapper">
+
+	<!-- 사원 식대 조회 -->
+	<select id="findUserMeal" resultType="hashmap" >
+	SELECT 	/* ProgramID=com.mapif.UserMapper.findUser */
+					  meal_id				AS mealId		/* PK	 */
+					, worker_id				AS workerId		/* 사원번호 */	
+					, date					AS date			/* 일자	 */
+					, item					AS item			/* 내역	 */
+					, shop_name				AS shopName		/* 상호	 */
+					, price					AS price		/* 금액	 */
+					, note					AS note			/* 비고	 */
+	FROM 		tb_excel_updown
+	<where>
+		<if test='workerId != null'>	worker_id = #{workerId}</if>
+	</where>
+	</select>
+</mapper>

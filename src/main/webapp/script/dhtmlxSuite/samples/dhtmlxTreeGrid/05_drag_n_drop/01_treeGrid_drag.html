@@ -1,0 +1,117 @@
+<!--conf
+<sample in_favorites="true">
+              <product version="1.4" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               <sampledescription><![CDATA[Rows can be dropped from TreeGrid to Grid and vica versa. Try this out with this sample. ]]></sampledescription></sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Drag and Drop between Grids</title>	
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+
+</head>
+
+<body>
+	
+	<h1>Drag and Drop between Grids</h1>
+	<p>
+            Drag-n-drop within Grid(TreeGrid), between Grids(TreeGrids)
+	</p>
+
+
+	<table width="1000px">
+		<tr>
+			<td width="500px">
+				<div id="gridbox" width="100%" height="250px" style="background-color:white;"></div>
+			</td>
+            <td>
+				<div id="gridbox2" width="100%" height="250px" style="background-color:white;"></div>
+            </td>
+		</tr>
+		<tr>
+			<td>
+				<div id="gridbox3" width="100%" height="250px" style="background-color:white;"></div>
+			</td>
+		</tr>
+
+	</table>
+
+
+
+<script>
+		mygrid = new dhtmlXGridObject('gridbox');
+
+		
+		mygrid.setImagePath("../../../codebase/imgs/");
+		mygrid.setIconPath("../common/images/");
+		mygrid.setHeader("Tree,Plain Text,Long Text,Color,Checkbox");
+		mygrid.setInitWidths("150,100,100,100,100")
+		mygrid.setColAlign("left,left,left,left,center")
+		mygrid.setColTypes("tree,ed,txt,ch,ch");
+		mygrid.setColSorting("str,str,str,na,str")
+        mygrid.enableDragAndDrop(true);
+        mygrid.enableSmartXMLParsing(false)
+		mygrid.init();
+		mygrid.setSkin("dhx_skyblue")
+	   	mygrid.loadXML("../common/test_list_1_05_drag_n_drop.xml");
+
+		mygrid2 = new dhtmlXGridObject('gridbox2');
+
+		mygrid2.selMultiRows = true;
+		mygrid2.setImagePath("../../../codebase/imgs/");
+		mygrid2.setIconPath("../common/images/");
+    	mygrid2.setHeader("Title,Price,Quantity,Total");
+    	mygrid2.setInitWidths("120,120,120,120")
+    	mygrid2.setColAlign("left,right,right,right")
+    	mygrid2.setColTypes("tree,price,ed[=sum],price[=sum]");
+    	mygrid2.setColSorting("str,int,int,int")
+    	
+        mygrid2.setMathRound(2);
+        mygrid2.enableDragAndDrop(true);
+		mygrid2.init();
+		mygrid2.setSkin("dhx_skyblue")
+		mygrid2.enableSmartXMLParsing(false)
+	   	mygrid2.loadXML("../common/treegrid_sample_05_drag_n_drop.xml");
+
+
+
+		mygrid3 = new dhtmlXGridObject('gridbox3');
+
+		mygrid3.selMultiRows = true;
+		mygrid3.setImagePath("../../../codebase/imgs/");
+		var flds = "Sales,Book Title,Author,Price";
+		flds += ",In Store,Shipping,Bestseller,Date of Publication";
+		mygrid3.setHeader(flds);
+		mygrid3.setInitWidths("50,150,120,80,80,80,80,200")
+		mygrid3.setColAlign("right,left,left,right,center,left,center,center")
+		mygrid3.setColTypes("dyn,ed,ed,price,ch,coro,ra,ro");
+		mygrid3.setColSorting("int,str,str,int,str,str,str,date")
+		
+		mygrid3.rowsBufferOutSize = 0;
+		mygrid3.setMultiLine(false);
+		mygrid3.enableDragAndDrop(true);
+		mygrid3.selmultirows="true"
+		
+		mygrid3.init();
+		mygrid3.setSkin("dhx_skyblue")
+	   	mygrid3.loadXML("../common/grid.xml");
+
+
+        mygrid3.gridToGrid=function(rowId,sgrid,tgrid){
+            var z=new Array();
+            for (var i=0; i<sgrid.hdr.rows[0].cells.length; i++)
+                z[i+1]=sgrid.cells(rowId,i).getValue();
+
+    	    return z;
+        }
+</script>
+
+</body>
+</html>

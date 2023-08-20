@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="BatchOpertDao">
+
+    <resultMap id="batchOpertResult" type="batchOpert">
+        <result property="batchOpertId" column="batch_opert_id" />
+        <result property="batchOpertNm" column="batch_opert_nm" />
+        <result property="batchProgrm" column="batch_progrm" />
+        <result property="paramtr" column="paramtr" />
+        <result property="register" column="register" />
+        <result property="rgsde" column="rgsde" />
+        <result property="updusr" column="updusr" />
+        <result property="updde" column="updde" />
+    </resultMap>
+    
+	<!-- 배치 목록 조회 -->
+	<select id="selectBatchOpertList" parameterType="batchOpert" resultMap="batchOpertResult">
+	SELECT	/* ProgramID=sqlmap.egovcom.bat.EgovBatchOpertMapper.selectBatchOpertList */
+					  a.batch_opert_id
+					, a.batch_opert_nm
+					, a.batch_progrm
+					, a.paramtr
+					, DATE_FORMAT(a.updde, '%Y-%m-%d %H:%i:%S') AS updde
+					, a.updusr
+					, a.register
+					, DATE_FORMAT(a.rgsde, '%Y-%m-%d %H:%i:%S') AS rgsde
+	FROM		comtnbatchopert a
+	WHERE		use_at = 'Y'
+			<!-- 검색조건 -->
+			<if test="searchKeyword != ''">
+				<if test="searchCondition == 0">AND a.batch_opert_nm LIKE CONCAT ('%', #{searchKeyword},'%')</if>
+				<if test="searchCondition == 1">AND a.batch_progrm LIKE CONCAT ('%', #{searchKeyword},'%')</if>
+			</if>
+	ORDER BY	a.batch_opert_id DESC
+	LIMIT			#{recordCountPerPage} OFFSET #{firstIndex}
+	</select>
+
+	<!-- 배치 목록 갯수 조회 -->
+	<select id="selectBatchOpertListCnt" parameterType="batchOpert" resultType="int">
+	SELECT	/* ProgramID=sqlmap.egovcom.bat.EgovBatchOpertMapper.selectBatchOpertListCnt */
+					COUNT(*) totcnt
+	FROM		comtnbatchopert a
+	WHERE		use_at = 'Y'
+			<!-- 검색조건 -->
+			<if test="searchKeyword != ''">
+				<if test="searchCondition == 0">AND a.batch_opert_nm LIKE CONCAT ('%', #{searchKeyword},'%')</if>
+				<if test="searchCondition == 1">AND a.batch_progrm LIKE CONCAT ('%', #{searchKeyword},'%')</if>
+			</if>
+	</select>
+	
+	<!-- 배치 상세 조회 -->
+	<select id="selectBatchOpert" parameterType="batchOpert" resultMap="batchOpertResult">
+	SELECT	/* ProgramID=sqlmap.egovcom.bat.EgovBatchOpertMapper.selectBatchOpert */
+					  a.batch_opert_id
+					, a.batch_opert_nm
+					, a.batch_progrm
+					, a.paramtr
+					, DATE_FORMAT(a.updde, '%Y-%m-%d %H:%i:%S') AS updde
+					, a.updusr
+					, a.register
+					, DATE_FORMAT(a.rgsde, '%Y-%m-%d %H:%i:%S') AS rgsde
+	FROM		comtnbatchopert a
+	WHERE		a.batch_opert_id = #{batchOpertId}
+	</select>
+	
+	<!-- 신규 배치 추가 -->
+	<insert id="insertBatchOpert" parameterType="batchOpert">
+	INSERT	/* ProgramID=sqlmap.egovcom.bat.EgovBatchOpertMapper.insertBatchOpert */
+	INTO			comtnbatchopert (
+					  batch_opert_id
+					, batch_opert_nm
+					, batch_progrm
+					, paramtr
+					, use_at
+					, updusr
+					, updde
+					, register
+					, rgsde ) 
+	VALUES (
+					  #{batchOpertId}
+                    , #{batchOpertNm}
+                    , #{batchProgrm}
+                    , #{paramtr}
+                    , 'Y'
+                    , #{updusr}
+                    , SYSDATE()
+                    , #{register}
+                    , SYSDATE()
+	)
+	</insert>
+    
+	<!-- 배치 상세 수정 -->
+	<update id="updateBatchOpert" parameterType="batchOpert">
+	UPDATE	/* ProgramID=sqlmap.egovcom.bat.EgovBatchOpertMapper.updateBatchOpert */
+					comtnbatchopert
+	SET 			  batch_opert_nm = #{batchOpertNm}
+					, batch_progrm = #{batchProgrm}
+					, paramtr = #{paramtr}
+					, updusr = #{updusr}
+					, updde = SYSDATE()
+	WHERE		batch_opert_id = #{batchOpertId} 
+	</update>
+
+	<!-- 배치 삭제 -->
+	<delete id="deleteBatchOpert" parameterType="batchOpert">
+	UPDATE	/* ProgramID=sqlmap.egovcom.bat.EgovBatchOpertMapper.deleteBatchOpert */
+					comtnbatchopert
+	SET			use_at = 'N'
+	WHERE		batch_opert_id = #{batchOpertId}
+	</delete>
+
+</mapper>

@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+	수정일		수정자					수정내용
+  =========     =======    =================================================
+  2011.8.24   	이기하     	 	테이블 표준화에 따른 수정사항 반영
+  							QUSTNR_TMPLAT_ID 를			 	QESTNR_TMPLAT_ID 로 변경
+							QUSTNR_TMPLAT_TY 를 			QESTNR_TMPLAT_TY 로 변경
+							FRST_REGIST_PNTTM 를			FRST_REGISTER_PNTTM 로 변경
+							QUSTNR_TMPLAT_IMAGE_INFO 를		QESTNR_TMPLAT_IMAGEPATHNM 로 변경
+							QUSTNR_TMPLAT_DC 를				QESTNR_TMPLAT_CN 로 변경
+							QUSTNR_TMPLAT_PATH_NM 를		QESTNR_TMPLAT_COURS 로 변경
+  2011.10.05	정진오		보안 취약점 점검사항에 따른 수정사항 반영
+  							${searchKeyword}를	 #{searchKeyword} 로 변경
+  							${searchCondition}는 <isEqual property="searchCondition" compareValue="선택조건명">으로 수정
+-->
+<mapper namespace="QustnrTmplatManage">
+	<resultMap id="QustnrTmplatManageTmplatImagepathnm" type="java.util.HashMap">
+		<result property="QUSTNR_TMPLAT_IMAGE_INFOPATHNM" column="QUSTNR_TMPLAT_IMAGE_INFOPATHNM" javaType="[B" jdbcType="BLOB"/>
+	</resultMap>
+
+	<select id="selectQustnrTmplatManageTmplatImagepathnm" parameterType="QustnrTmplatManageVO" resultMap="QustnrTmplatManageTmplatImagepathnm">
+	SELECT	/* ProgramID=sqlmap.egovcom.olp.EgovQustnrTmplatManageMapper.selectQustnrTmplatManageTmplatImagepathnm */
+					QUSTNR_TMPLAT_IMAGE_INFO 	QUSTNR_TMPLAT_IMAGE_INFOPATHNM
+	FROM		comtnqustnrtmplat
+	WHERE		1=1
+		AND		QUSTNR_TMPLAT_ID = #{qestnrTmplatId}
+	</select>
+
+	<!-- 설문조사(설문결과) 삭제 -->
+	<delete id="deleteQustnrRespondInfo">
+	DELETE	/* ProgramID=sqlmap.egovcom.olp.EgovQustnrTmplatManageMapper.deleteQustnrRespondInfo */
+	FROM		comtnqustnrrspnsresult
+	WHERE		QUSTNR_TMPLAT_ID = #{qestnrTmplatId}
+	</delete>
+	
+	<!-- 설문항목 삭제 -->
+	<delete id="deleteQustnrItemManage">
+	DELETE	/* ProgramID=sqlmap.egovcom.olp.EgovQustnrTmplatManageMapper.deleteQustnrItemManage */
+	FROM		comtnqustnriem
+	WHERE		QUSTNR_TMPLAT_ID = #{qestnrTmplatId}
+	</delete>
+	
+	<!-- 설문문항 삭제 -->
+	<delete id="deleteQustnrQestnManage">
+	DELETE	/* ProgramID=sqlmap.egovcom.olp.EgovQustnrTmplatManageMapper.deleteQustnrQestnManage */
+	FROM		comtnqustnrqesitm
+	WHERE		QUSTNR_TMPLAT_ID = #{qestnrTmplatId}
+	</delete>
+	
+	<!-- 설문관리 삭제 -->
+	<delete id="deleteQustnrManage">
+	DELETE	/* ProgramID=sqlmap.egovcom.olp.EgovQustnrTmplatManageMapper.deleteQustnrManage */
+	FROM		comtnqestnrinfo
+	WHERE		QUSTNR_TMPLAT_ID = #{qestnrTmplatId}
+	</delete>
+
+	<!-- 설문참여대상자 삭제 -->
+	<delete id="deleteQustnrTrgter">
+	DELETE	/* ProgramID=sqlmap.egovcom.olp.EgovQustnrTmplatManageMapper.deleteQustnrTrgter */
+	FROM		TB_QUSTNR_TRGTER
+	WHERE		QUSTNR_TMPLAT_ID = #{qestnrTmplatId}
+	</delete>
+
+	<delete id="deleteQustnrTmplatManage">
+	DELETE	/* ProgramID=sqlmap.egovcom.olp.EgovQustnrTmplatManageMapper.deleteQustnrTmplatManage */
+	FROM		comtnqustnrtmplat
+	WHERE		QUSTNR_TMPLAT_ID = #{qestnrTmplatId}
+	</delete>
+
+	<update id="updateQustnrTmplatManage">
+	UPDATE	/* ProgramID=sqlmap.egovcom.olp.EgovQustnrTmplatManageMapper.updateQustnrTmplatManage */
+					comtnqustnrtmplat
+	SET
+
+		<if test="qestnrTmplatImagepathnm != null and qestnrTmplatImagepathnm != '' ">
+					QUSTNR_TMPLAT_IMAGE_INFO = #{qestnrTmplatImagepathnm,jdbcType=BLOB},
+		</if>
+					QUSTNR_TMPLAT_TY = #{qestnrTmplatTy},
+					QUSTNR_TMPLAT_DC = #{qestnrTmplatCn},
+					QUSTNR_TMPLAT_PATH_NM = #{qestnrTmplatCours},
+					UPDDE = sysdate(),
+					UPDUSR = #{updusr}
+	WHERE		QUSTNR_TMPLAT_ID = #{qestnrTmplatId}
+	</update>
+
+	<select id="selectQustnrTmplatManageDetail" parameterType="QustnrTmplatManageVO" resultType="egovMap">
+	SELECT	/* ProgramID=sqlmap.egovcom.olp.EgovQustnrTmplatManageMapper.selectQustnrTmplatManageDetail */
+					QUSTNR_TMPLAT_ID		 QESTNR_TMPLAT_ID,
+					QUSTNR_TMPLAT_TY		 QESTNR_TMPLAT_TY,
+					RGSDE,
+					REGISTER,
+					UPDDE,
+					UPDUSR,
+					QUSTNR_TMPLAT_IMAGE_INFO      QESTNR_TMPLAT_IMAGEPATHNM,
+					QUSTNR_TMPLAT_DC		    QESTNR_TMPLAT_CN,
+					QUSTNR_TMPLAT_PATH_NM	    QESTNR_TMPLAT_COURS
+	FROM		comtnqustnrtmplat
+	WHERE		1=1
+		AND		QUSTNR_TMPLAT_ID = #{qestnrTmplatId}
+	</select>
+
+	<select id="selectQustnrTmplatManage" parameterType="comDefaultVO" resultType="egovMap">
+	SELECT	/* ProgramID=sqlmap.egovcom.olp.EgovQustnrTmplatManageMapper.selectQustnrTmplatManage */
+					A.QUSTNR_TMPLAT_ID		 QESTNR_TMPLAT_ID,
+					A.QUSTNR_TMPLAT_TY		 QESTNR_TMPLAT_TY,
+					A.RGSDE,
+					(SELECT NM FROM tb_emplyr WHERE USER_NO = A.REGISTER) REGISTER_NM,
+					A.REGISTER,
+					A.UPDDE,
+					A.UPDUSR,
+					A.QUSTNR_TMPLAT_IMAGE_INFO    QESTNR_TMPLAT_IMAGEPATHNM,
+					A.QUSTNR_TMPLAT_DC		    QESTNR_TMPLAT_CN,
+					A.QUSTNR_TMPLAT_PATH_NM	    QESTNR_TMPLAT_COURS
+	FROM		comtnqustnrtmplat A
+	WHERE		1=1
+		<if test="searchKeyword != null and searchKeyword != '' and searchCondition == 'QUSTNR_TMPLAT_DC'">
+		AND		QUSTNR_TMPLAT_DC LIKE CONCAT('%', #{searchKeyword}, '%')
+		</if>
+		<if test="searchKeyword != null and searchKeyword != '' and searchCondition == 'QUSTNR_TMPLAT_TY'">
+		AND		QUSTNR_TMPLAT_TY LIKE CONCAT('%', #{searchKeyword}, '%')
+		</if> 
+	ORDER BY	A.RGSDE DESC
+	LIMIT			#{recordCountPerPage} OFFSET #{firstIndex}
+	</select>
+
+	<select id="selectQustnrTmplatManageCnt" parameterType="comDefaultVO" resultType="int">
+	SELECT	/* ProgramID=sqlmap.egovcom.olp.EgovQustnrTmplatManageMapper.selectQustnrTmplatManageCnt */
+					COUNT(*) totcnt
+	FROM		comtnqustnrtmplat
+	WHERE		1=1
+		<if test="searchKeyword != null and searchKeyword != '' and searchCondition == 'QUSTNR_TMPLAT_DC'">
+		AND		QUSTNR_TMPLAT_DC LIKE CONCAT('%', #{searchKeyword}, '%')
+		</if>
+		<if test="searchKeyword != null and searchKeyword != '' and searchCondition == 'QUSTNR_TMPLAT_TY'">
+		AND		QUSTNR_TMPLAT_TY LIKE CONCAT('%', #{searchKeyword}, '%')
+		</if> 
+	</select>
+
+	<insert id="insertQustnrTmplatManage">
+	INSERT	/* ProgramID=sqlmap.egovcom.olp.EgovQustnrTmplatManageMapper.insertQustnrTmplatManage */
+	INTO			comtnqustnrtmplat (
+					QUSTNR_TMPLAT_ID
+					,QUSTNR_TMPLAT_TY
+					,QUSTNR_TMPLAT_IMAGE_INFO
+					,QUSTNR_TMPLAT_DC
+					,QUSTNR_TMPLAT_PATH_NM
+					,RGSDE
+					,REGISTER
+					,UPDDE
+					,UPDUSR )
+	VALUES (
+					 #{qestnrTmplatId}
+					,#{qestnrTmplatTy}
+					,#{qestnrTmplatImagepathnm,jdbcType=BLOB}
+					,#{qestnrTmplatCn}
+					,#{qestnrTmplatCours}
+					,sysdate()
+					,#{register}
+					,sysdate()
+					,#{updusr}
+	)
+	</insert>
+</mapper>

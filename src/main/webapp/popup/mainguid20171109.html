@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<title>기업정보</title>
+
+<link rel="stylesheet" type="text/css" href="/css/ucm.css" />
+<script type="text/javascript">
+
+
+function eventDisablePopup1(choice) {	
+
+	var ExpDate = new Date();
+	
+	if(choice == "day") {
+		ExpDate.setTime(ExpDate.getTime() + 1000*60*60*24);
+	}
+	else {
+		ExpDate.setTime(ExpDate.getTime() + 1000*60*60*24*7);
+
+	}
+	document.cookie = "mainguid20171109=1234; path=/; expires="+ ExpDate.toGMTString() + ";"; 
+	window.close();
+}
+
+</script>
+</head>
+<body>
+	<div id="eventPopup" style="top: 250px; left: 483px; ">
+		<table cellpadding="0" cellspacing="0" border="0" style="width: 400px;">
+			<tr>
+				<td>
+					<!-- <img id="eventPopupImage1" src="/images/popup/3f4eb81cb24b0e8bdf447a980bb857ed_1460450039_5233.png" alt="" /> -->
+					<a href="https://www.privacy.go.kr/gdpr" target="_blank"><img id="eventPopupImage1" src="/images/popup/3f4eb81cb24b0e8bdf447a980bb857ed_1460450039_5233.png" alt="" /></a>
+					
+					<input class = "ml5" id="eventPopupNomore1" type="checkbox" onfocus="this.blur();" onclick="eventDisablePopup1('day');" /> 
+					<a href="#none"><label for="eventPopupNomore1">하루 동안 이 창을 열지않음</label></a>
+					<!-- 
+					<input class = "ml5" id="eventPopupNomore2" type="checkbox" onfocus="this.blur();" onclick="eventDisablePopup1('week');" /> 
+					<a href="#none"><label for="eventPopupNomore2">7일 동안 이 창을 열지않음</label></a> 
+					//-->
+					<a href="#none" class="ml85"  onclick = "window.close();"><span>창닫기</span></a>
+				</td>
+			</tr>
+		</table>
+	</div>
+</body>
+</html>

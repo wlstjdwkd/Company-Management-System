@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<!--conf
+<sample>
+              <product version="4.0b1" edition="std"/>
+                     <modifications>
+                            <modified date="130911"/>
+                     </modifications>
+               </sample>
+-->
+<html>
+<head>
+	<title>Init from xml file</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+<script>
+	var myMenu;
+	function doOnLoad() {
+		myMenu = new dhtmlXMenuObject({
+			parent: "menuObj",
+			icons_path: "../common/imgs/",
+			xml: "../common/dhxmenu.xml",
+			onload: function() {
+				// callback
+			}
+		});
+	}
+</script>
+</head>
+<body onload="doOnLoad();">
+	<div style="height: 250px;">
+		<div id="menuObj"></div>
+	</div>
+</body>
+</html>

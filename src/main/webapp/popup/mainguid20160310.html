@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<title>기업정보</title>
+
+<link rel="stylesheet" type="text/css" href="/css/ucm.css" />
+<script type="text/javascript">
+
+
+function eventDisablePopup1(choice) {	
+
+	var ExpDate = new Date();
+	
+	if(choice == "day") {
+		ExpDate.setTime(ExpDate.getTime() + 1000*60*60*24);
+	}
+	else {
+		ExpDate.setTime(ExpDate.getTime() + 1000*60*60*24*7);
+	}
+	document.cookie = "mainguid20150706=1234; path=/; expires="+ ExpDate.toGMTString() + ";"; 
+	window.close();
+}
+
+/**
+ * 메뉴 이동(URL)
+ * 
+ * @param pMenuNo 부모 메뉴 번호
+ * @param menuNo 메뉴 번호
+ * @param programId 프로그램ID
+ * @param form 전송할 폼ID
+ * @returns
+ */
+var jsMoveMenuURL = function(pMenuNo, menuNo, programId, url, form) {
+    if(Util.isEmpty(form)){ form = menuFormId; }
+    var form = $('#'+form);
+    
+    $("#mn_pmenu_no").val(pMenuNo);
+    $("#mn_menu_no").val(menuNo);
+    $("#mn_program_id").val(programId);
+    
+    var parser = new Util.urlParser();
+    parser.setUrl(url);
+    
+    var actoinUrl = "";
+    
+    if(parser.existPrtc==true){
+    	actoinUrl =  Util.str.split(url,'?')[0];
+    }else{
+    	actoinUrl = "/"+Util.str.split(url,'?')[0];
+    }
+    
+    form.attr('action', actoinUrl);
+    
+    var params = parser.getParams();
+    for(var i=0;i<params.length;i++){
+    	var param = params[i];
+    	var key = param[0];
+    	var val = param[1];
+    	if(key=="df_method_nm"){
+    		$("#mn_method_nm").val(val);
+    	}else{
+    		form.append( "<input type='hidden' name='"+key+"' value='"+val+"'>" );
+    	}
+    }    
+    
+    form.submit();
+};
+
+</script>
+</head>
+<body>
+<body>
+<TABLE style="BORDER-BOTTOM: medium none; BORDER-LEFT: medium none; WIDTH: 100%; BORDER-COLLAPSE: collapse; FONT-FAMILY: Dotum; FONT-SIZE: 9pt; BORDER-TOP: medium none; BORDER-RIGHT: medium none" class=txc-table border=0 cellSpacing=0 cellPadding=0 width=391>
+<TBODY>
+<TR>
+	<TD style="BORDER-BOTTOM: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; WIDTH: 100%; HEIGHT: 65px; BORDER-TOP: #ccc 1px solid; BORDER-RIGHT: #ccc 1px solid">
+		<!-- <center><img alt="" src="/images/ts/event_20150706.jpg"></center> -->
+		<img src="/images/ts/ss.png" alt="공지사항" usemap="#001" border="0">
+		<map name="001">
+		 <area shape="rect" coords="20,250,120,270" href="/download/주제별_업종별_기업_수출_지원사업_안내.zip" target="_blank" alt="Sun">
+		 <area shape="rect" coords="20,275,150,298" href="/download/국가RND지원사업_안내.zip" target="_blank" alt="Sun">
+		 <area shape="rect" coords="20,305,140,328" href="/download/2016년도_기업_조세제도_안내.zip" target="_blank" alt="Sun">
+		 <area shape="rect" coords="20,335,160,358" href="/download/한국기업연합회_2016년_기업_범위해설_.zip" target="_blank" alt="Sun">
+		</map>
+	</TD>
+</TR>
+<TR>
+	<TD>
+		<input class = "ml5" id="eventPopupNomore1" type="checkbox" onfocus="this.blur();" onclick="eventDisablePopup1('day');" /> 
+		<a href="#none"><label for="eventPopupNomore1">하루 동안 이 창을 열지않음</label></a>
+		<!-- <input class = "ml5" id="eventPopupNomore2" type="checkbox" onfocus="this.blur();" onclick="eventDisablePopup1('week');" /> 
+		<a href="#none"><label for="eventPopupNomore2">7일 동안 이 창을 열지않음</label></a> -->
+		<a href="#none" class="ml40"  onclick = "window.close();"><span>창닫기</span></a>
+	</TD>
+</TR>
+</TBODY>
+</TABLE>
+
+</body>
+</html>

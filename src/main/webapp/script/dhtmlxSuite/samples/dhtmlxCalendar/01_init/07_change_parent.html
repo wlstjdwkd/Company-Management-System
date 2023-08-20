@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<!--conf
+<sample>
+              <product version="4.0b1" edition="std"/>
+                     <modifications>
+                            <modified date="140109"/>
+                     </modifications>
+               </sample>
+-->
+<html>
+<head>
+	<title>Change parent</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+	<style>
+		td.td {
+			text-align: center;
+		}
+		div#calendarHere1, div#calendarHere2 {
+			position: relative;
+			width: 200px;
+			height: 250px;
+		}
+	</style>
+	<script>
+		var myCalendar;
+		function doOnLoad() {
+			myCalendar = new dhtmlXCalendarObject("calendarHere1");
+			myCalendar.setDate(new Date(2013,2,1,16,0));
+			myCalendar.show();
+		}
+	</script>
+</head>
+<body onload="doOnLoad();">
+	<table border="1">
+		<tr>
+			<td class="td"><input type="button" value="Show here" onclick="myCalendar.setParent('calendarHere1');"></td>
+			<td class="td"><input type="button" value="Show here" onclick="myCalendar.setParent('calendarHere2');"></td>
+		</tr>
+		<tr>
+			<td class="td"><div id="calendarHere1" style="position:relative;height:250px;"></div></td>
+			<td class="td"><div id="calendarHere2" style="position:relative;height:250px;"></div></td>
+		</tr>
+	</table>
+</body>
+</html>

@@ -1,0 +1,1486 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.comm.mapif.UserMapper">
+
+	<resultMap id="UserCntByauthResult" type="hashmap">
+		<result property="AUTHOR_GROUP_CODE" column="AUTHOR_GROUP_CODE" />
+		<result property="CNT" column="CNT" />
+	</resultMap>
+
+	<resultMap id="UserCntByTypeResult" type="hashmap">
+		<result property="EMPLYR_TY" column="EMPLYR_TY" />
+		<result property="CNT" column="CNT" />
+	</resultMap>
+
+	<resultMap id="EntUserListResult" type="hashmap">
+		<result property="userNo"				column="userNo"/>
+		<result property="jurirno"				column="jurirno"/>
+		<result property="ipinSelfCrtfcNo"		column="ipinSelfCrtfcNo"/>
+		<result property="moblphonSelfCrtfcNo"	column="moblphonSelfCrtfcNo"/>
+		<result property="chargerNm"			column="chargerNm"/>
+		<result property="chargerDept"			column="chargerDept"/>
+		<result property="ofcps"				column="ofcps"/>
+		<result property="telno"				column="telno"/>
+		<result property="telno2"				column="telno2"/>
+		<result property="mbtlnum"				column="mbtlnum"/>
+		<result property="fxnum"				column="fxnum"/>
+		<result property="email"				column="email"/>
+		<result property="bizrno"				column="bizrno"/>
+		<result property="entrprsNm"			column="entrprsNm"/>
+		<result property="rprsntvNm"			column="rprsntvNm"/>
+		<result property="adres"				column="adres"/>
+		<result property="zip"					column="zip"/>
+		<result property="hedofcAdres"			column="hedofcAdres"/>
+		<result property="hedofcZip"			column="hedofcZip"/>
+		<result property="hpeCd"				column="hpeCd"/>
+		<result property="emailRecptnAgre"		column="emailRecptnAgre"/>
+		<result property="smsRecptnAgre"		column="smsRecptnAgre"/>
+	</resultMap>
+
+	<resultMap id="UserIdResult" type="hashmap">
+		<result property="userNo"	column="userNo"/>
+		<result property="loginId"	column="loginId"/>
+		<result property="mbtlNum"	column="mbtlNum"/>
+		<result property="email"	column="email"/>
+	</resultMap>
+
+	<resultMap id="UserPwdResult" type="hashmap">
+		<result property="userNo"	column="userNo"/>
+		<result property="mbtlNum"	column="mbtlNum"/>
+		<result property="email"	column="email"/>
+	</resultMap>
+
+	<resultMap id="EntChargerResult" type="hashmap">
+		<result property="userNo"		column="userNo"/>
+		<result property="userId"		column="userId"/>
+		<result property="jurirno"		column="jurirno"/>
+		<result property="chargerNm"	column="chargerNm"/>
+		<result property="chargerDept"	column="chargerDept"/>
+		<result property="ofcps"		column="ofcps"/>
+		<result property="telno2"		column="telno2"/>
+		<result property="mbtlnum"		column="mbtlnum"/>
+		<result property="email"		column="email"/>
+		<result property="bizrno"		column="bizrno"/>
+		<result property="entrprsNm"	column="entrprsNm"/>
+	</resultMap>
+
+	<resultMap id="ChangeChargerResult" type="hashmap">
+		<result property="SN"			column="SN"/>
+		<result property="USER_NO"		column="USER_NO"/>
+		<result property="JURIRNO"		column="JURIRNO"/>
+		<result property="BIZRNO"		column="BIZRNO"/>
+		<result property="SE"			column="SE"/>
+		<result property="ENTRPRS_NM"	column="ENTRPRS_NM"/>
+		<result property="CHARGER_NM"	column="CHARGER_NM"/>
+		<result property="CHARGER_DEPT"	column="CHARGER_DEPT"/>
+		<result property="OFCPS"		column="OFCPS"/>
+		<result property="TELNO2"		column="TELNO2"/>
+		<result property="MBTLNUM"		column="MBTLNUM"/>
+		<result property="EMAIL"		column="EMAIL"/>
+		<result property="FILE_SEQ"		column="FILE_SEQ"/>
+		<result property="FILE_NM"		column="FILE_NM"/>
+		<result property="FILE_SEQ2"	column="FILE_SEQ2"/>
+		<result property="FILE_NM2"		column="FILE_NM2"/>
+		<result property="APPLC_AT"		column="APPLC_AT"/>
+		<result property="USE_AT"		column="USE_AT"/>
+		<result property="FILE_ID"		column="FILE_ID"/>
+		<result property="LOCAL_NM"		column="LOCAL_NM"/>
+		<result property="SERVER_NM"	column="SERVER_NM"/>
+		<result property="FILE_URL"		column="FILE_URL"/>
+		<result property="FILE_ID"		column="FILE_ID"/>
+		<result property="LOCAL_NM"		column="LOCAL_NM"/>
+		<result property="SERVER_NM"	column="SERVER_NM"/>
+		<result property="FILE_URL"		column="FILE_URL"/>
+		<result property="RGSDE"		column="RGSDE"/>
+	</resultMap>
+
+	<resultMap id="ChangeChargerInfoResult" type="hashmap">
+		<result property="SN"			column="SN"/>
+		<result property="JURIRNO"		column="JURIRNO"/>
+		<result property="BIZRNO"		column="BIZRNO"/>
+		<result property="SE"			column="SE"/>
+		<result property="ENTRPRS_NM"	column="ENTRPRS_NM"/>
+		<result property="CHARGER_NM"	column="CHARGER_NM"/>
+		<result property="CHARGER_DEPT"	column="CHARGER_DEPT"/>
+		<result property="OFCPS"		column="OFCPS"/>
+		<result property="TELNO2"		column="TELNO2"/>
+		<result property="MBTLNUM"		column="MBTLNUM"/>
+		<result property="EMAIL"		column="EMAIL"/>
+	</resultMap>
+
+	<resultMap id="PwdInitEntUserInfoResult" type="hashmap">
+		<result property="SN"		column="SN"/>
+		<result property="JURIRNO"	column="JURIRNO"/>
+		<result property="BIZRNO"	column="BIZRNO"/>
+		<result property="USER_NO"	column="USER_NO"/>
+	</resultMap>
+
+	<resultMap id="IdUserInfoResult" type="hashmap">
+		<result property="LOGIN_ID"	column="LOGIN_ID"/>
+	</resultMap>
+
+	<resultMap id="notiMap" type="hashmap">
+		<result property="ectccNo"		column="ectccNo"/>
+		<result property="draftNm"		column="draftNm"/>
+		<result property="confmDt"		column="confmDt"/>
+		<result property="confmerId"	column="confmerId"/>
+		<result property="confmSttus"	column="confmSttus"/>
+		<result property="confmSttusNm"	column="confmSttusNm"/>
+	</resultMap>
+
+	<!-- 사용자 메뉴 목록 조회 -->
+	<select id="findUser" resultType="userVO">
+	SELECT 	/* ProgramID=com.comm.mapif.UserMapper.findUser */
+					  user_no							AS userNo
+					, login_id							AS loginId
+					, emplyr_ty							AS emplyrTy
+					, sttus								AS sttus
+					, IF (password = #{loginPw}, 'Y', 'N') AS loginAt
+					, CASE emplyr_ty
+					   	WHEN 'JB' THEN (SELECT nm FROM tb_emplyr S WHERE S.user_no = U.user_no)
+					   	WHEN 'EP' THEN (SELECT charger_nm FROM tb_entrprsuser S WHERE S.user_no = U.user_no)
+					   	ELSE (SELECT nm FROM tb_gnrluser S WHERE S.user_no = U.user_no)
+					   	END 							AS userNm
+					 , PASSWORD_VALID_DE		AS passwordValidDe
+					,LOGIN_DE			AS loginDe
+					,LOGOUT_DE			AS logoutDe
+					,PASSWD_INITL_AT	AS passwdInitlAt
+					,LOGIN_FAIL_CNT		AS loginFailCnt
+					,LOGIN_FAIL_DT		AS loginFailDt
+	FROM 		tb_userinfo U
+	WHERE		login_id = #{loginId}
+	<if test="checkSttus == '01'">
+		AND			sttus=#{checkSttus}
+	</if>
+	</select>
+	
+	<!-- 사용자 권한그룹 조회 -->
+	<select id="findUserAuthorGroup" resultType="string">
+	SELECT 	/* ProgramID=com.comm.mapif.UserMapper.findUserAuthorGroup */
+					author_group_code 				AS authorGroupCode
+	FROM 		tb_userauthorgroup
+	WHERE		user_no = #{userNo}
+	</select>
+	
+	<!-- 사용자 권한 조회 -->
+	<select id="findUserAuthority" resultType="authorityVO">
+	SELECT 	/* ProgramID=com.comm.mapif.UserMapper.findUserAuthority */
+	DISTINCT	  progrm_id							AS progrmId
+					, menu_outpt_at					AS menuOutptAt
+					, inqire_at							AS inqireAt
+					, stre_at								AS streAt
+					, delete_at							AS deleteAt
+					, prntng_at							AS prntngAt
+					, excel_at							AS excelAt
+					, spcl_at								AS spclAt
+	FROM 		tb_authorinfo
+	WHERE		author_group_code IN
+		<foreach item="item" collection="authorGrpCd" open="(" separator="," close=")">
+					#{item}
+		</foreach>
+	</select>
+	
+	<!-- 사용자정보 등록 -->
+	<insert id="insertUserInfo" useGeneratedKeys="true" keyProperty="USER_NO"  keyColumn="USER_NO">
+	INSERT INTO tb_userinfo /* ProgramID=com.comm.mapif.UserMapper.insertUserInfo */
+		        (
+		         LOGIN_ID	/* 로그인아이디 */
+		        ,PASSWORD	/* 비밀번호 */
+		        ,EMPLYR_TY	/* 사용자유형 */
+		        ,STTUS		/* 상태 */
+		        ,RGSDE		/* 등록일 */
+		        ,PASSWORD_VALID_DE
+		        )
+         VALUES
+                (                 
+				 #{LOGIN_ID}
+				,#{PASSWORD}
+				,#{EMPLYR_TY}
+				,#{STTUS}
+				,NOW()
+				,DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 6 MONTH), '%Y%m%d' )
+                )      
+	</insert>   
+	
+	<!-- 일반사용자 등록 -->
+	<insert id="insertGnrlUserInfo">
+	INSERT INTO tb_gnrluser /* ProgramID=com.comm.mapif.UserMapper.insertGnrlUserInfo */
+		        (
+                 USER_NO                /* 사용자번호 */
+                ,NM                     /* 이름 */
+                ,MBTLNUM                /* 휴대폰번호 */
+                ,EMAIL                  /* 이메일 */
+                ,IPIN_SELF_CRTFC_NO     /* IPIN_본인인증번호 */
+                ,MOBLPHON_SELF_CRTFC_NO /* 휴대폰본인인증번호 */
+                ,EMAIL_RECPTN_AGRE      /* 이메일수신동의 */
+                ,SMS_RECPTN_AGRE        /* 문자메시지수신동의 */
+                ,REGISTER               /* 등록자 */
+                ,RGSDE                  /* 등록일 */
+		        )
+         VALUES
+                (                 
+                 #{USER_NO}
+                ,#{NM}
+                ,#{MBTLNUM}
+                ,#{EMAIL}
+                ,#{IPIN_SELF_CRTFC_NO}
+                ,#{MOBLPHON_SELF_CRTFC_NO}
+                ,#{EMAIL_RECPTN_AGRE}
+                ,#{SMS_RECPTN_AGRE}
+                ,#{USER_NO}
+                ,NOW()
+                )       
+	</insert>
+
+	<!-- 기업사용자 등록 -->
+	<insert id="insertEntUserInfo">
+	INSERT INTO tb_entrprsuser /* ProgramID=com.comm.mapif.UserMapper.insertEntUserInfo */
+	            (
+	             USER_NO                 /* 사용자번호(PK)(FK)  */
+	            ,JURIRNO                 /* 법인등록번호(PK)    */
+	            ,IPIN_SELF_CRTFC_NO      /* IPIN_본인인증번호   */
+	            ,MOBLPHON_SELF_CRTFC_NO  /* 휴대폰본인인증번호  */
+	            ,CHARGER_NM              /* 담당자명            */
+	            ,CHARGER_DEPT            /* 담당자부서          */
+	            ,OFCPS                   /* 직위                */
+	            ,TELNO                   /* 전화번호            */
+	            ,TELNO2                   /* 담당자 일반전화번호            */
+	            ,MBTLNUM                 /* 휴대폰번호          */
+	            ,FXNUM                   /* 팩스번호            */
+	            ,EMAIL                   /* 이메일              */
+	            ,BIZRNO                  /* 사업자등록번호      */
+	            ,ENTRPRS_NM              /* 기업명              */
+	            ,RPRSNTV_NM              /* 대표자명            */
+	            ,ADRES                   /* 주소                */
+	            ,ZIP                     /* 우편번호            */
+	            ,HEDOFC_ADRES            /* 본사주소            */
+	            ,HEDOFC_ZIP              /* 본사우편번호        */
+	            ,HPE_CD                  /* 기업관리코드        */
+	            ,EMAIL_RECPTN_AGRE       /* 이메일수신동의      */
+	            ,SMS_RECPTN_AGRE         /* 문자메시지수신동의  */
+	            ,REGISTER				 /* 등록자              */
+	            ,RGSDE                	 /* 등록일              */
+	            ,BIZRNO_CERT_CHK		 /* 사업자 공인인증 여부*/
+	            ,BIZRNO_DN				 /* 사업자 공인인증 DN값*/
+	            )
+	     VALUES
+	            (                 
+	             #{USER_NO}
+	            ,#{JURIRNO}
+	            ,#{IPIN_SELF_CRTFC_NO}
+	            ,#{MOBLPHON_SELF_CRTFC_NO}
+	            ,#{CHARGER_NM}
+	            ,#{CHARGER_DEPT}
+	            ,#{OFCPS}
+	            ,#{TELNO}
+	            ,#{TELNO2}
+	            ,#{MBTLNUM}
+	            ,#{FXNUM}
+	            ,#{EMAIL}
+	            ,#{BIZRNO}
+	            ,#{ENTRPRS_NM}
+	            ,#{RPRSNTV_NM}
+	            ,#{ADRES}
+	            ,#{ZIP}
+	            ,#{HEDOFC_ADRES}
+	            ,#{HEDOFC_ZIP}
+	            ,#{HPE_CD}
+	            ,#{EMAIL_RECPTN_AGRE}
+	            ,#{SMS_RECPTN_AGRE}
+	            ,#{USER_NO}
+	            ,NOW()
+	            ,#{CERT_Y}
+	            ,#{DN}     
+	            )       
+	</insert>
+	
+	<!-- 기관사용자 등록 -->
+	<insert id="insertEmpUserInfo">
+	INSERT INTO tb_emplyr /* ProgramID=com.comm.mapif.UserMapper.insertEmpUserInfo */
+		        (
+                 USER_NO                /* 사용자번호 */
+                ,NM                     /* 이름 */
+                ,TELNO					/* 전화번호 */
+                ,EMAIL					/* 이메일 */
+                ,DEPT_NM				/* 부서명 */
+                ,OFCPS					/* 직위 */
+                ,MBTLNUM				/* 휴대폰번호 */
+                ,EMAIL_RECPTN_AGRE		/* 이메일수신동의 */
+                ,SMS_RECPTN_AGRE		/* 문자메시지수신동의 */
+                ,REGISTER				/* 등록자 */
+                ,RGSDE					/* 등록일 */
+		        )
+         VALUES
+                (                 
+                 #{USER_NO}
+                ,#{NM}
+                ,#{TELNO}
+                ,#{EMAIL}
+                ,#{DEPT_NM}
+                ,#{OFCPS}
+                ,#{MBTLNUM}
+                ,#{EMAIL_RECPTN_AGRE}
+                ,#{SMS_RECPTN_AGRE}
+                ,#{REGISTER}
+                ,NOW()
+                )  
+	</insert>
+	
+	<!-- 사용자권한그룹 등록 -->
+	<insert id="insertUserAuthorGroupInfo">
+	INSERT INTO tb_userauthorgroup /* ProgramID=com.comm.mapif.UserMapper.insertUserAuthorGroupInfo */
+	            (
+	             USER_NO                /* 사용자번호 */
+	            ,AUTHOR_GROUP_CODE      /* 권한그룹코드 */              
+	            )
+	     VALUES
+	            (                 
+	             #{USER_NO}              
+	            ,#{AUTHOR_GROUP_CODE}              
+	            )       
+	</insert>
+	
+	<!-- 사용자약관동의 등록 -->
+	<insert id="insertUserStplatAgre">
+	INSERT INTO tb_userstplatagre /* ProgramID=com.comm.mapif.UserMapper.insertUserStplatAgre */
+	            (
+	             USER_NO                /* 사용자번호 */
+	            ,POLICY_INFO_AGRE_AT    /* 정책정보동의여부 */              
+	            )
+	     VALUES
+	            (                 
+	             #{USER_NO}              
+	            ,#{POLICY_INFO_AGRE_AT}              
+	            )       
+	</insert>
+
+    <!-- 일반사용자 휴대폰번호 중복 조회 -->
+    <select id="findDuplGnrlUserMbtlNum" resultType="int">
+    SELECT /* ProgramID=com.comm.mapif.UserMapper.findDuplGnrlUserMbtlNum */
+           COUNT(*)
+     FROM tb_gnrluser a, tb_userinfo b
+     WHERE a.USER_NO = b.USER_NO
+     and b.STTUS <![CDATA[<>]]> '03'
+     and a.MBTLNUM = #{MBTLNUM}
+     <if test="USER_NO != null and USER_NO != ''">
+     AND a.USER_NO <![CDATA[<>]]> #{USER_NO}
+     </if>
+    </select>
+
+    <!-- 일반사용자 이메일 중복 조회 -->
+    <select id="findDuplGnrlEmail" resultType="int">
+    SELECT /* ProgramID=com.comm.mapif.UserMapper.findDuplGnrlEmail */
+           COUNT(*)
+      FROM tb_gnrluser a, tb_userinfo b
+     WHERE a.USER_NO = b.USER_NO
+     and b.STTUS <![CDATA[<>]]> '03'
+     and a.EMAIL = #{EMAIL}
+     <if test="USER_NO != null and USER_NO != ''">
+     AND a.USER_NO <![CDATA[<>]]> #{USER_NO}
+     </if>
+    </select>
+    
+    <!-- 기업사용자 휴대폰번호 중복 조회 -->
+    <select id="findDuplEntUserMbtlNum" resultType="int">
+    SELECT /* ProgramID=com.comm.mapif.UserMapper.findDuplEntUserMbtlNum */
+           COUNT(*)
+      FROM tb_entrprsuser a, tb_userinfo b
+     WHERE a.USER_NO = b.USER_NO
+     and b.STTUS <![CDATA[<>]]> '03'
+     and a.MBTLNUM = #{MBTLNUM}
+     <if test="USER_NO != null and USER_NO != ''">
+     AND a.USER_NO <![CDATA[<>]]> #{USER_NO}
+     </if>
+    </select>
+
+    <!-- 기업사용자 이메일 중복 조회 -->
+    <select id="findDuplEntEmail" resultType="int">
+    SELECT /* ProgramID=com.comm.mapif.UserMapper.findDuplEntEmail */
+           COUNT(*)
+      FROM tb_entrprsuser a, tb_userinfo b
+     WHERE a.USER_NO = b.USER_NO
+     and b.STTUS <![CDATA[<>]]> '03'
+     and a.EMAIL = #{EMAIL}
+     <if test="USER_NO != null and USER_NO != ''">
+     AND a.USER_NO <![CDATA[<>]]> #{USER_NO}
+     </if>
+    </select>
+    
+    <!-- 모든사용자 이메일 중복 조회 -->
+    <select id="findDuplUserEmail" resultType="int">
+    SELECT	/* ProgramID=com.comm.mapif.UserMapper.findDuplUserEmail */
+    	SUM(tb.cnt)
+	FROM(
+	    	SELECT	COUNT(*)	AS cnt
+	     	FROM 	tb_gnrluser GN
+	    	WHERE 	GN.EMAIL = #{EMAIL} 
+	    	<if test="USER_NO != null and USER_NO != ''">
+		    AND GN.USER_NO <![CDATA[<>]]> #{USER_NO}
+		    </if>
+			UNION
+	   		SELECT	COUNT(*)	AS cnt
+	   	 	FROM 	tb_entrprsuser EP
+	   	 	WHERE 	EP.EMAIL = #{EMAIL}  
+	   	 	<if test="USER_NO != null and USER_NO != ''">
+		    AND EP.USER_NO <![CDATA[<>]]> #{USER_NO}
+		    </if>
+	 		UNION
+			SELECT 	COUNT(*)	AS cnt
+	   	  	FROM 	tb_emplyr JB
+	   	  	WHERE JB.EMAIL = #{EMAIL}
+	     	<if test="USER_NO != null and USER_NO != ''">
+		    AND JB.USER_NO <![CDATA[<>]]> #{USER_NO}
+		    </if>
+	   ) tb
+    </select>
+    
+    <!-- 법인등록번호 중복 조회 -->
+    <select id="findDuplJrirno" resultType="int">
+    SELECT /* ProgramID=com.comm.mapif.UserMapper.findDuplJrirno */
+           COUNT(*)
+      FROM tb_entrprsuser
+     WHERE JURIRNO = #{JURIRNO}
+     <if test="USER_NO != null and USER_NO != ''">
+     AND USER_NO <![CDATA[<>]]> #{USER_NO}
+     </if>
+    </select>
+    
+    <!-- 일반사용자 휴대전화 인증 번호 중복 조회 -->
+    <select id="findDuplGnrlMobCrtNo" resultType="int">
+    SELECT /* ProgramID=com.comm.mapif.UserMapper.findDuplGnrlMobCrtNo */
+           COUNT(*)
+      FROM tb_gnrluser
+     WHERE MOBLPHON_SELF_CRTFC_NO = #{MOBLPHON_SELF_CRTFC_NO} 
+    </select>
+    
+    <!-- 기업사용자 휴대전화 인증 번호 중복 조회 -->
+    <select id="findDuplEntlMobCrtNo" resultType="int">
+    SELECT /* ProgramID=com.comm.mapif.UserMapper.findDuplEntlMobCrtNo */
+           COUNT(*)
+      FROM tb_entrprsuser
+     WHERE MOBLPHON_SELF_CRTFC_NO = #{MOBLPHON_SELF_CRTFC_NO} 
+    </select>        
+	
+	<!-- 모든 회원 조회 카운트 -->
+	<select id="findAllUserCnt" resultType="int">
+		SELECT	/* ProgramID=com.comm.mapif.UserMapper."findAllUserCnt" */
+			COUNT(DISTINCT UR.USER_NO)
+		FROM (SELECT USER_NO
+                   , STTUS
+                   , EMPLYR_TY
+               	   , RGSDE
+                   , LOGIN_ID 
+                FROM tb_userinfo) UR
+		LEFT JOIN (SELECT USER_NO
+	                    , NM
+	                    , EMAIL 
+	                 FROM tb_emplyr) EM ON (EM.USER_NO = UR.USER_NO)
+		LEFT JOIN (SELECT USER_NO
+	                    , ENTRPRS_NM
+	                    , CHARGER_NM
+	                    , BIZRNO
+	                    , JURIRNO
+	                    , EMAIL 
+	                 FROM tb_entrprsuser) EN ON (EN.USER_NO = UR.USER_NO)
+		LEFT JOIN (SELECT USER_NO
+	                    , NM
+	                    , EMAIL 
+	                 FROM tb_gnrluser) GN ON (GN.USER_NO = UR.USER_NO)
+		LEFT JOIN (SELECT USER_NO
+	                    , AUTHOR_GROUP_CODE 
+	                 FROM tb_userauthorgroup) AG ON (AG.USER_NO = UR.USER_NO)
+		WHERE 1=1
+		AND STTUS = '01'
+		<include refid="searchCondition"/>		
+	</select>
+	
+	<!-- 모든 회원 조회 GN:일반 EP:기업 JB:기관-->
+	<select id="findAllUser" resultType="com.comm.user.AllUserVO">
+		SELECT /* ProgramID=com.comm.mapif.UserMapper.findAllUser */
+			UR.USER_NO						AS userNo			/*사용자번호*/
+			, UR.LOGIN_ID						AS loginId		/*로그인ID*/
+			, UR.EMPLYR_TY						AS emplyrTy		/*사용자유형*/
+			, DATE_FORMAT(UR.RGSDE, '%Y-%m-%d') AS rgsde		/*등록일*/			
+			, EN.ENTRPRS_NM						AS entrprsNm	/*기업명*/			
+			, EN.RPRSNTV_NM						AS rprsntvNm	/*대표자명*/
+			, EN.JURIRNO						AS jurirno		/*법인등록번호(PK)*/
+			, EN.BIZRNO							AS bizrno		/*사업자등록번호*/
+			, EN.FXNUM							AS fxnum		/*팩스번호*/
+			, EN.ADRES							AS adres		/*주소*/
+			, EN.ZIP							AS zip			/*우편번호*/
+			, EN.HEDOFC_ADRES               AS hedofcAdres                 /*본사주소*/
+			, EN.HEDOFC_ZIP                   AS hedofcZip                     /*본사우편번호*/
+			, EN.CHARGER_NM						AS chargerNm	/*담당자명*/
+			, EN.CHARGER_DEPT					AS chargerDept	/*담당자부서*/
+			, EN.UPDDE                          AS updde        /*수정시간*/
+			, EM.DEPT_NM						AS deptNm		/*부서명(기관)*/
+			, CASE UR.EMPLYR_TY
+				WHEN 'JB' THEN EM.NM
+				WHEN 'EP' THEN EN.CHARGER_NM	
+				ELSE GN.NM
+				END 							AS userNm		/*이름*/
+			, CASE UR.EMPLYR_TY
+				WHEN 'JB' THEN EM.TELNO
+				WHEN 'EP' THEN EN.TELNO	
+				ELSE NULL
+				END 							AS telno		/*전화번호*/
+			, CASE UR.EMPLYR_TY
+				WHEN 'JB' THEN EM.TELNO
+				WHEN 'EP' THEN EN.TELNO2	
+				ELSE NULL
+				END 							AS telno2		/*전화번호*/
+			, CASE UR.EMPLYR_TY
+				WHEN 'JB' THEN EM.MBTLNUM
+				WHEN 'EP' THEN EN.MBTLNUM
+				ELSE GN.MBTLNUM
+				END 							AS mbtlnum		/*휴대폰번호*/
+			, CASE UR.EMPLYR_TY
+				WHEN 'JB' THEN EM.EMAIL
+				WHEN 'EP' THEN EN.EMAIL
+				ELSE GN.EMAIL
+				END 							AS email		/*이메일*/
+			, CASE UR.EMPLYR_TY
+				WHEN 'JB' THEN EM.OFCPS
+				WHEN 'EP' THEN EN.OFCPS
+				ELSE NULL
+				END 							AS ofcps		/*직위*/	
+			, CASE UR.EMPLYR_TY				
+				WHEN 'JB' THEN EM.EMAIL_RECPTN_AGRE
+				WHEN 'EP' THEN EN.EMAIL_RECPTN_AGRE
+				ELSE GN.EMAIL_RECPTN_AGRE
+				END								AS emailRecptnAgre	/*이메일수신동의*/
+			, CASE UR.EMPLYR_TY
+				WHEN 'JB' THEN EM.SMS_RECPTN_AGRE
+				WHEN 'EP' THEN EN.SMS_RECPTN_AGRE
+				ELSE GN.SMS_RECPTN_AGRE
+				END								AS smsRecptnAgre	/*문자메시지수신동의*/
+			, UR.STTUS                           AS sttus /*회원정보상태*/
+		FROM (SELECT USER_NO
+                   , STTUS
+                   , EMPLYR_TY
+               	   , RGSDE
+                   , LOGIN_ID 
+                FROM tb_userinfo) UR
+		LEFT JOIN (SELECT USER_NO
+	                    , NM
+	                    , EMAIL 
+                        , DEPT_NM
+                        , TELNO
+                        , MBTLNUM
+                        , OFCPS
+                        , EMAIL_RECPTN_AGRE
+                        , SMS_RECPTN_AGRE
+	                 FROM tb_emplyr) EM ON (EM.USER_NO = UR.USER_NO)
+		LEFT JOIN (SELECT USER_NO
+	                    , ENTRPRS_NM
+	                    , CHARGER_NM
+	                    , BIZRNO
+	                    , JURIRNO
+	                    , EMAIL 
+                        , RPRSNTV_NM
+                        , FXNUM
+                        , ADRES
+                        , ZIP
+                        , HEDOFC_ADRES
+                        , HEDOFC_ZIP
+                        , CHARGER_DEPT
+                        , TELNO
+                        , TELNO2
+                        , MBTLNUM
+                        , OFCPS
+                        , EMAIL_RECPTN_AGRE
+                        , SMS_RECPTN_AGRE
+                        , UPDDE
+	                 FROM tb_entrprsuser) EN ON (EN.USER_NO = UR.USER_NO)
+		LEFT JOIN (SELECT USER_NO
+	                    , NM
+	                    , EMAIL 
+                        , MBTLNUM
+                        , EMAIL_RECPTN_AGRE
+                        , SMS_RECPTN_AGRE
+	                 FROM tb_gnrluser) GN ON (GN.USER_NO = UR.USER_NO)
+		LEFT JOIN (SELECT USER_NO
+	                    , AUTHOR_GROUP_CODE 
+	                 FROM tb_userauthorgroup) AG ON (AG.USER_NO = UR.USER_NO)
+		WHERE 1=1
+		AND STTUS = '01'
+		<if test="USER_NO != null and USER_NO != ''">
+		AND UR.USER_NO = #{USER_NO}
+		</if>
+		<if test="LOGIN_ID != null and LOGIN_ID != ''">
+		AND UR.LOGIN_ID = #{LOGIN_ID}
+		</if>
+		<include refid="searchCondition"/>		
+		GROUP BY UR.USER_NO
+		LIMIT #{limitFrom}, #{limitTo}
+	</select>
+	
+	<!-- 회원관리 검색조건 -->
+	<sql id="searchCondition">
+		<if test="ad_emplyrTys != null  and ad_emplyrTys != ''">			
+			<choose>
+				<when test="ad_emplyrTys instanceof String">
+					AND UR.EMPLYR_TY = #{ad_emplyrTys}
+				</when>				
+				<otherwise>
+					AND UR.EMPLYR_TY IN
+					<foreach item="item" collection="ad_emplyrTys" open="(" separator="," close=")">
+						#{item}
+					</foreach>
+				</otherwise>
+			</choose>
+		</if>
+		<if test="ad_authorGroupCodes != null and ad_authorGroupCodes != ''" >
+			<choose>
+				<when test="ad_authorGroupCodes instanceof String">
+					AND AG.AUTHOR_GROUP_CODE = #{ad_authorGroupCodes}
+				</when>				
+				<otherwise>
+					AND AG.AUTHOR_GROUP_CODE IN
+					<foreach item="item" collection="ad_authorGroupCodes" open="(" separator="," close=")">
+						#{item}
+					</foreach>
+				</otherwise>
+			</choose>
+		</if>
+		<if test="START_DT != null  and START_DT != ''">		
+			AND DATE_FORMAT(#{START_DT}, '%Y-%m-%d %H:%i:%s') <![CDATA[<=]]> UR.RGSDE
+		</if>
+		<if test="END_DT != null  and END_DT != ''">
+			AND DATE_FORMAT(#{END_DT}, '%Y-%m-%d %H:%i:%s') <![CDATA[>=]]> UR.RGSDE
+		</if>
+		<if test="ad_search_type != '' and ad_search_word != ''" >			
+			<choose>
+				<when test="ad_search_type == 0">AND EN.ENTRPRS_NM LIKE CONCAT('%', #{ad_search_word}, '%')</when>
+				<when test="ad_search_type == 1">
+					AND 
+					( EM.NM LIKE CONCAT('%', #{ad_search_word}, '%')
+					OR EN.CHARGER_NM LIKE CONCAT('%', #{ad_search_word}, '%')
+					OR GN.NM LIKE CONCAT('%', #{ad_search_word}, '%')
+					)
+				</when>
+				<when test="ad_search_type == 2">AND EN.BIZRNO LIKE CONCAT('%', #{ad_search_word}, '%')</when>
+				<when test="ad_search_type == 3">AND EN.JURIRNO LIKE CONCAT('%', #{ad_search_word}, '%')</when>
+				<when test="ad_search_type == 4">
+					AND 
+					( EM.EMAIL LIKE CONCAT('%', #{ad_search_word}, '%')
+					OR EN.EMAIL LIKE CONCAT('%', #{ad_search_word}, '%')
+					OR GN.EMAIL LIKE CONCAT('%', #{ad_search_word}, '%')
+					)
+				</when>
+				<when test="ad_search_type == 5">
+					AND UR.LOGIN_ID  LIKE CONCAT('%', #{ad_search_word}, '%')
+				</when>
+			</choose>
+		</if>
+	</sql>
+	
+	<!-- 회원권한별 카운트 -->
+	<select id="findUserCntByauth" resultType="Map">
+	SELECT /* ProgramID=com.comm.mapif.UserMapper.findUserCntByType */
+			AUTHOR_GROUP_CODE AS AUTHOR_GROUP_CODE, 
+			COUNT(*) AS CNT
+	FROM 	tb_userauthorgroup
+	GROUP BY AUTHOR_GROUP_CODE;
+	</select>
+		
+	<!-- 회원유형별 카운트 -->
+	<select id="findUserCntByType" resultType="Map">
+	SELECT 	/* ProgramID=com.comm.mapif.UserMapper.findUserCntByauth */
+			EMPLYR_TY AS EMPLYR_TY, 
+			COUNT(*) AS CNT
+	FROM 	tb_userinfo
+	GROUP BY EMPLYR_TY;
+	</select>
+	
+	<!-- 기업사용자 리스트 카운트 -->
+	<select id="findEntUserListCnt" resultType="int" >
+	SELECT
+		COUNT(*)
+	FROM tb_entrprsuser A
+	   , tb_userinfo B
+   WHERE A.USER_NO = B.USER_NO
+     AND B.STTUS = '01'
+	<if test="searchEntrprsNm != null and searchEntrprsNm != ''" >
+	  AND A.ENTRPRS_NM LIKE CONCAT('%', #{searchEntrprsNm}, '%')
+	</if>
+	<if test="searchJurirno != null and searchJurirno != ''" >
+	  AND A.JURIRNO = #{searchJurirno}
+	</if>
+	</select>
+	
+	<!-- 기업사용자 리스트 조회-->
+	<select id="findEntUserList" resultType="Map">
+	SELECT /* ProgramID=com.comm.mapif.UserMapper.findEntUserList */
+	       A.USER_NO                 AS userNo               /* 사용자번호(PK)(FK)  */
+	      ,A.JURIRNO                 AS jurirno              /* 법인등록번호(PK)    */
+	      ,A.IPIN_SELF_CRTFC_NO      AS ipinSelfCrtfcNo      /* IPIN_본인인증번호   */
+	      ,A.MOBLPHON_SELF_CRTFC_NO  AS moblphonSelfCrtfcNo  /* 휴대폰본인인증번호  */
+	      ,A.CHARGER_NM              AS chargerNm            /* 담당자명            */
+	      ,A.CHARGER_DEPT            AS chargerDept          /* 담당자부서          */
+	      ,A.OFCPS                   AS ofcps                /* 직위                */
+	      ,A.TELNO                   AS telno                /* 전화번호            */
+	      ,A.TELNO2                  AS telno2               /* 담당자 일반전화번호   */
+	      ,A.MBTLNUM                 AS mbtlnum              /* 휴대폰번호          */
+	      ,A.FXNUM                   AS fxnum                /* 팩스번호            */
+	      ,A.EMAIL                   AS email                /* 이메일              */
+	      ,A.BIZRNO                  AS bizrno               /* 사업자등록번호      */
+	      ,A.ENTRPRS_NM              AS entrprsNm            /* 기업명              */
+	      ,A.RPRSNTV_NM              AS rprsntvNm            /* 대표자명            */
+	      ,A.ADRES                   AS adres                /* 주소                */
+	      ,A.ZIP                     AS zip                  /* 우편번호            */
+	      ,A.HEDOFC_ADRES            AS hedofcAdres          /* 본사주소            */
+	      ,A.HEDOFC_ZIP              AS hedofcZip            /* 본사우편번호        */
+	      ,A.HPE_CD                  AS hpeCd                /* 기업관리코드        */
+	      ,A.EMAIL_RECPTN_AGRE       AS emailRecptnAgre      /* 이메일수신동의      */
+	      ,A.SMS_RECPTN_AGRE         AS smsRecptnAgre        /* 문자메시지수신동의  */	      
+	  FROM tb_entrprsuser A
+	     , tb_userinfo B
+	 WHERE A.USER_NO = B.USER_NO
+	   AND B.STTUS = '01'
+	  <if test="searchEntrprsNm != null and searchEntrprsNm != ''" >
+	  	AND A.ENTRPRS_NM LIKE CONCAT('%', #{searchEntrprsNm}, '%')
+	  </if>
+	  <if test="searchJurirno != null and searchJurirno != ''" >
+	  	AND A.JURIRNO = #{searchJurirno}
+	  </if>
+	  ORDER BY A.USER_NO DESC
+	  LIMIT #{limitFrom}, #{limitTo}
+	</select>
+	
+	<!-- 기업사용자 조회-->
+	<select id="findEntUser" resultType="entUserVO">
+	SELECT /* ProgramID=com.comm.mapif.UserMapper.findEntUser */
+	       USER_NO                 AS userNo               /* 사용자번호(PK)(FK)  */
+	      ,JURIRNO                 AS jurirno              /* 법인등록번호(PK)    */
+	      ,IPIN_SELF_CRTFC_NO      AS ipinSelfCrtfcNo      /* IPIN_본인인증번호   */
+	      ,MOBLPHON_SELF_CRTFC_NO  AS moblphonSelfCrtfcNo  /* 휴대폰본인인증번호  */
+	      ,CHARGER_NM              AS chargerNm            /* 담당자명            */
+	      ,CHARGER_DEPT            AS chargerDept          /* 담당자부서          */
+	      ,OFCPS                   AS ofcps                /* 직위                */
+	      ,TELNO                   AS telno                /* 전화번호            */
+	      ,TELNO2                   AS telno2                /* 담당자 일반전화번호            */
+	      ,MBTLNUM                 AS mbtlnum              /* 휴대폰번호          */
+	      ,FXNUM                   AS fxnum                /* 팩스번호            */
+	      ,EMAIL                   AS email                /* 이메일              */
+	      ,BIZRNO                  AS bizrno               /* 사업자등록번호      */
+	      ,ENTRPRS_NM              AS entrprsNm            /* 기업명              */
+	      ,RPRSNTV_NM              AS rprsntvNm            /* 대표자명            */
+	      ,ADRES                   AS adres                /* 주소                */
+	      ,ZIP                     AS zip                  /* 우편번호            */
+	      ,HEDOFC_ADRES            AS hedofcAdres          /* 본사주소            */
+	      ,HEDOFC_ZIP              AS hedofcZip            /* 본사우편번호        */
+	      ,HPE_CD                  AS hpeCd                /* 기업관리코드        */
+	      ,EMAIL_RECPTN_AGRE       AS emailRecptnAgre      /* 이메일수신동의      */
+	      ,SMS_RECPTN_AGRE         AS smsRecptnAgre        /* 문자메시지수신동의  */	  
+	      ,BIZRNO_CERT_CHK		   AS bizrnoCertChk		   /* 사업자번호 인증확인 */
+	      ,BIZRNO_DN			   AS bizrnoDN			   /* 사업자번호 인증값   */
+	  FROM tb_entrprsuser
+	  WHERE USER_NO = #{USER_NO}	  
+	</select>
+	
+	<!-- 기업책임자 조회-->
+	<select id="findMngUser" resultType="entUserVO">
+	SELECT /* ProgramID=com.comm.mapif.UserMapper.findMngUser */
+	       USER_NO                 AS userNo               /* 사용자번호(PK)(FK)  */
+	      ,JURIRNO                 AS jurirno              /* 법인등록번호(PK)    */
+	      ,CHARGER_NM              AS chargerNm            /* 담당자명            */
+	      ,CHARGER_DEPT            AS chargerDept          /* 담당자부서          */
+	      ,OFCPS                   AS ofcps                /* 직위                */
+	      ,TELNO                   AS telno                /* 전화번호            */
+	      ,MBTLNUM                 AS mbtlnum              /* 휴대폰번호          */
+	      ,EMAIL                   AS email                /* 이메일              */
+	      ,BIZRNO                  AS bizrno               /* 사업자등록번호      */
+	      ,ENTRPRS_NM              AS entrprsNm            /* 기업명              */
+	      ,RPRSNTV_NM              AS rprsntvNm            /* 대표자명            */
+	      ,EMAIL_RECPTN_AGRE       AS emailRecptnAgre      /* 이메일수신동의      */
+	      ,SMS_RECPTN_AGRE         AS smsRecptnAgre        /* 문자메시지수신동의  */	  
+	      ,UPDDE                   AS updde                /* 수정일              */
+	  FROM tb_manageruser
+	  WHERE USER_NO = #{USER_NO}	  
+	</select>
+	
+	<!-- 기업책임자 틀 등록 -->
+	<insert id="insertMngUserBase">
+	INSERT INTO tb_manageruser /* ProgramID=com.comm.mapif.UserMapper.insertMngUser */
+		        (
+		          USER_NO
+		         ,JURIRNO
+		         ,EMAIL_RECPTN_AGRE
+		         ,SMS_RECPTN_AGRE
+		        )
+     	 VALUES
+	            (                 
+	              #{USER_NO}
+	             ,#{JURIRNO}
+	             ,'N'
+	             ,'N'
+				)       
+	</insert>
+	
+	<!-- 기업책임자 등록 -->
+	<insert id="insertMngUser">
+	INSERT INTO tb_manageruser (
+		   USER_NO
+		  ,JURIRNO
+		  ,CHARGER_NM
+		  ,CHARGER_DEPT
+		  ,OFCPS
+		  ,TELNO
+		  ,MBTLNUM
+		  ,EMAIL
+		  ,BIZRNO
+		  ,ENTRPRS_NM
+		  ,RPRSNTV_NM
+		  ,EMAIL_RECPTN_AGRE
+		  ,SMS_RECPTN_AGRE
+		  ,REGISTER
+		  ,RGSDE
+		  ,UPDUSR
+		  ,UPDDE
+	) VALUES (
+		   (SELECT USER_NO FROM tb_userinfo WHERE LOGIN_ID = #{LOGIN_ID})
+		  ,#{JURIRNO}
+		  ,#{CHARGER_NM}
+		  ,#{CHARGER_DEPT}
+		  ,#{OFCPS}
+		  ,#{TELNO}
+		  ,#{MBTLNUM}
+		  ,#{EMAIL}
+		  ,#{BIZRNO}
+		  ,#{ENTRPRS_NM}
+		  ,#{RPRSNTV_NM}
+		  ,#{EMAIL_RECPTN_AGRE}
+		  ,#{SMS_RECPTN_AGRE}
+		  ,(SELECT USER_NO FROM tb_userinfo WHERE LOGIN_ID = #{LOGIN_ID})
+		  ,NOW()
+		  ,(SELECT USER_NO FROM tb_userinfo WHERE LOGIN_ID = #{LOGIN_ID})
+		  ,NOW()
+	)     
+	</insert>
+	
+	<!-- Email 주소로 기업사용자 조회-->
+	<select id="findEntUserByEmail" resultType="entUserVO">
+	SELECT /* ProgramID=com.comm.mapif.UserMapper.findEntUser */
+	       USER_NO                 AS userNo               /* 사용자번호(PK)(FK)  */
+	      ,JURIRNO                 AS jurirno              /* 법인등록번호(PK)    */
+	      ,IPIN_SELF_CRTFC_NO      AS ipinSelfCrtfcNo      /* IPIN_본인인증번호   */
+	      ,MOBLPHON_SELF_CRTFC_NO  AS moblphonSelfCrtfcNo  /* 휴대폰본인인증번호  */
+	      ,CHARGER_NM              AS chargerNm            /* 담당자명            */
+	      ,CHARGER_DEPT            AS chargerDept          /* 담당자부서          */
+	      ,OFCPS                   AS ofcps                /* 직위                */
+	      ,TELNO                   AS telno                /* 전화번호            */
+	      ,TELNO2                   AS telno2                /* 담당자 일반전화번호            */
+	      ,MBTLNUM                 AS mbtlnum              /* 휴대폰번호          */
+	      ,FXNUM                   AS fxnum                /* 팩스번호            */
+	      ,EMAIL                   AS email                /* 이메일              */
+	      ,BIZRNO                  AS bizrno               /* 사업자등록번호      */
+	      ,ENTRPRS_NM              AS entrprsNm            /* 기업명              */
+	      ,RPRSNTV_NM              AS rprsntvNm            /* 대표자명            */
+	      ,ADRES                   AS adres                /* 주소                */
+	      ,ZIP                     AS zip                  /* 우편번호            */
+	      ,HEDOFC_ADRES            AS hedofcAdres          /* 본사주소            */
+	      ,HEDOFC_ZIP              AS hedofcZip            /* 본사우편번호        */
+	      ,HPE_CD                  AS hpeCd                /* 기업관리코드        */
+	      ,EMAIL_RECPTN_AGRE       AS emailRecptnAgre      /* 이메일수신동의      */
+	      ,SMS_RECPTN_AGRE         AS smsRecptnAgre        /* 문자메시지수신동의  */
+	      ,CREAT_DE                AS creatDe              /* 생성일자            */
+	      ,UPDT_DE                 AS UpdtDe               /* 수정일자            */
+	  FROM tb_entrprsuser
+	 WHERE EMAIL = #{EMAIL}
+	</select>	
+	
+	<!-- 법인등록번호로 기업사용자 조회-->
+	<select id="findEntUserByJurirno" resultType="entUserVO">
+	SELECT /* ProgramID=com.comm.mapif.UserMapper.findEntUserByJurirno */
+	       USER_NO                 AS userNo               /* 사용자번호(PK)(FK)  */
+	      ,JURIRNO                 AS jurirno              /* 법인등록번호(PK)    */
+	      ,IPIN_SELF_CRTFC_NO      AS ipinSelfCrtfcNo      /* IPIN_본인인증번호   */
+	      ,MOBLPHON_SELF_CRTFC_NO  AS moblphonSelfCrtfcNo  /* 휴대폰본인인증번호  */
+	      ,CHARGER_NM              AS chargerNm            /* 담당자명            */
+	      ,CHARGER_DEPT            AS chargerDept          /* 담당자부서          */
+	      ,OFCPS                   AS ofcps                /* 직위                */
+	      ,TELNO                   AS telno                /* 전화번호            */
+	      ,MBTLNUM                 AS mbtlnum              /* 휴대폰번호          */
+	      ,FXNUM                   AS fxnum                /* 팩스번호            */
+	      ,EMAIL                   AS email                /* 이메일              */
+	      ,BIZRNO                  AS bizrno               /* 사업자등록번호      */
+	      ,ENTRPRS_NM              AS entrprsNm            /* 기업명              */
+	      ,RPRSNTV_NM              AS rprsntvNm            /* 대표자명            */
+	      ,ADRES                   AS adres                /* 주소                */
+	      ,ZIP                     AS zip                  /* 우편번호            */
+	      ,HEDOFC_ADRES            AS hedofcAdres          /* 본사주소            */
+	      ,HEDOFC_ZIP              AS hedofcZip            /* 본사우편번호        */
+	      ,HPE_CD                  AS hpeCd                /* 기업관리코드        */
+	      ,EMAIL_RECPTN_AGRE       AS emailRecptnAgre      /* 이메일수신동의      */
+	      ,SMS_RECPTN_AGRE         AS smsRecptnAgre        /* 문자메시지수신동의  */	      
+	  FROM tb_entrprsuser
+	  WHERE JURIRNO = #{JURIRNO}
+	  LIMIT 1
+	</select>
+	
+	<!-- 일반사용자 조회 -->
+	<select id="findGnrUser" resultType="com.comm.user.AllUserVO">
+	SELECT /* ProgramID=com.comm.mapif.UserMapper.findGnrUser */
+		A.USER_NO					AS userNo				/* 사용자번호(PK)(FK)  */
+		,B.NM						AS userNm				/* 이름				   */
+		,B.MBTLNUM					AS mbtlnum              /* 휴대폰번호          */
+		,B.EMAIL					AS email                /* 이메일              */
+		,B.EMAIL_RECPTN_AGRE		AS emailRecptnAgre      /* 이메일수신동의      */
+		,B.SMS_RECPTN_AGRE 			AS smsRecptnAgre        /* 문자메시지수신동의  */
+		<!-- ,B.REGISTER
+		,B.RGSDE
+		,B.UPDUSR
+		,B.UPDDE -->
+	FROM tb_userinfo A, tb_gnrluser B
+	WHERE A.USER_NO = #{USER_NO}
+	AND A.USER_NO = B.USER_NO
+	</select>
+	
+	<!-- 기관사용자 조회 -->
+	<select id="findEmpUser" resultType="com.comm.user.AllUserVO">
+	SELECT /* ProgramID=com.comm.mapif.UserMapper.findEmpUser */
+		A.USER_NO
+		,A.LOGIN_ID
+		,A.EMPLYR_TY
+		,A.REGISTER
+		,A.RGSDE
+		,A.UPDUSR
+		,A.UPDDE
+		,B.NM 			AS userNm
+		,B.TELNO
+		,B.EMAIL
+		,B.DEPT_NM		
+	FROM tb_userinfo A, tb_emplyr B
+	WHERE A.USER_NO = #{USER_NO}
+	AND A.USER_NO = B.USER_NO	
+	</select>
+	
+	<!-- 일반 사용자 삭제 -->
+	<delete id="deleteUsergnrl">
+	DELETE
+	FROM tb_gnrluser
+	WHERE 	USER_NO IN 
+	<foreach item="item" collection="USER_NO_LIST" open="(" separator="," close=")">
+		#{item}
+	</foreach>
+	</delete>
+	
+	<!-- 기업 사용자 삭제 -->
+	<delete id="deleteUserentrprs">
+	DELETE
+	FROM tb_entrprsuser
+	WHERE 	USER_NO IN 
+	<foreach item="item" collection="USER_NO_LIST" open="(" separator="," close=")">
+		#{item}
+	</foreach>
+	</delete>
+	
+	<!-- 기관 사용자 삭제 -->
+	<delete id="deleteUseremp">
+	DELETE
+	FROM tb_emplyr
+	WHERE 	USER_NO IN 
+	<foreach item="item" collection="USER_NO_LIST" open="(" separator="," close=")">
+		#{item}
+	</foreach>
+	</delete>
+	
+	<!-- 사용자 정보 삭제 -->
+	<delete id="deleteUserInfo">
+	DELETE
+	FROM tb_userinfo
+	WHERE 	USER_NO IN 
+	<foreach item="item" collection="USER_NO_LIST" open="(" separator="," close=")">
+		#{item}
+	</foreach>
+	</delete>
+	
+	<!-- 사용자권한그룹 삭제 -->
+	<delete id="deleteUserAuthorGroup" >
+	DELETE 	/* ProgramID=com.comm.mapif.UserMapper.deleteUserAuthorGroup */
+	FROM 	tb_userauthorgroup
+	WHERE 	USER_NO IN 
+	<foreach item="item" collection="USER_NO_LIST" open="(" separator="," close=")">
+		#{item}
+	</foreach>
+	</delete>
+	
+	<!-- 패스워드 초기화 -->
+	<update id="updateInitializePwd">
+	UPDATE 	/* ProgramID=com.comm.mapif.UserMapper.updateInitializePwd */
+			tb_userinfo
+   	SET 	PASSWORD = #{PASSWORD},
+   			UPDUSR = #{UPDUSR},
+   			UPDDE = NOW()
+   	<if test="passwordValidDe != '' || passwordValidDe != null">
+   			,PASSWORD_VALID_DE = DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 6 MONTH), '%Y%m%d' )
+   	</if>
+ 	WHERE 	USER_NO   = #{USER_NO}   	
+	</update>
+	
+	<!-- 일반사용자 수정 -->
+	<update id="updateGnrlUserInfo">
+	UPDATE 	/* ProgramID=com.comm.mapif.UserMapper.updateGnrlUserInfo */
+			tb_gnrluser
+   	SET 	NM = #{NM},
+   			MBTLNUM = #{MBTLNUM},
+   			EMAIL = #{EMAIL},
+   			EMAIL_RECPTN_AGRE = #{EMAIL_RECPTN_AGRE},
+   			SMS_RECPTN_AGRE = #{SMS_RECPTN_AGRE},
+   			UPDUSR = #{UPDUSR},
+   			UPDDE = NOW()
+ 	WHERE 	USER_NO   = #{USER_NO}   	
+	</update>
+	
+	<!-- 기업사용자 수정 -->
+	<update id="updateEntUserInfo">
+	UPDATE  /* ProgramID=com.comm.mapif.UserMapper.updateEntUserInfo */
+			tb_entrprsuser
+   	SET 		JURIRNO = #{JURIRNO},
+   			CHARGER_NM = #{CHARGER_NM},
+   			CHARGER_DEPT = #{CHARGER_DEPT},
+   			OFCPS = #{OFCPS},
+   			TELNO = #{TELNO},
+   			TELNO2 = #{TELNO2},
+   			MBTLNUM = #{MBTLNUM},
+   			FXNUM = #{FXNUM},
+   			EMAIL = #{EMAIL},
+   			BIZRNO = #{BIZRNO},
+   			ENTRPRS_NM = #{ENTRPRS_NM},
+   			RPRSNTV_NM = #{RPRSNTV_NM},   			
+   			HEDOFC_ADRES = #{HEDOFC_ADRES},
+   			HEDOFC_ZIP = #{HEDOFC_ZIP},
+   			EMAIL_RECPTN_AGRE = #{EMAIL_RECPTN_AGRE},
+   			SMS_RECPTN_AGRE = #{SMS_RECPTN_AGRE}   			
+   			<!-- UPDUSR = #{UPDUSR}, -->
+   			<!-- UPDDE = NOW() -->
+ 	WHERE 	USER_NO   = #{USER_NO}   	
+	</update>
+	
+	<!-- 기업책임자 수정 -->
+	<update id="updateMngUserInfo">
+	UPDATE  /* ProgramID=com.comm.mapif.UserMapper.updateMngUserInfo */
+			tb_manageruser
+   	SET 		JURIRNO = #{JURIRNO},
+   			CHARGER_NM = #{CHARGER_NM},
+   			CHARGER_DEPT = #{CHARGER_DEPT},
+   			OFCPS = #{OFCPS},
+   			TELNO = #{TELNO},
+   			TELNO2 = #{TELNO2},
+   			MBTLNUM = #{MBTLNUM},
+   			FXNUM = #{FXNUM},
+   			EMAIL = #{EMAIL},
+   			BIZRNO = #{BIZRNO},
+   			ENTRPRS_NM = #{ENTRPRS_NM},
+   			RPRSNTV_NM = #{RPRSNTV_NM},   			
+   			HEDOFC_ADRES = #{HEDOFC_ADRES},
+   			HEDOFC_ZIP = #{HEDOFC_ZIP},
+   			EMAIL_RECPTN_AGRE = #{EMAIL_RECPTN_AGRE},
+   			SMS_RECPTN_AGRE = #{SMS_RECPTN_AGRE},   			
+   			UPDUSR = #{UPDUSR},
+   			UPDDE = NOW()
+ 	WHERE 	USER_NO   = #{USER_NO}   	
+	</update>
+	
+	<!-- 기관사용자 수정 -->
+	<update id="updateEmpUserInfo">
+	UPDATE	/* ProgramID=com.comm.mapif.UserMapper.updateEntUserInfo */ 
+		tb_emplyr
+   	SET NM = #{NM},
+   		TELNO = #{TELNO},
+   		EMAIL = #{EMAIL},
+   		DEPT_NM = #{DEPT_NM},
+   		OFCPS = #{OFCPS},
+   		MBTLNUM = #{MBTLNUM},
+   		EMAIL_RECPTN_AGRE = #{EMAIL_RECPTN_AGRE},
+   		SMS_RECPTN_AGRE = #{SMS_RECPTN_AGRE},
+   		UPDUSR = #{UPDUSR},
+   		UPDDE = NOW()
+ 	WHERE USER_NO   = #{USER_NO}   	
+	</update>
+ 
+ 	<!-- 사용자정보 상태 수정 -->
+	<update id="updateUserWithdrawal">
+	UPDATE	/* ProgramID=com.comm.mapif.UserMapper.updateUserWithdrawal */ 
+		tb_userinfo
+   	SET STTUS = #{STTUS}
+   	, LOGIN_ID = concat(LOGIN_ID, '_', #{USER_NO} )
+   	, LOGIN_DE = null
+ 	WHERE USER_NO   = #{USER_NO}   	
+	</update>
+	
+	<!-- 회원탈퇴 시 기업사용자정보 수정 -->
+	<update id="updateEntrprsUserWithdrawal">
+	UPDATE	/* ProgramID=com.comm.mapif.UserMapper.updateEntrprsUserWithdrawal */ 
+		tb_entrprsuser
+   	SET JURIRNO = concat(substring(JURIRNO, 2, length(JURIRNO)), substring(JURIRNO, 1, 1))
+ 	WHERE USER_NO   = #{USER_NO}   	
+	</update>
+	
+	<!-- 아이디찾기 조회 -->
+	<select id="findUserId" resultType="map">
+	(SELECT /* ProgramID=com.comm.mapif.UserMapper.findUserId */
+		 tb.USER_NO				AS			userNo
+		,tb.LOGIN_ID			AS			loginId
+		,GN.MBTLNUM				AS			mbtlNum
+		,GN.EMAIL				AS			email
+	FROM tb_userinfo tb, tb_gnrluser GN
+	WHERE GN.NM=#{userNm} AND GN.EMAIL=#{email} AND tb.USER_NO = GN.USER_NO AND tb.STTUS <![CDATA[<>]]> '03' )
+	UNION
+	(SELECT
+		 tb.USER_NO				AS			userNo
+		,tb.LOGIN_ID			AS			loginId
+		,EP.MBTLNUM				AS			mbtlNum
+		,EP.EMAIL				AS			email
+	FROM tb_userinfo tb, tb_entrprsuser EP
+	WHERE EP.CHARGER_NM=#{userNm} AND EP.EMAIL=#{email} AND tb.USER_NO = EP.USER_NO AND tb.STTUS <![CDATA[<>]]> '03') 
+	</select>
+	
+	<!-- 비밀번호찾기 조회 -->
+	<select id="findUserPwd" resultType="map">
+	(SELECT /* ProgramID=com.comm.mapif.UserMapper.findUserPwd */
+		GN.USER_NO				AS			userNo 
+		,GN.MBTLNUM				AS			mbtlNum
+		,GN.EMAIL				AS			email
+	FROM tb_userinfo tb, tb_gnrluser GN
+	WHERE GN.NM=#{userNm} AND GN.EMAIL=#{email} AND tb.LOGIN_ID=#{userId} AND tb.USER_NO = GN.USER_NO AND tb.STTUS <![CDATA[<>]]> '03')
+	UNION
+	(SELECT
+		 EP.USER_NO				AS			userNo
+		,EP.MBTLNUM				AS			mbtlNum
+		,EP.EMAIL				AS			email
+	FROM tb_userinfo tb, tb_entrprsuser EP
+	WHERE EP.CHARGER_NM=#{userNm} AND EP.EMAIL=#{email} AND tb.LOGIN_ID=#{userId} AND tb.USER_NO = EP.USER_NO AND tb.STTUS <![CDATA[<>]]> '03')
+	</select>
+	
+	<!-- 접근통제 IP여부 체크 -->
+	<select id="validateIPAddress" resultType="int">
+	SELECT		/* ProgramID=com.comm.mapif.UserMapper.validateIPAddress */
+					COUNT(*)
+	FROM		TB_ACCES_CNRL
+	WHERE		IP = #{ip}
+	</select>
+	
+	<!-- 개별 SMS 전송 -->
+	<insert id="insertSms">
+	INSERT INTO EMMA_DB.em_smt_tran /* ProgramID=com.comm.mapif.UserMapper.insertSms */
+		        (
+		          mt_refkey
+		         ,date_client_req
+		         ,content			/* 내용       */
+		         ,callback			/* 회신번호   */
+		         ,service_type		/* 서비스타입 */
+		         ,recipient_num 	/* 수신번호   */
+		        )
+     	 VALUES
+	            (                 
+	              #{MT_REFKEY}
+	             ,NOW()
+	             ,#{CONTENT}
+	             ,#{CALLBACK}
+	             ,#{SERVICE_TYPE}
+	             ,#{RECIPIENT_NUM}
+				)       
+	</insert>
+	
+	<!--  이메일 전송 -->
+	<insert id="insertEmail">
+	INSERT INTO TB_MAILSEND_MNG  /* ProgramID=com.comm.mapif.UserMapper.insertEmail */
+				(
+				  PRPOS
+				 ,EMAIL_SJ					/* 이메일제목 */
+				 ,TMPLAT_FILE_COURS			/* 템플릿파일경로 */
+				 ,TMPLAT_USE_AT				/* 템플릿사용여부 */
+				 ,SNDR_NM					/* 발신자명 */
+				 ,SNDR_EMAIL_ADRES			/* 발신자이메일 */
+				 ,RCVER_NM					/* 수신자명 */
+				 ,RCVER_EMAIL_ADRES			/* 수신자이메일주소 */
+				 ,SUBST_INFO1				/* 템플릿에서 대응되는 문자열1 */
+				 ,SUBST_INFO2				/* 템플릿에서 대응되는 문자열2 */
+				 ,SUBST_INFO3				/* 템플릿에서 대응되는 문자열3 */
+				 ,SUBST_INFO4				/* 템플릿에서 대응되는 문자열4 */
+				 ,SUBST_INFO5				/* 템플릿에서 대응되는 문자열5 */
+				 ,SUBST_INFO6				/* 템플릿에서 대응되는 문자열6 */
+				 ,SUBST_INFO7				/* 템플릿에서 대응되는 문자열7 */
+				 ,SUBST_INFO8				/* 템플릿에서 대응되는 문자열8 */
+				 ,SUBST_INFO9				/* 템플릿에서 대응되는 문자열9 */
+				 ,SNDNG_STTUS				
+				 ,PARAMTR1					/* 파라미터1 */
+				 ,PARAMTR2					/* 파라미터2 */
+				 ,RGSDE						/* 등록일 */				 
+				)
+		VALUES
+				(
+				  #{PRPOS}
+				 ,#{EMAIL_SJ}
+				 ,#{TMPLAT_FILE_COURS}
+				 ,#{TMPLAT_USE_AT}
+				 ,#{SNDR_NM}
+				 ,#{SNDR_EMAIL_ADRES}
+				 ,#{RCVER_NM}
+				 ,#{RCVER_EMAIL_ADRES}
+				 ,#{SUBST_INFO1}
+				 ,#{SUBST_INFO2}
+				 ,#{SUBST_INFO3}
+				 ,#{SUBST_INFO4}
+				 ,#{SUBST_INFO5}
+				 ,#{SUBST_INFO6}
+				 ,#{SUBST_INFO7}
+				 ,#{SUBST_INFO8}
+				 ,#{SUBST_INFO9}
+				 ,#{SNDNG_STTUS}
+				 ,#{PARAMTR1}
+				 ,#{PARAMTR2}
+				 ,NOW()
+				)
+	</insert>
+	
+	<!-- 로그인 일자 업데이트 -->
+	<update id="updateLoginDe">
+	UPDATE 	/* ProgramID=com.comm.mapif.UserMapper.updateLoginDe */
+			tb_userinfo
+   	SET 	LOGIN_DE = NOW()
+ 	WHERE 	USER_NO   = #{userNo}   	
+	</update>
+	
+	
+	<!-- 기업사용자(담당자) 조회-->
+	<select id="findEntCharger" resultType="Map">
+	SELECT /* ProgramID=com.comm.mapif.UserMapper.findEntCharger */
+	       EN.USER_NO                 AS userNo               /* 사용자번호(PK)(FK)  */
+	      ,tb.LOGIN_ID                AS userId               /* 로그인아이디 */
+	      ,EN.JURIRNO                 AS jurirno              /* 법인등록번호(PK)    */
+	      ,EN.CHARGER_NM              AS chargerNm            /* 담당자명            */
+	      ,EN.CHARGER_DEPT            AS chargerDept          /* 담당자부서          */
+	      ,EN.OFCPS                   AS ofcps                /* 직위                */
+	      ,EN.TELNO2                   AS telno2                /* 담당자 일반전화번호            */
+	      ,EN.MBTLNUM                 AS mbtlnum              /* 휴대폰번호          */
+	      ,EN.EMAIL                   AS email                /* 이메일              */
+	      ,EN.BIZRNO                  AS bizrno               /* 사업자등록번호      */
+	      ,EN.ENTRPRS_NM              AS entrprsNm            /* 기업명              */
+	  FROM tb_entrprsuser EN, tb_userinfo tb
+	  WHERE EN.USER_NO = tb.USER_NO
+	  AND EN.USER_NO = #{USER_NO}
+	</select>
+	
+	<!-- 기업사용자(담당자) 변경요청 등록 -->
+	<insert id="insertChangeEntCharger">
+	INSERT INTO TB_CHANGE_ENTPRS_CHARGER /* ProgramID=com.comm.mapif.UserMapper.insertChangeEntCharger */
+	            (
+	            JURIRNO                 /* 법인등록번호(PK)    */
+	            ,BIZRNO                  /* 사업자등록번호      */
+	            ,SE                      /* 구분                 */
+	            ,ENTRPRS_NM              /* 기업명              */
+	            ,CHARGER_NM              /* 담당자명            */
+	            ,CHARGER_DEPT            /* 담당자부서          */
+	            ,OFCPS                   /* 직위                */
+	            ,TELNO2                   /* 담당자 일반전화번호            */
+	            ,MBTLNUM                 /* 휴대폰번호          */
+	            ,EMAIL                   /* 이메일              */
+	            ,APPLC_AT				/* 적용여부              */
+	            ,USE_AT					/* 사용여부              */
+	            ,RGSDE                	 /* 등록일              */
+	            )
+	     VALUES
+	            (                 
+	            #{JURIRNO}
+	            ,#{BIZRNO}
+	            ,#{SE}
+	            ,#{ENTRPRS_NM}
+	            ,#{CHARGER_NM}
+	            ,#{CHARGER_DEPT}
+	            ,#{OFCPS}
+	            ,#{TELNO2}
+	            ,#{MBTLNUM}
+	            ,#{EMAIL}
+	            ,'N'
+	            ,'Y'
+	            ,NOW()     
+	            )       
+	</insert>
+	
+	<!-- 기업사용자(담당자) 변경요청 등록번호 조회 -->
+	<select id="selectChangeEntChargerSn" resultType="int">
+	SELECT /* ProgramID=com.comm.mapif.UserMapper.selectChangeEntChargerSn */
+		MAX(SN) AS SN 
+	FROM TB_CHANGE_ENTPRS_CHARGER
+	</select>
+	
+	<!-- 기업사용자(담당자) 변경요청 파일정보 업데이트 -->
+	<update id="updateChangeEntCharger">
+	UPDATE /* ProgramID=com.comm.mapif.UserMapper.updateChangeEntCharger */ 
+			TB_CHANGE_ENTPRS_CHARGER
+	SET 	FILE_SEQ = #{FILE_SEQ}
+		  , FILE_NM = #{FILE_NM}
+		  , FILE_SEQ2 = #{FILE_SEQ2}
+		  , FILE_NM2 = #{FILE_NM2}
+	WHERE SN = #{SN}
+	AND JURIRNO = #{JURIRNO}
+	</update>
+	
+	<!-- 모든 담당자변경신청 카운트 -->
+	<select id="selectChangeChargerCnt" resultType="int">
+		SELECT	/* ProgramID=com.comm.mapif.UserMapper.selectChangeChargerCnt */
+			COUNT(1)
+		FROM TB_CHANGE_ENTPRS_CHARGER EC LEFT JOIN OP_FILE OP1 
+			ON EC.FILE_SEQ = OP1.FILE_SEQ
+		LEFT JOIN OP_FILE OP2
+			ON EC.FILE_SEQ2 = OP2.FILE_SEQ
+		WHERE EC.USE_AT = 'Y'
+	</select>
+	
+	<!-- 모든 담당자변경신청 리스트 -->
+	<select id="selectChangeCharger" resultType="Map">
+		SELECT	/* ProgramID=com.comm.mapif.UserMapper.selectChangeCharger */
+			EC.SN,
+		  	EN.USER_NO,
+			EC.JURIRNO,
+			EC.BIZRNO,
+			EC.SE,
+			EC.ENTRPRS_NM,
+			EC.CHARGER_NM,
+			EC.CHARGER_DEPT,
+			EC.OFCPS,
+			EC.TELNO2,
+			EC.MBTLNUM,
+			EC.EMAIL,
+			EC.FILE_SEQ,
+			EC.FILE_NM,
+			EC.FILE_SEQ2,
+			EC.FILE_NM2,
+			EC.APPLC_AT,
+			EC.USE_AT,
+			OP1.FILE_ID, 
+			OP1.LOCAL_NM, 
+			OP1.SERVER_NM, 
+			OP1.FILE_URL, 
+			OP2.FILE_ID, 
+			OP2.LOCAL_NM, 
+			OP2.SERVER_NM, 
+			OP2.FILE_URL,
+			date_format(EC.RGSDE, '%Y-%m-%d %H:%i') as RGSDE
+		FROM TB_CHANGE_ENTPRS_CHARGER EC LEFT JOIN  (SELECT USER_NO
+										                  , ENTRPRS_NM
+										                  , CHARGER_NM
+										                  , BIZRNO
+										                  , JURIRNO
+										                  , EMAIL 
+										               FROM tb_entrprsuser) EN 
+		  ON EC.JURIRNO = EN.JURIRNO
+		LEFT JOIN OP_FILE OP1 
+			ON EC.FILE_SEQ = OP1.FILE_SEQ
+		LEFT JOIN OP_FILE OP2
+			ON EC.FILE_SEQ2 = OP2.FILE_SEQ
+		WHERE 1=1
+		AND EC.USE_AT = 'Y'
+		<include refid="searchCondition"/>
+		<if test="ad_search_type != '' and ad_search_word != ''" >			
+			<choose>
+				<when test="ad_search_type == 6">
+					AND 
+					EC.CHARGER_NM LIKE CONCAT('%', #{ad_search_word}, '%')
+				</when>
+			</choose>
+		</if>
+		<if test="ad_result_gubun != '' and ad_result_gubun != null " >
+			AND 
+			EC.APPLC_AT = #{ad_result_gubun}
+		</if>
+		ORDER BY EC.SN DESC
+		LIMIT #{limitFrom}, #{limitTo}
+	</select>
+	
+	<!-- 모든 담당자변경신청 리스트 -->
+	<select id="selectChangeChargerInfo" resultType="Map">
+		SELECT	/* ProgramID=com.comm.mapif.UserMapper.selectChangeChargerInfo */
+		       SN
+		     , JURIRNO
+		     , BIZRNO
+		     , SE
+		     , ENTRPRS_NM
+		     , CHARGER_NM
+		     , CHARGER_DEPT
+		     , OFCPS
+		     , TELNO2
+		     , MBTLNUM
+		     , EMAIL
+		  FROM TB_CHANGE_ENTPRS_CHARGER
+		 WHERE SN = #{SN}
+	</select>
+	
+	<!-- 기업사용자(담당자) 업데이트 -->
+	<update id="updateChargerInfo">
+		UPDATE   /* ProgramID=com.comm.mapif.UserMapper.updateChargerInfo */
+				tb_entrprsuser EN INNER JOIN TB_CHANGE_ENTPRS_CHARGER CH
+		ON EN.JURIRNO = CH.JURIRNO
+		SET EN.CHARGER_NM = CH.CHARGER_NM
+			, EN.CHARGER_DEPT = CH.CHARGER_DEPT
+			, EN.OFCPS = CH.OFCPS
+			, EN.TELNO2 = CH.TELNO2
+			, EN.MBTLNUM = CH.MBTLNUM
+			, EN.EMAIL = CH.EMAIL
+			, EN.EMAIL_RECPTN_AGRE = 'Y'
+			, EN.SMS_RECPTN_AGRE = 'Y'
+			, EN.UPDDE = NOW()
+		WHERE CH.SN = #{SN}
+	</update>
+	
+	<!-- 패스워드 초기화 대상 기업사용자 조회 -->
+	<select id="selectPwdInitEntUserInfo" resultType="Map">
+		SELECT	/* ProgramID=com.comm.mapif.UserMapper.selectPwdInitEntUserInfo */
+		       CH.SN
+		     , EN.JURIRNO
+		     , EN.BIZRNO
+		     , EN.USER_NO
+		  FROM tb_entrprsuser EN
+    INNER JOIN TB_CHANGE_ENTPRS_CHARGER CH
+		    ON EN.JURIRNO = CH.JURIRNO
+		 WHERE CH.SN = #{SN}
+	</select>
+	
+	<!-- 담당자변경신청 기업사용자 아이디 조회 -->
+	<select id="selectIdUserInfo" resultType="Map">
+		SELECT	/* ProgramID=com.comm.mapif.UserMapper.selectIdUserInfo */
+		       A.LOGIN_ID
+		  FROM (SELECT U.USER_NO
+		             , U.LOGIN_ID
+		             , EP.JURIRNO
+		          FROM tb_userinfo U
+		             , tb_entrprsuser EP
+		         WHERE U.USER_NO = EP.USER_NO
+		           AND U.STTUS <![CDATA[<>]]> '03') A
+		     , TB_CHANGE_ENTPRS_CHARGER CH
+		 WHERE A.JURIRNO = CH.JURIRNO
+		   AND CH.SN = #{SN}
+	</select>
+	
+	<!-- 기업명 업데이트 -->
+	<update id="updateEntrprsNmInfo">
+		UPDATE   /* ProgramID=com.comm.mapif.UserMapper.updateChargerInfo */
+				tb_entrprsuser EN INNER JOIN TB_CHANGE_ENTPRS_CHARGER CH
+		ON EN.JURIRNO = CH.JURIRNO
+		SET EN.ENTRPRS_NM = CH.ENTRPRS_NM
+			, EN.UPDDE = NOW()
+		WHERE CH.SN = #{SN}
+	</update>
+	
+	<!-- 담당자요청정보 적용여부 업데이트 -->
+	<update id="updateApplcAt">
+		UPDATE   /* ProgramID=com.comm.mapif.UserMapper.updateApplcAt */
+				TB_CHANGE_ENTPRS_CHARGER CH
+		SET CH.APPLC_AT = 'Y'
+		, CH.UPDDE = NOW()
+		WHERE CH.SN = #{SN}
+	</update>
+	
+	<!-- 담당자요청정보 삭제 -->
+	<update id="deleteChargerInfo" >
+	UPDATE 	/* ProgramID=com.comm.mapif.UserMapper.deleteChargerInfo */
+			TB_CHANGE_ENTPRS_CHARGER CH
+	SET CH.USE_AT = 'N'
+	, CH.UPDDE = NOW()
+	WHERE CH.SN = #{SN}
+	</update>
+	
+</mapper>

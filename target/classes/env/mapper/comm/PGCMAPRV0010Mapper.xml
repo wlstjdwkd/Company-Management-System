@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.comm.mapif.PGCMAPRV0010Mapper">
+
+	<resultMap type="HashMap" id="basisProgrsMap">
+		<result property="sanctnSeq" 		column="sanctnSeq" />
+		<result property="drafterId" 		column="drafterId" />
+		<result property="drafterNm" 		column="drafterNm" />
+		<result property="drafterDeptCd" 	column="drafterDeptCd" />
+		<result property="drafterDeptNm" 	column="drafterDeptNm" />
+		<result property="sanctnNm" 		column="sanctnNm" />
+		<result property="useAt" 			column="useAt" />
+	</resultMap>
+
+	<resultMap type="HashMap" id="basisProgrsDetailMap">
+		<result property="sanctnNm" 			column="sanctnNm" />
+		<result property="drafterId" 			column="drafterId" />
+		<result property="drafterNm" 			column="drafterNm" />
+		<result property="drafterDeptNm" 		column="drafterDeptNm" />
+		<result property="sanctnSeq" 			column="sanctnSeq" />
+		<result property="progrsStep" 			column="progrsStep" />
+		<result property="confmerId" 			column="confmerId" />
+		<result property="confmerNm" 			column="confmerNm" />
+		<result property="confmerDeptCd" 		column="confmerDeptCd" />
+		<result property="confmerDept" 			column="confmerDept" />
+		<result property="sanctnEnd" 			column="sanctnEnd" />
+		<result property="useAt" 				column="useAt" />
+		<result property="altrtvConfmerId" 		column="altrtvConfmerId" />
+		<result property="altrtvConfmerNm" 		column="altrtvConfmerNm" />
+		<result property="altrtvConfmerDeptNm" 	column="altrtvConfmerDeptNm" />
+		<result property="altrtvConfmBgnDt" 	column="altrtvConfmBgnDt" />
+		<result property="altrtvConfmEndDt" 	column="altrtvConfmEndDt" />
+	</resultMap>
+
+	<resultMap type="HashMap" id="emplyrMap">
+		<result property="userNo" 		column="userNo" />
+		<result property="nm" 			column="nm" />
+		<result property="deptCd" 		column="deptCd" />
+		<result property="deptNm" 		column="deptNm" />
+		<result property="ofcpsCd" 		column="ofcpsCd" />
+	</resultMap>
+
+	<resultMap type="HashMap" id="deptMap">
+		<result property="deptCd" 		column="deptCd" />
+		<result property="deptNm" 		column="deptNm" />
+	</resultMap>
+
+	<resultMap type="HashMap" id="altrtvMap">
+		<result property="confmerId" 			column="confmerId" />
+		<result property="altrtvConfmerId" 		column="altrtvConfmerId" />
+		<result property="confmerNm" 			column="confmerNm" />
+		<result property="altrtvConfmerNm" 		column="altrtvConfmerNm" />
+		<result property="altrtvConfmerDeptNm" 	column="altrtvConfmerDeptNm" />
+		<result property="altrtvConfmBgnDt" 	column="altrtvConfmBgnDt" />
+		<result property="altrtvConfmEndDt" 	column="altrtvConfmEndDt" />
+	</resultMap>
+
+	<select id="getBasisProgrsList" resultMap="basisProgrsMap">
+		SELECT /* ProgramID=com.comm.mapif.PGCMAPRV0010Mapper.getBasisProgrsList */
+			SANCTN_SEQ AS sanctnSeq
+			,DRAFTER_ID AS drafterId
+			,DRAFTER_NM AS drafterNm
+			,DRAFTER_DEPT_CD AS drafterDeptCd
+			,DRAFTER_DEPT_NM AS drafterDeptNm
+			,SANCTN_NM AS sanctnNm
+			,USE_AT AS useAt
+		FROM TB_BASIS_PROGRS
+		WHERE DRAFTER_ID = #{userNo}
+		<if test="useAt != '' and useAt != null">
+			AND USE_AT = #{useAt}
+		</if>
+		GROUP BY SANCTN_SEQ , DRAFTER_ID , DRAFTER_NM , DRAFTER_DEPT_CD , DRAFTER_DEPT_NM , SANCTN_NM , USE_AT
+		ORDER BY SANCTN_SEQ DESC
+	</select>
+
+	<select id="getBasisProgrsListCnt" resultType="Int">
+		SELECT
+			COUNT(*)
+		FROM (
+			SELECT /* ProgramID=com.comm.mapif.PGCMAPRV0010Mapper.getBasisProgrsList */
+				SANCTN_SEQ AS sanctnSeq
+				,DRAFTER_ID AS drafterId
+				,DRAFTER_NM AS drafterNm
+				,DRAFTER_DEPT_CD AS drafterDeptCd
+				,DRAFTER_DEPT_NM AS drafterDeptNm
+				,SANCTN_NM AS sanctnNm
+				,USE_AT AS useAt
+			FROM TB_BASIS_PROGRS
+			WHERE DRAFTER_ID = #{userNo}
+			<if test="useAt != '' and useAt != null">
+				AND USE_AT = #{useAt}
+			</if>
+			GROUP BY SANCTN_SEQ , DRAFTER_ID , DRAFTER_NM , DRAFTER_DEPT_CD , DRAFTER_DEPT_NM , SANCTN_NM , USE_AT
+		)
+	</select>
+
+	<select id="getBasisProgrsDetailList" resultMap="basisProgrsDetailMap">
+		SELECT
+			BP.SANCTN_NM AS sanctnNm
+			,BP.DRAFTER_ID AS drafterId
+			,BP.DRAFTER_NM AS drafterNm
+			,BP.DRAFTER_DEPT_NM AS drafterDeptNm
+			,BP.SANCTN_SEQ AS sanctnSeq
+			,BP.PROGRS_STEP AS progrsStep
+			,BP.CONFMER_ID AS confmerId
+			,BP.CONFMER_NM AS confmerNm
+			,EMP.DEPT_CD AS confmerDeptCd
+			,EMP.DEPT_NM AS confmerDept
+			,BP.SANCTN_END_AT AS sanctnEnd
+			,BP.USE_AT AS useAt
+			,AC.ALTRTV_CONFMER_ID AS altrtvConfmerId
+			,AC.ALTRTV_CONFMER_NM AS altrtvConfmerNm
+			,EMP2.DEPT_NM AS altrtvConfmerDeptNm
+			,TO_CHAR(AC.ALTRTV_CONFM_BGN_DE,'YYYY-MM-DD') AS altrtvConfmBgnDt
+			,TO_CHAR(AC.ALTRTV_CONFM_END_DE,'YYYY-MM-DD') AS altrtvConfmEndDt
+		FROM TB_BASIS_PROGRS BP
+		LEFT JOIN TB_EMPLYR EMP
+		ON BP.CONFMER_ID = EMP.USER_NO
+		LEFT JOIN TB_ALTRTV_CONFRM AC
+		ON BP.CONFMER_ID = AC.CONFMER_ID AND (TO_DATE(SYSDATE,'YYYY-MM-DD') BETWEEN AC.ALTRTV_CONFM_BGN_DE AND AC.ALTRTV_CONFM_END_DE) AND AC.USE_AT = 'Y'
+		LEFT JOIN TB_EMPLYR EMP2
+		ON AC.CONFMER_ID = EMP2.USER_NO
+		WHERE BP.DRAFTER_ID = #{userNo}
+		AND BP.SANCTN_SEQ = #{sanctnSeq}
+		ORDER BY BP.PROGRS_STEP
+	</select>
+
+	<select id="findSanctnSeq" resultType="Int">
+		SELECT /* ProgramID=com.comm.mapif.PGCMAPRV0010Mapper.findSanctnSeq */
+			NVL(MAX(SANCTN_SEQ),0) AS sanctnSeq
+		FROM TB_BASIS_PROGRS
+		WHERE DRAFTER_ID = #{userNo}
+	</select>
+
+	<select id="findEmplyrInfo" resultMap="emplyrMap">
+		SELECT /* ProgramID=com.comm.mapif.PGCMAPRV0010Mapper.findEmplyrInfo */
+			USER_NO AS userNo
+			,NM AS nm
+			,DEPT_CD AS deptCd
+			,DEPT_NM AS deptNm
+			,OFCPS_CD AS ofcpsCd
+		FROM TB_EMPLYR
+		WHERE USER_NO = #{userNo}
+	</select>
+
+	<select id="findConfirmerList" resultMap="emplyrMap">
+		SELECT /* ProgramID=com.comm.mapif.PGCMAPRV0010Mapper.findConfirmerList */
+			EMP.DEPT_CD AS deptCd
+			,EMP.DEPT_NM AS deptNm
+			,EMP.USER_NO AS userNo
+			,EMP.NM AS nm
+		FROM TB_EMPLYR EMP, TB_USERINFO USR
+		WHERE EMP.OFCPS_CD <![CDATA[<=]]> (SELECT OFCPS_CD FROM TB_EMPLYR WHERE USER_NO = #{userNo})
+		AND EMP.USER_NO = USR.USER_NO
+		AND EMP.USER_NO != #{userNo} AND USR.STTUS = '01'
+		ORDER BY EMP.USER_NO
+	</select>
+
+	<insert id="insertBasisProgrs">
+		INSERT	/* ProgramID=com.comm.mapif.PGCMAPRV0010Mapper.insertBasisProgrs */
+		INTO TB_BASIS_PROGRS(
+			DRAFTER_ID
+			,SANCTN_SEQ
+			,PROGRS_STEP
+			,SANCTN_NM
+			,DRAFTER_DEPT_CD
+			,DRAFTER_DEPT_NM
+			,DRAFTER_NM
+			,CONFMER_ID
+			,CONFMER_NM
+			,SANCTN_END_AT
+			,USE_AT
+			,REGISTER
+			,RGSDE
+		)
+		VALUES(
+			#{drafterId}
+			,#{sanctnSeq}
+			,#{progrsStep}
+			,#{sanctnNm}
+			,#{drafterDeptCd}
+			,#{drafterDeptNm}
+			,#{drafterNm}
+			,#{confmerId}
+			,#{confmerNm}
+			,#{sanctnEndAt}
+			,#{useAt}
+			,#{register}
+			,SYSDATE
+		)
+	</insert>
+
+	<delete id="deleteBasisProgrs">
+		DELETE /* ProgramID=com.comm.mapif.PGCMAPRV0010Mapper.deleteBasisProgrs */
+		FROM TB_BASIS_PROGRS
+		WHERE DRAFTER_ID = #{drafterId}
+		AND SANCTN_SEQ = #{sanctnSeq}
+	</delete>
+
+	<select id="findAltrtvConfrm" resultMap="altrtvMap">
+		SELECT /* ProgramID=com.comm.mapif.PGCMAPRV0010Mapper.findAltrtvConfrm */
+			CONFMER_ID AS confmerId
+			,ALTRTV_CONFMER_ID AS altrtvConfmerId
+			,CONFMER_NM AS confmerNm
+			,ALTRTV_CONFMER_NM AS altrtvConfmerNm
+			,EMP.DEPT_NM AS altrtvConfmerDeptNm
+			,TO_CHAR(ALTRTV_CONFM_BGN_DE,'YYYY-MM-DD') AS altrtvConfmBgnDt
+			,TO_CHAR(ALTRTV_CONFM_END_DE,'YYYY-MM-DD') AS altrtvConfmEndDt
+		FROM TB_ALTRTV_CONFRM AC
+		LEFT JOIN TB_EMPLYR EMP
+		ON AC.ALTRTV_CONFMER_ID = EMP.USER_NO
+		WHERE CONFMER_ID = #{confmerId}
+		AND TO_CHAR(SYSDATE,'YYYYMMDD') BETWEEN ALTRTV_CONFM_BGN_DE AND ALTRTV_CONFM_END_DE
+		AND USE_AT = 'Y'
+	</select>
+
+</mapper>

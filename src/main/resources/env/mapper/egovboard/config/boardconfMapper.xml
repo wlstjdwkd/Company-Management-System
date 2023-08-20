@@ -1,0 +1,804 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="_boardconf">
+	
+	<!-- 게시판 목록 -->
+	<select id="boardConfList" parameterType="egovframework.board.config.BoardConfVO" resultType="egovframework.board.config.BoardConfVO">
+		SELECT B.* FROM (
+			SELECT <!-- ROWNUM NUM,  -->A.* FROM (
+				SELECT A.BBS_CD			AS bbsCd,
+					   A.BBS_NM			AS bbsNm,
+					   A.BBS_DESC		AS bbsDesc,
+					   A.USE_YN			AS useYn,
+					   <!-- TO_CHAR(TO_DATE(A.REG_DT, 'YYYYMMDDHH24MISS'), 'YYYY-MM-DD') AS regDt, -->
+					   DATE_FORMAT(STR_TO_DATE(A.REG_DT, 'YYYY%m%dHH24MISS'), '%Y-%m-%d') AS regDt,
+					   (SELECT COUNT(SEQ)
+						  FROM OP_BOARD
+						 WHERE BBS_CD = A.BBS_CD) AS articleCnt,
+					   (SELECT COUNT(CMT_SEQ)
+						  FROM OP_BOARD_CMT
+						 WHERE BBS_CD = A.BBS_CD ) AS commentCnt,
+					   (SELECT COUNT(Y.ORDER_NO)
+						  FROM OP_BOARD X, OP_FILE Y
+						 WHERE X.BBS_CD = A.BBS_CD
+						   AND X.FILE_SEQ = Y.FILE_SEQ) AS fileCnt,
+					   B.KIND_CD		AS kindCd,
+					   B.CTG_YN			AS ctgYn,
+					   B.NOTICE_YN		AS noticeYn,
+					   B.COMMENT_YN		AS commentYn,
+					   B.SKIN_PATH		AS skinPath,
+					   B.LIST_SKIN		AS listSkin,
+					   C.MGR_EDITOR_YN	AS mgrEditorYn,
+					   C.USR_EDITOR_YN	AS usrEditorYn,
+					   C.FILE_YN		AS fileYn,
+					   C.BAN_YN			AS banYn,
+					   C.CAPTCHA_YN		AS captchaYn,
+					   C.OPEN_YN		AS openYn,
+					   D.LIST_VIEW_CD	AS listViewCd,
+					   D.RECOMM_YN		AS recommYn,
+					   D.SUE_YN			AS sueYn,
+					   D.STFY_YN		AS stfyYn,
+					   E.DOWN_YN		AS downYn,
+					   E.FEED_YN		AS feedYn
+				  FROM OP_BOARD_CONF A,			OP_BOARD_CONF_GLOBAL B,
+					   OP_BOARD_CONF_FORM C,	OP_BOARD_CONF_VIEW D,
+					   OP_BOARD_CONF_LIST E
+				 WHERE A.BBS_CD = B.BBS_CD
+				   AND A.BBS_CD = C.BBS_CD
+				   AND A.BBS_CD = D.BBS_CD
+				   AND A.BBS_CD = E.BBS_CD
+				<trim>
+				   	<if test="superAdmYn != null and superAdmYn != &quot;&quot;">
+						<if test="superAdmYn != &quot;Y&quot;"><!-- 협회관리자와 지회관리자 또는 공공구매관리자 -->
+							<if test="ppAdmYn != null and ppAdmYn != &quot;&quot;">
+								<if test="ppAdmYn == &quot;Y&quot;"><!-- 공공구매관리자 -->
+									AND A.BBS_CD IN(1002,1006,1013,1014)
+								</if>
+								<if test="ppAdmYn != &quot;Y&quot;"><!-- 협회관리자와 지회관리자 -->
+									AND A.BBS_CD IN(1002,1012)
+								</if>
+							</if>
+						</if>
+				  	</if>
+				</trim>
+				<trim>
+					<if test="q_searchVal != null  and q_searchVal != ''">
+						<if test="q_searchKey == 1001">AND
+							A.BBS_NM LIKE '%${q_searchVal}%'
+						</if>
+					</if>
+				</trim>
+				<!-- <trim>
+					<if test="q_sortName != null  and q_sortName != ''">
+						ORDER BY ${q_sortName} ${q_sortOrder}
+					</if>
+					<if test="q_sortName == null or q_sortName == ''">
+						ORDER BY A.ORDER_NO ASC
+					</if>
+				</trim> -->
+				) A
+			<!-- WHERE ROWNUM &lt;= #{pagingEndNum} -->
+		 ) B
+		 <!-- WHERE NUM &gt;= #{pagingStartNum} -->
+		 LIMIT #{limitFrom}, #{limitTo}
+	</select>
+	
+	<select id="boardConfListCount" parameterType="egovframework.board.config.BoardConfVO" resultType="int">
+		SELECT COUNT(A.BBS_CD) AS bbsCount
+		  FROM OP_BOARD_CONF A, OP_BOARD_CONF_GLOBAL B,
+			   OP_BOARD_CONF_FORM C, OP_BOARD_CONF_VIEW D
+		 WHERE A.BBS_CD = B.BBS_CD
+		   AND A.BBS_CD = C.BBS_CD
+		   AND A.BBS_CD = D.BBS_CD
+		<trim>
+			<if test="superAdmYn != null and superAdmYn != &quot;&quot;">
+				<if test="superAdmYn != &quot;Y&quot;"><!-- 협회관리자와 지회관리자 또는 공공구매관리자 -->
+					<if test="ppAdmYn != null and ppAdmYn != &quot;&quot;">
+						<if test="ppAdmYn == &quot;Y&quot;"><!-- 공공구매관리자 -->
+							AND A.BBS_CD IN(1002,1006,1013,1014)
+						</if>
+						<if test="ppAdmYn != &quot;Y&quot;"><!-- 협회관리자와 지회관리자 -->
+							AND A.BBS_CD IN(1002,1012)
+						</if>
+					</if>
+				</if>
+		  	</if>
+		</trim>
+		<trim>
+			<if test="q_searchVal != null  and q_searchVal != ''">
+				<if test="q_searchKey == 1001">AND
+					A.BBS_NM LIKE '%${q_searchVal}%'
+				</if>
+			</if>
+		</trim>
+	</select>
+	
+	<!-- 게시판 템플릿 목록 가져오기 -->
+	<select id="boardTemplateList" resultType="egovframework.board.temp.BoardTempVO" parameterType="string">
+		SELECT TEMPLATE_ID AS templateId,
+			   TEMPLATE_NM AS templateNm
+		  FROM OP_BOARD_TEMPLATE
+		 WHERE TEMPLATE_TYPE = #{templateType}
+		 ORDER BY REG_DT ASC
+	</select>
+	
+	
+	
+	<!-- 게시판 신규등록 
+====================================================================== 
+	-->
+	<!-- 게시판 설정 등록 - 기본정보(개요) -->
+	<insert id="boardConfInsert" parameterType="egovframework.board.config.BoardConfVO">
+		<selectKey order="BEFORE" keyProperty="bbsCd" resultType="int">
+			SELECT IFNULL(MAX(BBS_CD),1000)+1 FROM OP_BOARD_CONF
+		</selectKey>		
+		INSERT INTO OP_BOARD_CONF (
+			   BBS_CD,		BBS_NM,		BBS_DESC,
+			   ORDER_NO
+		) VALUES (
+			   #{bbsCd},		#{bbsNm},	#{bbsDesc},
+			   (SELECT A.MAX_ORDER_NO FROM 
+			   		(
+			   			SELECT IFNULL(MAX(ORDER_NO),0)+1 AS MAX_ORDER_NO 
+			   			FROM OP_BOARD_CONF
+			   		) A
+			   )
+		   	   <!-- (SELECT IFNULL(MAX(ORDER_NO),0)+1 FROM OP_BOARD_CONF) -->
+		)	
+	</insert>
+	
+	<!-- 게시판 설정 등록 - 기본정보(SKIN, 분류, 공지글, 의견글 사용여부) -->
+	<insert id="boardConfGlobalInsert" parameterType="egovframework.board.config.BoardConfVO">
+		INSERT INTO OP_BOARD_CONF_GLOBAL (
+			BBS_CD,			KIND_CD,	CTG_YN,			NOTICE_YN,
+			COMMENT_YN,		SKIN_PATH,	HEADER_PATH,	FOOTER_PATH,
+			LIST_SKIN,		VIEW_SKIN,	FORM_SKIN
+		) VALUES (
+			#{bbsCd},		#{kindCd},		#{ctgYn},		#{noticeYn},
+			#{commentYn},	#{skinPath},	#{headerPath},	#{footerPath},
+			#{listSkin},	#{viewSkin},	#{formSkin}
+		)
+	</insert>
+	
+	<!-- 게시판 설정 등록 - 목록 설정 -->
+	<insert id="boardConfListInsert" parameterType="egovframework.board.config.BoardConfVO">
+		INSERT INTO OP_BOARD_CONF_LIST (
+			BBS_CD,			RPP_NUM,			DOWN_YN,		FEED_YN,
+			CUT_TITLE_NUM,	NEW_ARTICLE_NUM,	EMPHASIS_NUM,	REGISTER_VIEW_CD
+		) VALUES (
+			#{bbsCd},		#{rppNum},			#{downYn},		#{feedYn},
+			#{cutTitleNum},	#{newArticleNum},	#{emphasisNum},	#{registerViewCd}
+		)
+	</insert>
+	
+	<!-- 게시판 설정 등록 - 상세조회 설정 -->
+	<insert id="boardConfViewInsert" parameterType="egovframework.board.config.BoardConfVO">
+		INSERT INTO OP_BOARD_CONF_VIEW (
+			BBS_CD,		LIST_VIEW_CD,	RECOMM_YN,	SUE_YN,
+			STFY_YN,	TAG_YN,			READ_COOKIE_HOUR
+		) VALUES (
+			#{bbsCd},	#{listViewCd},	#{recommYn},	#{sueYn},
+			#{stfyYn},	#{tagYn},		#{readCookieHour}
+		)
+	</insert>
+	
+	<!-- 게시판 설정 등록 - 입력폼 설정 -->
+	<insert id="boardConfFormInsert" parameterType="egovframework.board.config.BoardConfVO">
+		INSERT INTO OP_BOARD_CONF_FORM (
+			BBS_CD,			MGR_EDITOR_YN,		USR_EDITOR_YN,	FILE_YN,	UPLOAD_TYPE,	MAX_FILE_CNT,
+			MAX_FILE_SIZE,	TOTAL_FILE_SIZE,	FILE_EXTS,		BAN_YN,		CAPTCHA_YN,		OPEN_YN,
+			BAN_CONTENTS
+		) VALUES (
+			#{bbsCd},		#{mgrEditorYn},		#{usrEditorYn},	#{fileYn},	#{uploadType},	#{maxFileCnt},
+			#{maxFileSize},	#{totalFileSize},	#{fileExts},		#{banYn},	#{captchaYn},	#{openYn},
+			#{banContents}
+		)
+	</insert>
+	
+	<!-- 게시판 설정 등록 - 항목관리 -->
+	<insert id="boardConfExtensionInsert" parameterType="egovframework.board.config.BoardExtensionVO">
+		INSERT INTO OP_BOARD_CONF_EXTENSION (
+			BBS_CD,
+			COLUMN_ID,
+			COLUMN_NM,
+			COLUMN_TYPE,
+			COLUMN_COMMENT,
+			SEARCH_YN,
+			SEARCH_TYPE,
+			REQUIRE_YN,
+			USE_YN
+		) VALUES (
+			#{bbsCd},
+			#{columnId},
+			#{columnNm},
+			#{columnType},
+			#{columnComment},
+			#{searchYn},
+			#{searchType},
+			#{requireYn},
+			#{useYn}
+		)
+	</insert>
+	
+	<!-- 게시판 설정 등록 - 분류등록 -->
+	<insert id="boardCtgInsert" parameterType="egovframework.board.config.BoardCtgVO">
+		INSERT INTO OP_BOARD_CTG (
+			BBS_CD,	  
+			CTG_CD,	
+			CTG_NM,	ORDER_NO
+		) VALUES (
+			#{bbsCd},	 
+			<!-- (SELECT IFNULL(MAX(CTG_CD),1000)+1 FROM OP_BOARD_CTG WHERE BBS_CD = #{bbsCd}),  -->			
+			(SELECT A.MAX_CTG_CD FROM 
+		   		(
+		   			SELECT IFNULL(MAX(CTG_CD),1000)+1 AS MAX_CTG_CD 
+		   			FROM OP_BOARD_CTG
+		   			WHERE BBS_CD = #{bbsCd}
+		   		) A
+		    ),			     
+			#{ctgNm},   #{orderNo}
+		)
+	</insert>
+	
+	<!-- 게시판 분류 삭제 -->
+	<delete id="boardCtgDeleteAll" parameterType="egovframework.board.config.BoardCtgVO">
+		DELETE FROM OP_BOARD_CTG
+		 WHERE BBS_CD = #{bbsCd}
+	</delete>
+	
+	<!-- 게시판 목록 배치 설정 삭제 -->
+	<delete id="boardConfArrangeDelete" parameterType="egovframework.board.config.BoardArrangeVO">
+		DELETE FROM OP_BOARD_CONF_ARRANGE
+		 WHERE BBS_CD = #{bbsCd}
+		   AND LIST_VIEW_GUBUN = #{listViewGubun}
+	</delete>
+	
+	<!-- 게시판 목록의 columnId 에 대한 culumnName을 가져온다. -->
+	<select id="getBoardColumnName" parameterType="egovframework.board.config.BoardArrangeVO" resultType="String">
+		SELECT A.columnNm FROM (
+			SELECT COLUMN_NM AS columnNm FROM OP_BOARD_CONF_EXTENSION
+			 WHERE BBS_CD = #{bbsCd}
+			   AND COLUMN_ID = #{columnId}
+			   AND USE_YN = 'Y'
+			   
+			UNION
+			  
+			SELECT COLUMN_COMMENT AS columnNm
+			  FROM INFORMATION_SCHEMA.COLUMNS
+			 WHERE TABLE_SCHEMA = 'GNRLZ_INFO_DB'
+			   AND TABLE_NAME = 'OP_BOARD'
+			   AND COLUMN_NAME = #{columnId} 				 			
+		)A LIMIT 0,1 
+	</select>	
+	
+	<!-- 게시판 설정 - 목록 배치 -->
+	<insert id="boardConfArrangeInsert" parameterType="egovframework.board.config.BoardArrangeVO">		
+		INSERT INTO OP_BOARD_CONF_ARRANGE (
+			BBS_CD,
+			LIST_VIEW_GUBUN,
+			COLUMN_ID,
+			COLUMN_NM,
+			ORDER_NO,
+			BEAN_NM
+		) VALUES (
+			#{bbsCd},
+			#{listViewGubun},
+			#{columnId},
+			<!-- (SELECT A.columnNm FROM (
+				SELECT COLUMN_NM AS columnNm FROM OP_BOARD_CONF_EXTENSION
+				 WHERE BBS_CD = #{bbsCd}
+				   AND COLUMN_ID = #{columnId}
+				   AND USE_YN = 'Y'
+				   
+				UNION
+				  
+				SELECT COLUMN_COMMENT AS columnNm
+				  FROM INFORMATION_SCHEMA.COLUMNS
+				 WHERE TABLE_SCHEMA = 'GNRLZ_INFO_DB'
+				   AND TABLE_NAME = 'OP_BOARD'
+				   AND COLUMN_NAME = #{columnId} 				 			
+			)A LIMIT 0,1 ), -->
+			#{columnNm},
+			#{orderNo},
+			#{beanNm}
+		)
+	</insert>
+	
+	
+	<!-- 게시판 설정 상세보기
+====================================================================== 
+	-->
+	<select id="boardConfView" parameterType="int" resultType="egovframework.board.config.BoardConfVO">
+		SELECT A.BBS_CD			AS bbsCd,
+			   A.BBS_NM			AS bbsNm,
+			   A.BBS_DESC		AS bbsDesc,
+			   A.USE_YN			AS useYn,
+			   A.ORDER_NO		AS orderNo,
+			   C.FEED_YN		AS feedYn,
+			   <!-- TO_CHAR(TO_DATE(A.REG_DT, 'YYYYMMDDHH24MISS'), 'YYYY-MM-DD HH24:MI:SS') AS regDt,
+			   TO_CHAR(TO_DATE(A.MOD_DT, 'YYYYMMDDHH24MISS'), 'YYYY-MM-DD HH24:MI:SS') AS modDt, -->			   
+			   DATE_FORMAT(A.REG_DT, '%Y-%m-%d %H:%i:%s') AS regDt,
+	   		   DATE_FORMAT(A.MOD_DT, '%Y-%m-%d %H:%i:%s') AS modDt,
+			   B.KIND_CD		AS kindCd,
+			   B.CTG_YN			AS ctgYn,
+			   B.NOTICE_YN		AS noticeYn,
+			   B.COMMENT_YN		AS commentYn,
+			   B.SKIN_PATH		AS skinPath,
+			   B.HEADER_PATH	AS headerPath,
+			   B.FOOTER_PATH	AS footerPath,
+			   B.LIST_SKIN		AS listSkin,
+			   B.VIEW_SKIN		AS viewSkin,
+			   B.FORM_SKIN		AS formSkin,
+			   C.RPP_NUM		AS rppNum,
+			   E.OPEN_YN		AS openYn
+		  FROM OP_BOARD_CONF A, OP_BOARD_CONF_GLOBAL B, OP_BOARD_CONF_LIST C, OP_BOARD_CONF_VIEW D, OP_BOARD_CONF_FORM E
+		 WHERE A.BBS_CD = #{bbsCd}
+		   AND B.BBS_CD = A.BBS_CD
+		   AND C.BBS_CD = A.BBS_CD
+		   AND D.BBS_CD = A.BBS_CD
+		   AND E.BBS_CD = A.BBS_CD
+	</select>
+	
+	<!-- 게시판 분류목록 설정 조회 -->
+	<select id="boardCtgNmList" parameterType="int" resultType="string">
+		SELECT CTG_NM  AS ctgNm
+		  FROM OP_BOARD_CTG
+		 WHERE BBS_CD = #{bbsCd}
+		 ORDER BY ORDER_NO ASC
+	</select>
+	
+	<!-- 게시판 목록 설정 조회 -->
+	<select id="boardConfListView" parameterType="int" resultType="egovframework.board.config.BoardConfVO">
+		SELECT A.BBS_CD				AS bbsCd,
+			   A.RPP_NUM			AS rppNum,
+			   A.DOWN_YN			AS downYn,
+			   A.FEED_YN			AS feedYn,
+			   A.CUT_TITLE_NUM		AS cutTitleNum,
+			   A.NEW_ARTICLE_NUM	AS newArticleNum,
+			   A.EMPHASIS_NUM		AS emphasisNum,
+			   A.REGISTER_VIEW_CD	AS registerViewCd
+		  FROM OP_BOARD_CONF_LIST A
+		 WHERE A.BBS_CD = #{bbsCd}
+	</select>
+	
+	<!-- 게시판 상세조회 설정 조회 -->
+	<select id="boardConfViewView" parameterType="int" resultType="egovframework.board.config.BoardConfVO">
+		SELECT A.BBS_CD				AS bbsCd,
+			   A.LIST_VIEW_CD		AS listViewCd,
+			   A.RECOMM_YN			AS recommYn,
+			   A.SUE_YN				AS sueYn,
+			   A.STFY_YN			AS stfyYn,
+			   A.TAG_YN				AS tagYn,
+			   A.READ_COOKIE_HOUR	AS readCookieHour
+		  FROM OP_BOARD_CONF_VIEW A
+		 WHERE A.BBS_CD = #{bbsCd}
+	</select>
+	
+	<!-- 게시판 입력폼 설정 조회 -->
+	<select id="boardConfFormView" parameterType="int" resultType="egovframework.board.config.BoardConfVO">
+		SELECT A.BBS_CD				AS bbsCd,
+			   A.MGR_EDITOR_YN		AS mgrEditorYn,
+			   A.USR_EDITOR_YN		AS usrEditorYn,
+			   A.FILE_YN			AS fileYn,
+			   A.UPLOAD_TYPE		AS uploadType,
+			   A.MAX_FILE_CNT		AS maxFileCnt,
+			   A.MAX_FILE_SIZE		AS maxFileSize,
+			   A.TOTAL_FILE_SIZE	AS totalFileSize,
+			   A.FILE_EXTS			AS fileExts,
+			   A.BAN_YN				AS banYn,
+			   A.BAN_CONTENTS		AS banContents,
+			   A.CAPTCHA_YN			AS captchaYn,
+			   A.OPEN_YN			AS openYn
+		  FROM OP_BOARD_CONF_FORM A
+		 WHERE A.BBS_CD = #{bbsCd}
+	</select>
+	
+	<!--  -->
+	<select id="boardConfAuthView" parameterType="int" resultType="egovframework.board.config.BoardConfVO">
+		SELECT A.BBS_CD				AS bbsCd,
+			   A.AUTH_CD_LIST		AS authCdList,
+			   A.AUTH_CD_VIEW		AS authCdView,
+			   A.AUTH_CD_WRITE		AS authCdWrite,
+			   A.AUTH_CD_REPLY		AS authCdReply,
+			   A.AUTH_CD_COMMENT	AS authCdComment,
+			   A.AUTH_IDS			AS authIds
+		  FROM OP_BOARD_CONF_AUTH A
+		 WHERE A.BBS_CD = #{bbsCd}
+	</select>
+	
+	<select id="boardDisplayColumnList" parameterType="egovframework.board.config.BoardArrangeVO" resultType="egovframework.board.config.BoardArrangeVO">
+		SELECT COLUMN_ID AS columnId, 
+			   COLUMN_NM AS columnNm,
+			   BEAN_NM AS beanNm
+		  FROM OP_BOARD_CONF_ARRANGE
+		 WHERE BBS_CD = #{bbsCd}
+		   AND LIST_VIEW_GUBUN = #{listViewGubun}
+		 ORDER BY ORDER_NO ASC
+	</select>
+	
+	<select id="boardColumnList" parameterType="map" resultType="egovframework.board.config.BoardArrangeVO">
+		select * from (SELECT COLUMN_NAME AS columnId,
+                      COLUMN_COMMENT AS columnNm
+				  FROM INFORMATION_SCHEMA.COLUMNS
+				 WHERE TABLE_SCHEMA = 'GNRLZ_INFO_DB'
+				   AND TABLE_NAME = 'OP_BOARD') m  
+				   where m.columnId not in (SELECT COLUMN_ID AS columnId
+					 FROM OP_BOARD_CONF_EXTENSION
+					 WHERE BBS_CD = #{bbsCd})
+		UNION
+		SELECT COLUMN_ID AS columnId,
+			   COLUMN_NM AS columnNm
+		  FROM OP_BOARD_CONF_EXTENSION
+		 WHERE BBS_CD = #{bbsCd}
+		   AND USE_YN = 'Y';
+	</select>
+	
+	<!-- 게시판 항목 설정 조회 -->
+	<select id="boardConfExtensionList" parameterType="int" resultType="egovframework.board.config.BoardExtensionVO">
+		SELECT
+			BBS_CD			AS bbsCd,
+			COLUMN_ID		AS columnId,
+			COLUMN_NM		AS columnNm,
+			COLUMN_TYPE		AS columnType,
+			COLUMN_COMMENT	AS columnComment,
+			SEARCH_YN		AS searchYn,
+			SEARCH_TYPE		AS searchType,
+			REQUIRE_YN		AS requireYn,
+			USE_YN			AS useYn
+		FROM OP_BOARD_CONF_EXTENSION
+		WHERE BBS_CD = #{bbsCd}
+		ORDER BY USE_YN DESC, COLUMN_ID ASC
+	</select>
+	
+	<!-- 게시판 설정 수정 - 기본정보(개요) -->
+	<update id="boardConfUpdate" parameterType="egovframework.board.config.BoardConfVO">
+		UPDATE OP_BOARD_CONF
+		<set>
+			<if test="bbsNm != null  and bbsNm != ''">
+			BBS_NM = #{bbsNm},
+			</if>
+			<if test="bbsDesc != null  and bbsDesc != ''">
+			BBS_DESC = #{bbsDesc},
+			</if>
+            <if test="orderNo != 0">
+            ORDER_NO = #{orderNo},
+            </if>
+			<if test="useYn != null  and useYn != ''">
+			USE_YN = #{useYn},
+			</if>
+			MOD_DT = #{modDt}
+		</set>
+		 WHERE BBS_CD = #{bbsCd}
+	</update>
+	
+	<!-- 게시판 설정 수정 - 기본정보(SKIN, 분류, 공지글, 의견글 사용여부) -->
+	<update id="boardConfGlobalUpdate" parameterType="egovframework.board.config.BoardConfVO">
+		UPDATE OP_BOARD_CONF_GLOBAL
+		<set>
+			<if test="kindCd != 0">
+			KIND_CD = #{kindCd},
+			</if>
+			<if test="ctgYn != null  and ctgYn != ''">
+			CTG_YN = #{ctgYn},
+			</if>
+			<if test="noticeYn != null  and noticeYn != ''">
+			NOTICE_YN = #{noticeYn},
+			</if>
+			<if test="commentYn != null  and commentYn != ''">
+			COMMENT_YN = #{commentYn},
+			</if>
+			SKIN_PATH = #{skinPath},
+			<if test="headerPath != null  and headerPath != ''">
+			HEADER_PATH = #{headerPath},
+			</if>
+			<if test="footerPath != null  and footerPath != ''">
+			FOOTER_PATH = #{footerPath},
+			</if>
+			<if test="listSkin != null  and listSkin != ''">
+			LIST_SKIN = #{listSkin},
+			</if>
+			<if test="viewSkin != null  and viewSkin != ''">
+			VIEW_SKIN = #{viewSkin},
+			</if>
+			<if test="formSkin != null  and formSkin != ''">
+			FORM_SKIN = #{formSkin},
+			</if>
+			BBS_CD = BBS_CD
+		</set>
+		 WHERE BBS_CD = #{bbsCd}
+	</update>
+	
+	<!-- 게시판 설정 수정 - 목록 설정 -->
+	<update id="boardConfListUpdate" parameterType="egovframework.board.config.BoardConfVO">
+		UPDATE OP_BOARD_CONF_LIST
+        <set>
+            <if test="rppNum != 0">
+            RPP_NUM = #{rppNum},
+            </if>
+            <if test="downYn != null  and downYn != ''">
+            DOWN_YN = #{downYn},
+            </if>
+            <if test="feedYn != null  and feedYn != ''">
+            FEED_YN = #{feedYn},
+            </if>
+            <if test="cutTitleNum != 0">
+            CUT_TITLE_NUM = #{cutTitleNum},
+            </if>
+            <if test="newArticleNum != 0">
+            NEW_ARTICLE_NUM = #{newArticleNum},
+            </if>
+            <if test="emphasisNum != 0">
+            EMPHASIS_NUM = #{emphasisNum},
+            </if>
+            <if test="registerViewCd != 0">
+            REGISTER_VIEW_CD = #{registerViewCd},
+            </if>
+            BBS_CD = BBS_CD
+        </set>
+		 WHERE BBS_CD = #{bbsCd}
+	</update>
+	
+	<!-- 게시판 설정 수정 - 상세조회 설정 -->
+	<update id="boardConfViewUpdate" parameterType="egovframework.board.config.BoardConfVO">
+		UPDATE OP_BOARD_CONF_VIEW
+        <set>
+            <if test="listViewCd != 0">
+            LIST_VIEW_CD = #{listViewCd},
+            </if>
+            <if test="recommYn != null  and recommYn != ''">
+            RECOMM_YN = #{recommYn},
+            </if>
+            <if test="sueYn != null  and sueYn != ''">
+            SUE_YN = #{sueYn},
+            </if>
+            <if test="stfyYn != null  and stfyYn != ''">
+            STFY_YN = #{stfyYn},
+            </if>
+            <if test="tagYn != null  and tagYn != ''">
+            TAG_YN = #{tagYn},
+            </if>
+            <if test="readCookieHour != 0">
+            READ_COOKIE_HOUR = #{readCookieHour},
+            </if>
+            BBS_CD = BBS_CD
+        </set>
+		 WHERE BBS_CD = #{bbsCd}
+	</update>
+	
+	<!-- 게시판 설정 수정 - 입력폼 설정 -->
+	<update id="boardConfFormUpdate" parameterType="egovframework.board.config.BoardConfVO">
+		UPDATE OP_BOARD_CONF_FORM SET
+		<trim>
+			<if test="mgrEditorYn != null  and mgrEditorYn != ''">
+			MGR_EDITOR_YN = #{mgrEditorYn},
+			</if>
+			<if test="usrEditorYn != null  and usrEditorYn != ''">
+			USR_EDITOR_YN = #{usrEditorYn},
+			</if>
+			<if test="fileYn != null  and fileYn != ''">
+			FILE_YN = #{fileYn},
+			</if>
+			<if test="uploadType != null  and uploadType != ''">
+			UPLOAD_TYPE = #{uploadType},
+			</if>
+			<if test="maxFileCnt != null  and maxFileCnt != ''">
+			MAX_FILE_CNT = #{maxFileCnt},
+			</if>
+			<if test="maxFileSize != null  and maxFileSize != ''">
+			MAX_FILE_SIZE = #{maxFileSize},
+			</if>
+			<if test="totalFileSize != null  and totalFileSize != ''">
+			TOTAL_FILE_SIZE = #{totalFileSize},
+			</if>
+			<if test="fileExts != null  and fileExts != ''">
+			FILE_EXTS = #{fileExts},
+			</if>
+			<if test="banYn != null  and banYn != ''">
+			BAN_YN = #{banYn},
+			</if>
+			<if test="banContents != null  and banContents != ''">
+			BAN_CONTENTS = #{banContents},
+			</if>
+			<if test="captchaYn != null  and captchaYn != ''">
+			CAPTCHA_YN = #{captchaYn},
+			</if>
+			<if test="openYn != null  and openYn != ''">
+			OPEN_YN = #{openYn},
+			</if>
+			BBS_CD = BBS_CD
+		</trim>
+		 WHERE BBS_CD = #{bbsCd}
+	</update>
+	
+	<!-- 게시판 설정 수정 - 권한 설정 (사용안함.) -->
+	<update id="boardConfAuthUpdate" parameterType="egovframework.board.config.BoardConfVO">
+		UPDATE OP_BOARD_CONF_AUTH SET
+			<if test="authCdList == null or authCdList == ''">
+			AUTH_CD_LIST = 0,
+			</if>
+			<if test="authCdList != null  and authCdList != ''">
+			AUTH_CD_LIST = #{authCdList},
+			</if>
+			<if test="authCdView == null or authCdView == ''">
+			AUTH_CD_VIEW = 0,
+			</if>
+			<if test="authCdView != null  and authCdView != ''">
+			AUTH_CD_VIEW = #{authCdView},
+			</if>
+			<if test="authCdWrite == null or authCdWrite == ''">
+			AUTH_CD_WRITE = 0,
+			</if>
+			<if test="authCdWrite != null  and authCdWrite != ''">
+			AUTH_CD_WRITE = #{authCdWrite},
+			</if>
+			<if test="authCdReply == null or authCdReply == ''">
+			AUTH_CD_REPLY = 0,
+			</if>
+			<if test="authCdReply != null  and authCdReply != ''">
+			AUTH_CD_REPLY = #{authCdReply},
+			</if>
+			<if test="authCdComment == null or authCdComment == ''">
+			AUTH_CD_COMMENT = 0,
+			</if>
+			<if test="authCdComment != null  and authCdComment != ''">
+			AUTH_CD_COMMENT = #{authCdComment},
+			</if>
+			AUTH_IDS = #{authIds}
+		 WHERE BBS_CD = #{bbsCd}
+	</update>
+	
+	<update id="boardConfExtensionUpdate" parameterType="egovframework.board.config.BoardExtensionVO">
+		UPDATE OP_BOARD_CONF_EXTENSION SET
+			   COLUMN_ID = #{columnId},
+			   COLUMN_NM = #{columnNm},
+			   COLUMN_TYPE = #{columnType},
+			   COLUMN_COMMENT = #{columnComment},
+			   SEARCH_YN = #{searchYn},
+			   SEARCH_TYPE = #{searchType},
+			   REQUIRE_YN = #{requireYn},
+			   USE_YN = #{useYn}
+		 WHERE BBS_CD = #{bbsCd}
+		   AND COLUMN_ID = #{columnId}
+	</update>
+	
+	<!-- 게시판 설정 삭제 -->
+	<delete id="boardConfDelete" parameterType="string">
+	DELETE FROM OP_BOARD_CONF
+	WHERE BBS_CD = #{bbsCd}
+	</delete>
+	
+	<!-- 게시판 설정(배치) 삭제 -->
+	<delete id="deleteBdConArrange">
+	DELETE FROM OP_BOARD_CONF_ARRANGE
+	WHERE BBS_CD = #{bbsCd}
+	</delete>
+	
+	<!-- 게시판 설정(확장) 삭제 -->
+	<delete id="deleteBdConExtension">
+	DELETE FROM OP_BOARD_CONF_EXTENSION
+	WHERE BBS_CD = #{bbsCd}
+	</delete>
+	
+	<!-- 게시판 설정(입력폼) 삭제 -->
+	<delete id="deleteBdConForm">
+	DELETE FROM OP_BOARD_CONF_FORM
+	WHERE BBS_CD = #{bbsCd}
+	</delete>
+	
+	<!-- 게시판 설정(전역) 삭제 -->
+	<delete id="deleteBdConGlobal">
+	DELETE FROM OP_BOARD_CONF_GLOBAL
+	WHERE BBS_CD = #{bbsCd}
+	</delete>
+	
+	<!-- 게시판 설정(목록) 삭제 -->
+	<delete id="deleteBdConList">
+	DELETE FROM OP_BOARD_CONF_LIST
+	WHERE BBS_CD = #{bbsCd}
+	</delete>
+	
+	<!-- 게시판 설정(상세조회) 삭제 -->
+	<delete id="deleteBdConView">
+	DELETE FROM OP_BOARD_CONF_VIEW
+	WHERE BBS_CD = #{bbsCd}
+	</delete>
+	
+	<!-- 게시판 설정(카테고리) 삭제 -->
+	<delete id="deleteBdConCtg">
+	DELETE FROM OP_BOARD_CTG
+	WHERE BBS_CD = #{bbsCd}
+	</delete>
+	
+	<update id="boardConfYnUpdate" parameterType="egovframework.board.config.BoardConfYnVO">
+		UPDATE OP_BOARD_CONF
+		<set>
+			<if test="useYn != null  and useYn != ''">
+			USE_YN = #{useYn},
+			</if>
+			MOD_DT = #{modDt}
+		</set>
+		 WHERE BBS_CD = #{bbsCd}
+	</update>
+	
+	<update id="boardConfGlobalYnUpdate" parameterType="egovframework.board.config.BoardConfYnVO">
+		UPDATE OP_BOARD_CONF_GLOBAL SET
+		<trim>
+			<if test="ctgYn != null  and ctgYn != ''">
+			CTG_YN = #{ctgYn},
+			</if>
+			<if test="noticeYn != null  and noticeYn != ''">
+			NOTICE_YN = #{noticeYn},
+			</if>
+			<if test="commentYn != null  and commentYn != ''">
+			COMMENT_YN = #{commentYn},
+			</if>
+			<if test="feedYn != null  and feedYn != ''">
+			FEED_YN = #{feedYn},
+			</if>
+			BBS_CD = BBS_CD
+		</trim>
+		 WHERE BBS_CD = #{bbsCd}
+	</update>
+	
+	<update id="boardConfListYnUpdate" parameterType="egovframework.board.config.BoardConfYnVO">
+		UPDATE OP_BOARD_CONF_LIST SET
+		<trim>
+			<if test="downYn != null  and downYn != ''">
+			DOWN_YN = #{downYn},
+			</if>
+			<if test="feedYn != null  and feedYn != ''">
+			FEED_YN = #{feedYn},
+			</if>
+			BBS_CD = BBS_CD
+		</trim>
+		 WHERE BBS_CD = #{bbsCd}
+	</update>
+	
+	<update id="boardConfViewYnUpdate" parameterType="egovframework.board.config.BoardConfYnVO">
+		UPDATE OP_BOARD_CONF_VIEW SET
+		<trim>
+			<if test="recommYn != null  and recommYn != ''">
+			RECOMM_YN = #{recommYn},
+			</if>
+			<if test="sueYn != null  and sueYn != ''">
+			SUE_YN = #{sueYn},
+			</if>
+			<if test="stfyYn != null  and stfyYn != ''">
+			STFY_YN = #{stfyYn},
+			</if>
+			<if test="tagYn != null  and tagYn != ''">
+			TAG_YN = #{tagYn},
+			</if>
+			BBS_CD = BBS_CD
+		</trim>
+		 WHERE BBS_CD = #{bbsCd}
+	</update>
+	
+	<update id="boardConfFormYnUpdate" parameterType="egovframework.board.config.BoardConfYnVO">
+		UPDATE OP_BOARD_CONF_FORM SET
+		<trim>
+			<if test="mgrEditorYn != null  and mgrEditorYn != ''">
+			MGR_EDITOR_YN = #{mgrEditorYn},
+			</if>
+			<if test="usrEditorYn != null  and usrEditorYn != ''">
+			USR_EDITOR_YN = #{usrEditorYn},
+			</if>
+			<if test="fileYn != null  and fileYn != ''">
+			FILE_YN = #{fileYn},
+			</if>
+			<if test="banYn != null  and banYn != ''">
+			BAN_YN = #{banYn},
+			</if>
+			<if test="captchaYn != null  and captchaYn != ''">
+			CAPTCHA_YN = #{captchaYn},
+			</if>
+			<if test="openYn != null  and openYn != ''">
+			OPEN_YN = #{openYn},
+			</if>
+			BBS_CD = BBS_CD
+		</trim>
+		 WHERE BBS_CD = #{bbsCd}
+	</update>
+	
+</mapper>

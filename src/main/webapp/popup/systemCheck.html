@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<title>기업정보</title>
+
+<link rel="stylesheet" type="text/css" href="/css/ucm.css" />
+<script type="text/javascript">
+
+
+function eventDisablePopup1(choice) {	
+
+	var ExpDate = new Date();
+	
+	if(choice == "day") {
+		ExpDate.setTime(ExpDate.getTime() + 1000*60*60*24);
+	}
+	else {
+		ExpDate.setTime(ExpDate.getTime() + 1000*60*60*24*7);
+
+	}
+	document.cookie = "systemCheck=1234; path=/; expires="+ ExpDate.toGMTString() + ";"; 
+	window.close();
+}
+
+</script>
+</head>
+<body>
+<body>
+<TABLE style="BORDER-BOTTOM: medium none; BORDER-LEFT: medium none; WIDTH: 100%; BORDER-COLLAPSE: collapse; FONT-FAMILY: Dotum; FONT-SIZE: 9pt; BORDER-TOP: medium none; BORDER-RIGHT: medium none" class=txc-table border=0 cellSpacing=0 cellPadding=0 width=391>
+<TBODY>
+<TR>
+	<TD style="BORDER-BOTTOM: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BACKGROUND-COLOR: #003399; WIDTH: 100%; HEIGHT: 65px; BORDER-TOP: #ccc 1px solid; BORDER-RIGHT: #ccc 1px solid">
+		<P style="TEXT-ALIGN: center">&nbsp;﻿
+			<STRONG>
+				<!--  <SPAN style="COLOR: #ffffff; FONT-SIZE: 18pt">﻿확인서 신청 접수 안내﻿</SPAN>  -->
+				<SPAN style="COLOR: #ffffff; FONT-SIZE: 18pt">시스템 점검 공지안내﻿</SPAN>
+			</STRONG>
+		</P>
+	</TD>
+</TR>
+<TR>
+	<TD style="BORDER-BOTTOM: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; WIDTH: 100%; HEIGHT: 65px; BORDER-TOP: #ccc 1px solid; BORDER-RIGHT: #ccc 1px solid">
+		<P style="TEXT-ALIGN: center">&nbsp;﻿
+			<STRONG>
+				<SPAN style="FONT-SIZE: 11pt">
+				<br>
+				보다 나은 서비스를 제공해드리기 위해<br>
+				아래와 같이 시스템 점검을 시행합니다.<br>
+				<br>
+				점검시간 동안 서비스 이용이 제한되오니 많은 양해 부탁드립니다.
+				</SPAN>
+			</STRONG>
+		</P>
+		<P>&nbsp; </P>
+	</TD>
+</TR>
+<TR>
+	<TD style="BORDER-BOTTOM: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; WIDTH: 100%; HEIGHT: 150px; BORDER-RIGHT: #ccc 1px solid">
+		<center>
+			<P>&nbsp; </P>
+			<STRONG>
+				<SPAN style="COLOR: #ED0000; FONT-SIZE: 12pt">﻿
+					점검일정<br> 
+					2015년 10월 14일(수) 18:00 ~ 20:00
+				</SPAN>
+			</STRONG>
+		</center>
+		<P>&nbsp;</P>
+		<SPAN style="FONT-SIZE: 10pt" >
+			&nbsp;﻿&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			※ 상기 작업 시간은 사정에 의해 변경될 수 있습니다.
+		</SPAN>
+		<P>&nbsp;</P>
+	</TD>
+</TR>
+<TR>
+	<TD>
+		<input class = "ml5" id="eventPopupNomore1" type="checkbox" onfocus="this.blur();" onclick="eventDisablePopup1('day');" /> 
+		<a href="#none"><label for="eventPopupNomore1">하루 동안 이 창을 열지않음</label></a>
+		<!-- <input class = "ml5" id="eventPopupNomore2" type="checkbox" onfocus="this.blur();" onclick="eventDisablePopup1('week');" /> 
+		<a href="#none"><label for="eventPopupNomore2">7일 동안 이 창을 열지않음</label></a> -->
+		<a href="#none" class="ml40"  onclick = "window.close();"><span>창닫기</span></a>
+	</TD>
+</TR>
+</TBODY>
+</TABLE>
+
+</body>
+</html>

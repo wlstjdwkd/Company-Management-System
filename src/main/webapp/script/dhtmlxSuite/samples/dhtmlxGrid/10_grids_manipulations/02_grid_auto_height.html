@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+
+<html>
+<head>
+	<title>Auto height</title>
+	
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+</head>
+
+<body>
+	<h1>Auto height</h1>
+	<p>If auto height mode is swicthed on grid expands  to prevent vertical scrolling, and shrinks not to occupy external place.</p>
+	<table width="700px">
+		<tr>
+			<td>
+				<div id="gridbox" style="width:380px; height:270px; background-color:white;overflow:hidden"></div>
+			</td>
+            <td valign='top'>
+<a href="javascript:void(0)" onClick="mygrid.addRow((new Date()).valueOf(),[0,'','','',false,'na',false,''],mygrid.getRowIndex(mygrid.getSelectedId()))">Add row</a><br>
+				<a href="javascript:void(0)" onClick="mygrid.deleteSelectedItem()">Remove Selected Row</a><br>
+				Turn AutoHeight <a href="javascript:void(0)" onClick="mygrid.enableAutoHeight(true)">On</a>/
+				<a href="javascript:void(0)" onClick="mygrid.enableAutoHeight(false)">Off</a>
+			</td>
+		</tr>
+		<tr>
+		</tr>
+	</table>
+<script>
+	mygrid = new dhtmlXGridObject('gridbox');
+	mygrid.setImagePath("../../../codebase/imgs/");
+	mygrid.setHeader("Column A, Column B");
+	mygrid.setInitWidths("200,180")
+	mygrid.setColAlign("right,left")
+	mygrid.setColTypes("ro,ed");
+	mygrid.setColSorting("int,str")
+    mygrid.enableAutoHeight(true,400);
+    mygrid.enableAutoWidth(true)
+	mygrid.init();
+	mygrid.setSkin("dhx_skyblue")
+	mygrid.loadXML("../common/grid.xml");
+</script>
+
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!--conf
+<sample in_favorites="false">
+              <product version="1.4" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               </sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Footer</title>
+	
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+</head>
+
+<body>
+	<h1>Setting Footer</h1>
+	<div id="gridbox" style="width:600px; height:310px;background-color:white;"></div>
+	<h3>Setting style for footer:</h3>
+	<ul>
+	<li>To modify  default style of footer you should redefine "div.gridbox div.ftr td" after dhtmlXGrid.css has been placed on page</li>
+
+	<li>To set explicit style for each cell in footer use the second argument  of <code>attachFooter</code> method.</li>
+	</ul>
+	
+<script>
+	function calculateFooterValues(stage){
+		if(stage && stage!=2)
+			return true;
+		var nrQ = document.getElementById("nr_q");
+			nrQ.innerHTML = sumColumn(3)
+		var srQ = document.getElementById("sr_q");
+			srQ.innerHTML = sumColumn(5)
+		var nrS = document.getElementById("nr_s");
+			nrS.innerHTML = "$ "+sumIncome(2,3)
+		var srS = document.getElementById("sr_s");
+			srS.innerHTML = "$ "+sumIncome(4,5)
+		return true;
+	}
+	function sumColumn(ind){
+		var out = 0;
+		for(var i=0;i<mygrid.getRowsNum();i++){
+			out+= parseFloat(mygrid.cells2(i,ind).getValue())
+		}
+		return out;
+	}
+	function sumIncome(indPrice,indQuant){
+		var out = 0;
+		for(var i=0;i<mygrid.getRowsNum();i++){
+			out+= parseFloat(mygrid.cells2(i,indPrice).getValue())*parseFloat(mygrid.cells2(i,indQuant).getValue())
+		}
+		return out;
+	}
+
+	mygrid = new dhtmlXGridObject('gridbox');
+	mygrid.setImagePath("../../../codebase/imgs/");
+    mygrid.setHeader("Book,#cspan,North Region,#cspan,South Region,#cspan");
+   	mygrid.attachHeader("Author,Title,Price,Sold,Price,Sold");
+	mygrid.setInitWidths("150,170,50,80,50,*")
+	mygrid.setColAlign("left,left,right,right,right,right")
+	mygrid.setColTypes("ro,ro,price,ed,price,ed");
+  	mygrid.setColSorting("str,str,int,int,int,int")
+	mygrid.setSkin("dhx_skyblue")
+	mygrid.attachEvent("onEditCell",calculateFooterValues)
+	mygrid.setSkin("dhx_skyblue")
+	mygrid.init();
+   	mygrid.attachFooter("Total quantity,#cspan,-,<div id='nr_q'>0</div>,-,<div id='sr_q'>0</div>",["text-align:left;"])
+	mygrid.attachFooter("Income per Region,#cspan,<div id='nr_s'>0</div>,#cspan,<div id='sr_s'>0</div>,#cspan",["text-align:left;"])
+	mygrid.loadXML("../common/grid_numbers.xml",calculateFooterValues);
+
+</script>
+
+</body>
+</html>

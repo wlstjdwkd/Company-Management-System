@@ -1,0 +1,47 @@
+<!--conf
+<sample in_favorites="false">
+              <product version="1.4" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               </sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Extra Excell types</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+</head>
+<body>
+	<h1>Extra eXcell types</h1>
+	<p>There are several eXcell types available in dhtmlxGrid:
+		<ul>
+           <li>List <code>&quot;clist&quot;</code>
+            - list of values, which is displayed as comma delimited list in cells</li>
+			<li>Calculator <code>&quot;calck&quot;</code>
+			- allows you to make some math calculations</li>
+			<li>New Checkbox <code>&quot;acheck&quot;</code> - skinable two-state control</li>
+			<li>Image <code>&quot;img&quot;</code> - allow to insert image into the grid cell</li>
+		</ul>
+	</p>
+	<div id="gridbox" style="width:670px;height:250px;background-color:white;"></div>	
+<script>
+	mygrid = new dhtmlXGridObject('gridbox');
+	mygrid.setImagePath("../../../codebase/imgs/");
+	mygrid.setHeader("Sales,Book Title,List,Calculator,New Checkbox,Image");
+	mygrid.setInitWidths("50,100,250,80,80,100");
+	mygrid.setColAlign("right,left,left,right,left,center");
+	mygrid.setColTypes("dyn,ed,clist,calck,acheck,img");
+	mygrid.setColSorting("int,str,str,int,str,date");
+	mygrid.registerCList(2,["Stephen King","John Grisham","Honore de Balzac"]);
+	mygrid.enableAutoWidth(true);
+	mygrid.setSkin("dhx_skyblue");
+	mygrid.init();
+	mygrid.loadXML("../common/grid_extra.xml");
+</script>
+
+</body>
+</html>

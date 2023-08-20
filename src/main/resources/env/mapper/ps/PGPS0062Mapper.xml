@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="biz.tech.mapif.ps.PGPS0062Mapper">
+	<sql id="dynamicWhereSql">
+     <trim>
+        <if test="sel_target_year != null and sel_target_year != '' ">
+			AND STDYY_DO=#{sel_target_year}
+		</if>
+     </trim>
+     </sql>
+     
+	<sql id="dynamicWhere">
+     <trim>
+        <if test="sel_target_year != null and sel_target_year != '' ">
+			AND STDYY=#{sel_target_year}
+		</if>
+		<if test="searchCondition != null and searchCondition != '' ">
+			<if test="searchCondition == 'EA1' "></if>
+			<if test="searchCondition == 'EA2' ">AND A.MNGMT_STLE LIKE '%기업(일반)%'</if>
+			<if test="searchCondition == 'EA3' ">AND A.MNGMT_STLE LIKE '%관계기업%'</if>
+			<if test="searchCondition == 'EA4' ">AND A.MNGMT_STLE LIKE '%후보기업%'</if>
+			<if test="searchCondition == 'EA5' ">AND A.MNGMT_STLE LIKE '%가젤형%'</if>
+		</if>
+     </trim>
+     </sql>
+     
+    <!-- 테마별업종 조회(코드그룹별) -->
+	<select id="findCodesByGroupNo" resultType="MAP">
+	SELECT 	/* ProgramID=biz.tech.mapif.ps.PGPS0062Mapper.findCodesByGroupNo */
+				   code 			AS code			/* 코드 */
+				  ,code_dc			AS codeDc		/* 코드설명 */
+				  ,code_group_no	AS codeGroupNo	/* 코드그룹번호 */
+				  ,code_nm			AS codeNm		/* 코드명 */
+	  FROM		tb_cmmncode
+	 WHERE		code_group_no = #{param}
+	 	AND		use_at = 'Y'
+	 ORDER		BY outpt_ordr ASC	
+	</select>
+     
+	<!-- 주요지표-현황 목록 개수 조회-->
+	<select id="findTotalIdxInfoRowCnt" resultType="int">
+	SELECT 	/* ProgramID=biz.tech.mapif.ps.PGPS0062Mapper.findTotalIdxInfoRowCnt */
+	count(1) from (
+		SELECT
+		'구분' COL0
+		,1234 COL1
+		,1234 COL2
+		,1234 COL3
+		,1234 COL4
+		,1234 COL5
+		,1234 COL6
+		from TB_ENTPRS_INFO
+		limit 1, 10
+	) A
+	</select>
+	
+	<!-- 진입시기별분석 > 현황 조회 -->
+	<select id="selectSttus" resultType="Map">
+	SELECT	/* ProgramID=biz.tech.mapif.ps.PGPS0062Mapper.selectSttus */
+	IFNULL(B.STDYY_DO, #{sel_target_year}) AS STDYY_DO
+	, A.CODE
+	, A.CODE_NM
+	, ROUND(IFNULL(B.AVRG_SELNG_AM, 0)/100000, 0) AS AVRG_SELNG_AM
+	, ROUND(IFNULL(B.AVRG_XPORT_AM_DOLLAR, 0)/100000, 0) AS AVRG_XPORT_AM_DOLLAR
+	, IFNULL(B.AVRG_ORDTM_LABRR_CO, 0) AS AVRG_ORDTM_LABRR_CO
+	, CONCAT(IFNULL(B.AVRG_RSRCH_DEVLOP_RT, 0), '%') AS AVRG_RSRCH_DEVLOP_RT
+	, ROUND(IFNULL(B.AVRG_BSN_PROFIT, 0)/100000, 0) AS AVRG_BSN_PROFIT
+	, CONCAT(IFNULL(B.AVRG_BSN_PROFIT_RT, 0), '%') AS AVRG_BSN_PROFIT_RT
+	FROM (
+	  select CODE, CODE_NM
+	  from tb_cmmncode
+	  WHERE  CODE_GROUP_NO = 70) A left outer join STS_ENTRY_ERA B
+	ON A.CODE = B.SE_CODE
+	<!-- 검색조건 시작 -->
+		<include refid="dynamicWhereSql"/>
+	<!-- 검색조건 끝 -->
+	ORDER BY A.CODE, B.STDYY_DO
+	</select>
+	
+	<!-- 진입시기별분석 > 성장현황 조회 -->
+	<select id="selectGrowthSttus" resultType="Map">
+	SELECT	/* ProgramID=biz.tech.mapif.ps.PGPS0062Mapper.selectGrowthSttus */
+	K.STDYY_DO
+	, K.CODE
+	, K.CODE_NM
+	, IFNULL(ROUND(power(SUM(K.AVRG_SELNG_AM) / SUM(L.AVRG_SELNG_AM), (1/4))-1, 2), 0) AS SELNG_GROWTH5
+	, IFNULL(ROUND(power(SUM(K.AVRG_SELNG_AM) / SUM(M.AVRG_SELNG_AM), (1/2))-1, 2), 0) AS SELNG_GROWTH3
+	, IFNULL(ROUND(power(SUM(K.AVRG_XPORT_AM_DOLLAR) / SUM(L.AVRG_XPORT_AM_DOLLAR), (1/4))-1, 2), 0) AS XPORT_GROWTH5
+	, IFNULL(ROUND(power(SUM(K.AVRG_XPORT_AM_DOLLAR) / SUM(M.AVRG_XPORT_AM_DOLLAR), (1/2))-1, 2), 0) AS XPORT_GROWTH3
+	, IFNULL(ROUND(power(SUM(K.AVRG_ORDTM_LABRR_CO) / SUM(L.AVRG_ORDTM_LABRR_CO), (1/4))-1, 2), 0) AS ORDTM_GROWTH5
+	, IFNULL(ROUND(power(SUM(K.AVRG_ORDTM_LABRR_CO) / SUM(M.AVRG_ORDTM_LABRR_CO), (1/2))-1, 2), 0) AS ORDTM_GROWTH3
+	, IFNULL(ROUND(power((K.AVRG_RSRCH_DEVLOP_RT / 100 * K.AVRG_SELNG_AM) / (L.AVRG_RSRCH_DEVLOP_RT / 100 * L.AVRG_SELNG_AM), (1/4))-1, 2), 0) AS RSRCH_GROWTH5
+    , IFNULL(ROUND(power((K.AVRG_RSRCH_DEVLOP_RT / 100 * K.AVRG_SELNG_AM) / (M.AVRG_RSRCH_DEVLOP_RT / 100 * M.AVRG_SELNG_AM), (1/2))-1, 2), 0) AS RSRCH_GROWTH3
+	, IFNULL(ROUND(power(ABS(SUM(K.AVRG_BSN_PROFIT) / SUM(L.AVRG_BSN_PROFIT)), (1/4))-1, 2), 0) AS BSN_GROWTH5
+	, IFNULL(ROUND(power(ABS(SUM(K.AVRG_BSN_PROFIT) / SUM(L.AVRG_BSN_PROFIT)), (1/2))-1, 2), 0) AS BSN_GROWTH3
+	FROM (
+	  SELECT 
+	  IFNULL(B.STDYY_DO, #{sel_target_year}) AS STDYY_DO
+	  , A.CODE
+	  , A.CODE_NM
+	  , IFNULL(B.AVRG_SELNG_AM, 0) AS AVRG_SELNG_AM
+	  , IFNULL(B.AVRG_XPORT_AM_DOLLAR, 0) AS AVRG_XPORT_AM_DOLLAR
+	  , IFNULL(B.AVRG_ORDTM_LABRR_CO, 0) AS AVRG_ORDTM_LABRR_CO
+	  , IFNULL(B.AVRG_RSRCH_DEVLOP_RT, 0) AS AVRG_RSRCH_DEVLOP_RT
+	  , IFNULL(B.AVRG_BSN_PROFIT, 0) AS AVRG_BSN_PROFIT
+	  , IFNULL(B.AVRG_BSN_PROFIT_RT, 0) AS AVRG_BSN_PROFIT_RT
+	  FROM (
+	    select CODE, CODE_NM
+	    from tb_cmmncode
+	    WHERE  CODE_GROUP_NO = 70) A left outer join STS_ENTRY_ERA B
+	  ON A.CODE = B.SE_CODE
+	  AND B.STDYY_DO = #{sel_target_year}
+	) K, (
+	  SELECT 
+	  IFNULL(B.STDYY_DO, #{sel_target_year}-4) AS STDYY_DO
+	  , A.CODE
+	  , A.CODE_NM
+	  , IFNULL(B.AVRG_SELNG_AM, 0) AS AVRG_SELNG_AM
+	  , IFNULL(B.AVRG_XPORT_AM_DOLLAR, 0) AS AVRG_XPORT_AM_DOLLAR
+	  , IFNULL(B.AVRG_ORDTM_LABRR_CO, 0) AS AVRG_ORDTM_LABRR_CO
+	  , IFNULL(B.AVRG_RSRCH_DEVLOP_RT, 0) AS AVRG_RSRCH_DEVLOP_RT
+	  , IFNULL(B.AVRG_BSN_PROFIT, 0) AS AVRG_BSN_PROFIT
+	  , IFNULL(B.AVRG_BSN_PROFIT_RT, 0) AS AVRG_BSN_PROFIT_RT
+	  FROM (
+	    select CODE, CODE_NM
+	    from tb_cmmncode
+	    WHERE  CODE_GROUP_NO = 70) A left outer join STS_ENTRY_ERA B
+	  ON A.CODE = B.SE_CODE
+	  AND B.STDYY_DO = #{sel_target_year}-4
+	) L, (
+	  SELECT 
+	  IFNULL(B.STDYY_DO, #{sel_target_year}-2) AS STDYY_DO
+	  , A.CODE
+	  , A.CODE_NM
+	  , IFNULL(B.AVRG_SELNG_AM, 0) AS AVRG_SELNG_AM
+	  , IFNULL(B.AVRG_XPORT_AM_DOLLAR, 0) AS AVRG_XPORT_AM_DOLLAR
+	  , IFNULL(B.AVRG_ORDTM_LABRR_CO, 0) AS AVRG_ORDTM_LABRR_CO
+	  , IFNULL(B.AVRG_RSRCH_DEVLOP_RT, 0) AS AVRG_RSRCH_DEVLOP_RT
+	  , IFNULL(B.AVRG_BSN_PROFIT, 0) AS AVRG_BSN_PROFIT
+	  , IFNULL(B.AVRG_BSN_PROFIT_RT, 0) AS AVRG_BSN_PROFIT_RT
+	  FROM (
+	    select CODE, CODE_NM
+	    from tb_cmmncode
+	    WHERE  CODE_GROUP_NO = 70) A left outer join STS_ENTRY_ERA B
+	  ON A.CODE = B.SE_CODE
+	  AND B.STDYY_DO = #{sel_target_year}-2
+	) M
+	WHERE 1=1
+	AND K.CODE =  L.CODE
+	AND L.CODE =  M.CODE
+	group by STDYY_DO, CODE, CODE_NM
+	</select>
+</mapper>
+

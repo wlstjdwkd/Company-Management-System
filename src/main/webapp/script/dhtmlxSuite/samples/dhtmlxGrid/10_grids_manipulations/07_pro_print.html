@@ -1,0 +1,39 @@
+<!--conf
+<sample>
+              <product version="1.4" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               </sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Print friendly view</title>
+	
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+	
+</head>
+
+<body>
+	<h1>Print friendly view</h1>
+    <p>There is feature which allows you to preview print version of grid.</p>
+	
+	<div id="gridbox" style="width:600px;height:330px;background-color:white;"></div>
+	
+	<div><a href="#" onClick="mygrid.printView()">Printable view</a></div>
+
+<script>
+    mygrid = new dhtmlXGridObject('gridbox');
+	mygrid.setImagePath("../../../codebase/imgs/");
+	mygrid.setSkin("dhx_skyblue");
+	mygrid.loadXML("../common/gridHP.xml"); 
+</script>
+
+
+
+</body>
+</html>

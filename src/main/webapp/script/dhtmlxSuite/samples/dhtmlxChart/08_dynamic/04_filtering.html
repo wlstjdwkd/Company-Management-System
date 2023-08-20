@@ -1,0 +1,68 @@
+<!--conf
+<sample>
+              <product version="2.6" edition="std"/>
+                     <modifications>
+                            <modified date="100609"/>
+                     </modifications>
+               </sample>
+ -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<title>Filtering</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+	
+	<script src="../common/testdata.js"></script>
+	<script>
+
+	
+	window.onload = function(){
+        barChart =  new dhtmlXChart({
+            view:"bar",
+            container:"chartDiv",
+            value:"#sales#",
+            value:"#sales#",
+            color:"#color#",
+            radius:2,
+            width:40,
+            tooltip:{
+                template:"#sales#"
+            },
+             yAxis:{
+                start:0,
+                end:100,
+                step:10,
+                template:function(value){
+                    return value%20?"":value
+                }
+            },
+            xAxis:{
+                template:"'#year#"
+            }
+        });
+        barChart.parse(dataset_colors,"json");
+	}
+
+	function filter1(){
+        barChart.filter(function(obj){
+            return obj.sales >50;
+        });
+    }
+    function filter2(){
+        barChart.filter(function(obj){
+            return obj.sales < 70;
+        });
+    }
+	
+	</script>
+</head>
+<body>
+	<div id="chartDiv" style="width:600px;height:250px;border:1px solid #A4BED4;"></div>
+	
+	<input type="button" value="show all" onclick="barChart.filter();">
+	<input type="button" value="show sales > 50" onclick="filter1()">
+	<input type="button" value="show sales < 70" onclick="filter2()">
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!--conf
+<sample>
+              <product version="1.5" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               </sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+   "http://www.w3.org/TR/html4/loose.dtd">
+
+<html>
+<head>
+	<title> Refreshing Items</title>
+	
+</head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+<body onLoad="doOnLoad()">
+
+	<h1>Refreshing Items</h1>
+	
+	<script>
+		var tree;
+		function doOnLoad(){
+			tree=new dhtmlXTreeObject("treeboxbox_tree","100%","100%",0);
+
+			tree.setSkin('dhx_skyblue');
+			tree.setImagePath("../../../codebase/imgs/dhxtree_skyblue/");
+            tree.enableDragAndDrop(true);
+            tree.setXMLAutoLoadingBehaviour("id");
+            tree.setChildCalcMode("child");
+			
+            tree.setXMLAutoLoading("php/xml.php");
+		    tree.enableSmartXMLParsing(true);
+			tree.loadXML("php/xml.php");
+		}
+	</script>
+
+<div id="treeboxbox_tree" style="width:260px;height:200px;float:left"></div>
+<div style="height:200px;">
+	<a href="#" onClick="tree.deleteItem(tree.getSelectedItemId(),true)">Delete</a> Selected Node<br>
+	<a href="#" onClick="tree.setItemText(tree.getSelectedItemId(),document.getElementById('newlabel').value)">Set</a> selected Node Lable to <input id="newlabel">
+</div>
+
+<div>
+<p>Refresh Item and the entire tree from server</p>
+
+	These operations get tree structure (of the entire tree or starting from the specified level)
+	from server to syncronize client and server nodes.
+	<br>
+	<a  href="javascript:void(0)" onClick="tree.refreshItem(tree.getSelectedItemId())">Refresh selected Item</a>
+	<br>
+	<a  href="javascript:void(0)" onClick="tree.refreshItem(0)">Refresh root (Entire tree)</a>
+</div>
+
+
+<p>Refresh Item in the smart mode</p>
+
+	Refreshing items in the smart mode keeps opened and selected items state when it is possible.
+<br>
+	<a  href="javascript:void(0)" onClick="tree.smartRefreshItem(tree.getSelectedItemId())">Refresh selected Item (smart mode)</a>
+
+
+
+
+
+
+
+</body>
+</html>

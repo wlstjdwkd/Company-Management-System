@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.comm.mapif.PGCMMON0140Mapper">
+
+<!-- 일별 접속자 통계 -->
+<select id = "callVisitStats" statementType="CALLABLE" resultType = "map" >
+					/* ProgramID=com.comm.mapif.PGCMMON0140Mapper.callVisitStats */
+{													
+	CALL sp_SELECT_STS_ACCESS(#{de}, 't')
+}
+</select>
+
+<!-- 전월까지의 접속자 통계 -->
+<select id="findBeforeVisitStats" resultType = "map" >
+	SELECT				/* ProgramID=com.comm.mapif.PGCMMON0140Mapper.findBeforeVisitStats */
+							SUM(REQUST_CO)			AS requstCo
+	FROM 				STS_ACCESS_USER
+	WHERE 				#{de} > DE
+</select>
+
+<!-- 누적 방문자 통계 -->
+<select id="findTotalVisitStats" resultType = "int" >
+	SELECT				/* ProgramID=com.comm.mapif.PGCMMON0140Mapper.findTotalVisitStats */
+							SUM(REQUST_CO)			AS requstCo
+	FROM 				STS_ACCESS_USER
+</select>
+
+</mapper>

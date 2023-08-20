@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="Generator" content="EditPlus®">
+<meta name="Author" content="">
+<meta name="Keywords" content="">
+<meta name="Description" content="">
+<title>Korea_Eureka_Day_2018(웹플라이어)</title>
+
+<link rel="stylesheet" type="text/css" href="/css/ucm.css" />
+<script type="text/javascript">
+
+
+function eventDisablePopup1(choice) {	
+
+	var ExpDate = new Date();
+	
+	if(choice == "day") {
+		ExpDate.setTime(ExpDate.getTime() + 1000*60*60*24);
+	}
+	else {
+		ExpDate.setTime(ExpDate.getTime() + 1000*60*60*24*7);
+
+	}
+	document.cookie = "mainguid20160701=1234; path=/; expires="+ ExpDate.toGMTString() + ";"; 
+	window.close();
+}
+
+</script>
+</head>
+<body>
+<div id="eventPopup">
+	<div id="mc" style="margin: 0px auto; width: 700px; position: relative;">
+		<img alt="2018년 코리아 유레카데이 안내" src="http://www.kiat.or.kr/newsletter/20180219/_20180213.jpg" style="width:700px;">
+		<a href="http://nems.kiat.or.kr:80/4I-148573I-40I-4goaSoZE-8zPqrCF-154269I-4ehhgE-8D-7D-7EhCHaSHPD-6CuD-6ZuD-7ZCuD-7zUucPAD-7BHzDPuD-7JBhBLHzPuhD-6JCF-3zUucPAI-5HCF-1841I-3"
+			name="ANCHOR16046" style="border: currentColor; left: 50%; width: 416px; height: 64px; bottom: 50px; margin-left: -208px; position: absolute;" target="_blank">
+			<img style="border: currentColor;" alt="참가신청" src="http://www.kiat.or.kr/newsletter/btn/reg_btn_green.jpg">
+		</a>
+	</div>
+	
+	<table cellpadding="0" cellspacing="0" border="0">
+		<tr>
+			<td>
+				<input class = "ml5" id="eventPopupNomore1" type="checkbox" onfocus="this.blur();" onclick="eventDisablePopup1('day');" />
+				<a href="#none"><label for="eventPopupNomore1">하루 동안 이 창을 열지않음</label></a>
+				<!--
+				<input class = "ml5" id="eventPopupNomore2" type="checkbox" onfocus="this.blur();" onclick="eventDisablePopup1('week');" />
+				<a href="#none"><label for="eventPopupNomore2">7일 동안 이 창을 열지않음</label></a>
+				//-->
+				<a href="#none" class="ml85"  onclick = "window.close();"><span>창닫기</span></a>
+			</td>
+		</tr>
+	</table>
+</div>
+</body>
+</html>

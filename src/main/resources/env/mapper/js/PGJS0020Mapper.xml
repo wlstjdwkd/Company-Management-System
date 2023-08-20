@@ -1,0 +1,386 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="biz.tech.mapif.js.PGJS0020Mapper">
+	
+	<!-- 판정기준 목록 조회 -->
+	<select id="selectJudgeStdrList" resultType="egovMap">
+	SELECT		/* ProgramID=biz.tech.mapif.js.PGJS0020Mapper.selectJudgeStdrListByScale */
+					  JDGMNT_STDR_CL
+					, STDR_SN
+					, DATE_FORMAT(APPLC_BEGIN_DE,'%Y-%m-%d')		APPLC_BEGIN_DE
+					, DATE_FORMAT(APPLC_END_DE,'%Y-%m-%d')			APPLC_END_DE
+					, IF(CHAR_LENGTH(DC) > 65, CONCAT(SUBSTR(DC, 1, 63),'...'), DC)		DC
+	FROM		TB_JUDGE_STDR
+	WHERE		JDGMNT_STDR_CL = #{jdgmntStdrCl}
+	ORDER BY	STDR_SN DESC
+	</select>
+	
+	<!-- 판정기준 상세조회 -->
+	<select id="selectJudgeStdr" resultType="egovMap">
+	SELECT		/* ProgramID=biz.tech.mapif.js.PGJS0020Mapper.selectJudgeStdr */
+					  JDGMNT_STDR_CL
+					, STDR_SN
+					, DATE_FORMAT(APPLC_BEGIN_DE,'%Y-%m-%d')		APPLC_BEGIN_DE
+					, DATE_FORMAT(APPLC_END_DE,'%Y-%m-%d')			APPLC_END_DE
+					, DC
+	FROM		TB_JUDGE_STDR
+	WHERE		JDGMNT_STDR_CL = #{jdgmntStdrCl}
+		AND		STDR_SN = #{stdrSn}
+	</select>
+	
+	<!-- 이전 판정기준 상세조회 -->
+	<select id="selectLastJudgeStdr" resultType="egovMap">
+	SELECT		/* ProgramID=biz.tech.mapif.js.PGJS0020Mapper.selectLastJudgeStdr */
+					  JDGMNT_STDR_CL
+					, STDR_SN
+					, DATE_FORMAT(APPLC_BEGIN_DE,'%Y-%m-%d')		APPLC_BEGIN_DE
+					, DATE_FORMAT(APPLC_END_DE,'%Y-%m-%d')			APPLC_END_DE
+	FROM		TB_JUDGE_STDR
+	WHERE		JDGMNT_STDR_CL = #{jdgmntStdrCl}
+		AND		STDR_SN = (
+						SELECT		MAX(STDR_SN) 
+						FROM		TB_JUDGE_STDR 
+						WHERE		JDGMNT_STDR_CL = #{jdgmntStdrCl}
+		<if test="stdrSn != null and stdrSn != '' ">
+							AND		STDR_SN <![CDATA[<]]> #{stdrSn}
+		</if>	
+					)
+	</select>
+	
+	<!-- 규모기준 목록조회 -->
+	<select id="selectScaleStdrList" resultType="egovMap">
+	SELECT		/* ProgramID=biz.tech.mapif.js.PGJS0020Mapper.selectScaleStdrList */
+					  scale.JDGMNT_STDR_CL
+					, scale.STDR_SN
+					, scale.SN
+					, scale.ORDTM_LABRR_CO_APPLC_AT
+					, scale.ORDTM_LABRR_CO
+					, scale.CAPL_APPLC_AT
+					, scale.CAPL
+					, scale.SELNG_AM_APPLC_AT
+					, scale.SELNG_AM
+					, scale.Y3AVG_SELNG_AM_APPLC_AT
+					, scale.Y3AVG_SELNG_AM
+					, (
+						SELECT		IF(CHAR_LENGTH(tb1.KOREAN_NM) > 16, CONCAT(SUBSTR(tb1.KOREAN_NM, 1, 14),'...'), tb1.KOREAN_NM)
+						FROM
+						(
+							SELECT		  IF( INDUTY_CODE = LCLAS_CD, LCLAS_CD,  CONCAT(LCLAS_CD, INDUTY_CODE))	IND_CODE
+											, KOREAN_NM
+											, SE
+							FROM		TB_IND_CD
+							WHERE		( LCLAS_CD = 'C' AND SE = '2'	) OR ( LCLAS_CD != 'C' AND SE = '1' )
+						) tb1, TB_SCALE_STDR_INDUTY induty1
+						WHERE	tb1.IND_CODE = induty1.IND_CD
+							AND	tb1.SE = induty1.CODE_SE
+							AND	scale.JDGMNT_STDR_CL = induty1.JDGMNT_STDR_CL
+							AND	scale.STDR_SN = induty1.STDR_SN
+							AND	scale.SN = induty1.SN
+						LIMIT 1
+					) IND_NAME
+					, (
+						SELECT GROUP_CONCAT(tb2.CODE_INFO SEPARATOR ',') 
+						FROM
+						(
+							SELECT		  IF( INDUTY_CODE = LCLAS_CD, LCLAS_CD,  CONCAT(LCLAS_CD, INDUTY_CODE))	IND_CODE
+											, CONCAT( IF( INDUTY_CODE = LCLAS_CD, LCLAS_CD,  CONCAT(LCLAS_CD, INDUTY_CODE)), ':', SE) CODE_INFO
+											, SE
+							FROM		TB_IND_CD
+							WHERE		( LCLAS_CD = 'C' AND SE = '2'	) OR ( LCLAS_CD != 'C' AND SE = '1' )
+						) tb2, TB_SCALE_STDR_INDUTY induty2
+						WHERE	tb2.IND_CODE = induty2.IND_CD
+							AND	tb2.SE = induty2.CODE_SE
+							AND	scale.JDGMNT_STDR_CL = induty2.JDGMNT_STDR_CL
+							AND	scale.STDR_SN = induty2.STDR_SN
+							AND	scale.SN = induty2.SN
+					) IND_CD
+	FROM		TB_SCALE_STDR scale
+	WHERE		scale.JDGMNT_STDR_CL = #{jdgmntStdrCl}
+		AND		scale.STDR_SN = #{stdrSn}
+	ORDER BY	scale.SN DESC
+	</select>
+	
+	
+	<!-- 업종선택 목록 -->
+	<select id="selectIndCdList" resultType="egovMap">
+	SELECT 		/* ProgramID=biz.tech.mapif.js.PGJS0020Mapper.selectIndCdList */
+					  indCd.IND_CODE
+					, indCd.KOREAN_NM
+					, indCd.SE
+					, rn
+					<if test="ad_ac_type == 'update' or ad_ac_type == 'view' ">
+					, IF(ISNULL(induty.IND_CD), 'N', 'Y')	CHKED
+					</if>
+					<if test="ad_ac_type != 'update' and ad_ac_type != 'view' ">
+					, 'N'	CHKED
+					</if>
+	FROM		(
+						SELECT	@RNUM := @RNUM + 1	rn, tb.IND_CODE, tb.KOREAN_NM, tb.SE
+						FROM (
+									SELECT		  ''				AS		IND_CODE
+													, '제조업'	AS		KOREAN_NM
+													, 0				AS		SE
+									FROM		DUAL
+									UNION ALL
+									SELECT		  IF( INDUTY_CODE = LCLAS_CD, LCLAS_CD,  CONCAT(LCLAS_CD, INDUTY_CODE))	IND_CODE
+													, KOREAN_NM
+													, SE
+									FROM		TB_IND_CD
+									WHERE		LCLAS_CD = 'C' AND SE = '2'
+									UNION ALL
+									SELECT		  ''				AS		IND_CODE
+													, '비제조업'	AS		KOREAN_NM
+													, 0				AS		SE
+									FROM		DUAL
+									UNION ALL
+									SELECT		  IF( INDUTY_CODE = LCLAS_CD, LCLAS_CD,  CONCAT(LCLAS_CD, INDUTY_CODE))	IND_CODE
+													, KOREAN_NM
+													, SE
+									FROM		TB_IND_CD
+									WHERE		LCLAS_CD != 'C' AND SE = '1'
+								) tb, ( SELECT @RNUM := 0 ) R
+					)			indCd
+	LEFT JOIN		
+					(
+							SELECT		DISTINCT IND_CD, CODE_SE
+							FROM		TB_SCALE_STDR_INDUTY
+		<if test="ad_ac_type == 'update' or ad_ac_type == 'view' ">
+							WHERE		JDGMNT_STDR_CL = #{jdgmntStdrCl}
+								AND		STDR_SN = #{stdrSn}
+								AND		SN = #{sn}
+		</if>
+					)			induty
+	ON						indCd.IND_CODE = induty.IND_CD
+		AND					indCd.SE = induty.CODE_SE 
+	ORDER BY rn ASC
+	</select>
+	
+	<!-- 상한기준 조회 -->
+	<select id="selectUplmtStdr" resultType="egovMap">
+	SELECT		/* ProgramID=biz.tech.mapif.js.PGJS0020Mapper.selectUplmtStdr */
+					  JDGMNT_STDR_CL
+					, STDR_SN
+					, ORDTM_LABRR_CO_APPLC_AT
+					, ORDTM_LABRR_CO
+					, ASSETS_TOTAMT_APPLC_AT
+					, ASSETS_TOTAMT
+					, ECPTL_APPLC_AT
+					, ECPTL
+					, Y3AVG_SELNG_AM_APPLC_AT
+					, Y3AVG_SELNG_AM
+	FROM		TB_UPLMT_STDR
+	WHERE		JDGMNT_STDR_CL = #{jdgmntStdrCl}
+		AND		STDR_SN = #{stdrSn}
+	</select>
+	
+	<!-- 독립성기준 조회 -->
+	<select id="selectIndpnStdr" resultType="egovMap">
+	SELECT		/* ProgramID=biz.tech.mapif.js.PGJS0020Mapper.selectIndpnStdr */
+					  JDGMNT_STDR_CL
+					, STDR_SN
+					, POSESN30_APPLC_AT
+					, ASSETS_TOTAMT
+					, POSESN_QOTA_RT
+					, RCPY_ADUP_QOTA_RT_APPLC_AT
+					, RCPY_STDR_QOTA_RT
+	FROM		TB_INDPNDNC_STDR
+	WHERE		JDGMNT_STDR_CL = #{jdgmntStdrCl}
+		AND		STDR_SN = #{stdrSn}
+	</select>
+
+	<!-- 규모기준순번 채번 -->
+	<select id="getScaleStdrMaxSnPlus1" resultType="string">
+	SELECT		/* ProgramID=biz.tech.mapif.js.PGJS0020Mapper.getScaleStdrMaxSnPlus1 */
+					IFNULL(MAX(SN) + 1, 1)
+	FROM		TB_SCALE_STDR
+	WHERE		JDGMNT_STDR_CL = #{jdgmntStdrCl}
+		AND		STDR_SN = #{stdrSn}
+	</select>
+
+	
+	<!-- 판정기준 등록 -->
+	<insert id="insertJudgeStdr">
+	INSERT		/* ProgramID=biz.tech.mapif.js.PGJS0020Mapper.insertJudgeStdr */
+	INTO			TB_JUDGE_STDR (
+					  JDGMNT_STDR_CL
+					, STDR_SN
+					, APPLC_BEGIN_DE
+					, APPLC_END_DE
+					, DC
+					, CREAT_DE )
+	VALUES		(
+					  #{jdgmntStdrCl}
+					, #{stdrSn}
+					, #{applcBeginDe}
+					, #{applcEndDe}
+					, #{dc}
+					, sysdate()	)
+	ON DUPLICATE KEY UPDATE
+					  APPLC_BEGIN_DE = #{applcBeginDe}
+					, APPLC_END_DE = #{applcEndDe}
+					, DC = #{dc}
+	</insert>
+
+	<!-- 규모기준 등록 -->
+	<insert id="insertScaleStdr">
+	INSERT		/* ProgramID=biz.tech.mapif.js.PGJS0020Mapper.insertScaleStdr */
+	INTO			TB_SCALE_STDR (
+					  JDGMNT_STDR_CL
+					, STDR_SN
+					, SN
+					, ORDTM_LABRR_CO_APPLC_AT
+					, ORDTM_LABRR_CO
+					, CAPL_APPLC_AT
+					, CAPL
+					, SELNG_AM_APPLC_AT
+					, SELNG_AM
+					, Y3AVG_SELNG_AM_APPLC_AT
+					, Y3AVG_SELNG_AM
+					, CREAT_DE )
+	VALUES		(
+					  #{jdgmntStdrCl}
+					, #{stdrSn}
+					, #{sn}
+					, #{ordtmLabrrCoApplcAt}
+					, #{ordtmLabrrCo}
+					, #{caplApplcAt}
+					, #{capl}
+					, #{selngAmApplcAt}
+					, #{selngAm}
+					, #{y3avgSelngAmApplcAt}
+					, #{y3avgSelngAm}
+					, sysdate()	)
+	ON DUPLICATE KEY UPDATE
+					  ORDTM_LABRR_CO_APPLC_AT = #{ordtmLabrrCoApplcAt}
+					, ORDTM_LABRR_CO = #{ordtmLabrrCo}
+					, CAPL_APPLC_AT = #{caplApplcAt}
+					, CAPL = #{capl}
+					, SELNG_AM_APPLC_AT = #{selngAmApplcAt}
+					, SELNG_AM = #{selngAm}
+					, Y3AVG_SELNG_AM_APPLC_AT = #{y3avgSelngAmApplcAt}
+					, Y3AVG_SELNG_AM = #{y3avgSelngAm}
+	</insert>
+	
+	<!-- 규모기준 업종등록 -->
+	<insert id="insertScaleStdrInduty">
+	INSERT		/* ProgramID=biz.tech.mapif.js.PGJS0020Mapper.insertScaleStdrInduty */
+	INTO			TB_SCALE_STDR_INDUTY (
+					  JDGMNT_STDR_CL
+					, STDR_SN
+					, SN
+					, IND_CD
+					, CODE_SE
+					, CREAT_DE )
+	VALUES		(
+					  #{jdgmntStdrCl}
+					, #{stdrSn}
+					, #{sn}
+					, #{indCd}
+					, #{codeSe}
+					, sysdate()	)
+	</insert>
+	
+	<!-- 규모기준 업종삭제 -->
+	<delete id="deleteScaleStdrInduty">
+	DELETE		/* ProgramID=biz.tech.mapif.js.PGJS0020Mapper.deleteScaleStdrInduty */
+	FROM		TB_SCALE_STDR_INDUTY
+	WHERE		JDGMNT_STDR_CL = #{jdgmntStdrCl}
+		AND		STDR_SN = #{stdrSn}
+		AND		SN = #{sn}
+	</delete>
+	
+	<!-- 상한기준 등록 -->
+	<insert id="insertUplmtStdr">
+	INSERT		/* ProgramID=biz.tech.mapif.js.PGJS0020Mapper.insertUplmtStdr */
+	INTO			TB_UPLMT_STDR (
+					  JDGMNT_STDR_CL
+					, STDR_SN
+					, ORDTM_LABRR_CO_APPLC_AT
+					, ORDTM_LABRR_CO
+					, ASSETS_TOTAMT_APPLC_AT
+					, ASSETS_TOTAMT
+					, ECPTL_APPLC_AT
+					, ECPTL
+					, Y3AVG_SELNG_AM_APPLC_AT
+					, Y3AVG_SELNG_AM
+					, CREAT_DE )
+	VALUES		(
+					  #{jdgmntStdrCl}
+					, #{stdrSn}
+					, #{ordtmLabrrCoApplcAt}
+					, #{ordtmLabrrCo}
+					, #{assetsTotamtApplcAt}
+					, #{assetsTotamt}
+					, #{ecptlApplcAt}
+					, #{ecptl}
+					, #{y3avgSelngAmApplcAt}
+					, #{y3avgSelngAm}
+					, sysdate()	)
+	</insert>
+	
+	<!-- 독립성기준 등록 -->
+	<insert id="insertIndpnStdr">
+	INSERT		/* ProgramID=biz.tech.mapif.js.PGJS0020Mapper.insertIndpnStdr */
+	INTO			TB_INDPNDNC_STDR (
+					  JDGMNT_STDR_CL
+					, STDR_SN
+					, POSESN30_APPLC_AT
+					, ASSETS_TOTAMT
+					, POSESN_QOTA_RT
+					, RCPY_ADUP_QOTA_RT_APPLC_AT
+					, RCPY_STDR_QOTA_RT
+					, CREAT_DE )
+	VALUES		(
+					  #{jdgmntStdrCl}
+					, #{stdrSn}
+					, #{posesn30ApplcAt}
+					, #{assetsTotamt}
+					, #{posesnQotaRt}
+					, #{RcpyAdupQotaRtApplcAt}
+					, #{RcpyStdrQotaRt}
+					, sysdate()	)
+	</insert>
+	
+	<!-- 이전 판정기준 적용만료일자 수정 -->
+	<update id="updateLastJudgeStdrEndDe">
+	UPDATE		/* ProgramID=biz.tech.mapif.js.PGJS0020Mapper.updateLastJudgeStdrEndDe */
+					TB_JUDGE_STDR
+	SET
+					APPLC_END_DE = #{applcEndDe}
+	WHERE		JDGMNT_STDR_CL = #{jdgmntStdrCl}
+		AND		STDR_SN = #{stdrSn}
+	</update>
+	
+	<!-- 상한기준 수정 -->
+	<update id="updateUplmtStdr">
+	UPDATE		/* ProgramID=biz.tech.mapif.js.PGJS0020Mapper.updateUplmtStdr */
+					TB_UPLMT_STDR
+	SET
+					  ORDTM_LABRR_CO_APPLC_AT = #{ordtmLabrrCoApplcAt}
+					, ORDTM_LABRR_CO = #{ordtmLabrrCo}
+					, ASSETS_TOTAMT_APPLC_AT = #{assetsTotamtApplcAt}
+					, ASSETS_TOTAMT = #{assetsTotamt}
+					, ECPTL_APPLC_AT = #{ecptlApplcAt}
+					, ECPTL = #{ecptl}
+					, Y3AVG_SELNG_AM_APPLC_AT = #{y3avgSelngAmApplcAt}
+					, Y3AVG_SELNG_AM = #{y3avgSelngAm}
+	WHERE		JDGMNT_STDR_CL = #{jdgmntStdrCl}
+		AND		STDR_SN = #{stdrSn}
+	</update>
+	
+	<!-- 독립성기준 수정 -->
+	<update id="updateIndpnStdr">
+	UPDATE		/* ProgramID=biz.tech.mapif.js.PGJS0020Mapper.updateIndpnStdr */
+					TB_INDPNDNC_STDR
+	SET
+					  POSESN30_APPLC_AT = #{posesn30ApplcAt}
+					, ASSETS_TOTAMT = #{assetsTotamt}
+					, POSESN_QOTA_RT = #{posesnQotaRt}
+					, RCPY_ADUP_QOTA_RT_APPLC_AT = #{RcpyAdupQotaRtApplcAt}
+					, RCPY_STDR_QOTA_RT = #{RcpyStdrQotaRt}
+	WHERE		JDGMNT_STDR_CL = #{jdgmntStdrCl}
+		AND		STDR_SN =  #{stdrSn}
+	</update>
+	
+	
+</mapper>

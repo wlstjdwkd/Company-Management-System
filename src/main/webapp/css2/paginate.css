@@ -1,0 +1,51 @@
+/* paginate
+	--------------------------------------------------*/
+.paginate{padding-top:20px;text-align:center;font-family: "Gulim";font-size:12px;overflow:hidden;clear:both;margin:0 auto;zoom:1;}
+.paginate a{display:-moz-inline-box;display:inline-block;_position:relative;
+	border: 1px solid #dadada;padding: 3px 8px 3px 8px; margin-left: 8px; 
+	color:#252525;width: 16px;line-height:28px;text-decoration:none !important}
+
+.paginate a:hover,.paginate a:focus,.paginate a:active{}
+.paginate strong{display:-moz-inline-box;display:inline-block;_position:relative;line-height:28px;text-decoration:none !important}
+.paginate strong{color:#252525 !important}
+.paginate a span{display:block;_display:inline;position:relative;top:0;zoom:1}
+.paginate a:hover span,
+.paginate a:focus span,
+.paginate a:active span{
+	cursor:pointer;font-weight: bold;text-decoration: underline;
+}
+.paginate strong span{display:block;_display:inline;position:relative;top:0;font-weight: bold;text-decoration: underline;width: 30px;
+	border: 1px solid #2763ba; margin-left: 8px; padding: 3px 3px 3px 3px; background-color: #2763ba;color: #fff;
+	zoom:1}
+.paginate a.pre,
+.paginate a.next {
+	cursor:pointer;width: 30px !important;
+	border: 1px solid #dadada;widthhh: 12px; margin-left: 8px; padding: 12px 3px 12px 3px;line-height: 10px;
+}
+.paginate a.pre_end,
+.paginate a.next_end {
+	cursor:pointer;width: 30px !important;
+	border: 1px solid #dadada;widthhh: 12px; margin-left: 8px; padding: 12px 3px 12px 3px;line-height: 10px;
+}
+.paginate a.pre:hover,
+.paginate a.pre:focus,
+.paginate a.pre:active{
+background: url("/images2/sub/btn_pre_on.png") no-repeat;
+}
+.paginate a.pre_end:hover,
+.paginate a.pre_end:focus,
+.paginate a.pre_end:active{
+background: url("/images2/sub/btn_pre_end_on.png") no-repeat;
+}
+.paginate a.next:hover,
+.paginate a.next:focus,
+.paginate a.next:active{
+background: url("/images2/sub/btn_next_on.png") no-repeat;
+}
+.paginate a.next_end:hover,
+.paginate a.next_end:focus,
+.paginate a.next_end:active{
+background: url("/images2/sub/btn_next_end_on.png") no-repeat;
+}
+.paginate a.pre{padding-righttt:18px}
+.paginate a.next{padding-lefttt:18px}

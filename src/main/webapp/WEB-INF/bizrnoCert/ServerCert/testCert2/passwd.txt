@@ -1,0 +1,5 @@
+아래의 폴더를 생성하고 폴더에 SignCert.der, KmCert.der, SignPri.key, KMPri.key 파일을 복사해 넣으세요.
+C:\Users\{사용자}\AppData\LocalLow\NPKI\TradeSign\User\cn=테스트1_KTNET_0000068725,ou=TEST,ou=AccreditedCA,o=TradeSign,c=KR
+암호 : asdfasdf
+사업자번호: 1234567890
+용도 : 범용(사업자)

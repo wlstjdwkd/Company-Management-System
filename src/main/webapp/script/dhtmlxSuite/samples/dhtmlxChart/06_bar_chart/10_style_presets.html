@@ -1,0 +1,91 @@
+<!--conf
+<sample>
+              <product version="3.0" edition="std"/>
+                     <modifications>
+                            <modified date="100609"/>
+                     </modifications>
+               </sample>
+ -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<title>Presets</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+	
+	<script src="../common/testdata.js"></script>
+	<style>
+        #chartContainer1,#chartContainer2,#chartContainer3{
+            width:400px;
+            height:250px;
+        }
+         #cont1,#cont2,#cont3{
+            margin:10px;
+            display:inline-block;
+
+        }
+	</style>
+	<script type="text/javascript">
+        var chart,chart2,chart3;
+        window.onload = function(){
+            var baseConfig =  {
+                view:"bar",
+                value:"#sales#",
+                yAxis:{
+                    start:0,
+                    step:10,
+                    end:100,
+                    template:function(value){
+                        return (value%20?"":value);
+                    }
+                },
+                xAxis:{
+                    template:"'#year#"
+                },
+                padding:{
+                    left:20
+                }
+            };
+            /*chart1*/
+            var config1 = {
+                container:"chartContainer1",
+                preset:"column"
+            };
+            dhtmlx.extend(config1,baseConfig);
+            chart1 =  new dhtmlXChart(config1);
+            chart1.parse(dataset,"json");
+             /*chart2*/
+            var config2 = {
+                container:"chartContainer2",
+                preset:"stick"
+            };
+            dhtmlx.extend(config2,baseConfig);
+            chart2 =  new dhtmlXChart(config2);
+            chart2.parse(dataset,"json");
+             /*chart3*/
+             var config3 = {
+                container:"chartContainer3",
+                preset:"alpha"
+            };
+            dhtmlx.extend(config3,baseConfig);
+            chart3 =  new dhtmlXChart(config3);
+            chart3.parse(dataset,"json");
+        };
+	</script>
+</head>
+<body>
+    <div id="cont1">
+        preset: <b>"column"</b>
+        <div id="chartContainer1"></div>
+    </div>
+    <div id="cont2">
+        preset: <b>"stick"</b>
+        <div id="chartContainer2"></div>
+     </div>
+    <div id="cont3">
+        preset: <b>"alpha"</b>
+        <div id="chartContainer3"></div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,527 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+	수정일		수정자					수정내용
+  =========     =======    =================================================
+  2011.8.24   	이기하     	 	테이블 표준화에 따른 수정사항 반영
+  							QUSTNR_TMPLAT_ID 를			 	QESTNR_TMPLAT_ID 로 변경
+							QUSTNR_SJ 를					QESTNR_SJ 로 변경
+							QUSTNR_PURPS 를					QESTNR_PURPS 로 변경
+							QUSTNR_WRITNG_GUIDANCE_CN 를	QESTNR_WRITNG_GUIDANCE_CN 로 변경
+							QUSTNR_TRGET 를					QESTNR_TRGET 로 변경
+  2011.10.05	정진오		보안 취약점 점검사항에 따른 수정사항 반영
+  							${searchKeyword}를	 #{searchKeyword} 로 변경
+  							${searchCondition}는 <isEqual property="searchCondition" compareValue="선택조건명">으로 수정
+-->
+<mapper namespace="QustnrManage">
+
+	<resultMap id="QustnrManage" type="QustnrManageVO">
+		<result property="qestnrId" column="QESTNR_ID"/>
+		<result property="qestnrSj" column="QUSTNR_SJ"/>
+		<result property="qestnrPurps" column="QUSTNR_PURPS"/>
+		<result property="qestnrWritngGuidanceCn" column="QUSTNR_WRITNG_GUIDANCE_CN"/>
+		<result property="qestnrBeginDe" column="QUSTNR_BGNDE"/>
+		<result property="qestnrEndDe" column="QUSTNR_ENDDE"/>
+		<result property="qestnrTrget" column="QUSTNR_TRGET"/>
+		<result property="qestnrTmplatId" column="QUSTNR_TMPLAT_ID"/>
+		<result property="qestnrTmplatTy" column="QUSTNR_TMPLAT_TY"/>
+		<result property="rgsde" column="RGSDE"/>
+		<result property="register" column="REGISTER"/>
+		<result property="updde" column="UPDDE"/>
+		<result property="updusr" column="UPDUSR"/>
+	</resultMap>
+
+	<!-- 설문정보::목록조회_게시물정보 -->
+	<select id="selectQustnrManageDetailModel" resultMap="QustnrManage">
+	SELECT	/* ProgramID=sqlmap.egovcom.olp.EgovQustnrManageMapper.selectQustnrManageDetailModel */
+					A.QESTNR_ID,
+					A.QUSTNR_SJ,
+					A.QUSTNR_PURPS,
+					A.QUSTNR_WRITNG_GUIDANCE_CN,
+					DATE_FORMAT(A.QUSTNR_BGNDE,'%Y-%m-%d') QUSTNR_BGNDE,
+					DATE_FORMAT(A.QUSTNR_ENDDE,'%Y-%m-%d') QUSTNR_ENDDE,
+					A.QUSTNR_TRGET,
+					A.QUSTNR_TMPLAT_ID,
+					(SELECT QUSTNR_TMPLAT_TY FROM comtnqustnrtmplat WHERE  QUSTNR_TMPLAT_ID = A.QUSTNR_TMPLAT_ID) QUSTNR_TMPLAT_TY,
+					A.RGSDE,
+					A.REGISTER,
+					A.UPDDE,
+					A.UPDUSR
+	FROM		comtnqestnrinfo A
+	WHERE		1=1
+		AND		QESTNR_ID = #{qestnrId}
+	</select>
+
+	<!-- 설문정보::목록조회_게시물정보 -->
+	<select id="selectQustnrManage" parameterType="comDefaultVO" resultType="egovMap">
+	SELECT	/* ProgramID=sqlmap.egovcom.olp.EgovQustnrManageMapper.selectQustnrManage */
+					A.QESTNR_ID,
+					IF(CHAR_LENGTH(A.QUSTNR_SJ) > 35, CONCAT(SUBSTR(A.QUSTNR_SJ, 1, 33),'...'), A.QUSTNR_SJ)		QESTNR_SJ,
+					A.QUSTNR_PURPS		    QESTNR_PURPS,
+					A.QUSTNR_WRITNG_GUIDANCE_CN	    QESTNR_WRITNG_GUIDANCE_CN,
+					DATE_FORMAT(A.QUSTNR_BGNDE,'%Y-%m-%d') 	    QESTNR_BEGIN_DE,
+					DATE_FORMAT(A.QUSTNR_ENDDE,'%Y-%m-%d') 		    QESTNR_END_DE,
+					A.QUSTNR_TRGET		    QESTNR_TRGET,
+					A.QUSTNR_TMPLAT_ID	 QESTNR_TMPLAT_ID,
+					A.RGSDE,
+					A.REGISTER,
+					(SELECT NM FROM tb_emplyr WHERE USER_NO = A.REGISTER) REGISTER_NM,
+					A.UPDDE,
+					A.UPDUSR
+	FROM		comtnqestnrinfo A
+	WHERE		1=1
+		<if test="searchKeyword != null and searchKeyword != '' and searchCondition == 'QUSTNR_SJ'">
+		AND		QUSTNR_SJ LIKE CONCAT('%', #{searchKeyword}, '%')
+		</if>
+
+		<if test="searchKeyword != null and searchKeyword != '' and searchCondition == 'REGISTER'">
+		AND		REGISTER IN (SELECT USER_NO FROM tb_emplyr WHERE NM LIKE CONCAT('%', #{searchKeyword}, '%'))
+		</if>
+	ORDER BY	A.RGSDE DESC
+	LIMIT			#{recordCountPerPage} OFFSET #{firstIndex}
+	</select>
+
+	<!-- 설문정보::목록조회_게시물 총갯수  -->
+	<select id="selectQustnrManageCnt" parameterType="comDefaultVO" resultType="int">
+	SELECT	/* ProgramID=sqlmap.egovcom.olp.EgovQustnrManageMapper.selectQustnrManageCnt */
+					COUNT(*) totcnt
+	FROM		comtnqestnrinfo
+	WHERE		1=1
+		<if test="searchKeyword != null and searchKeyword != '' and searchCondition == 'QUSTNR_SJ'">
+		AND		QUSTNR_SJ LIKE CONCAT('%', #{searchKeyword}, '%')
+		</if>
+
+		<if test="searchKeyword != null and searchKeyword != '' and searchCondition == 'REGISTER'">
+		AND		REGISTER IN (SELECT USER_NO FROM tb_emplyr WHERE NM LIKE CONCAT('%', #{searchKeyword}, '%'))
+		</if>
+	</select>
+
+	<!-- 설문정보::설문템플릿정보 -->
+	<select id="selectQustnrTmplatManage" parameterType="QustnrManageVO" resultType="egovMap">
+	SELECT	/* ProgramID=sqlmap.egovcom.olp.EgovQustnrManageMapper.selectQustnrTmplatManage */
+					QUSTNR_TMPLAT_ID	 QESTNR_TMPLAT_ID,
+					QUSTNR_TMPLAT_TY	 QESTNR_TMPLAT_TY
+	FROM		comtnqustnrtmplat
+	</select>
+	
+	<!-- 설문조사(설문결과) 삭제 -->
+	<delete id="deleteQustnrRespondInfo">
+	DELETE	/* ProgramID=sqlmap.egovcom.olp.EgovQustnrManageMapper.deleteQustnrRespondInfo */
+	FROM		comtnqustnrrspnsresult WHERE QESTNR_ID = #{qestnrId}
+	</delete>
+	
+	<!-- 설문항목 삭제 -->
+	<delete id="deleteQustnrItemManage">
+	DELETE	/* ProgramID=sqlmap.egovcom.olp.EgovQustnrManageMapper.deleteQustnrItemManage */
+	FROM 		comtnqustnriem
+	WHERE		QESTNR_ID = #{qestnrId}
+	</delete>
+	
+	<!-- 설문문항 삭제 -->
+	<delete id="deleteQustnrQestnManage">
+	DELETE	/* ProgramID=sqlmap.egovcom.olp.EgovQustnrManageMapper.deleteQustnrQestnManage */
+	FROM 		comtnqustnrqesitm 
+	WHERE		QESTNR_ID = #{qestnrId}
+	</delete>
+
+	<!-- 설문정보::삭제  -->
+	<delete id="deleteQustnrManage">
+	DELETE	/* ProgramID=sqlmap.egovcom.olp.EgovQustnrManageMapper.deleteQustnrManage */
+	FROM		comtnqestnrinfo
+	WHERE		QESTNR_ID = #{qestnrId}
+	</delete>
+	
+	<!-- 설문참여대상자 삭제 -->
+	<delete id="deleteQustnrTrgter">
+	DELETE	/* ProgramID=sqlmap.egovcom.olp.EgovQustnrManageMapper.deleteQustnrTrgter */
+	FROM		TB_QUSTNR_TRGTER
+	WHERE		QESTNR_ID = #{qestnrId}
+	</delete>
+
+	<!-- 설문정보::수정  -->
+	<update id="updateQustnrManage">
+	UPDATE	/* ProgramID=sqlmap.egovcom.olp.EgovQustnrManageMapper.updateQustnrManage */
+					comtnqestnrinfo
+	SET
+					QUSTNR_SJ=#{qestnrSj},
+					QUSTNR_PURPS=#{qestnrPurps},
+					QUSTNR_TMPLAT_ID=#{qestnrTmplatId},
+					QUSTNR_WRITNG_GUIDANCE_CN=#{qestnrWritngGuidanceCn},
+					QUSTNR_BGNDE=REPLACE(#{qestnrBeginDe},'-',''),
+					QUSTNR_TRGET=#{qestnrTrget},
+					QUSTNR_ENDDE=REPLACE(#{qestnrEndDe},'-',''),
+					UPDDE = sysdate(),
+					UPDUSR = #{updusr}
+	WHERE		QESTNR_ID = #{qestnrId}
+	</update>
+
+	<!-- 설문정보::상세보기 -->
+	<select id="selectQustnrManageDetail" parameterType="QustnrManageVO" resultType="egovMap">
+	SELECT	/* ProgramID=sqlmap.egovcom.olp.EgovQustnrManageMapper.selectQustnrManageDetail */
+					A.QESTNR_ID,
+					A.QUSTNR_SJ		    QESTNR_SJ,
+					A.QUSTNR_PURPS	    QESTNR_PURPS,
+					A.QUSTNR_WRITNG_GUIDANCE_CN	    QESTNR_WRITNG_GUIDANCE_CN,
+					DATE_FORMAT(A.QUSTNR_BGNDE,'%Y-%m-%d') QESTNR_BEGIN_DE,
+					DATE_FORMAT(A.QUSTNR_ENDDE,'%Y-%m-%d') QESTNR_END_DE,
+					A.RGSDE,
+					A.REGISTER,
+					A.UPDDE,
+					A.UPDUSR,
+					A.QUSTNR_TRGET		    QESTNR_TRGET,
+					A.QUSTNR_TMPLAT_ID	 QESTNR_TMPLAT_ID,
+					         (SELECT QUSTNR_TMPLAT_TY FROM comtnqustnrtmplat WHERE  QUSTNR_TMPLAT_ID = A.QUSTNR_TMPLAT_ID) QESTNR_TMPLAT_TY
+	FROM		comtnqestnrinfo A
+	WHERE		1=1
+		AND		QESTNR_ID = #{qestnrId}
+	</select>
+
+	<!-- 설문정보::입력  -->
+	<insert id="insertQustnrManage">
+	INSERT	/* ProgramID=sqlmap.egovcom.olp.EgovQustnrManageMapper.insertQustnrManage */
+	INTO			comtnqestnrinfo (
+					QESTNR_ID,
+					QUSTNR_SJ,
+					QUSTNR_PURPS,
+					QUSTNR_WRITNG_GUIDANCE_CN,
+					QUSTNR_BGNDE,
+					QUSTNR_ENDDE,
+					QUSTNR_TRGET,
+					QUSTNR_TMPLAT_ID,
+					RGSDE,
+					REGISTER,
+					UPDDE,
+					UPDUSR )
+	VALUES (
+					#{qestnrId},
+					#{qestnrSj},
+					#{qestnrPurps},
+					#{qestnrWritngGuidanceCn},
+					REPLACE(#{qestnrBeginDe},'-',''),
+					REPLACE(#{qestnrEndDe},'-',''),
+					#{qestnrTrget},
+					#{qestnrTmplatId},
+					sysdate(),
+					#{register},
+					sysdate(),
+					#{updusr}
+	)
+	</insert>
+	
+	<!-- 설문정보::설문결과 데이터조회(엑셀다운)
+	<select id="selectQustnrResponseListData" resultType="egovMap">
+	SELECT		/* ProgramID=sqlmap.egovcom.olp.EgovQustnrManageMapper.findQustnrResponseListData */
+					  tb.QESTN_SN
+					, tb.QESTN_TY_CODE
+					, tb.ETC_ANSWER_CN 
+					, tb.RESPOND_ANSWER_CN
+					, tb.RESPOND_NM
+					, tb.JURIRNO
+					, tb.TRGTER_EMAIL
+					, iem.IEM_SN	
+					, userinfo.USER_NO
+			       , userinfo.LOGIN_ID
+			       , userinfo.ENTRPRS_NM
+			       , userinfo.EN_EMAIL
+			       , userinfo.NM
+			       , userinfo.GN_EMAIL
+	FROM		(
+						SELECT
+											  result.QESTNR_ID
+											, result.QUSTNR_TMPLAT_ID
+											, result.QUSTNR_QESITM_ID
+											, result.QUSTNR_IEM_ID
+											, result.ETC_ANSWER_CN 
+											, result.RESPOND_ANSWER_CN
+											, result.RESPOND_NM
+											, result.TRGTER_EMAIL
+											, (SELECT enpuser.JURIRNO FROM tb_entrprsuser enpuser WHERE result.TRGTER_EMAIL = enpuser.EMAIL) JURIRNO
+											, sitm.QESTN_SN
+											, sitm.QESTN_TY_CODE
+						FROM			  comtnqustnrrspnsresult result
+											, comtnqustnrqesitm sitm
+						WHERE			result.QESTNR_ID = sitm.QESTNR_ID
+							AND			result.QUSTNR_TMPLAT_ID = sitm.QUSTNR_TMPLAT_ID
+							AND			result.QUSTNR_QESITM_ID = sitm.QUSTNR_QESITM_ID
+							AND			result.QESTNR_ID = #{qestnrId}
+							AND			result.QUSTNR_TMPLAT_ID = #{qestnrTmplatId}
+					) tb
+	LEFT OUTER JOIN		comtnqustnriem iem
+					ON		tb.QESTNR_ID = iem.QESTNR_ID
+					AND		tb.QUSTNR_TMPLAT_ID = iem.QUSTNR_TMPLAT_ID
+					AND		tb.QUSTNR_QESITM_ID = iem.QUSTNR_QESITM_ID
+					AND		tb.QUSTNR_IEM_ID = iem.QUSTNR_IEM_ID
+	LEFT OUTER JOIN (
+             select a.USER_NO, a.LOGIN_ID, b.JURIRNO, b.ENTRPRS_NM, b.EMAIL as EN_EMAIL, c.NM, c.EMAIL as GN_EMAIL
+              from tb_userinfo a left join tb_entrprsuser b
+              on a.USER_NO = b.USER_NO
+              left join tb_gnrluser c
+              on a.USER_NO = c.USER_NO
+              ) userinfo
+              on tb.JURIRNO = userinfo.JURIRNO
+	ORDER BY				tb.TRGTER_EMAIL ASC, tb.QESTN_SN ASC	
+	</select>
+	 -->
+	 
+	 <!-- 설문정보::설문결과 데이터조회(엑셀다운) -->
+	<select id="selectQustnrResponseListData" resultType="egovMap">
+	SELECT		/* ProgramID=sqlmap.egovcom.olp.EgovQustnrManageMapper.findQustnrResponseListData */
+					  tb.QESTN_SN
+					, tb.QESTN_TY_CODE
+					, tb.ETC_ANSWER_CN 
+					, tb.RESPOND_ANSWER_CN
+					, tb.RESPOND_NM
+					, tb.JURIRNO
+					, tb.TRGTER_EMAIL
+					, iem.IEM_SN	
+					, userinfo.USER_NO
+			       , userinfo.LOGIN_ID
+			       , userinfo.ENTRPRS_NM
+			       , userinfo.EN_EMAIL
+			       , userinfo.NM
+			       , userinfo.GN_EMAIL
+	FROM		(
+						SELECT
+											  result.QESTNR_ID
+											, result.QUSTNR_TMPLAT_ID
+											, result.QUSTNR_QESITM_ID
+											, result.QUSTNR_IEM_ID
+											, result.ETC_ANSWER_CN 
+											, result.RESPOND_ANSWER_CN
+											, result.RESPOND_NM
+											, result.TRGTER_EMAIL
+											, (select JURIRNO FROM (SELECT JURIRNO, EMAIL, MAX(RGSDE)
+											   FROM tb_entrprsuser
+											   GROUP BY EMAIL) enpuser
+											   WHERE result.TRGTER_EMAIL = enpuser.EMAIL) JURIRNO
+											, sitm.QESTN_SN
+											, sitm.QESTN_TY_CODE
+						FROM			  comtnqustnrrspnsresult result
+											, comtnqustnrqesitm sitm
+						WHERE			result.QESTNR_ID = sitm.QESTNR_ID
+							AND			result.QUSTNR_TMPLAT_ID = sitm.QUSTNR_TMPLAT_ID
+							AND			result.QUSTNR_QESITM_ID = sitm.QUSTNR_QESITM_ID
+							AND			result.QESTNR_ID = #{qestnrId}
+							AND			result.QUSTNR_TMPLAT_ID = #{qestnrTmplatId}
+					) tb
+	LEFT OUTER JOIN		comtnqustnriem iem
+					ON		tb.QESTNR_ID = iem.QESTNR_ID
+					AND		tb.QUSTNR_TMPLAT_ID = iem.QUSTNR_TMPLAT_ID
+					AND		tb.QUSTNR_QESITM_ID = iem.QUSTNR_QESITM_ID
+					AND		tb.QUSTNR_IEM_ID = iem.QUSTNR_IEM_ID
+	LEFT OUTER JOIN (
+             select a.USER_NO, a.LOGIN_ID, b.JURIRNO, b.ENTRPRS_NM, b.EMAIL as EN_EMAIL, c.NM, c.EMAIL as GN_EMAIL
+              from tb_userinfo a left join tb_entrprsuser b
+              on a.USER_NO = b.USER_NO
+              left join tb_gnrluser c
+              on a.USER_NO = c.USER_NO
+              where a.STTUS = '01'
+              ) userinfo
+              on (tb.TRGTER_EMAIL = userinfo.EN_EMAIL or tb.TRGTER_EMAIL = userinfo.GN_EMAIL)
+	ORDER BY				tb.TRGTER_EMAIL ASC, tb.QESTN_SN ASC	
+	</select>
+	
+	<!-- 설문정보::설문결과 타이틀조회(엑셀다운) -->
+	<select id="selectQustnrResponseListTitle" resultType="egovMap">
+	SELECT		/* ProgramID=sqlmap.egovcom.olp.EgovQustnrManageMapper.findQustnrResponseListTitle */
+					QESTN_SN
+	FROM		comtnqustnrqesitm
+	WHERE		QESTNR_ID = #{qestnrId}
+		AND		QUSTNR_TMPLAT_ID = #{qestnrTmplatId}
+	ORDER BY	QESTN_SN ASC
+	</select>
+	
+	<!-- 메일발송자 목록조회 -->
+	<select id="selectQustnrTrgterEmailList" resultType="egovMap">
+	SELECT		/* ProgramID=sqlmap.egovcom.olp.EgovQustnrManageMapper.selectQustnrTrgterEmailList */
+					  trgt.QUSTNR_TMPLAT_ID
+					, trgt.QESTNR_ID
+					, trgt.TRGTER_EMAIL
+					, IF (trgt.TRGTER_CL = '1', '확인서발급기업', '직접입력') AS TRGTER_CL_NM
+					, DATE_FORMAT(trgt.REGIST_TIME, '%y-%m-%d %H:%i:%s') AS REGIST_TIME
+					, IF(mail.SNDNG_STTUS IS NULL, '-', IF(mail.SNDNG_STTUS = 'F', '발송실패', IF(mail.SNDNG_STTUS = 'S', DATE_FORMAT(mail.TREDE, '%y-%m-%d %H:%i:%s'), '발송대기'))) AS SNDNG_TIME
+	FROM		TB_QUSTNR_TRGTER trgt
+	LEFT JOIN	(SELECT RCVER_EMAIL_ADRES, SNDNG_STTUS, PARAMTR1, PARAMTR2, TREDE FROM TB_MAILSEND_MNG ORDER BY EMAIL_NO DESC) mail
+		ON		trgt.QESTNR_ID = mail.PARAMTR1
+		AND		trgt.QUSTNR_TMPLAT_ID = mail.PARAMTR2
+		AND		trgt.TRGTER_EMAIL = mail.RCVER_EMAIL_ADRES
+	WHERE		trgt.QESTNR_ID = #{qestnrId}
+		AND		trgt.QUSTNR_TMPLAT_ID = #{qestnrTmplatId}
+		<if test="searchCondition != null and searchCondition != '' ">
+		AND		trgt.TRGTER_CL = #{searchCondition}
+		</if>
+	GROUP BY	trgt.TRGTER_EMAIL
+	ORDER BY	trgt.REGIST_TIME DESC, trgt.TRGTER_CL ASC, trgt.TRGTER_EMAIL ASC
+	LIMIT			#{limitTo} OFFSET #{limitFrom}
+	</select>
+	
+	<!-- 메일발송자 목록갯수 조회 -->
+	<select id="selectQustnrTrgterEmailListCnt" resultType="int">
+	SELECT	/* ProgramID=sqlmap.egovcom.olp.EgovQustnrManageMapper.selectQustnrTrgterEmailListCnt */
+					COUNT(*) totcnt
+	FROM		TB_QUSTNR_TRGTER
+	WHERE		QESTNR_ID = #{qestnrId}
+		AND		QUSTNR_TMPLAT_ID = #{qestnrTmplatId}
+		<if test="searchCondition != null and searchCondition != '' ">
+		AND		TRGTER_CL = #{searchCondition}
+		</if>
+	</select>
+	
+	<!-- 발송정보 조회(메일제목/인사말) -->
+	<select id="selectQustnrTrgterInfoGreeting" resultType="egovMap">
+	SELECT		/* ProgramID=sqlmap.egovcom.olp.EgovQustnrManageMapper.selectQustnrTrgterInfoGreeting */
+					  IFNULL(MAIL_QUSTNR_SJ, QUSTNR_SJ)	AS QUSTNR_SJ
+					, IFNULL(MAIL_QUSTNR_WRITNG_GUIDANCE_CN, QUSTNR_WRITNG_GUIDANCE_CN) AS GUIDANCE_CN
+	FROM 		comtnqestnrinfo
+	WHERE		QESTNR_ID = #{qestnrId}
+		AND		QUSTNR_TMPLAT_ID = #{qestnrTmplatId}
+	</select>
+	
+	<!-- 발송정보 수정(메일제목/인사말) -->
+	<update id="updateQustnrTrgterInfoGreeting">
+	UPDATE		/* ProgramID=sqlmap.egovcom.olp.EgovQustnrManageMapper.updateQustnrTrgterInfoGreeting */
+					comtnqestnrinfo
+	SET
+					  MAIL_QUSTNR_SJ = #{mailQustnrSj}
+					, MAIL_QUSTNR_WRITNG_GUIDANCE_CN = #{mailQustnrWritngGuidanceCn}
+	WHERE		QESTNR_ID = #{qestnrId}
+		AND		QUSTNR_TMPLAT_ID = #{qestnrTmplatId}
+	</update>
+	
+	<!-- 발송정보 등록 -->
+	<insert id="insertQustnrTrgterEmail">
+	INSERT 		/* ProgramID=sqlmap.egovcom.olp.EgovQustnrManageMapper.insertQustnrTrgter */
+	INTO			TB_QUSTNR_TRGTER	(
+					QESTNR_ID,
+					QUSTNR_TMPLAT_ID,
+					TRGTER_EMAIL,
+					TRGTER_CL,
+					REGIST_TIME
+	)
+	VALUES		(
+					#{qestnrId},
+					#{qestnrTmplatId},
+					#{trgterEmail},
+					#{trgterCl},
+					sysdate()	
+	) ON DUPLICATE KEY UPDATE
+					  TRGTER_CL = #{trgterCl}
+					, REGIST_TIME =sysdate()
+	</insert>
+	
+	<!-- 발송정보 삭제 -->
+	<delete id="deleteQustnrTrgterEmail">
+	DELETE		/* ProgramID=sqlmap.egovcom.olp.EgovQustnrManageMapper.deleteQustnrTrgterEmail */
+	FROM		TB_QUSTNR_TRGTER
+	WHERE		QESTNR_ID = #{qestnrId}
+		AND		QUSTNR_TMPLAT_ID = #{qestnrTmplatId}
+		AND		TRGTER_EMAIL IN
+        <foreach collection="emailList" item="email" index="index" separator="," open="(" close=")">
+            #{email}
+        </foreach>
+	</delete>
+	
+	<!-- 확인서발급기업 목록 조회 -->
+	<select id="selectCnfirmEnpEmailList" resultType="egovMap">
+	SELECT	/* ProgramID=sqlmap.egovcom.olp.EgovQustnrManageMapper.selectCnfirmEnpEmailList */
+	DISTINCT	  enpuser.email
+	FROM 		  tb_entrprsuser enpuser
+					, tb_userinfo user
+					, TB_REQST_RCPY_LIST reqst
+					, TB_RESN_MANAGE resn
+	WHERE		enpuser.user_no = user.user_no
+		AND		user.sttus = '01'
+		AND		enpuser.email_recptn_agre = 'Y'
+		AND		enpuser.jurirno = reqst.jurirno
+		AND		reqst.rcept_no = resn.rcept_no
+		AND		reqst.entrprs_se = 'O'
+		AND		resn.resn_se = 'R'
+		AND		resn.se_code = 'RC1'
+	</select>
+	
+	<!-- 이메일 수신거부 메일목록 조회 -->
+	<select id="selectRejectEmailList" resultType="egovMap">
+	SELECT		/* ProgramID=sqlmap.egovcom.olp.EgovQustnrManageMapper.selectRejectEmailList */
+	DISTINCT	email
+	FROM		tb_entrprsuser
+	WHERE		email_recptn_agre = 'N'
+	</select>
+	
+	<!-- 기 등록 메일목록 조회 -->
+	<select id="selectDuplEmailList" resultType="egovMap">
+	SELECT		/* ProgramID=sqlmap.egovcom.olp.EgovQustnrManageMapper.selectDuplEmailList */
+	DISTINCT	trgter_email		AS email
+	FROM		TB_QUSTNR_TRGTER
+	WHERE		QESTNR_ID = #{qestnrId}
+		AND		QUSTNR_TMPLAT_ID = #{qestnrTmplatId}
+	</select>
+
+	<!-- 전체 메일 목록 조회 -->
+	<select id="selectAllTargetEmailList" resultType="String">
+	SELECT	/* ProgramID=sqlmap.egovcom.olp.EgovQustnrManageMapper.selectAllTargetEmailList */
+					TRGTER_EMAIL
+	FROM		TB_QUSTNR_TRGTER
+	WHERE		QESTNR_ID = #{qestnrId}
+		AND		QUSTNR_TMPLAT_ID = #{qestnrTmplatId}
+	</select>
+	
+	<!-- 메일발송정보 조회 -->
+	<select id="selectQustnrEmailInfo" resultType="egovMap">
+	SELECT		/* ProgramID=sqlmap.egovcom.olp.EgovQustnrManageMapper.selectQustnrEmailInfo */
+					  QUSTNR_PURPS
+					, MAIL_QUSTNR_SJ
+					, MAIL_QUSTNR_WRITNG_GUIDANCE_CN
+					, DATE_FORMAT(QUSTNR_BGNDE,'%Y-%m-%d') QESTNR_BEGIN_DE
+					, DATE_FORMAT(QUSTNR_ENDDE,'%Y-%m-%d') QESTNR_END_DE
+	FROM 		comtnqestnrinfo
+	WHERE		QESTNR_ID = #{qestnrId}
+		AND		QUSTNR_TMPLAT_ID = #{qestnrTmplatId}
+	</select>
+	
+	<!-- 이메일 발송요청 등록 -->
+	<insert id="insertRequestSendEmail">
+	INSERT 		/* ProgramID=sqlmap.egovcom.olp.EgovQustnrManageMapper.insertRequestSendEmail */
+	INTO			TB_MAILSEND_MNG	(
+					  PRPOS
+					, EMAIL_SJ
+					, TMPLAT_FILE_COURS
+					, TMPLAT_USE_AT
+					, SNDR_EMAIL_ADRES
+					, RCVER_EMAIL_ADRES
+					, SUBST_INFO1
+					, SUBST_INFO2
+					, SUBST_INFO3
+					, SUBST_INFO4
+					, SUBST_INFO5
+					, SUBST_INFO6
+					, SUBST_INFO7
+					, SUBST_INFO8
+					, SUBST_INFO9
+					, SNDNG_STTUS
+					, PARAMTR1
+					, PARAMTR2
+					, RGSDE
+	)
+	VALUES		(
+					  #{prpos}
+					, #{emailSj}
+					, #{tmplatFileCours}
+					, #{tmplatUseAt}
+					, #{sndrEmailAdres}
+					, #{rcverEmailAdres}
+					, #{substInfo1}
+					, #{substInfo2}
+					, #{substInfo3}
+					, #{substInfo4}
+					, #{substInfo5}
+					, #{substInfo6}
+					, #{substInfo7}
+					, #{substInfo8}
+					, #{substInfo9}
+					, #{sndngSttus}
+					, #{paramtr1}
+					, #{paramtr2}
+					, sysdate()
+	)
+	</insert>
+</mapper>

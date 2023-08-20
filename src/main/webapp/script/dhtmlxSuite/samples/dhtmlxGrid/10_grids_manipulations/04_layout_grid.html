@@ -1,0 +1,66 @@
+<!--conf
+<sample>
+               <product version="1.4" edition="std"/>
+                       <modifications>
+                               <modified date="070101"/>
+                       </modifications>
+               </sample>
+ --> 
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Multiple Grids per Page</title>
+	
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+	
+</head>
+
+<body>
+	
+	<h1>Multiple Grids per Page</h1>
+	<p>You can place any number of grids on page with different configuring and styling.</p>
+	
+	<table>
+		<tr>
+			<td>
+				<div id="gridbox" style="width: 300px; height: 270px; overflow:hidden"></div>
+			</td>
+			<td> 
+				<div id="gridbox2" style="width: 500px; height: 270px; overflow:hidden"></div>
+			</td>
+		</tr>
+	</table>
+
+
+
+<script>
+	mygrid = new dhtmlXGridObject('gridbox');
+	mygrid.setImagePath("../../../codebase/imgs/");
+	mygrid.setHeader("Column A, Column B");
+    mygrid.setInitWidths("150,*");
+	mygrid.setColAlign("right,left")
+	mygrid.setColTypes("ro,ed");
+	mygrid.setColSorting("int,str")
+	mygrid.setSkin("dhx_skyblue");
+	mygrid.init();
+	mygrid.loadXML("../common/grid.xml");
+
+	mygrid2 = new dhtmlXGridObject('gridbox2');
+	mygrid2.setImagePath("../../../codebase/imgs/");
+	mygrid2.setHeader("Column A, Column B, Column C");
+    mygrid2.setInitWidths("200,100,*");
+	mygrid2.setColAlign("right,left,left")
+	mygrid2.setColTypes("ro,ed,ed");
+	mygrid2.setColSorting("int,str,str")
+	mygrid2.setSkin("dhx_skyblue")
+	mygrid2.init();
+	mygrid2.loadXML("../common/grid.xml");
+</script>
+
+</body>
+</html>
+

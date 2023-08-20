@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="biz.tech.mapif.pm.PGPM0070Mapper">
+<!-- 세율 등록 -->
+	<!-- 메일 전송기록 조회 -->
+	<select id="findSendLog" resultType="map">
+	SELECT	/* ID=biz.tech.mapif.pm.PGPM0070Mapper.findSendLog */
+			  EMP_NO				as empNo			/* 사원번호 */
+			, MAIL_TT				as mailTt			/* 메일 제목 */
+			, FILE_NM				as fileNm			/* 첨부 파일명 */
+			, MAX(SEND_DT)			as sendDt			/* 전송일자, 가장 최근것 */
+	FROM	TB_PAY_SND_LOG
+	WHERE	FILE_NM = #{fileNm}
+	GROUP	BY FILE_NM
+	</select>
+
+	<!-- 선택한 기간의 특정 사원이 개인월급여 조회 -->
+	<select id="findIndvPayMnt" resultType="map">
+	SELECT	/* ID=biz.tech.mapif.pm.PGPM0070Mapper.findIndvPayMnt */
+			  PAY_YM				as payYm			/* 급여년월 */
+			, EMP_NO				as empNo			/* 사원번호 */
+			, PAY_ITM_CD			as payItmCd			/* 급여항목코드 */
+			, ITM_AMT				as itmAmt			/* 항목금액 */
+			, RMRK					as rmrk				/* 비고 */
+			, MOD_DT				as modDt			/* 수정일 */
+			, ENRT_DT				as enrtDt			/* 생성일 */
+	FROM	  TB_PAY_MNT_LST
+	WHERE	  EMP_NO = #{empNo}
+		AND   PAY_YM = #{payYm}
+	ORDER BY  payItmCd ASC
+	</select>
+
+	<!-- 급여 명세서 전송 기록 저장 -->
+	<insert id="insertSendLog">
+	INSERT	/* ID=biz.tech.mapif.pm.PGPM0070Mapper.insertSendLog */
+	INTO		TB_PAY_SND_LOG (
+				  EMP_NO								/* 사원번호 */
+				, SEND_DT								/* 전송 일자 */
+				, MAIL_TT								/* 메일 제목 */
+				, FILE_NM								/* 첨부 파일명 */
+	) VALUES (
+				  #{empNo}
+		<choose>
+			<when test="_databaseId == 'mysql'">
+				, SYSDATE()
+			</when>
+			<when test="_databaseId == 'tibero'">
+				, SYSDATE
+			</when>
+			<otherwise>
+				, SYSDATE()
+			</otherwise>
+		</choose>
+				, #{mailTt}
+				, #{fileNm}
+	)
+	</insert>
+</mapper>

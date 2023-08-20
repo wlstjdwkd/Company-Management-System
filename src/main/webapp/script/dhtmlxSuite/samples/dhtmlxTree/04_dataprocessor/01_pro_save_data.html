@@ -1,0 +1,78 @@
+<!--conf
+<sample in_favorites="true">
+            <product version="1.5" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               <sampledescription><![CDATA[Sample demonstrates how to setup and use dhtmlxDataProcessor extension for dhtmlxTree for loading data from server and saving chnages back to server datasource. ]]></sampledescription></sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Updating server datasource</title>
+</head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+<body>
+	<h1>Updating server datasource</h1>
+	<p>Using dhtmlxDataProcessor you can avoid any script programming. Just implement server side (samples are available)</p>
+	
+	<table>
+		<tr>
+			<td>
+				<a href="#" onclick="tree.insertNewChild(tree.getSelectedItemId()||0,(new Date()).valueOf(),'New item')">Add node as child of selected (or top)</a> <br/>
+                <a href="#" onclick="tree.insertNewNext(tree.getSelectedItemId(),(new Date()).valueOf(),'New item')">Add node next to selected</a> <br/>
+                <a href="#" onclick="var id = tree.getSelectedItemId(); if (id) tree.deleteItem(id);">Delete selected row</a><br/>
+			</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>
+				<div id="treeboxbox_tree" style="width:250px; height:218px;background-color:#f5f5f5;border :1px solid Silver;; overflow:auto;"></div>
+			</td>
+			<td rowspan="2" style="padding-left:25" valign="top">
+			<div id="logarea" style="background-color:lightgrey;height:218px;width:400px;overflow:auto; padding:3px;"></div>
+			</td>
+		</tr>
+		<tr>
+			<td>
+                Single click on selected item to edit it.<br>
+				Move items between levels using drag-n-drop 
+			</td>
+		</tr>
+	</table>
+
+
+
+	<script>
+			
+			function doLog(str){
+				var log = document.getElementById("logarea");
+				log.innerHTML = log.innerHTML+str+"</br>"
+				log.scrollTop = log.scrollHeight;
+			}
+			
+			tree=new dhtmlXTreeObject("treeboxbox_tree","100%","100%",0);
+
+			
+			tree.setSkin('dhx_skyblue');
+			tree.setImagePath("../../../codebase/imgs/dhxtree_skyblue/");
+            tree.enableDragAndDrop(true);
+            tree.enableItemEditor(true);
+			tree.loadXML("php/get.php");
+
+        	//init dataprocessor and assign verification function
+        	myDataProcessor = new dataProcessor("php/update.php");
+        	//add after-update event handler
+			myDataProcessor.attachEvent("onAfterUpdate",function(nodeId,cType,newId){
+				doLog("Item was "+cType+"ed. Item id is " + newId)
+			});
+
+			myDataProcessor.init(tree);
+	</script>
+
+
+</body>
+</html>

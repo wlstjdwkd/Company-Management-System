@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="biz.tech.mapif.ev.PGEV0100Mapper">
+	<!-- 직원 조회의 갯수 -->
+	<select id="findEvalist" resultType="int">
+	SELECT 	/* PK=biz.tech.mapif.ev.PGEV0100Mapper.findEvalist */
+				COUNT(*)
+	FROM 		emp_eva
+	</select>
+  
+	<select id="findMember" resultType="hashmap">
+	SELECT		  name					/* 평가대상자 이름 */
+				, rank					/* 평가대상자 직급 */d
+				, in_date					/* 평가대상자 입사일 */
+				, PK
+							
+	FROM		tb_member_info
+	
+		<where>
+		<if test="ad_search_word !='' and ad_search_word !=null">
+			 name=#{ad_search_word}
+		</if>
+		</where>
+	</select>
+	
+	<select id="findEvaList" resultType="hashmap">
+	SELECT    b.name               /* 평가대상자 이름 */
+            , b.rank               /* 평가대상자 직급 */
+            , b.in_date               /* 평가대상자 입사일 */
+            , b.PK
+            
+            , SCORE                  /* 평가 점수 */
+            , COMMENT               /* 평가 코멘트 */
+            , EVA_DATE               /* 평가일 */
+            , TAR_ID
+   	FROM      emp_eva
+   	LEFT OUTER JOIN (
+               SELECT
+                    name
+                  , rank 
+                  , in_date
+                  , PK
+               FROM   tb_member_info
+               ) b
+ 	ON         TAR_ID = b.PK
+	
+		<where>
+			 b.PK=#{ad_PK}
+		</where>
+	</select>
+	
+</mapper>

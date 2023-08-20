@@ -1,0 +1,73 @@
+<!--conf
+<sample>
+	<product version="1.0" edition="std"/>
+	<modifications>
+		<modified date="080205"/>
+	</modifications>
+<sampledescription><![CDATA[Sample demonstrates the possibility to filter item based on different parameters. ]]></sampledescription></sample>
+ --> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<title>Filtering items</title>
+	<style>
+		.links{
+			cursor:pointer;
+			color:blue;
+			text-decoration:underline;
+		}
+	</style>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+    <script src="./types/ftypes.js" type="text/javascript"></script>
+    <link rel="STYLESHEET" type="text/css" href="./types/ftypes.css">
+	<script>
+		dhtmlx.image_path = "../../../codebase/imgs/"
+		var data;
+		function doOnLoad(){
+			data = new dhtmlXDataView("data_container");
+			changeType("ficon");
+			data.load("../common/files_ext.xml");
+		}
+		
+		function changeType(type){
+			data.types[type].icons_src_dir = "../common/images";
+			data.define("type",type);
+		}
+		function clear_filter(){
+			document.getElementById('filter1').value="";
+			document.getElementById('filter2').value="";
+			data.filter();
+		}
+	</script>
+	
+	<script>
+		function filterItemsBySizeGT(data,mask){
+			return (parseInt(data.filesize)>mask);
+		}
+	</script>
+<body onload="doOnLoad()">
+	<h1>Filtering Items</h1>
+	<div style="position:relative;">
+		<img src="../common/images/samples_frame.gif" width="436" height="513" alt="" border="0">
+		<div id="data_container" style="width:396px;height:396px;overflow:hidden;position:absolute;top:65px;left:20px;border:0px solid red;"></div>
+	</div>
+	
+	<input type="text" id="filter1"><span class="links" onclick="data.filter(filterItemsBySizeGT,parseInt(this.previousSibling.value));">Filter by Size (greater than, bytes)</span><br>
+	<input type="text" id="filter2"><span class="links" onclick="data.filter('#name#',this.previousSibling.value);">Filter by Name (includes)</span><br>
+	<span class="links" onclick="clear_filter()">Clear All Filters</span><br>
+	
+	
+	
+	<h3>Filtering state remains while changing types</h3>
+	<input type="radio" name="switch" onclick="changeType(this.value)" value="ficon" checked> F-icon<br>
+	<input type="radio" name="switch" onclick="changeType(this.value)" value="ftiles"> F-titles<br>
+	<input type="radio" name="switch" onclick="changeType(this.value)" value="ftable"> F-table<br>
+
+
+
+</body>
+</html>
+

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<title>기업정보</title>
+
+<link rel="stylesheet" type="text/css" href="/css/ucm.css" />
+<script type="text/javascript">
+
+
+function eventDisablePopup1(choice) {	
+
+	var ExpDate = new Date();
+	
+	if(choice == "day") {
+		ExpDate.setTime(ExpDate.getTime() + 1000*60*60*24);
+	}
+	else {
+		ExpDate.setTime(ExpDate.getTime() + 1000*60*60*24*7);
+
+	}
+	document.cookie = "mainguid20150331=1234; path=/; expires="+ ExpDate.toGMTString() + ";"; 
+	window.close();
+}
+
+</script>
+</head>
+<body>
+<body>
+	<P>&nbsp;</P>
+<TABLE style="BORDER-BOTTOM: medium none; BORDER-LEFT: medium none; WIDTH: 100%; BORDER-COLLAPSE: collapse; FONT-FAMILY: Dotum; FONT-SIZE: 9pt; BORDER-TOP: medium none; BORDER-RIGHT: medium none" class=txc-table border=0 cellSpacing=0 cellPadding=0 width=391>
+<TBODY>
+<TR>
+<TD style="BORDER-BOTTOM: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BACKGROUND-COLOR: #003399; WIDTH: 100%; HEIGHT: 65px; BORDER-TOP: #ccc 1px solid; BORDER-RIGHT: #ccc 1px solid">
+<P style="TEXT-ALIGN: center">&nbsp;﻿<STRONG><SPAN style="COLOR: #ffffff">﻿</SPAN><SPAN style="COLOR: #ffffff; FONT-SIZE: 18pt">﻿확인서 신청 접수 안내﻿</SPAN></STRONG></P></TD></TR>
+<TR>
+<TD style="BORDER-BOTTOM: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; WIDTH: 100%; HEIGHT: 24px; BORDER-RIGHT: #ccc 1px solid">
+<P>&nbsp; </P>
+<P>&nbsp; </P>
+<P>&nbsp; </P>
+<P>&nbsp;&nbsp; <SPAN style="FONT-SIZE: 12pt"><STRONG>현상 : 확인서 입력 후 임시저장 / 자가진단 / 신청 이 <br>정상 처리 되지 않는 현상&nbsp;</STRONG></SPAN></P>
+<P>&nbsp;</P>
+<P><SPAN style="FONT-SIZE: 12pt"><STRONG>&nbsp;원인 : 일부 기업들 중 자체 방화벽때문에 첨부파일이 등록된 접수건들은 저장이 되지않습니다. 기업 정보에 대한 방화벽 제한을 해제하신 후 이용하시기 바랍니다.</STRONG></SPAN></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+</TD></TR>
+<TR><TD>
+		<input class = "ml5" id="eventPopupNomore1" type="checkbox" onfocus="this.blur();" onclick="eventDisablePopup1('day');" /> 
+		<a href="#none"><label for="eventPopupNomore1">하루 동안 이 창을 열지않음</label></a>
+		<!-- <input class = "ml5" id="eventPopupNomore2" type="checkbox" onfocus="this.blur();" onclick="eventDisablePopup1('week');" /> 
+		<a href="#none"><label for="eventPopupNomore2">7일 동안 이 창을 열지않음</label></a> -->
+		<a href="#none" class="ml40"  onclick = "window.close();"><span>창닫기</span></a>
+</TD></TR>
+	  </TBODY></TABLE>
+
+</body>
+</html>

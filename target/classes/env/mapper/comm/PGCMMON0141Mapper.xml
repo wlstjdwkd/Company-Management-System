@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.comm.mapif.PGCMMON0141Mapper">
+
+<!-- 일별 업무별 접속 통계 -->
+<select id="findVisitStats" resultType = "Map">
+	SELECT 
+				  			  a.MENU_NM				AS		jobId
+				  			, a.PARNTS_MENU_NO	AS	 	parntsMenuNo
+   							, sum(b.CONECTR_CO_IP ) 	AS conectrCoIp
+							, sum(b.REQUST_CO  )			AS requstCo
+
+	FROM				tb_menuinfo a 
+	LEFT OUTER JOIN STS_ACCESS_PROG b
+	ON a.PROGRM_ID = b.JOB_ID and a.MENU_LEVEL != 1
+	WHERE b.DE = #{searchDate}
+	GROUP BY a.PARNTS_MENU_NO, a.MENU_NM
+	LIMIT #{limitFrom} , #{limitTo}	
+	
+</select>
+
+<!-- 일별 총 접속사용자 수 -->
+<select id = "findTotalVisitstats" resultType = "map"> 
+	SELECT				/* ProgramID=com.comm.mapif.PGCMMON0141Mapper.findTotalVisitstats */
+					CONECTR_CO_IP		AS		conectrCoIp
+	FROM		STS_ACCESS_USER
+	WHERE		DE = #{searchDate}
+</select>
+ 
+<select id="findLogCnt" resultType = "int">
+	SELECT /* ProgramID=com.comm.mapif.PGCMMON0141Mapper.findLogCnt */
+	          COUNT(1)
+	FROM				tb_menuinfo a 
+	LEFT OUTER JOIN STS_ACCESS_PROG b
+	ON a.PROGRM_ID = b.JOB_ID and a.MENU_LEVEL != 1
+	WHERE b.DE = #{searchDate}
+</select>
+
+
+</mapper>

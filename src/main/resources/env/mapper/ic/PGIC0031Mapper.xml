@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="biz.tech.mapif.ic.PGIC0031Mapper">
+
+	<!-- 위변조문서신고 등록-->
+	<insert id="insertDocReport">
+	INSERT /* ProgramID=biz.tech.mapif.ic.PGIC0031Mapper.insertDocReport */
+	INTO	  TB_FRGRY_ALTR_STTEMNT (
+			APLCNT_NM				
+			,TELNO				
+			,DOC_CNFIRM_NO			
+			,ACQS_CRCMSTNCS		
+			,EMAIL					
+			,CREAT_DE
+	)
+	VALUES	(
+			#{aplcntNm}
+		  , #{telNo}
+		  , #{docCrfirmNo}
+		  , #{acqsCrcmstncs}
+		  , #{email}
+		  , SYSDATE()
+	)	
+	</insert>
+</mapper>

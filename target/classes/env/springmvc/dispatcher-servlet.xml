@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:p="http://www.springframework.org/schema/p"
+        xmlns:context="http://www.springframework.org/schema/context"
+        xmlns:mvc="http://www.springframework.org/schema/mvc"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+                http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+                http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd">
+
+    <context:component-scan base-package="egovframework">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service"/>
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Repository"/>
+    </context:component-scan>
+    <context:component-scan base-package="com">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service"/>
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Repository"/>
+    </context:component-scan>
+    <context:component-scan base-package="biz">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service"/>
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Repository"/>
+    </context:component-scan>
+
+	<bean id="checkAuthorityInterceptor" class="com.infra.aop.CheckAuthorityInterceptor">
+		<property name="exclude">
+			<set>
+				<value>PGUM0001</value><!-- 웹메인 -->
+				<!-- <value>PGMB0010</value> --><!-- 로그인 -->
+				<value>PGCMLOGIO0010</value>
+				<value>WEB-INF/views/egovframework/com/uss/olp/qnn/BD_EgovQustnrRespondInfoManageRegist</value><!-- 설문작성 -->
+				<!-- 20160620 TEST 페이지 제거
+				<value>PGTS0001</value>테스트1
+				<value>PGTS0002</value>테스트2
+				<value>PGTS0003</value>테스트3
+				<value>PGTS0004</value>테스트4
+				<value>PGTS0005</value>테스트5
+				-->
+				<value>PGMS0081</value><!-- 게시물관리 -->
+				<value>reload</value><!-- SQL 로딩(개발용) -->
+			</set>
+		</property>
+	</bean>
+
+    <!-- commandMap 사용 설정 -->
+	<bean class="egovframework.rte.ptl.mvc.bind.annotation.EgovRequestMappingHandlerAdapter">
+		<property name="customArgumentResolvers">
+			<list>
+				<bean class="egovframework.rte.ptl.mvc.bind.AnnotationCommandMapArgumentResolver" />
+			</list>
+		</property>
+        <property name="webBindingInitializer">
+            <bean class="egovframework.com.cmm.web.EgovBindingInitializer"/>
+        </property>
+	</bean>
+	<!-- 
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+        <property name="webBindingInitializer">
+            <bean class="egovframework.com.cmm.web.EgovBindingInitializer"/>
+        </property>
+    </bean> -->
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
+		<property name="interceptors">
+			<list>
+				<ref bean="checkAuthorityInterceptor" />
+			</list>
+		</property>
+    </bean>
+    
+     <!-- [ ViewResolver ] =============================================================== -->
+    <bean class="org.springframework.web.servlet.view.BeanNameViewResolver" p:order="1" />
+    
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver" p:order="2"
+	    p:viewClass="org.springframework.web.servlet.view.JstlView"
+	    p:prefix="/WEB-INF/views" p:suffix=".jsp"/>
+	
+	<!-- [ ExceptionResolver ] =============================================================== -->    
+    <bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+		<property name="order" value="1" />
+        <property name="defaultErrorView" value="/cmm/egovError"/>
+        <property name="exceptionMappings">
+            <props>
+                <prop key="EgovBizException">/cmm/egovError</prop>
+                <prop key="AuthorityException">/cmm/authError</prop>
+                <prop key="NoMemberException"><![CDATA[redirect:/PGCMLOGIO0010.do?df_pmenu_no=24&df_menu_no=25&df_program_id=PGCMLOGIO0010]]></prop>
+                <!-- 
+                <prop key="NoMemberException"><![CDATA[redirect:/PGMB0010.do?df_pmenu_no=24&df_menu_no=25&df_program_id=PGMB0010]]></prop>
+                <prop key="org.springframework.dao.DataAccessException">/cmm/dataAccessFailure</prop>
+                <prop key="org.springframework.transaction.TransactionException">/cmm/transactionFailure</prop>
+                <prop key="org.springframework.security.AccessDeniedException">/cmm/egovError</prop>
+                -->
+            </props>
+        </property>
+    </bean>
+
+</beans>

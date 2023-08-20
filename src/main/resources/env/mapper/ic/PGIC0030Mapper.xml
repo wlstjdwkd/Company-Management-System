@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="biz.tech.mapif.ic.PGIC0030Mapper">
+
+	<!-- 발급문서진위확인 조회 CNFIRM:확인서출력이력 ISSU:신청기업기초정보 REQST:신청기업및관계기업주요정보-->
+	<select id="findIssuDocument" resultType="map">
+	SELECT /* ProgramID=biz.tech.mapif.ic.PGIC0030Mapper.findIssuDocument */
+			CNFIRM.DOC_CNFIRM_NO			AS		docCnfirmNo			/* 문서확인번호(PK)  */
+			,REQST.ENTRPRS_NM               AS		entprsNm			/* 기업명  */
+			,REQST.JURIRNO                  AS		jurirno		    	/* 법인등록번호  */
+			,ISSU.ISSU_NO					AS		issuNo				/* 발급번호			 */
+			,ISSU.ISSU_DE					AS		issuDe				/* 발급일자			 */
+			,ISSU.VALID_PD_BEGIN_DE			AS		validBeginDe		/* 유효기간시작일자	 */
+			,ISSU.VALID_PD_END_DE			AS		validEndDe			/* 유효기간종료일자  */
+	FROM	TB_ISSU_BSIS_INFO ISSU, TB_CNFIRM_OUTPT_HIST CNFIRM, TB_REQST_RCPY_LIST REQST
+	WHERE	ISSU.RCEPT_NO = CNFIRM.RCEPT_NO
+	AND     ISSU.RCEPT_NO = REQST.RCEPT_NO
+	AND		CNFIRM.DOC_CNFIRM_NO = #{DOC_CNFIRMNO}
+	AND ISSU.RCEPT_NO NOT IN (SELECT RCEPT_NO FROM TB_RESN_MANAGE WHERE SE_CODE = 'RC4')
+	AND REQST.ENTRPRS_SE = 'O'
+    AND REQST.SN = 1
+	</select>
+	
+</mapper>

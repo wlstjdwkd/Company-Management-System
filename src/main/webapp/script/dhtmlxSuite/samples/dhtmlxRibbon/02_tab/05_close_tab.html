@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Close (remove) tab</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+	<script>
+		var myRibbon;
+		function doOnLoad() {
+			myRibbon = new dhtmlXRibbon({
+				parent: "ribbonObj",
+				icons_path: "../common/",
+				json: "../common/tabs.json"
+			});
+		};
+
+		function doOnUnload() {
+			if (myRibbon) {
+				myRibbon.unload();
+				myRibbon = null;
+			}
+		};
+		
+		function _close(id,activateId) {
+			myRibbon.tabs(id).close(activateId);
+		};
+		function refresh() {
+			window.onunload();
+			window.onload();
+		}
+	</script>
+
+</head>
+<body onload="doOnLoad();" onunload="doOnUnload();">
+	<div id="ribbonObj"></div>
+	<div>Tab 1 <button onclick="_close('tab_1')">close and select next tab</button></div>
+	<div>Tab 1 <button onclick="_close('tab_1',false)">close a1 and do not select any tab</button></div>
+	<div>Tab 1 <button onclick="_close('tab_1','tab_3')">close end select tab 3</button></div>
+	<button onclick="refresh()">Refresh</button>
+</body>
+</html>

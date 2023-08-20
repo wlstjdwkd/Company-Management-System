@@ -1,0 +1,57 @@
+/* 
+ * Nanum Gothic (Korean) http://www.google.com/earlyaccess
+ */
+@font-face {
+font-family: 'NotoKrL';
+font-style: normal;
+font-weight: 100;
+src: local('Noto Sans Light'), local('NotoSans-Light'), url(./NotoSans-Light.eot);
+src: url(./NotoSans-Light.eot?#iefix) format('embedded-opentype'),
+url(./NotoSans-Light.woff2) format('woff2'),
+url(./NotoSans-Light.woff) format('woff');;
+}
+@font-face {
+font-family: 'NotoKrR';
+font-style: normal;
+font-weight: 300;
+src: local('Noto Sans Regular'), local('NotoSans-Regular'), url(./NotoSans-Regular.eot);
+src: url(./NotoSans-Regular.eot?#iefix) format('embedded-opentype'),
+url(./NotoSans-Regular.woff2) format('woff2'),
+url(./NotoSans-Regular.woff) format('woff');
+}
+@font-face {
+font-family: 'NotoKrM';
+font-style: normal;
+font-weight: 500;
+src: local('Noto Sans Medium'), local('NotoSans-Medium'), url(./NotoSans-Medium.eot);
+src: url(./NotoSans-Medium.eot?#iefix) format('embedded-opentype'),
+url(./NotoSans-Medium.woff2) format('woff2'),
+url(./NotoSans-Medium.woff) format('woff');
+}
+@font-face {
+font-family: 'NotoKrB';
+font-style: normal;
+font-weight: 700;
+src: local('Noto Sans Bold'), local('NotoSans-Bold'), url(./NotoSans-Bold.eot);
+src: url(./NotoSans-Bold.eot?#iefix) format('embedded-opentype'),
+url(./NotoSans-Bold.woff2) format('woff2'),
+url(./NotoSans-Bold.woff) format('woff');
+}
+
+@font-face {
+font-family: 'Noto Sans KR2';
+font-style: normal;
+font-weight: 300;
+src: url(./NotoSansSC-Light.woff2) format('woff2'),
+url(./NotoSansSC-Light.woff) format('woff'),
+url(./NotoSansSC-Light.otf) format('opentype');
+}
+
+@font-face {
+font-family: 'Noto Sans KR3_1';
+font-style: normal;
+font-weight: 600;
+src: url(./NotoSansSC-Regular.woff2) format('woff2'),
+url(./NotoSansSC-Regular.woff) format('woff'),
+url(./NotoSansSC-Regular.otf) format('opentype');
+}

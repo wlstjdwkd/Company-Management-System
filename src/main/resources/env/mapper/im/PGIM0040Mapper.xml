@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="biz.tech.mapif.im.PGIM0040Mapper">
+
+	<!-- 위변조문서신고내역 목록갯수 -->
+	<select id="findDocReportListCnt" resultType="int">
+		SELECT	/* ProgramID=biz.tech.mapif.im.PGIM0040Mapper.findDocReportListCnt */
+				COUNT(*)
+		FROM	TB_FRGRY_ALTR_STTEMNT
+		<!-- 검색조건 -->
+		<where>
+			<if test="q_pjt_start_dt != null and q_pjt_start_dt != '' and q_pjt_end_dt != null and q_pjt_end_dt != '' ">
+				AND	 CREAT_DE BETWEEN #{q_pjt_start_dt} AND #{q_pjt_end_dt} 
+			</if>
+		</where>
+	</select>
+	
+	<!-- 위변조문서신고내역 목록 조회 -->
+	<select id="findDocReportList" resultType="map">
+		SELECT	/* ProgramID=biz.tech.mapif.im.PGIM0040Mapper.findDocReportList */
+				 APLCNT_NM							AS aplcntNm			/*	신고자			*/
+				,TELNO								AS telNo			/*	전화번호		*/
+				,DOC_CNFIRM_NO						AS docCnfirmNo		/*	문서확인번호	*/
+				,ACQS_CRCMSTNCS						AS acqsCrcmstncs	/*	취득경위		*/
+				,EMAIL								AS email			/*	이메일			*/
+				,DATE_FORMAT(CREAT_DE,'%Y-%m-%d')	AS creatDe			/*	신고일			*/
+		FROM	TB_FRGRY_ALTR_STTEMNT
+		<!-- 검색조건 -->
+		<where>
+			<if test="q_pjt_start_dt != null and q_pjt_start_dt != '' and q_pjt_end_dt != null and q_pjt_end_dt != '' ">
+				AND	 CREAT_DE BETWEEN #{q_pjt_start_dt} AND #{q_pjt_end_dt}
+			</if>
+		</where>
+		ORDER BY CREAT_DE DESC
+	</select>
+	
+</mapper>

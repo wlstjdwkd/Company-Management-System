@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="biz.tech.mapif.dc.PGDC0020Mapper">
+
+	<!-- 신용평가사수집 작업 목록조회 -->
+	<select id="findentInfoMgrList" resultType="map">
+		SELECT	/* ProgramID=biz.tech.mapif.dc.PGDC0020Mapper.findentInfoMgrList */
+						 SN													AS 	sn										/* 순번 */
+						,STDYY												AS 	stdYy									/* 기준년도  */
+						,DATE_FORMAT(RQESTDE,'%Y-%m-%d')				AS 	reqDe					/* 요청일  */
+						,DATE_FORMAT(COLCT_DE,'%Y-%m-%d')				AS 	colctDe					/* 수집일  */
+						,TRNSMIS_ENTRPRS_CO									AS 	transCnt					/* 전송기업수 */
+						,ENTPRINF_ENTRPRS_CO									AS 	entInfCnt				/* 개황_기업수 */		
+						,FNNR_ENTRPRS_CO											AS 	fnCnt					 	/* 재무_기업수 */		
+						,INVSTMNT_ENTRPRS_CO									AS 	invCnt					/* 출자_기업수 */		
+						,BCNC_ENTRPRS_CO											AS 	bcncCnt					/* 거래처_기업수 */		
+						,(
+							CASE PROCESS_STTUS	
+								WHEN 	'1'	 	THEN '전송'			
+								WHEN 	'2' 	THEN '수신'
+								WHEN 	'3'		THEN '완료(성공)'	
+								WHEN 	'4'		THEN '완료(실패)'
+								ELSE	'N/A'
+							END
+						)																	AS    proSatus					/* 처리상태(1,2,3)*/				
+						,DATE_FORMAT(BEGIN_TM , '%Y-%m-%d %H:%m%s')  	AS 	beginTm					/* 시작시각 */
+						,DATE_FORMAT(END_TM , '%Y-%m-%d %H:%m%s')  	AS 	endTm					/* 종료시각 */
+						,DATE_FORMAT(CREAT_DE , '%Y-%m-%d %H:%m%s')  	AS 	createTm				/* 생성일자 */
+		FROM					TB_ENTPRS_COLCT
+		<where>
+			<!-- 검색조건 -->
+			<if test="stdYy != null and stdYy != ''" >
+					AND 			STDYY = #{stdYy}
+			</if>
+		</where>
+		ORDER 		BY stdYy,  reqDe DESC 
+	</select>
+	
+	<!-- 신용평가사수집 대상기업 조회 -->
+	<select id="findentInfoReq" resultType="map">
+		SELECT DISTINCT	/* ProgramID=biz.tech.mapif.dc.PGDC0030Mapper.findentInfoReq */ 
+				  k.JURIRNO   					AS 		jurirNo			/* 법인번호 */
+				  ,k.BIZRNO						AS			bizrNo			/* 사업자번호 */
+				  ,j.COLCT_CODE 				AS			kedCd			/*	신용평사가수집코드 */
+		FROM
+		(
+			<!--  폐업자 제외  -->
+			SELECT DISTINCT a.JURIRNO, a.BIZRNO
+			FROM 	TB_ENTPRS_INFO    a 
+			WHERE 	a.SPCSS_AT <![CDATA[<>]]>  'SC2'
+			UNION ALL
+			<!-- 확인서발급기업  -->
+			SELECT DISTINCT  a.JURIRNO, a.BIZRNO
+			FROM TB_REQST_RCPY_LIST a 
+			WHERE   TRIM(a.JURIRNO)  <![CDATA[<>]]> ''  OR  TRIM(a.BIZRNO) <![CDATA[<>]]> '' AND a.CPR_REGIST_SE = 'L'
+			UNION ALL
+			<!--  상호출자제한기업집단  -->
+			SELECT DISTINCT  a.JURIRNO, '' as BIZRNO
+			FROM TB_MUTUAL_INVEST_LIMIT a 
+		) k LEFT OUTER JOIN TB_ENTRPRS_CD j
+		ON  k.BIZRNO = j.BIZRNO and k.JURIRNO = j.JURIRNO ;
+	</select>
+	
+	<select id="callentInfoReq" statementType="CALLABLE" resultType="map">
+	{
+    	call sp_SELECT_REQ_ENTRPRS_INFO(#{stdYy}, '1') 
+	}
+	</select>
+	
+	
+		<!-- 신용평가사수집 작업 목록조회 -->
+	<insert id="insertentInfoMgr" useGeneratedKeys="true" keyProperty="SN" >
+		INSERT	INTO	/* ProgramID=biz.tech.mapif.dc.PGDC0020Mapper.insertentInfoMgr */
+					TB_ENTPRS_COLCT (
+							STDYY												/* 기준년도  */
+							,RQESTDE											/* 요청일  */
+							,TRNSMIS_ENTRPRS_CO						/* 전송기업수 */
+							,PROCESS_STTUS									/* 처리상태(1,2,3)*/				
+							,BEGIN_TM											/* 시작시각 */
+							,CREAT_DE											/* 생성일자 */
+					)
+					VALUES
+					(
+							#{stdYy}
+							,now()
+							,#{reqCnt}
+							,1
+							,now()
+							,now()
+					)
+	</insert>
+	
+		<!-- 신용평가사수집 작업 목록조회(NICE) -->
+	<insert id="insertentInfoMgrNice" useGeneratedKeys="true" keyProperty="SN" >
+		INSERT	INTO	/* ProgramID=biz.tech.mapif.dc.PGDC0020Mapper.insertentInfoMgrNice */
+					TB_ENTPRS_COLCT_NICE (
+							STDYY												/* 기준년도  */
+							,RQESTDE											/* 요청일  */
+							,TRNSMIS_ENTRPRS_CO						/* 전송기업수 */
+							,PROCESS_STTUS									/* 처리상태(1,2,3)*/				
+							,BEGIN_TM											/* 시작시각 */
+							,CREAT_DE											/* 생성일자 */
+					)
+					VALUES
+					(
+							#{stdYy}
+							,now()
+							,#{reqCnt}
+							,1
+							,now()
+							,now()
+					)
+	</insert>
+</mapper>

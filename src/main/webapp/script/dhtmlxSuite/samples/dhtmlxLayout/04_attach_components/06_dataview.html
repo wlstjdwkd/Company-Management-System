@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<!--conf
+<sample>
+              <product version="4.0b1" edition="std"/>
+                     <modifications>
+                            <modified date="130911"/>
+                     </modifications>
+               </sample>
+-->
+<html>
+<head>
+	<title>Integration with dhtmlxDataView</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+	<style>
+		div#layoutObj {
+			position: relative;
+			margin-top: 20px;
+			margin-left: 20px;
+			width: 600px;
+			height: 400px;
+		}
+	</style>
+	<script>
+		var myLayout, myDataView;
+		function doOnLoad() {
+			myLayout = new dhtmlXLayoutObject({
+				parent: "layoutObj",
+				pattern: "3L",
+				cells: [{id: "a", text: "dhtmlxDataView", width: 410}]
+			});
+			
+			myDataView = myLayout.cells("a").attachDataView({
+				type: {
+					template:"#Package# : #Version#<br/>#Maintainer#",
+					padding: 5,
+					height: 40,
+					width: 170
+				},
+				drag: true,
+				select: true
+			});
+			myDataView.load("../common/dataview.xml");
+
+		}
+	</script>
+</head>
+<body onload="doOnLoad();">
+	<div id="layoutObj"></div>
+</body>
+</html>

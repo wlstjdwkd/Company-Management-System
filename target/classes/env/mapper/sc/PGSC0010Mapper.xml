@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="biz.tech.mapif.sc.PGSC0010Mapper">
+
+	<!-- 회원 정보 등록 -->
+	<insert id="insertMember">
+	INSERT /* PK=com.mapif.PGSC0010Mapper.insertMember */ 
+	INTO		tb_member_info ( 
+					PK								/* 사원번호 */
+				, name							/* 이름 */
+				, rank							/* 직급 */
+				, ss_num						/* 주민번호 */
+				, bank							/* 결제은행 */
+				, bank_num						/* 결제계좌 */
+				, in_date						/* 입사일 */
+				, tel							/* 연락처 */
+				, p_mail						/* 개인메일 */
+				, c_mail						/* 회사메일 */
+				, address						/* 주소 */
+	)
+	VALUES ( 
+			  #{adPK}
+			, #{adname}
+			, #{adrank}
+			, #{adss}
+			, #{adbank}
+			, #{adbanknum}
+			, #{startdt}
+			, #{adtel}
+			, #{adpmail}
+			, #{adcmail}
+			, #{adadd}
+	)
+	</insert>
+	
+	<!-- 수정 페이지 정보 조회 -->
+	<select id="findUsermember" resultType="hashmap">
+	SELECT /* PK=com.mapif.PGSC0010Mapper.findUsermember */
+				PK								/* 사원번호 */
+				, name							/* 이름 */
+				, rank							/* 직급 */
+				, ss_num		AS ssnum		/* 주민번호 */
+				, bank							/* 결제은행 */
+				, bank_num		AS banknum		/* 결제계좌 */
+				, in_date		AS indate		/* 입사일 */
+				, tel							/* 연락처 */
+				, p_mail		AS pmail		/* 개인메일 */
+				, c_mail		AS cmail		/* 회사메일 */
+				, address						/* 주소 */
+	FROM		tb_member_info
+	WHERE		PK = #{adPK}
+	ORDER BY PK ASC			
+	</select>
+	
+	<!-- 직원 정보 삭제 -->
+	<delete id="deletemember">
+	DELETE 	/* PK=com.mapif.PGSC0010Mapper.deletemember*/
+	FROM	tb_member_info
+	WHERE	PK = #{adPK}
+	</delete>
+	
+	<!-- 직원 정보 수정 -->
+	<update id="updatemember">
+	UPDATE /* PK=sqlmpa.cm.PGSC0010Mapper.updatemember */
+			tb_member_info
+	SET
+			PK = #{adPK}										
+			, name = #{adname}
+			, rank = #{adrank}												
+			, ss_num = #{adss}													
+			, bank = #{adbank}								
+			, bank_num = #{adbanknum}													
+			, in_date = #{startdt}											
+			, tel = #{adtel}
+			, p_mail = #{adpmail}
+			, c_mail = #{adcmail}
+			, address = #{adadd}											
+	WHERE PK = #{adPK}
+	</update>
+	
+	<!-- 회원 조회 -->
+	<select id="findmember" resultType="hashmap">
+	SELECT /* PK=com.mapif.PGSC0010Mapper.findmember */
+				PK								/* 사원번호 */
+				, name							/* 이름 */
+				, rank							/* 직급 */
+				, ss_num		AS ssnum		/* 주민번호 */
+				, bank							/* 결제은행 */
+				, bank_num		AS banknum		/* 결제계좌 */
+				, in_date		AS indate		/* 입사일 */
+				, tel							/* 연락처 */
+				, p_mail		AS pmail		/* 개인메일 */
+				, c_mail		AS cmail		/* 회사메일 */
+				, address						/* 주소 */
+	FROM		tb_member_info
+	<where>
+	<if test="ad_search_word !='' and ad_search_word !=null">
+		name=#{ad_search_word}
+	</if>
+	</where>
+	ORDER BY PK ASC			
+	</select>
+	
+	<!-- 회원 조회의 갯수 -->
+	<select id="findUsermemberlist" resultType="int">
+	SELECT 	/* PK=com.mapif.PGSC0010Mapper.findUsermemberlist */
+				COUNT(*)
+	FROM 		tb_member_info
+	</select>
+
+</mapper>

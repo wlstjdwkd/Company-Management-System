@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="biz.tech.mapif.pc.PGPC0030Mapper">
+
+
+<!-- 최근년도 구하기 -->
+<select id="findMaxStdyy" resultType = "int">
+	SELECT 		/* ProgramID=biz.tech.mapif.pc.PGPC0030Mapper.findMaxStdyy */
+					MAX(STDYY_DO)																		/*  최근 년도		*/
+	FROM		 STS_ENTCLS
+</select>
+
+<!-- 연도별 주요 지표 찾기 -->
+<select id = "findMainPoint" resultType = "Map">
+	SELECT			/* ProgramID=biz.tech.mapif.pc.PGPC0030Mapper.findMainPoint */
+					  SUM(ENTRPRS_CO)							AS entrprsCo					/*	기업 수					*/
+					, SUM(ORDTM_LABRR_CO)					AS ordtmLabrrCo				/*	상시근로자 수			*/
+					, SUM(XPORT_AM_DOLLAR)					AS xportAmDollar			/*	수출액 달러			*/
+					, SUM(SELNG_AM)								AS selngAm					/*	매출액					*/
+	FROM		STS_ENTCLS
+	WHERE		STDYY_DO	= #{stdyyDo}
+    AND     ENTCLS = 'EA1'
+</select>
+
+<!-- 연도별 업종별 지표 값 찾기 -->
+<select id = "findMlfscPoint" resultType = "Map">
+	SELECT		/* ProgramID=biz.tech.mapif.pc.PGPC0030Mapper.findMlfscPoint */
+					SUM(ENTRPRS_CO)								AS entrprsCo					/* 기업 수				*/
+					, SUM(ORDTM_LABRR_CO)					AS ordtmLabrrCo				/* 상시근로자 수		*/
+					, SUM(XPORT_AM_DOLLAR)					AS xportAmDollar			/* 수출액 달러			*/
+					, SUM(SELNG_AM)								AS selngAm					/* 매출액				*/
+	FROM		STS_ENTCLS
+	<where>
+	AND 			STDYY_DO	= #{stdyyDo}
+	AND			ENTCLS = 'EA1'
+	<if test="productAt == 'YY' ">
+		AND 		INDUTY_CODE LIKE CONCAT ('C', '%')
+	</if>
+	<if test="productAt == 'NN' ">
+		AND 		INDUTY_CODE NOT LIKE CONCAT ('C', '%')
+	</if>
+	</where>
+	</select>
+	
+	<!-- 판정 최종년도 조회 -->
+	<select id="selectMaxJdgmntYear" resultType="String">
+	SELECT MAX(STDYY) 
+	FROM TB_JDGMNT_MANAGE
+	WHERE JDGMNT_MBY ='M';
+	</select>
+	
+	<!-- 기업 통계 포함기업 카운트 -->
+	<select id="selectHpeAllFnnrCount" resultType="int">
+	SELECT COUNT(*) 
+	FROM VW_HPE_ALL_FNNR
+	WHERE STDYY = #{STDYY}
+	<if test="ENTRPRS_NM != null and ENTRPRS_NM != ''">
+	AND ENTRPRS_NM LIKE CONCAT('%', #{ENTRPRS_NM}, '%')
+	</if>
+	<if test="LCLAS_CD != null and LCLAS_CD != ''">
+	AND CASE WHEN LCLAS_CD = 'C' THEN CONCAT(LCLAS_CD, MLSFC_CD)
+			 WHEN LCLAS_CD != 'C' THEN LCLAS_CD
+		END = #{LCLAS_CD}
+	</if>
+	<if test="AREA1 != null and AREA1 != ''">
+	AND AREA1 = #{AREA1}
+	</if>
+	</select>
+	
+	<!-- 기업 통계 포함기업 검색 -->
+	<select id="selectHpeAllFnnr" resultType="map">
+	SELECT 
+		   STDYY				/* 기준년 		*/
+		 , HPE_CD				/* 기업관리코드 */
+		 , ENTRPRS_NM			/* 기업명 		*/
+		 , RPRSNTV_NM			/* 대표자명 	*/
+		 , substr(HEDOFC_ADRES, 1, INSTR(HEDOFC_ADRES, " ")) AS AREA_SIDO	/* 지역(시도) */
+		 , (SELECT KOREAN_NM 
+			FROM TB_IND_CD IND
+			WHERE IND.INDUTY_CODE = DTLDTLCLFC_CD) AS INDUTY_NM				/* 세세분류명 */
+	FROM VW_HPE_ALL_FNNR
+	WHERE STDYY = #{STDYY}
+	<if test="ENTRPRS_NM != null and ENTRPRS_NM != ''">
+	AND ENTRPRS_NM LIKE CONCAT('%', #{ENTRPRS_NM}, '%')
+	</if>	
+	<if test="LCLAS_CD != null and LCLAS_CD != ''">
+	AND CASE WHEN LCLAS_CD = 'C' THEN CONCAT(LCLAS_CD, MLSFC_CD)
+			 WHEN LCLAS_CD != 'C' THEN LCLAS_CD
+		END = #{LCLAS_CD}
+	</if>
+	<if test="AREA1 != null and AREA1 != ''">
+	AND AREA1 = #{AREA1}
+	</if>
+	LIMIT #{limitFrom}, #{limitTo}
+	</select>
+	
+	<!-- 업종세분류목록 조회 -->
+	<select id="selectIndutyDtlclfcList" resultType="Map">
+	SELECT
+		   IF( INDUTY_CODE = LCLAS_CD, LCLAS_CD,  CONCAT(LCLAS_CD, INDUTY_CODE)) AS IND_CODE
+		 , KOREAN_NM
+		 , LCLAS_CD
+	FROM TB_IND_CD
+	WHERE LCLAS_CD = 'C' AND SE = '2'
+	UNION ALL
+	SELECT
+		   IF( INDUTY_CODE = LCLAS_CD, LCLAS_CD,  CONCAT(LCLAS_CD, INDUTY_CODE)) AS IND_CODE
+		 , KOREAN_NM
+		 , LCLAS_CD
+	FROM TB_IND_CD
+	WHERE LCLAS_CD != 'C' AND SE = '1'
+	</select>
+	
+	<!-- 지역코드 조회(시도별) -->
+	<select id="selectAreaDivList" resultType="Map">
+	SELECT
+	AREA_CODE
+	, UPPER_CODE
+	, `DIV`
+	, AREA_NM
+	, ABRV
+	from TB_AREA_DIV
+	where `DIV` = 2
+	and AREA_CODE != 'D99'
+	</select>
+</mapper>

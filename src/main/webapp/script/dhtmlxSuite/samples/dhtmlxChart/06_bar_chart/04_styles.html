@@ -1,0 +1,86 @@
+<!--conf
+<sample>
+              <product version="2.6" edition="std"/>
+                     <modifications>
+                            <modified date="100609"/>
+                     </modifications>
+               </sample>
+ -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+    <head>
+        <title>Styles</title>
+        	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+        
+        <script src="../common/testdata.js"></script>
+    </head>
+    <body >
+        <h1>Styles</h1>
+        <div id="chart1" style="width:600px;height:250px;border:1px solid #A4BED4;"></div>
+        <div id="chart2" style="width:600px;height:250px;border:1px solid #A4BED4;"></div>
+
+        <script>
+            var barChart1 =  new dhtmlXChart({
+                view:"bar",
+                container:"chart1",
+                value:"#sales#",
+                width:30,
+                color:"#7ed500",
+                gradient:"rising",
+                alpha:function(data){
+                    return data.sales/90;
+                },
+                tooltip:{
+                    template:"#sales#"
+                },
+                xAxis:{
+                    template:"'#year#"
+                },
+                yAxis:{
+                    start:0,
+                    end:100,
+                    step:10,
+                    template:function(obj){
+                        return (obj%20?"":obj)
+                    }
+                },
+                padding:{
+                    left: 30
+                },
+                border:0
+            })
+            barChart1.parse(dataset,"json");
+
+            var barChart2 =  new dhtmlXChart({
+                view:"bar",
+                container:"chart2",
+                value:"#sales#",
+                label:"#sales#",
+                width:45,
+                color:"#color#",
+                tooltip:{
+                    template:"#sales#"
+                },
+                xAxis:{
+                    template:"'#year#"
+                },
+                yAxis:{
+                    start:0,
+                    end:100,
+                    step:10,
+                    template:function(obj){
+                        return (obj%20?"":obj)
+                    }
+                },
+                padding:{
+                    left: 30
+                },
+                radius:0
+
+            })
+            barChart2.parse(dataset_colors,"json");
+        </script>
+    </body>
+</html>

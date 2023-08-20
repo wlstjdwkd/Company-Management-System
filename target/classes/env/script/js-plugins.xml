@@ -1,0 +1,1077 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  - ${contextPath} 설정은 WAS 서버에서 사용되는 것과 WEB 서버에서의 리소스 경로가
+  - 달라질 수 있기 때문에 컨텍스트 패스를 사용하는 리소스에 대하여 설정한다.
+  -->
+<configuration>
+    <javascript>
+    
+        <!-- 일반 웹 라이브러리 -->
+        <web>
+            <jquery>
+                <js>
+                    <![CDATA[                    
+                    <script type="text/javascript" src="${contextPath}/script/jquery/jquery-1.11.1.min.js"></script>                                                                                                                
+                    ]]>
+                </js>                
+            </jquery>
+            <json>
+                <js>
+                    <![CDATA[                    
+                    <script type="text/javascript" src="${contextPath}/script/jquery/json/jquery.json-2.4.js"></script>
+                                                                                                                                           
+                    ]]>
+                </js>                
+            </json>
+            <blockUI>
+                <js>
+                    <![CDATA[
+                    <script type="text/javascript" src="${contextPath}/script/jquery/blockUI/jquery.blockUI.js"></script>
+                    <script type="text/javascript" src="${contextPath}/script/jquery/blockUI/jquery.blockUI.setting.js"></script>                                                                                                                       
+                    ]]>
+                </js>                
+            </blockUI>
+            <colorbox>
+                <js>
+                    <![CDATA[                    
+                    <script type="text/javascript" src="${contextPath}/script/jquery/colorbox/1.5.14/jquery.colorbox-min.js"></script>
+                    <script type="text/javascript" src="${contextPath}/script/jquery/colorbox/1.5.14/i18n/jquery.colorbox-kr.js"></script>                                                                                                                       
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+                    <link rel="stylesheet" type="text/css" href="${contextPath}/script/jquery/colorbox/1.5.14/themes/theme2/colorbox.css" />
+                    ]]>
+                </css>
+            </colorbox>
+            <colorboxAdmin>
+                <js>
+                    <![CDATA[                    
+                    <script type="text/javascript" src="${contextPath}/script/jquery/colorbox/1.5.14/jquery.colorbox-min.js"></script>
+                    <script type="text/javascript" src="${contextPath}/script/jquery/colorbox/1.5.14/i18n/jquery.colorbox-kr.js"></script>                                                                                                                       
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+                    <link rel="stylesheet" type="text/css" href="${contextPath}/script/jquery/colorbox/1.5.14/themes/theme3/colorbox.css" />
+                    ]]>
+                </css>
+            </colorboxAdmin>
+            <cookie>
+                <js>
+                    <![CDATA[
+					<script type="text/javascript" src="${contextPath}/script/jquery/cookie/jquery.cookie.js"></script>
+                    ]]>
+                </js>                
+            </cookie>
+            <flot>
+                <js>
+                    <![CDATA[
+                    <!--[if lte IE 8]><script type="text/javascript" src="${contextPath}/script/jquery/flot/excanvas.min.js"></script><![endif]-->
+					<script type="text/javascript" src="${contextPath}/script/jquery/flot/jquery.flot.js"></script>
+					<script type="text/javascript" src="${contextPath}/script/jquery/flot/jquery.flot.pie.js"></script>
+					<script type="text/javascript" src="${contextPath}/script/jquery/flot/jquery.flot.orderBars.js"></script>																
+                    ]]>
+                </js>                
+            </flot>
+            <form>
+                <js>
+                    <![CDATA[
+                    <script type="text/javascript" src="${contextPath}/script/jquery/form/jquery.form.js"></script>
+                    ]]>
+                </js>                
+            </form>
+            <jqGrid>
+                <js>
+                    <![CDATA[
+                    <script type="text/javascript" src="${contextPath}/script/jquery/jqGrid/js/i18n/grid.locale-kr.js"></script>
+                    <script type="text/javascript" src="${contextPath}/script/jquery/jqGrid/js/jquery.jqGrid.min.js"></script>                    
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+                    <link rel="stylesheet" type="text/css" href="${contextPath}/script/jquery/jqGrid/css/ui.jqgrid.css" />                    					                                       
+                    ]]>
+                </css>
+            </jqGrid>
+            <multifile>
+                <js>
+                    <![CDATA[
+                    <script type="text/javascript" src="${contextPath}/script/jquery/MultiFile/jquery.MultiFile.js"></script>
+                    <script type="text/javascript" src="${contextPath}/script/jquery/MultiFile/jquery.MultiFile.pack.js"></script>
+                    ]]>
+                </js>                
+            </multifile>
+            <notice>
+                <js>
+                    <![CDATA[
+                    <script type="text/javascript" src="${contextPath}/script/jquery/notice/jquery.notice.js"></script>
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+                    <link rel="stylesheet" type="text/css" href="${contextPath}/script/jquery/notice/jquery.notice.css" />
+                    ]]>
+                </css>
+            </notice>
+            <selectbox>
+                <js>
+                    <![CDATA[
+                    <script type="text/javascript" src="${contextPath}/script/jquery/selectbox/jquery.selectboxes.js"></script>
+                    <script type="text/javascript" src="${contextPath}/script/jquery/selectbox/jquery.selectboxutils-0.1.0.js"></script>                    
+                    ]]>
+                </js>                
+            </selectbox>
+            <timer>
+                <js>
+                    <![CDATA[
+                    <script type="text/javascript" src="${contextPath}/script/jquery/timer/jquery.timer.js"></script>                                                                                                                       
+                    ]]>
+                </js>                
+            </timer>
+            <tools>
+                <js>
+                    <![CDATA[
+                    <script type="text/javascript" src="${contextPath}/script/jquery/tools/jquery.tools.min.js"></script>                                                                                                                       
+                    ]]>
+                </js>
+            </tools>
+            <ui>
+                <js>
+                    <![CDATA[
+                    <script type="text/javascript" src="${contextPath}/script/jquery/ui/1.11.2/jquery-ui.min.js"></script>                    
+                    <script type="text/javascript" src="${contextPath}/script/jquery/ui/1.8.18/jquery.ui.datepicker-ko.min.js"></script>                                                                                                                       
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+                    <link rel="stylesheet" type="text/css" href="${contextPath}/script/jquery/ui/1.11.2/themes/cupertino/jquery-ui.min.css" />
+                    <link rel="stylesheet" type="text/css" href="${contextPath}/script/jquery/ui/1.11.2/themes/cupertino/theme.css" />
+                    
+                    <link rel="stylesheet" type="text/css" href="${contextPath}/script/jquery/ui/1.11.2/jquery-ui.structure.min.css" />
+                    ]]>
+                </css>
+            </ui>
+            <validate>
+                <js>
+                    <![CDATA[
+                    <script type="text/javascript" src="${contextPath}/script/jquery/validate/jquery.validate.1.13.1.js"></script>                    
+                    <script type="text/javascript" src="${contextPath}/script/jquery/validate/additional-methods.1.13.1.js"></script>
+                    <script type="text/javascript" src="${contextPath}/script/jquery/validate/jquery.validate.messages.js"></script>
+                    <script type="text/javascript" src="${contextPath}/script/jquery/validate/jquery.validate.settings.js"></script>                                                                                                                                                               
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+                    <link rel="stylesheet" type="text/css" href="${contextPath}/script/jquery/validate/jquery.validate.css" />
+                    ]]>
+                </css>
+            </validate>
+            <mask>
+                <js>
+                    <![CDATA[
+                    <script type="text/javascript" src="${contextPath}/script/jquery/mask/jquery.mask.js"></script>                                                                                                                                                                                   
+                    ]]>
+                </js>                
+            </mask>
+            <multiselect>
+                <js>
+                    <![CDATA[
+                    <script type="text/javascript" src="${contextPath}/script/jquery/multiselect/jquery.multiple.select.js"></script>                                                                                                                                                                                   
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+                    <link rel="stylesheet" type="text/css" href="${contextPath}/script/jquery/multiselect/css/multiple-select.css" />                                                                                                                                                                                                      
+                    ]]>
+                </css>             
+            </multiselect>
+            <msgBox>
+                <js>
+                    <![CDATA[
+                    <script type="text/javascript" src="${contextPath}/script/jquery/msgbox/jquery.msgBox.js"></script>                                                                                                                                                                                   
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+                    <link rel="stylesheet" type="text/css" href="${contextPath}/script/jquery/msgbox/themes/theme01/msgBox.css" />                                                                                                                                                                                                      
+                    ]]>
+                </css>             
+            </msgBox>
+            <msgBoxAdmin>
+                <js>
+                    <![CDATA[
+                    <script type="text/javascript" src="${contextPath}/script/jquery/msgbox/jquery.msgBox.js"></script>                                                                                                                                                                                   
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+                    <link rel="stylesheet" type="text/css" href="${contextPath}/script/jquery/msgbox/themes/theme02/msgBox.css" />                                                                                                                                                                                                      
+                    ]]>
+                </css>             
+            </msgBoxAdmin>
+            <filestyle>
+                <js>
+                    <![CDATA[
+                    <script type="text/javascript" src="${contextPath}/script/jquery/filestyle/js/jquery-filestyle.js"></script>                                                                                                                                                                                   
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+                    <link rel="stylesheet" type="text/css" href="${contextPath}/script/jquery/filestyle/css/jquery-filestyle.css" />                                                                                                                                                                                                      
+                    ]]>
+                </css>             
+            </filestyle>
+            <jBox>
+                <js>
+                    <![CDATA[
+                    <script type="text/javascript" src="${contextPath}/script/jquery/jBox/jBox.js"></script>                                                                                                                                                                                   
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+                    <link rel="stylesheet" type="text/css" href="${contextPath}/script/jquery/jBox/jBox.css" />                                                                                                                                                                                                      
+                    ]]>
+                </css>             
+            </jBox>
+            <google>
+                <js>
+                    <![CDATA[
+                    <script type="text/javascript" src="https://www.google.com/jsapi"></script>                                                                                                                                                                                   
+                    ]]>
+                </js>                         
+            </google>
+            <dhtmlx>
+				<js>
+					<![CDATA[
+                    <script type="text/javascript" src="${contextPath}/script/dhtmlxSuite/codebase/dhtmlx.js"></script>                                                                                                  
+                    ]]>
+				</js>
+				<css>
+                    <![CDATA[
+                    <link rel="stylesheet" type="text/css" href="${contextPath}/script/dhtmlxSuite/codebase/dhtmlx.css"/>                                                                                                                                                                                                      
+                    ]]>
+                </css>
+            </dhtmlx>
+            <sheetjs>
+            	<js>
+            		<![CDATA[
+                    <script type="text/javascript" src="${contextPath}/script/xlsx.full.min.js"></script>                                                                                                                                                                               
+                    ]]>
+            	</js>
+            </sheetjs>
+        </web>
+
+        <!-- 업무별, 공통, 유틸 라이브러리 -->
+        <tech>
+        	<!-- 유틸 -->
+        	<msg>
+                <js>
+                    <![CDATA[
+                    <script type="text/javascript" src="${contextPath}/script/tech/sysMessage.js"></script>                                                                                                    
+                    ]]>
+                </js>                
+            </msg>
+        	<!-- 유틸 -->
+        	<util>
+                <js>
+                    <![CDATA[
+                    <script type="text/javascript" src="${contextPath}/script/tech/util.function.js"></script>
+                    <script type="text/javascript" src="${contextPath}/script/tech/util.form.js"></script>                                                                                
+                    ]]>
+                </js>                
+            </util>
+            <!-- 공통 -->
+            <cm>
+                <js>
+                    <![CDATA[                    
+                    <script type="text/javascript" src="${contextPath}/script/tech/cm.js"></script>                                        
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+					<link rel="stylesheet" type="text/css" href="${contextPath}/css/cm.css" />
+                    ]]>
+                </css>
+            </cm>
+            <!-- 사용자 공통 -->
+            <ucm>
+                <js>
+                    <![CDATA[                    
+                    <script type="text/javascript" src="${contextPath}/script/tech/ucm.js"></script>                                        
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+					<link rel="stylesheet" type="text/css" href="${contextPath}/css/ucm.css" />
+                    ]]>
+                </css>
+            </ucm>
+            <!-- 관리자 공통 -->
+            <acm>
+                <js>
+                    <![CDATA[                    
+                    <script type="text/javascript" src="${contextPath}/script/tech/acm.js"></script>                                        
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+					<link rel="stylesheet" type="text/css" href="${contextPath}/css/acm.css" />
+                    ]]>
+                </css>
+            </acm>
+            <!-- 사용자 서비스 메인 -->
+            <um>
+                <js>
+                    <![CDATA[                    
+                    <script type="text/javascript" src="${contextPath}/script/tech/um.js"></script>                                        
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+					<link rel="stylesheet" type="text/css" href="${contextPath}/css/um.css" />
+                    ]]>
+                </css>
+            </um>
+            <!-- 약관 -->
+            <cl>
+                <css>
+                    <![CDATA[
+					<link rel="stylesheet" type="text/css" href="${contextPath}/css/cl.css" />
+                    ]]>
+                </css>
+            </cl>
+            
+            <!-- 기업소개 -->
+            <hi>
+                <js>
+                    <![CDATA[                    
+                    <script type="text/javascript" src="${contextPath}/script/tech/hi.js"></script>                                        
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+					<link rel="stylesheet" type="text/css" href="${contextPath}/css/hi.css" />
+                    ]]>
+                </css>
+            </hi>
+            <!-- 현황 및 통계 -->
+            <ps>
+                <js>
+                    <![CDATA[                    
+                    <script type="text/javascript" src="${contextPath}/script/tech/ps.js"></script>                                        
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+					<link rel="stylesheet" type="text/css" href="${contextPath}/css/ps.css" />
+                    ]]>
+                </css>
+            </ps>
+            <!-- 기업현황 -->
+            <pc>
+                <css>
+                    <![CDATA[
+					<link rel="stylesheet" type="text/css" href="${contextPath}/css/pc.css" />
+                    ]]>
+                </css>
+            </pc>
+            <!-- 기업확인 -->
+            <ic>
+                <js>
+                    <![CDATA[                    
+                    <script type="text/javascript" src="${contextPath}/script/tech/ic.js"></script>                                        
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+					<link rel="stylesheet" type="text/css" href="${contextPath}/css/ic.css" />
+                    ]]>
+                </css>
+            </ic>
+            <!-- 기업정책 -->
+            <sp>
+                <js>
+                    <![CDATA[                    
+                    <script type="text/javascript" src="${contextPath}/script/tech/sp.js"></script>                                        
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+					<link rel="stylesheet" type="text/css" href="${contextPath}/css/sp.css" />
+                    ]]>
+                </css>
+            </sp>
+            <!-- 고객지원 -->
+            <cs>
+                <js>
+                    <![CDATA[                    
+                    <script type="text/javascript" src="${contextPath}/script/tech/cs.js"></script>                                        
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+					<link rel="stylesheet" type="text/css" href="${contextPath}/css/cs.css" />
+                    ]]>
+                </css>
+            </cs>
+            <!-- 마이페이지 -->
+            <my>
+                <js>
+                    <![CDATA[                    
+                    <script type="text/javascript" src="${contextPath}/script/tech/my.js"></script>                                        
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+					<link rel="stylesheet" type="text/css" href="${contextPath}/css/my.css" />
+                    ]]>
+                </css>
+            </my>
+            <!-- 회원서비스 -->
+            <mb>
+                <js>
+                    <![CDATA[                    
+                    <script type="text/javascript" src="${contextPath}/script/tech/mb.js"></script>                                        
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+					<link rel="stylesheet" type="text/css" href="${contextPath}/css/mb.css" />
+                    ]]>
+                </css>
+            </mb>
+            <!-- 이용약관,개인정보취급방침,이메일자동수집거부,저작권정책,사이트맵 -->
+            <et>
+                <js>
+                    <![CDATA[                    
+                    <script type="text/javascript" src="${contextPath}/script/tech/et.js"></script>                                        
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+					<link rel="stylesheet" type="text/css" href="${contextPath}/css/et.css" />
+                    ]]>
+                </css>
+            </et>
+            <!-- 관리자메인 -->
+            <am>
+                <js>
+                    <![CDATA[                    
+                    <script type="text/javascript" src="${contextPath}/script/tech/am.js"></script>                                        
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+					<link rel="stylesheet" type="text/css" href="${contextPath}/css/am.css" />
+                    ]]>
+                </css>
+            </am>
+            <!-- 현황및통계 -->
+            <ps>
+                <js>
+                    <![CDATA[                    
+                    <script type="text/javascript" src="${contextPath}/script/tech/ps.js"></script>                                        
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+					<link rel="stylesheet" type="text/css" href="${contextPath}/css/ps.css" />
+                    ]]>
+                </css>
+            </ps>
+            <!-- 확인서발급관리 -->
+            <im>
+                <js>
+                    <![CDATA[                    
+                    <script type="text/javascript" src="${contextPath}/script/tech/im.js"></script>                                        
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+					<link rel="stylesheet" type="text/css" href="${contextPath}/css/im.css" />
+                    ]]>
+                </css>
+            </im>
+            <!-- 수집데이터관리 -->
+            <dc>
+                <js>
+                    <![CDATA[                    
+                    <script type="text/javascript" src="${contextPath}/script/tech/dc.js"></script>                                        
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+					<link rel="stylesheet" type="text/css" href="${contextPath}/css/dc.css" />
+                    ]]>
+                </css>
+            </dc>
+            <!-- 판정및통계관리 -->
+            <js>
+                <js>
+                    <![CDATA[                    
+                    <script type="text/javascript" src="${contextPath}/script/tech/js.js"></script>                                        
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+					<link rel="stylesheet" type="text/css" href="${contextPath}/css/js.css" />
+                    ]]>
+                </css>
+            </js>
+            <!-- 서비스운영관리 -->
+            <so>
+                <js>
+                    <![CDATA[                    
+                    <script type="text/javascript" src="${contextPath}/script/tech/so.js"></script>                                        
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+					<link rel="stylesheet" type="text/css" href="${contextPath}/css/so.css" />
+                    ]]>
+                </css>
+            </so>
+            <!-- 시스템관리 -->
+            <ms>
+                <js>
+                    <![CDATA[                    
+                    <script type="text/javascript" src="${contextPath}/script/tech/ms.js"></script>                                        
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+					<link rel="stylesheet" type="text/css" href="${contextPath}/css/ms.css" />
+                    ]]>
+                </css>
+            </ms>
+            <!-- 모바일 -->
+            <mv>
+                <js>
+                    <![CDATA[                    
+                    <script type="text/javascript" src="${contextPath}/script/tech/mv.js"></script>                                        
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+                    <link rel="stylesheet" href="/css/mv.css" />
+                    <!--
+					<link rel="stylesheet" media="all and (orientation: portrait)" href="/css/mv.css" />
+					<link rel="stylesheet" media="all and (orientation: landscape)" href="/css/mv_c.css" />
+					-->
+                    ]]>
+                </css>
+            </mv>
+            <!-- 기타 -->
+            <etc>
+            	<css>
+                    <![CDATA[
+					<link rel="stylesheet" type="text/css" href="${contextPath}/css/etc.css" />
+                    ]]>
+            	</css>
+            </etc>
+            <bxslider>
+            	<js>
+            		<![CDATA[
+            		<script src="${contextPath}/script/tech2/jquery.bxslider.min.js" type="text/javascript"></script>
+            		]]>
+            	</js>
+            	<css>
+            		<![CDATA[
+            		<link href="${contextPath}/css2/jquery.bxslider.css" rel="stylesheet" type="text/css" />
+            		]]>
+            	</css>
+            </bxslider>
+            <slick>
+            	<js>
+            		<![CDATA[
+            		<script src="${contextPath}/script/tech2/slick.min.js" type="text/javascript"></script>
+            		]]>
+            	</js>
+            	<css>
+            		<![CDATA[
+            		<link href="${contextPath}/css2/slick.css" rel="stylesheet" type="text/css" />
+            		]]>
+            	</css>
+            </slick>
+            <owl>
+            	<js>
+            		<![CDATA[
+            		<script src="${contextPath}/script/tech2/owl.carousel.js" type="text/javascript"></script>
+            		]]>
+            	</js>
+            	<css>
+            		<![CDATA[
+            		<link rel="stylesheet" href="${contextPath}/css2/owl.theme.default.min.css" />
+					<link rel="stylesheet" href="${contextPath}/css2/owl.carousel.min.css" />
+            		]]>
+            	</css>
+            </owl>
+            <cmn>
+            	<js>
+            		<![CDATA[
+            		<script src="${contextPath}/script/tech2/common.js" type="text/javascript"></script>
+            		]]>
+            	</js>
+            	<css>
+            		<![CDATA[
+            		<link href="${contextPath}/css2/common.css" rel="stylesheet" type="text/css" />
+            		]]>
+            	</css>
+            </cmn>
+            <mainn>
+            	<css>
+            		<![CDATA[
+            		<link href="${contextPath}/css2/main.css" rel="stylesheet" type="text/css" />
+            		]]>
+            	</css>
+            </mainn>
+            <subb>
+            	<css>
+            		<![CDATA[
+            		<link href="${contextPath}/css2/sub.css" rel="stylesheet" type="text/css" />
+            		]]>
+            	</css>
+            </subb>
+            <font>
+            	<css>
+            		<![CDATA[
+            		<link href="${contextPath}/font/nanumsquare/nanumsquare.css" rel="stylesheet" type="text/css" />
+					<link href="${contextPath}/font/NanumBarunGothic/NanumBarunGothic.css" rel="stylesheet" type="text/css" />
+					<link href="${contextPath}/font/Notosans/notosans.css" rel="stylesheet" type="text/css" />
+            		]]>
+            	</css>
+            </font>
+            <paginate>
+            	<css>
+            		<![CDATA[
+            		<link href="${contextPath}/css2/paginate.css" rel="stylesheet" type="text/css" />
+            		]]>
+            	</css>
+            </paginate>
+        </tech>
+         
+        <!-- 업무별, 공통, 유틸 라이브러리 -->
+        <ahpek>
+        	<!-- 유틸 -->
+        	<msg>
+                <js>
+                    <![CDATA[
+                    <script type="text/javascript" src="${contextPath}/script/ahpek/sysMessage.js"></script>                                                                                                    
+                    ]]>
+                </js>                
+            </msg>
+        	<!-- 유틸 -->
+        	<util>
+                <js>
+                    <![CDATA[
+                    <script type="text/javascript" src="${contextPath}/script/ahpek/util.function.js"></script>
+                    <script type="text/javascript" src="${contextPath}/script/ahpek/util.form.js"></script>                                                                                
+                    ]]>
+                </js>                
+            </util>
+            <!-- 공통 -->
+            <cm>
+                <js>
+                    <![CDATA[                    
+                    <script type="text/javascript" src="${contextPath}/script/ahpek/cm.js"></script>                                        
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+					<link rel="stylesheet" type="text/css" href="${contextPath}/css/cm.css" />
+                    ]]>
+                </css>
+            </cm>
+            <!-- 사용자 공통 -->
+            <ucm>
+                <js>
+                    <![CDATA[                    
+                    <script type="text/javascript" src="${contextPath}/script/ahpek/ucm.js"></script>                                        
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+					<link rel="stylesheet" type="text/css" href="${contextPath}/css/ucm.css" />
+                    ]]>
+                </css>
+            </ucm>
+            <!-- 관리자 공통 -->
+            <acm>
+                <js>
+                    <![CDATA[                    
+                    <script type="text/javascript" src="${contextPath}/script/ahpek/acm.js"></script>                                        
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+					<link rel="stylesheet" type="text/css" href="${contextPath}/css/acm.css" />
+                    ]]>
+                </css>
+            </acm>
+            <!-- 사용자 서비스 메인 -->
+            <um>
+                <js>
+                    <![CDATA[                    
+                    <script type="text/javascript" src="${contextPath}/script/ahpek/um.js"></script>                                        
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+					<link rel="stylesheet" type="text/css" href="${contextPath}/css/um.css" />
+                    ]]>
+                </css>
+            </um>
+            <!-- 약관 -->
+            <cl>
+                <css>
+                    <![CDATA[
+					<link rel="stylesheet" type="text/css" href="${contextPath}/css/cl.css" />
+                    ]]>
+                </css>
+            </cl>
+            
+            <!-- 기업소개 -->
+            <hi>
+                <js>
+                    <![CDATA[                    
+                    <script type="text/javascript" src="${contextPath}/script/ahpek/hi.js"></script>                                        
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+					<link rel="stylesheet" type="text/css" href="${contextPath}/css/hi.css" />
+                    ]]>
+                </css>
+            </hi>
+            <!-- 현황 및 통계 -->
+            <ps>
+                <js>
+                    <![CDATA[                    
+                    <script type="text/javascript" src="${contextPath}/script/ahpek/ps.js"></script>                                        
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+					<link rel="stylesheet" type="text/css" href="${contextPath}/css/ps.css" />
+                    ]]>
+                </css>
+            </ps>
+            <!-- 기업현황 -->
+            <pc>
+                <css>
+                    <![CDATA[
+					<link rel="stylesheet" type="text/css" href="${contextPath}/css/pc.css" />
+                    ]]>
+                </css>
+            </pc>
+            <!-- 기업확인 -->
+            <ic>
+                <js>
+                    <![CDATA[                    
+                    <script type="text/javascript" src="${contextPath}/script/ahpek/ic.js"></script>                                        
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+					<link rel="stylesheet" type="text/css" href="${contextPath}/css/ic.css" />
+                    ]]>
+                </css>
+            </ic>
+            <!-- 기업정책 -->
+            <sp>
+                <js>
+                    <![CDATA[                    
+                    <script type="text/javascript" src="${contextPath}/script/ahpek/sp.js"></script>                                        
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+					<link rel="stylesheet" type="text/css" href="${contextPath}/css/sp.css" />
+                    ]]>
+                </css>
+            </sp>
+            <!-- 고객지원 -->
+            <cs>
+                <js>
+                    <![CDATA[                    
+                    <script type="text/javascript" src="${contextPath}/script/ahpek/cs.js"></script>                                        
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+					<link rel="stylesheet" type="text/css" href="${contextPath}/css/cs.css" />
+                    ]]>
+                </css>
+            </cs>
+            <!-- 마이페이지 -->
+            <my>
+                <js>
+                    <![CDATA[                    
+                    <script type="text/javascript" src="${contextPath}/script/ahpek/my.js"></script>                                        
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+					<link rel="stylesheet" type="text/css" href="${contextPath}/css/my.css" />
+                    ]]>
+                </css>
+            </my>
+            <!-- 회원서비스 -->
+            <mb>
+                <js>
+                    <![CDATA[                    
+                    <script type="text/javascript" src="${contextPath}/script/ahpek/mb.js"></script>                                        
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+					<link rel="stylesheet" type="text/css" href="${contextPath}/css/mb.css" />
+                    ]]>
+                </css>
+            </mb>
+            <!-- 이용약관,개인정보취급방침,이메일자동수집거부,저작권정책,사이트맵 -->
+            <et>
+                <js>
+                    <![CDATA[                    
+                    <script type="text/javascript" src="${contextPath}/script/ahpek/et.js"></script>                                        
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+					<link rel="stylesheet" type="text/css" href="${contextPath}/css/et.css" />
+                    ]]>
+                </css>
+            </et>
+            <!-- 관리자메인 -->
+            <am>
+                <js>
+                    <![CDATA[                    
+                    <script type="text/javascript" src="${contextPath}/script/ahpek/am.js"></script>                                        
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+					<link rel="stylesheet" type="text/css" href="${contextPath}/css/am.css" />
+                    ]]>
+                </css>
+            </am>
+            <!-- 현황및통계 -->
+            <ps>
+                <js>
+                    <![CDATA[                    
+                    <script type="text/javascript" src="${contextPath}/script/ahpek/ps.js"></script>                                        
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+					<link rel="stylesheet" type="text/css" href="${contextPath}/css/ps.css" />
+                    ]]>
+                </css>
+            </ps>
+            <!-- 확인서발급관리 -->
+            <im>
+                <js>
+                    <![CDATA[                    
+                    <script type="text/javascript" src="${contextPath}/script/ahpek/im.js"></script>                                        
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+					<link rel="stylesheet" type="text/css" href="${contextPath}/css/im.css" />
+                    ]]>
+                </css>
+            </im>
+            <!-- 수집데이터관리 -->
+            <dc>
+                <js>
+                    <![CDATA[                    
+                    <script type="text/javascript" src="${contextPath}/script/ahpek/dc.js"></script>                                        
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+					<link rel="stylesheet" type="text/css" href="${contextPath}/css/dc.css" />
+                    ]]>
+                </css>
+            </dc>
+            <!-- 판정및통계관리 -->
+            <js>
+                <js>
+                    <![CDATA[                    
+                    <script type="text/javascript" src="${contextPath}/script/ahpek/js.js"></script>                                        
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+					<link rel="stylesheet" type="text/css" href="${contextPath}/css/js.css" />
+                    ]]>
+                </css>
+            </js>
+            <!-- 서비스운영관리 -->
+            <so>
+                <js>
+                    <![CDATA[                    
+                    <script type="text/javascript" src="${contextPath}/script/ahpek/so.js"></script>                                        
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+					<link rel="stylesheet" type="text/css" href="${contextPath}/css/so.css" />
+                    ]]>
+                </css>
+            </so>
+            <!-- 시스템관리 -->
+            <ms>
+                <js>
+                    <![CDATA[                    
+                    <script type="text/javascript" src="${contextPath}/script/ahpek/ms.js"></script>                                        
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+					<link rel="stylesheet" type="text/css" href="${contextPath}/css/ms.css" />
+                    ]]>
+                </css>
+            </ms>
+            <!-- 모바일 -->
+            <mv>
+                <js>
+                    <![CDATA[                    
+                    <script type="text/javascript" src="${contextPath}/script/ahpek/mv.js"></script>                                        
+                    ]]>
+                </js>
+                <css>
+                    <![CDATA[
+                    <link rel="stylesheet" href="/css/mv.css" />
+                    <!--
+					<link rel="stylesheet" media="all and (orientation: portrait)" href="/css/mv.css" />
+					<link rel="stylesheet" media="all and (orientation: landscape)" href="/css/mv_c.css" />
+					-->
+                    ]]>
+                </css>
+            </mv>
+            <!-- 기타 -->
+            <etc>
+            	<css>
+                    <![CDATA[
+					<link rel="stylesheet" type="text/css" href="${contextPath}/css/etc.css" />
+                    ]]>
+            	</css>
+            </etc>
+            <bxslider>
+            	<js>
+            		<![CDATA[
+            		<script src="${contextPath}/script/ahpek2/jquery.bxslider.min.js" type="text/javascript"></script>
+            		]]>
+            	</js>
+            	<css>
+            		<![CDATA[
+            		<link href="${contextPath}/css2/jquery.bxslider.css" rel="stylesheet" type="text/css" />
+            		]]>
+            	</css>
+            </bxslider>
+            <slick>
+            	<js>
+            		<![CDATA[
+            		<script src="${contextPath}/script/ahpek2/slick.min.js" type="text/javascript"></script>
+            		]]>
+            	</js>
+            	<css>
+            		<![CDATA[
+            		<link href="${contextPath}/css2/slick.css" rel="stylesheet" type="text/css" />
+            		]]>
+            	</css>
+            </slick>
+            <owl>
+            	<js>
+            		<![CDATA[
+            		<script src="${contextPath}/script/ahpek2/owl.carousel.js" type="text/javascript"></script>
+            		]]>
+            	</js>
+            	<css>
+            		<![CDATA[
+            		<link rel="stylesheet" href="${contextPath}/css2/owl.theme.default.min.css" />
+					<link rel="stylesheet" href="${contextPath}/css2/owl.carousel.min.css" />
+            		]]>
+            	</css>
+            </owl>
+            <cmn>
+            	<js>
+            		<![CDATA[
+            		<script src="${contextPath}/script/ahpek2/common.js" type="text/javascript"></script>
+            		]]>
+            	</js>
+            	<css>
+            		<![CDATA[
+            		<link href="${contextPath}/css2/common.css" rel="stylesheet" type="text/css" />
+            		]]>
+            	</css>
+            </cmn>
+            <mainn>
+            	<css>
+            		<![CDATA[
+            		<link href="${contextPath}/css2/main.css" rel="stylesheet" type="text/css" />
+            		]]>
+            	</css>
+            </mainn>
+            <subb>
+            	<css>
+            		<![CDATA[
+            		<link href="${contextPath}/css2/sub.css" rel="stylesheet" type="text/css" />
+            		]]>
+            	</css>
+            </subb>
+            <font>
+            	<css>
+            		<![CDATA[
+            		<link href="${contextPath}/font/nanumsquare/nanumsquare.css" rel="stylesheet" type="text/css" />
+					<link href="${contextPath}/font/NanumBarunGothic/NanumBarunGothic.css" rel="stylesheet" type="text/css" />
+					<link href="${contextPath}/font/Notosans/notosans.css" rel="stylesheet" type="text/css" />
+            		]]>
+            	</css>
+            </font>
+            <paginate>
+            	<css>
+            		<![CDATA[
+            		<link href="${contextPath}/css2/paginate.css" rel="stylesheet" type="text/css" />
+            		]]>
+            	</css>
+            </paginate>
+        </ahpek>
+        
+        <!-- egovframework 업무별 -->
+        <egovframework>
+        	<!-- 게시판 설정 -->
+        	<boardconf>
+                <js>
+                    <![CDATA[
+                    <script type="text/javascript" src="${contextPath}/script/egovframework/boardconf.js"></script>                                                                                                    
+                    ]]>
+                </js>
+            </boardconf>
+            <!-- 게시판 관리 -->
+        	<board>
+                <js>
+                    <![CDATA[
+                    <script type="text/javascript" src="${contextPath}/script/egovframework/board.js"></script>
+                    <script type="text/javascript" src="${contextPath}/script/egovframework/editor/ckeditor/ckeditor.js"></script>
+					<script type="text/javascript" src="${contextPath}/script/egovframework/editor/ckeditor/adapters/jquery.js"></script>
+                    ]]>
+                </js>
+            </board>
+             <!-- 게시판 (사용자) -->
+        	<boardFront>
+                <js>
+                    <![CDATA[
+                    <script type="text/javascript" src="${contextPath}/script/egovframework/boardFront.js"></script>                                                                                                    
+                    <script type="text/javascript" src="${contextPath}/script/egovframework/editor/ckeditor/ckeditor.js"></script>
+					<script type="text/javascript" src="${contextPath}/script/egovframework/editor/ckeditor/adapters/jquery.js"></script>
+                    ]]>
+                </js>
+            </boardFront>
+        </egovframework>
+        
+    </javascript>    
+<typeAliases></typeAliases>
+</configuration>

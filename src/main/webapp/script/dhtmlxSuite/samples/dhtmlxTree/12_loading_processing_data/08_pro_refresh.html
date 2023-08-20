@@ -1,0 +1,56 @@
+<!--conf
+<sample>
+              <product version="1.5" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               </sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-/W3C/DTD HTML 4.01 Transitional/EN">
+
+<html>
+<head>
+	<title> Refresh item from server</title>
+</head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+<body>
+	<h1>Refresh item from server</h1>
+	
+<p>dhtmlxTree allows you to refresh data for the specified node or  group of nodes from the server.
+<br>
+Choose a node in the tree, press Change the text of selected item action link, then Refresh selected item from server one.</br> </p>
+	<table>
+		<tr>
+			<td valign="top">
+				<div id="treeboxbox_tree" style="width:250px; height:218px;background-color:#f5f5f5;border :1px solid Silver;; overflow:auto;"></div>
+			</td>
+			<td rowspan="2" style="padding-left:25" valign="top">
+			<a href="javascript:void(0);" onClick="action_2();">Change the text of selected item</a><br>
+			<a href="javascript:void(0);" onClick="action_1();">Refresh selected item from server</a><br>
+			</td>
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+		</tr>
+	</table>
+
+	<script>
+			tree=new dhtmlXTreeObject("treeboxbox_tree","100%","100%",0);
+
+			tree.setSkin('dhx_skyblue');
+			tree.setImagePath("../../../codebase/imgs/dhxtree_skyblue/");
+			tree.loadXML("../common/tree.xml");
+			function action_1(){
+				tree.refreshItems(tree.getSelectedItemId(),"../common/tree.xml");
+			}
+			function action_2(){
+				tree.setItemText(tree.getSelectedItemId(),"Some trash :)");
+			}
+								
+	</script>
+<br><br>
+
+</body>
+</html>

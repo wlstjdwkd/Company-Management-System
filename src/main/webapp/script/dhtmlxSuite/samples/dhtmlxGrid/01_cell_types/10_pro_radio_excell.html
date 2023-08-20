@@ -1,0 +1,40 @@
+<!--conf
+<sample>
+              <product version="1.5" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               </sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Row-oriented radio button</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+</head>
+<body>
+	<h1>Row-oriented radio button</h1>
+	<p>There is a possibility to set row-oriented radio button in dhtmlxGrid. To achieve this use <code>&quot;ra_str&quot;</code> row eXcell type.</p>
+	<div id="gridbox" style="width:600px;height:270px;background-color:white;"></div>
+<br>
+<script>
+    mygrid = new dhtmlXGridObject('gridbox');
+	mygrid.setImagePath("../../../codebase/imgs/");
+	mygrid.setHeader("Sales,Book Title,Author,Price,In Store,Shipping,Bestseller,Date of Publication");
+	mygrid.setInitWidths("50,150,120,80,80,80,80,200")
+	mygrid.setColAlign("center,left,left,right,center,left,center,center")
+	mygrid.setColTypes("dyn,ed,ed,price,ch,co,ra,ro");
+   	mygrid.getCombo(5).put(2,2);
+	mygrid.setColSorting("int,str,str,int,str,str,str,date")
+	mygrid.setSkin("dhx_skyblue")
+	mygrid.init();
+	mygrid.loadXML("../common/grid.xml",function(){
+		mygrid.setRowExcellType("1","ra_str");
+		mygrid.setRowTextStyle("1","text-align:center");
+	});
+</script>
+</body>
+</html>

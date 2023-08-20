@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="biz.tech.mapif.pm.PGPM0030Mapper">
+	<!-- 개인별 급여항목 조회 -->
+	<select id="findEmpPayList" resultType="map">
+	SELECT	/* ID=biz.tech.mapif.pm.PGPM0030Mapper.findEmpPayList */
+				  AA.EMP_NO					as empNo				<!-- 사원 번호 -->
+				, BB.EMP_NM					as empNm				<!-- 사원 이름 -->
+				, AA.PAY_ITM_CD				as payItmCd 			<!-- 급여 항목 코드 -->
+				, CC.PAY_ITM_NM				as payItmNm				<!-- 급여 항목명 -->
+				, AA.ITM_BAS_AMT			as itmBasAmt			<!-- 항목 기본금액 -->
+				, CC.UP_ITM_CD				as upItmCd				<!-- 부모 코드 -->
+				<!-- , IFNULL(AA.DC_RT, 0)	as dcRt 					공제세율 -->
+				, AA.USE_YN					as useYN				<!-- 사용 여부 -->
+				, AA.RMRK					as rmk					<!-- 비고 -->
+				, DATE_FORMAT(AA.MOD_DT, '%Y-%m-%d')	as modDt	<!-- 수정 일자 -->
+				, DATE_FORMAT(AA.ENRT_DT, '%Y-%m-%d')	as enrtDay	<!-- 등록 일자 --> 
+				
+	FROM		TB_PAY_ITM_LST as AA
+					LEFT OUTER JOIN TB_PAY_EMP as BB 
+					ON AA.EMP_NO = BB.EMP_NO
+						LEFT OUTER JOIN TB_PAY_ITM_MST as CC
+						ON AA.PAY_ITM_CD = CC.PAY_ITM_CD
+						
+	WHERE		AA.EMP_NO = #{empNo}
+			AND CC.USE_YN = 'Y'
+				
+	ORDER BY CC.ITM_SEQ
+	</select>
+	
+	<!-- 사원 조회 -->
+	<select id="findEmpList" resultType="map">
+	SELECT	/* ID=biz.tech.mapif.pm.PGPM0030Mapper.findEmpList */
+				  EMP_NO					as empNo				/* 직원번호 */
+				, EMP_NM					as empNm				/* 이름 */
+				, WRK_TP					as wrkTp				/* 근무형태 */
+				, POS_CD					as posCd				/* 직급코드 */
+				, DEPT_CD					as deptCd				/* 부서코드 */
+				, CURR_YN					as currYn				/* 재직여부 */
+				, CIZ_NO					as cizNo				/* 주민번호 */
+				, DEAL_BNK					as deaBnk				/* 거래은행 */
+				, ACCT_NO					as acctNo				/* 계좌번호 */
+				, INCO_DT					as inCoDt				/* 입사일자 */
+				, OUTCO_DT					as outCoDt				/* 퇴사일자 */
+				, ADJ_YR					as adjYr				/* 조정년 */
+				, ADJ_MON					as adjMon				/* 조정월 */
+				, RMRK						as rmk 					/* 비고 */
+				, BDT						as bdt 					/* 생년월일 */
+				, MOB_TEL					as mobTel 				/* 휴대전화번호 */
+				, HM_TEL					as hmTel 				/* 집전화번호 */
+				, LSED						as lsed 				/* 최종학력 */
+				, DPT						as dpt 					/* 학과 */
+				, DGR						as dgr 					/* 인정학력 */
+				, GRA_YR					as graYr 				/* 졸업년 */
+				, GRA_MN					as graMn 				/* 졸업년월 */
+				, PER_MAIL					as perMail 				/* 개인메일 */
+				, COM_MAIL					as comMail 				/* 회사메일 */
+				, ADDR						as addr 				/* 주소 */
+				, MRG						as mrg 					/* 혼인여부 */
+				, MRG_DT					as mrgDt				/* 결혼기념일 */
+				, PAY_IN_DAY				as payInDay 			/* 급여지급일 */
+				, DC_RT						as dcRt 				/* 공제세율 */
+				, MOD_DT					as modDt 				/* 수정일 */
+				, ENRT_DT					as enrtDt 				/* 등록일 */
+				
+	FROM		TB_PAY_EMP
+	<where>
+		<if test="empNo != null"> EMP_NO = #{empNo} </if>
+	</where>
+	</select>
+	
+	<!-- 급여 항목 확인 -->
+	<select id="chkPayItm" resultType="map">
+	SELECT	/* ID=biz.tech.mapif.pm.PGPM0030Mapper.chkPayItm */
+				  LST.*
+				
+	FROM		TB_PAY_ITM_LST LST
+				LEFT OUTER JOIN TB_PAY_ITM_MST MST
+				ON LST.PAY_ITM_CD = MST.PAY_ITM_CD
+	
+	WHERE		LST.EMP_NO = #{empNo}
+			AND	LST.PAY_ITM_CD = #{payItmCd}
+			AND MST.USE_YN = 'Y'
+	</select>
+	
+	<!-- 개인별 급여 항목 등록 -->
+	<insert id="insertPayItm">
+	INSERT	/* ID=biz.tech.mapif.pm.PGPM0030Mapper.insertPayItm */
+	INTO		TB_PAY_ITM_LST (
+				  EMP_NO
+				, PAY_ITM_CD
+				, ITM_BAS_AMT
+				, USE_YN
+				, ENRT_DT
+ 
+	) VALUES (
+				  #{empNo}
+				, #{payItmCd}
+				, #{itmBasAmt}
+				, #{useYn}
+		<choose>
+			<when test="_databaseId == 'mysql'">
+				, SYSDATE()
+			</when>
+			<when test="_databaseId == 'tibero'">
+				, SYSDATE
+			</when>
+			<otherwise>
+				, SYSDATE()
+			</otherwise>
+		</choose>
+	)
+	</insert>
+	
+	<!-- 변동 내역 등록 -->
+	<insert id="insertPayItmLog">
+	INSERT	/* ID=biz.tech.mapif.pm.PGPM0030Mapper.insertPayItmLog */
+	INTO		TB_PAY_ITM_LOG (
+				  MOD_DT
+				, EMP_NO
+				, PAY_ITM_CD
+				, PREV_ITM_AMT
+				, POST_ITM_AMT
+				, RMRK
+ 
+	) VALUES (
+		<choose>
+			<when test="_databaseId == 'mysql'">
+				  SYSDATE()
+			</when>
+			<when test="_databaseId == 'tibero'">
+				  SYSDATE
+			</when>
+			<otherwise>
+				  SYSDATE()
+			</otherwise>
+		</choose>
+				, #{empNo}
+				, #{payItmCd}
+				, #{prevItmAmt}
+				, #{postItmAmt}
+				, #{rmrk}
+	)
+	</insert>
+	
+	<!-- 개인별 급여항목 수정 -->
+	<update id="updateEmpPay">
+	UPDATE	/* ID=biz.tech.mapif.pm.PGPM0030Mapper.updateEmpPay */
+				TB_PAY_ITM_LST
+	SET 
+				  ITM_BAS_AMT = #{itmBasAmt}
+				, USE_YN = #{useYN}
+		<if test="rmrk != null">
+				, RMRK = #{rmrk}
+		</if>
+		
+		<choose>
+			<when test="_databaseId == 'mysql'">
+				, MOD_DT = SYSDATE()
+			</when>
+			<when test="_databaseId == 'tibero'">
+				, MOD_DT = SYSDATE
+			</when>
+			<otherwise>
+				, MOD_DT = SYSDATE()
+			</otherwise>
+		</choose>
+	WHERE		EMP_NO = #{empNo}
+			AND	PAY_ITM_CD = #{payItmCd}
+	</update>
+</mapper>

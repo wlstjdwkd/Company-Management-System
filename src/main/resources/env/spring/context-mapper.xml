@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mybatis="http://mybatis.org/schema/mybatis-spring"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+						http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring.xsd
+						http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!-- SqlSession setup for MyBatis Database Layer -->
+	<!-- <bean id="sqlSession" class="org.mybatis.spring.SqlSessionFactoryBean"> --><!-- 운영용 -->
+	<bean id="sqlSession" class="com.infra.dev.RefreshableSqlSessionFactoryBean"><!-- 개발용 -->
+		<property name="dataSource" ref="aframe.dataSource" />
+		<property name="configLocation" value="classpath:/env/mapper/mybatis-config.xml" />
+		<property name="mapperLocations" value="classpath:/env/mapper/**/*Mapper.xml" />
+	</bean>
+	
+	<!-- MapperConfigurer setup for MyBatis Database Layer with @Mapper("deptMapper") in DeptMapper Interface -->
+ 	<bean class="egovframework.rte.psl.dataaccess.mapper.MapperConfigurer">
+		<property name="basePackage" value="mapper" />
+	</bean>
+
+    <mybatis:scan base-package="com.comm.mapif" />
+    <mybatis:scan base-package="biz.tech.mapif" />
+</beans>

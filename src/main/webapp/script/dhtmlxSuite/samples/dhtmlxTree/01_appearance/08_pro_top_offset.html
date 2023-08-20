@@ -1,0 +1,50 @@
+<!--conf
+<sample>
+              <product version="1.5" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               </sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Specific top offset</title>
+</head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+<body>
+	<h1>Specific top offset</h1>
+    <p>There is a functionality in the tree which allows you to adjust the distance between the selected node and its superior one. To achieve this you should select an item in the tree, set the size of distance in boxe and then click on the action link.</p>
+	
+	<table>
+		<tr>
+			<td>
+				<div id="treeboxbox_tree" style="width:250px; height:218px;background-color:#f5f5f5;border :1px solid Silver;"></div>
+			</td>
+			<td rowspan="2" style="padding-left:25" valign="top">
+				<a href="#" onClick="tree.setItemTopOffset(tree.getSelectedItemId(),this.nextSibling.value);">Set top offset of selected item</a><input value='20px'><br>
+			</td>
+		</tr>
+	</table>
+
+Specific top offset can be set from xml - "topoffset" atribute or by the tree.setItemTopOffset method.
+	<script>
+
+			tree=new dhtmlXTreeObject("treeboxbox_tree","100%","100%",0);
+
+
+			tree.setSkin('dhx_skyblue');
+			tree.setImagePath("../../../codebase/imgs/dhxtree_skyblue/");
+			tree.enableSmartXMLParsing(true);
+			tree.enableCheckBoxes(true);
+            tree.enableDragAndDrop(true);
+			tree.enableThreeStateCheckboxes(true);
+			tree.loadXML("../common/tree_to.xml")
+	</script>
+<br><br>
+
+</body>
+</html>

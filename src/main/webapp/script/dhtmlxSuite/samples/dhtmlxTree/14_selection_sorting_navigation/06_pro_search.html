@@ -1,0 +1,48 @@
+<!--conf
+<sample>
+              <product version="1.5" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               </sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title> Search</title>
+</head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+<body>
+	<h1>Search</h1>
+	<p>This functionality allows you to search for an item in the entire tree. Also you can restrict seeking criteria searching for an item situated above or below the currently selected node.</p>
+		
+	<table>
+	  <tr>
+			<td>
+				<div id="treeboxbox_tree" style="width:250px; height:218px;background-color:#f5f5f5;border :1px solid Silver;; overflow:auto;"/>
+			</td>
+			<td rowspan="2" style="padding-left:25" valign="top">
+				<input type="text" id="stext" width="200px"> <a href="javascript:void(0)" onClick="tree.findItem(document.getElementById('stext').value,0,1)"> Find </a> | <a href="javascript:void(0)" onClick="tree.findItem(document.getElementById('stext').value)"> Find Next</a> | <a href="javascript:void(0)" onClick="tree.findItem(document.getElementById('stext').value,1)"> Find Prev </a>
+			</td>
+		</tr>
+		<tr>
+			<td></td>
+		</tr>
+	</table>
+
+
+	<script>
+			tree=new dhtmlXTreeObject("treeboxbox_tree","100%","100%",0);
+
+			tree.setSkin('dhx_skyblue');
+			tree.setImagePath("../../../codebase/imgs/dhxtree_skyblue/");
+			tree.enableSmartXMLParsing(true);
+			tree.loadXML("../common/tree3_14_selection_sorting_navigation.xml")
+	</script>
+
+
+</body>
+</html>

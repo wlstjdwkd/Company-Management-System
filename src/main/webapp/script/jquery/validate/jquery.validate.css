@@ -1,0 +1,6 @@
+label.error, p.error {
+    font-weight: bold;
+    color: #CA5F42;
+}
+
+div.hiddden_txt{padding: 2px 0;color: #aa2610;display: block;}

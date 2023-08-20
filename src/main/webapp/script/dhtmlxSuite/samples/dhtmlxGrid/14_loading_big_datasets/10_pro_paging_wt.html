@@ -1,0 +1,72 @@
+<!--conf
+<sample in_favorites="false">
+              <product version="1.4" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               <sampledescription><![CDATA[You do not need to write lots of lines of code to split your data into pages and load into grid. dhtmlxGrid has built-in support for paginal output. This sample demonstrates how it works in conection with dhtmlxToolbar.]]></sampledescription></sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Paginal Output with Toolbar</title>
+	
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+
+	<style>
+		.toolbarTable{
+			background-color:#EDEDED;
+		}
+	</style>
+</head>
+
+<script>
+	var mygrid;
+	function doOnLoad(){
+		mygrid = new dhtmlXGridObject('gridbox');
+		mygrid.selMultiRows = true;
+		mygrid.setImagePath("../../../codebase/imgs/");
+		mygrid.setHeader("Sales,Book Title,Author,Price,In Store,Shipping,Bestseller,Date of Publication");
+		mygrid.setInitWidths("50,130,120,80,80,80,80,200")
+		mygrid.setColAlign("right,left,left,right,center,left,center,center")
+		mygrid.setColTypes("dyn,ed,ed,price,ch,coro,ra,ro");
+		mygrid.setColSorting("int,str,str,int,str,str,str,date")
+
+		//set values for select box in 5th column
+		var combobox = mygrid.getCombo(5);
+		combobox.put("1","1 Hour");
+		combobox.put("12","12 Hours")
+		combobox.put("24","24 Hours")
+		combobox.put("48","2 days")
+		combobox.put("168","1 week")
+		combobox.put("pick","pick up")
+		combobox.put("na","na")
+		//start grid
+		mygrid.setSkin("dhx_skyblue")
+		mygrid.enablePaging(true,10,3,"recinfoArea");
+		mygrid.setPagingSkin("toolbar","dhx_skyblue")
+
+		mygrid.init();
+		mygrid.loadXML("../common/grid.xml");
+	}
+</script>
+<body onload="doOnLoad()">
+	
+	<h1>Paginal Output with Toolbar</h1>
+	<table width="600" cellpadding="0" cellspacing="0">
+		<tr>
+			<td>
+				<div id="gridbox" style="width:100%; height:250px; background-color:white;overflow:hidden"></div>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<div id="recinfoArea"></div>
+			</td>
+		</tr>
+	</table>
+</body>
+</html>

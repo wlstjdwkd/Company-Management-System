@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<!--conf
+<sample>
+              <product version="4.0b1" edition="std"/>
+                     <modifications>
+                            <modified date="130911"/>
+                     </modifications>
+               </sample>
+-->
+<html>
+<head>
+	<title>Hrefs mode</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+	<script>
+		var myMenu;
+		function doOnLoad() {
+			myMenu = new dhtmlXMenuObject({
+				parent: "menuObj",
+				icons_path: "../common/imgs_links/",
+				xml: "../common/dhxmenu_links.xml"
+			});
+		}
+	</script>
+</head>
+<body onload="doOnLoad()">
+	<div style="padding-bottom:10px;">if href mode is on - menu will automatically follow attached link when item clicked</div>
+	<div style="height: 250px;"><div id="menuObj"></div></div>
+</body>
+</html>

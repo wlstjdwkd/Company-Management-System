@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+	<!-- 개발환경 DS -->
+	<bean id="dataSource-jndi" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="java:/comp/env/jdbc/DS_AFRAME"/>
+	</bean>
+	<alias name="dataSource-jndi" alias="aframe.dataSource"/>
+
+	<bean id="databaseIdProvider" class="org.apache.ibatis.mapping.VendorDatabaseIdProvider">
+	  	<property name="properties">
+		    <props>
+		      <prop key="SQL Server">sqlserver</prop>
+		      <prop key="DB2">db2</prop>
+		      <prop key="Oracle">oracle</prop>
+		      <prop key="MySQL">mysql</prop>
+		      <prop key="PostgreSql">postgresql</prop>
+		      <prop key="Derby">derby</prop>
+		      <prop key="HSQL">hsqldb</prop>
+		      <prop key="H2">h2</prop>
+		      <prop key="Tibero">tibero</prop>
+		    </props>
+  		</property>
+	</bean>
+</beans>

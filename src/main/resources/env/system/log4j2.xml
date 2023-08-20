@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration monitorInterval="10">
+	<Properties>
+		<property name="patternlayout">%d{HH:mm:ss} %5p [%c] %m%n</property>
+		<property name="filename">C:\aframe\logs\app.log</property>
+		<property name="filenamePattern">C:\aframe\logs\app-%d{yyyy-MM-dd}-%i.log</property>
+    </Properties>
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${patternlayout}" />
+        </Console>
+		<RollingFile name="rollingFile" fileName="${filename}" filePattern="${filenamePattern}" ignoreExceptions="false">
+			<PatternLayout pattern="${patternlayout}" />
+      		<TimeBasedTriggeringPolicy />
+    	</RollingFile>
+    </Appenders>
+    <Loggers>
+    	<!-- Spring -->
+        <Logger name="org.springframework" level="ERROR" />
+        <Logger name="org.springframework.jdbc" level="INFO" />
+        <!-- Egov Framework-->
+        <Logger name="egovframework" level="DEBUG" />
+        <!-- MyBatis -->
+		<Logger name="org.apache.ibatis" level="DEBUG" />
+		<!-- Apache Utility -->
+		<Logger name="org.apache.commons" level="ERROR" />
+  		<!-- Cache -->
+		<Logger name="net.sf.ehcache" level="INFO" />
+		<!-- SQL LOG -->
+	    <Logger name="log4jdbc.log4j2" level="INFO">
+	    	<MarkerFilter marker="LOG4JDBC_JDBC" onMatch="DENY" onMismatch="NEUTRAL"/><!-- SQL & RESULTSET -->
+	    	<!-- <MarkerFilter marker="LOG4JDBC_OTHER" onMatch="DENY" onMismatch="NEUTRAL"/> --><!-- SQL ONLY -->
+	    </Logger>
+	    
+		<!-- TECH -->
+	    <Logger name="biz.tech" level="DEBUG" />
+	    <Logger name="com" level="DEBUG" />
+
+        <Root level="INFO">
+            <AppenderRef ref="console" />
+            <AppenderRef ref="rollingFile" />
+        </Root>
+    </Loggers>
+</Configuration>

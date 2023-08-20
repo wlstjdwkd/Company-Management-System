@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.comm.mapif.CertIssueMapper">
+
+	<!-- 확인서 기본 정보 -->
+	<select id="findCertIssueBsisInfo" resultType="Map">
+	SELECT 	/* ProgramID=com.comm.mapif.CertIssueMapper.findCertIssueInfo */
+					  biz.RCEPT_NO 					AS		rceptNo					/*  접수번호    */
+					, biz.RPRSNTV_NM 				AS		rprsntvNm				/*  대표자명    */
+					, replace(biz.HEDOFC_ADRES, <![CDATA['&amp;']]>, <![CDATA['&']]>) 			AS		hedofcAdres				/*  본사주소    */
+					, biz.VALID_PD_BEGIN_DE 		AS		validpdBeginDe			/*  유효기간시작일자    */
+					, biz.VALID_PD_END_DE 		AS		validdpEndDe			/*  유효기간종료일자    */
+					, rcpy.JURIRNO 					AS		jurirNo					/*  법인등록번호    */
+					, replace(rcpy.ENTRPRS_NM, <![CDATA['&amp;']]>, <![CDATA['&']]>)				AS		entrprsNm				/*  기업명    */
+					, rcpy.BIZRNO 					AS		bizrNo					/*  사업자등록번호    */
+					, apply.ISGN_AT					AS		isgnAt						/*  재발급여부    */
+					, biz.ISSU_DE 					AS		issuDe					/*  발급일자    */
+	FROM 		
+			( SELECT RCEPT_NO, RPRSNTV_NM, HEDOFC_ADRES, VALID_PD_BEGIN_DE, VALID_PD_END_DE, ISSU_DE
+			  FROM		TB_ISSU_BSIS_INFO
+			  WHERE		 ISSU_NO = #{issueNo}
+			  ) biz ,  TB_REQST_RCPY_LIST rcpy,   TB_APPLY_MASTER apply
+	WHERE		biz.RCEPT_NO = rcpy.RCEPT_NO 	
+				AND	 rcpy.ENTRPRS_SE = 'O' 		
+				AND 		biz.RCEPT_NO = apply.RCEPT_NO
+	</select>
+	
+	<!-- 확인서 기본 정보(기업 확인서 발급 신청증) -->
+	<select id="findCertIssueBsisInfo2" resultType="Map">
+	SELECT 	/* ProgramID=com.comm.mapif.CertIssueMapper.findCertIssueInfo2 */
+		   biz.RCEPT_NO														AS rceptNo		/* 접수번호 */
+		 , biz.RPRSNTV_NM 													AS rprsntvNm	/* 대표자명 */
+		 , replace(biz.HEDOFC_ADRES, <![CDATA['&amp;']]>, <![CDATA['&']]>) 	AS hedofcAdres	/* 본사주소 */
+		 , rcpy.JURIRNO 													AS jurirNo		/* 법인등록번호 */
+		 , replace(rcpy.ENTRPRS_NM, <![CDATA['&amp;']]>, <![CDATA['&']]>) 	AS entrprsNm	/* 기업명 */
+		 , rcpy.BIZRNO														AS bizrNo		/* 사업자등록번호 */
+		 , apply.ISGN_AT													AS isgnAt		/* 재발급여부 */
+		 , DATE_FORMAT(apply.RCEPT_DE, '%Y%m%d')							AS rceptDe		/* 접수일자 */
+	  FROM (SELECT RCEPT_NO, RPRSNTV_NM, HEDOFC_ADRES
+			  FROM TB_ISSU_BSIS_INFO
+		   ) biz
+		 , TB_REQST_RCPY_LIST rcpy
+		 , (SELECT RCEPT_NO, ISGN_AT, RCEPT_DE
+        	  FROM TB_APPLY_MASTER
+        	 WHERE RCEPT_NO = #{rceptNo}
+           ) apply
+	 WHERE biz.RCEPT_NO = rcpy.RCEPT_NO
+	   AND rcpy.ENTRPRS_SE = 'O'
+	   AND biz.RCEPT_NO = apply.RCEPT_NO
+	</select>
+	
+	<!-- 확인서 재발급 기본 정보 -->
+	<select id="findCertIssueIsgnInfo" resultType="Map">
+	SELECT 	/* ProgramID=com.comm.mapif.CertIssueMapper.findCertIssueIsgnInfo */
+					  isgn.RCEPT_NO 					AS		rceptNo				/*  접수번호    */
+					, replace(isgn.ENTRPS_NM, <![CDATA['&amp;']]>, <![CDATA['&']]>)					AS		entrprsNm			/*  기업명    */
+					, isgn.RPRSNTV_NM 				AS		rprsntvNm			/*  대표자명    */
+					, replace(isgn.HEDOFC_ADRES, <![CDATA['&amp;']]>, <![CDATA['&']]>)				AS		hedofcAdres			/*  본사주소    */
+					, DATE_FORMAT(apply.RESN_OCCRRNC_DE, '%Y%m%d')			AS resnOccrrncDe			/*	사유발생일자	*/
+	FROM 		
+			( SELECT  MASTER.RCEPT_NO	,MASTER.JDGMNT_REQST_YEAR		,MASTER.RCEPT_DE		,MASTER.UPPER_RCEPT_NO			,RESN.RESN_OCCRRNC_DE
+				FROM TB_APPLY_MASTER MASTER 	LEFT JOIN TB_RESN_MANAGE RESN 	ON MASTER.RCEPT_NO = RESN.RCEPT_NO
+				WHERE MASTER.UPPER_RCEPT_NO = #{rceptNo}
+								AND RESN.SE_CODE = 'RC1'
+				ORDER BY MASTER.RCEPT_DE DESC
+				LIMIT 1
+			  ) apply ,  TB_ISGN_BSIS_INFO isgn
+	WHERE		apply.RCEPT_NO = isgn.RCEPT_NO
+	</select>
+
+	<!-- 확인서 재발급 사업자번호 목록 - 재발급 -->
+	<select id="findCertIssueBiznoList" resultType="Map">
+	SELECT 	/* ProgramID=com.comm.mapif.CertIssueMapper.findCertIssueBiznoList */
+					  RCEPT_NO 					AS		rceptNo			/*  접수번호    */
+					, BIZRNO						AS		bizrNo			/*  사업자등록번호    */
+	FROM 	TB_COMPNO_BIZRNO_MANAGE
+	WHERE		RCEPT_NO = #{rceptNo}
+	</select>
+	
+	<!-- 확인서 재발급 사업자번호 목록 - 신규 -->
+	<select id="findCertIssueAddBiznoList" resultType="Map">
+	SELECT 	/* ProgramID=com.comm.mapif.CertIssueMapper.findCertIssueBiznoList */
+					  RCEPT_NO 					AS		rceptNo			/*  접수번호    */
+					, BIZRNO						AS		bizrNo			/*  사업자등록번호    */
+	FROM 	TB_ADD_BIZRNO_MANAGE
+	WHERE		RCEPT_NO = #{rceptNo}
+	</select>
+	
+	<!-- 기업확인서문서출력번호 -->
+	<select id="calldocNo" statementType="CALLABLE" resultType="String">
+	{
+    	call sp_TB_CNFIRM_OUTPT_HIST(#{rceptNo}) 
+	}
+	</select>
+	
+	<!-- 기업확인서발급신청증문서출력번호 -->
+	<select id="calldocNo2" statementType="CALLABLE" resultType="String">
+	{
+    	call sp_TB_CNFIRM_ISSU_REQSTDOC_OUTPT_HIST(#{rceptNo}) 
+	}
+	</select>
+	
+</mapper>

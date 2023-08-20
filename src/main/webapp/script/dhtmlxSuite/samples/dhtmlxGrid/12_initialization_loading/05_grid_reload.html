@@ -1,0 +1,45 @@
+<!--conf
+<sample>
+              <product version="1.4" edition="std"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               </sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Reload with new structure</title>
+	
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+	<script>
+		dhtmlx.skin = "dhx_skyblue";
+	</script>
+</head>
+
+<body>
+	<h1>Reload with new structure</h1>
+   <p> You are allowed to clear data and structure of grid and then load new data from XML file.</p>
+   
+   <div id="gridbox" style="width:600px; height:270px; background-color:white;"></div>
+	<a href='#alfa' onClick="ser()">Reload grid with another structure</a>
+<br>
+<script>
+    mygrid = new dhtmlXGridObject('gridbox');
+	mygrid.setImagePath("../../../codebase/imgs/");
+	mygrid.loadXML("../common/gridH.xml");
+
+
+    function ser(){
+        mygrid.clearAll(true);
+		mygrid.loadXML("../common/gridH3.xml");
+    }
+</script>
+
+
+
+</body>
+</html>

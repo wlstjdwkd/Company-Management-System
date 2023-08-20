@@ -1,0 +1,48 @@
+<!--conf
+<sample>
+              <product version="1.4" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               </sample>
+ --> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<title>Distributed parsing</title>
+	
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+</head>
+
+<body>
+	<h1>Distributed parsing</h1>
+	<p> To decrease time before grid appears on page you can enable Distributed Parsing. <br>
+	In this case grid will be shown right after the first portion of data parsed although it continues parsing other portions in async mode. Changing number of records per portion and delay (in milliseconds) you can change the loading speed. </p>
+		
+	<div id="gridbox" style="width:600px; height:250px; background-color:white;"></div>
+
+<script>
+	mygrid = new dhtmlXGridObject('gridbox');
+	mygrid.setImagePath("../../../codebase/imgs/");
+	mygrid.setHeader("Sales,Book Title,Author,Price,In Store,Shipping,Bestseller,Date of Publication");
+	mygrid.setInitWidths("50,150,120,80,80,80,80,200")
+	mygrid.setColAlign("right,left,left,right,center,left,center,center")
+	mygrid.setColTypes("dyn,ed,ed,price,ch,co,ra,ro");
+    mygrid.getCombo(5).put(2,2);
+	mygrid.setColSorting("int,str,str,int,str,str,str,date")
+	mygrid.init();
+	mygrid.setSkin("dhx_skyblue")
+    //enabling distributed parsing
+    mygrid.enableDistributedParsing(true,10,300);
+	mygrid.loadXML("../common/500_14_loading_big_datasets.xml");
+
+
+</script>
+
+
+</body>
+</html>

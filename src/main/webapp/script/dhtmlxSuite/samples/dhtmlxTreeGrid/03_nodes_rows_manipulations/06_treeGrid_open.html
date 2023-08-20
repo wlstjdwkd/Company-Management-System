@@ -1,0 +1,66 @@
+<!--conf
+<sample in_favorites="true">
+              <product version="1.4" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               </sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Dynamic loading on item opening</title>	
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+</head>
+
+<body>
+	
+	<h1>TreeGrid - opening nodes and dynamic loading</h1>
+	<p>
+            You can set functions called before and after opening node
+	</p>
+	
+
+	<table width="680">
+		<tr>
+			<td>
+				<div id="gridbox" width="100%" height="248px" style="background-color:white;"></div>
+			</td>
+            <td width="100px"><div id='a111'></div></td>
+		</tr>
+		<tr>
+			<td>
+
+            </td>
+		</tr>
+	</table>
+
+
+
+<script>
+		mygrid = new dhtmlXGridObject('gridbox');
+
+		
+		mygrid.setImagePath("../../../codebase/imgs/");
+		mygrid.setHeader("Tree,Plain Text,Long Text,Color,Checkbox");
+		mygrid.setInitWidths("150,100,100,100,100")
+		mygrid.setColAlign("left,left,left,left,center")
+		mygrid.setColTypes("tree,ed,txt,ch,ch");
+		mygrid.setColSorting("str,str,str,na,str")
+        mygrid.attachEvent("onOpenStart",function(id,m){ return confirm("Row "+id+"will be "+(m==1?"closed":"opened")); });
+        mygrid.attachEvent("onOpenEnd",function(id,m){ document.getElementById("a111").innerHTML="<br/>Row "+id+"was "+(m==-1?"closed":"opened"); });
+
+		mygrid.init();
+		mygrid.setSkin("dhx_skyblue")
+        mygrid.kidsXmlFile="php/treeGrid_dynamic.php";
+	   	mygrid.loadXML("php/treeGrid_dynamic.php");
+</script>
+
+</body>
+</html>
+
+

@@ -1,0 +1,130 @@
+<!--conf
+<sample>
+              <product version="1.4" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               </sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+	<title>Per-cell eXcell</title>
+	<title>Calendar eXcell</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+</head>
+<style type="text/css" media="screen">
+	/*custom styling for the first column*/
+	.form_cell{
+		border-color:#FDFDFD #93AFBA #93AFBA #FDFDFD !important;
+		border-style:solid !important;
+		border-width:1px !important;
+	}
+</style>
+<script>
+	function loadGridFromString(){
+		mygrid = new dhtmlXGridObject('gridbox');
+		mygrid.setImagePath("../../../codebase/imgs/");
+		mygrid.enableAutoHeight(true);
+		mygrid.loadXMLString(document.getElementById("tcont1").value);
+	}
+	function loadGrid2(){
+		mygrid2 = new dhtmlXGridObject('gridbox2');
+		mygrid2.setImagePath("../../../codebase/imgs/");
+		mygrid2.loadXML("../common/gridH.xml");
+	}
+</script>
+<body onload="loadGridFromString();loadGrid2()">
+<h1>Per-cell eXcell</h1>
+<p>You can set different cell editors for cells in column<p> 
+<h3>Setting cell types in xml</h3>
+<div id="gridbox" width="600px" height="160px"></div>
+<br />
+<textarea id="tcont1" style="width:600px;height:100px;display:none"><?xml version="1.0" encoding="UTF-8"?>
+<rows>
+    <head>
+        <column width="200" type="ro" align="left" color="#D4D0C8" sort="na">Form Fields</column>
+        <column width="*" type="coro" align="left" sort="na">Field Values
+			<option value="1">Worker</option>
+			<option value="2">Office Manager</option>
+			<option value="3">Car Driver</option>
+			<option value="4">Programmer</option>
+		</column>
+    </head>
+ 	<row id="1">
+		<cell class='form_cell'>First, Last Name</cell>
+		<cell type="ed">John, Bossom</cell>
+	</row>
+	<row id="2">
+		<cell class='form_cell'>Profession</cell>
+		<cell>1</cell>
+	</row>
+	<row id="3">
+		<cell class='form_cell'>Salary</cell>
+		<cell type="price" style="text-align:right">1500</cell>
+	</row>
+	<row id="4">
+		<cell class='form_cell'>High Education</cell>
+		<cell type="ch">1</cell>
+	</row>
+	<row id="6">
+		<cell class='form_cell'>Age</cell>
+		<cell type="ed">29</cell>
+	</row>
+	<row id="7">
+		<cell class='form_cell'>Comments</cell>
+		<cell type="txt">
+			Some
+			Multiline content	
+		</cell>
+	</row>
+	<row id="5">
+		<cell class='form_cell'>Color of blood</cell>
+		<cell type="cp">red</cell>
+	</row>
+</rows>
+</textarea>
+
+<h3>Setting cell types with script methods</h3>
+<table border="0" cellspacing="5" cellpadding="5">
+	<tr><td>
+<div id="gridbox2" width="600px" height="160px"></div>		
+	</td><td>
+<div style="float:left;">
+<ul>
+	<li><a href="javascript:void(0)" onclick="mygrid2.editStop(); mygrid2.setRowExcellType(mygrid2.getSelectedId(),document.getElementById('editorsLst').value)">Set Selected Row cells Type to</a>
+		<select id="editorsLst">
+			<option value="ed">[ed] Simple Editor
+			<option value="txt">[txt] Multiline Editor
+			<option value="ch">[ch] Checkbox
+			<option value="dyn">[dyn] Dynamic
+		</select>
+	</li>
+	<li><a href="javascript:void(0)" onclick="mygrid2.editStop(); mygrid2.setCellExcellType(mygrid2.getSelectedId(),mygrid2.getSelectedCellIndex(),document.getElementById('editorsLst2').value)">Set Selected Cell Type to</a>
+		<select id="editorsLst2">
+			<option value="ed">[ed] Simple Editor
+			<option value="txt">[txt] Multiline Editor
+			<option value="ch">[ch] Checkbox
+			<option value="dyn">[dyn] Dynamic
+		</select>
+	</li>
+	<li><a href="javascript:void(0)" onclick="mygrid2.editStop(); mygrid2.setColumnExcellType(mygrid2.getSelectedCellIndex(),document.getElementById('editorsLst3').value)">Set Column (by selected cell) Type to</a>
+		<select id="editorsLst3">
+			<option value="ed">[ed] Simple Editor
+			<option value="txt">[txt] Multiline Editor
+			<option value="ch">[ch] Checkbox
+			<option value="dyn">[dyn] Dynamic
+		</select>
+	</li>
+</ul>
+</div>		
+	</td></tr>	
+</table>
+
+
+
+<br />
+</body>
+</html>

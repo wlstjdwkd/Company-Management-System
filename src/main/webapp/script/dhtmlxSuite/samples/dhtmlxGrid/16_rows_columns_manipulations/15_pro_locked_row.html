@@ -1,0 +1,71 @@
+<!--conf
+<sample>
+              <product version="1.4" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               </sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Locked row(s)</title>
+	
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+	
+</head>
+
+<body>
+	
+	<h1>Locked row(s)</h1>
+	<p>You are allowed to prohibit editing rows in user interface. Instead of this you should specify new values for rows using some methods in API (setValue method, for instance).
+	<p>As you can see in the sample below you have the possibility to lock any row before loading by using lockRow method. Here rows 1-3 are locked from XML. This funclionality will be enabled once grid is fully loaded.
+        <table>
+          <tr>
+                <td><a href='#' onclick='mygrid.lockRow(1,true)'>Lock row 1</a></td>
+                <td><a href='#' onclick='mygrid.lockRow(1,false)'>Unlock row 1</a></td>
+            </tr>
+            <tr>
+                <td><a href='#' onclick='mygrid.lockRow(2,true)'>Lock row 2</a></td>
+                <td><a href='#' onclick='mygrid.lockRow(2,false)'>Unlock row 2</a></td>
+            </tr>
+            <tr>
+                <td><a href='#' onclick='mygrid.lockRow(3,true)'>Lock row 3</a></td>
+                <td><a href='#' onclick='mygrid.lockRow(3,false)'>Unlock row 3</a></td>
+            </tr>
+        </table>
+
+	</p>
+
+
+	<table width="600">
+		<tr>
+			<td>
+				<div id="gridbox" style="width:100%;height:270px;background-color:white;"></div>
+			</td>
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+		</tr>
+	</table>
+<br>
+
+		
+<script>
+	mygrid = new dhtmlXGridObject('gridbox');
+	mygrid.setImagePath("../../../codebase/imgs/");
+	mygrid.setHeader("Sales,Book Title,Author,Price,In Store,Shipping");
+	mygrid.setInitWidths("50,200,200,70,70,100")
+	mygrid.setColAlign("right,left,left,right,center,center")
+	mygrid.setColTypes("dyn,ed,ed,ed,ch,ed");
+	mygrid.setColSorting("int,str,str,int,str,date")
+	mygrid.init();
+	mygrid.setSkin("dhx_skyblue")
+	mygrid.loadXML("../common/grid_lock.xml");
+</script>
+
+</body>
+</html>

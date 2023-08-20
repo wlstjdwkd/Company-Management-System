@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<!--conf
+<sample>
+              <product version="4.0b1" edition="std"/>
+                     <modifications>
+                            <modified date="130911"/>
+                     </modifications>
+               </sample>
+-->
+<html>
+<head>
+	<title>Attach menu/toolbar/status in fullscreen mode</title>
+	<!--
+	add the following style
+	<style>
+		html, body {
+			width: 100%;
+			height: 100%;
+			margin: 0px;
+			padding: 0px;
+			overflow: hidden;
+		}
+	</style>
+	-->
+	<script>
+		// init layout
+		// var myLayout = new dhtmlXLayoutObject(document.body, "3L");
+		function openLayout() {
+			window.open("inc/header_footer_with_menu.html");
+		}
+	</script>
+</head>
+<body>
+	<input type="button" onclick="openLayout();" value="open demo">
+</body>
+</html>

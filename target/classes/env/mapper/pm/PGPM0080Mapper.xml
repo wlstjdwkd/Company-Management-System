@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="biz.tech.mapif.pm.PGPM0080Mapper">
+
+	<!-- 직원 조회 emp table -->
+	<select id="membersearch" resultType="hashmap">
+	SELECT /* EMP_NO=biz.tech.mapif.pm.PGPM0080Mapper.membersearch */
+				  EMP_NO					/* 직원번호 */
+				, EMP_NM					/* 이름 */
+				, CURR_YN					/* 재직여부 */
+				, INCO_DT					/* 입사일자 */
+				, OUTCO_DT					/* 퇴사일자 */
+				, EMP_YOS					/* 연차발생일수 */
+				, HD_USED					/* 사용연차일수 */
+				, HD_LEFT					/* 잔여연차일수*/
+				
+	FROM		TB_PAY_EMP
+	LEFT OUTER JOIN (
+					SELECT
+						  CODE
+						, CODE_NM
+					FROM	tb_cmmncode
+					) b
+	ON			DEAL_BNK = CODE
+		<where>
+		<if test="ad_search_word !='' and ad_search_word !=null">
+			EMP_NM=#{ad_search_word}
+		</if>
+		</where>
+	ORDER BY EMP_NO ASC	
+		<if test="limitTo != '' and limitTo != null">LIMIT ${limitFrom} , ${limitTo}</if>
+	</select>
+	
+	<!-- 직원 조회의 갯수 emp -->
+	<select id="findmemberlist" resultType="int">
+	SELECT 	/* EMP_NO=biz.tech.mapif.pm.PGPM0010Mapper.findmemberlist */
+				COUNT(*)
+	FROM 		TB_PAY_EMP
+	</select>
+
+	<!-- 직원 정보 수정 -->
+	<update id="updatememberemp">
+	UPDATE /* EMP_NO=biz.tech.mapif.pm.PGPM0080Mapper.updatememberemp */
+			TB_PAY_EMP
+	SET
+				EMP_NO 		= #{adempno}					/* 직원번호 */
+				, EMP_NM 	= #{adempnm}					/* 이름 */
+				, INCO_DT 	= #{adincodt}					/* 입사일자 */
+				, OUTCO_DT 	= #{adoutcodt}					/* 퇴사일자 */
+				, RMRK	= #{adrmrk}							/* 비고 */
+				, HD_WUSE	= #{adhdwuse}					/* 당회사용일수 */
+				
+	WHERE EMP_NO = #{adempno}
+	</update>
+	
+	<!-- 발생휴가일수 갱신 -->
+	<update id="updateEMPYOS">
+	UPDATE 
+			TB_PAY_EMP
+	SET 		EMP_YOS=
+	CASE
+	WHEN 		TIMESTAMPDIFF(YEAR,INCO_DT,NOW()) >= 1
+	THEN 		(15 + FLOOR((TIMESTAMPDIFF(YEAR,INCO_DT,NOW())-1)/2))
+	ELSE 		TIMESTAMPDIFF(MONTH,INCO_DT,NOW())
+	END
+	WHERE 		OUTCO_DT IS NULL 
+			AND EMP_NO = #{adempno}
+	</update>
+	
+	<!-- 누적사용휴가일수 갱신 -->
+	<update id="updateHDUSED">
+	UPDATE 	TB_PAY_EMP
+	SET 	HD_USED = 
+	IF 	(EMP_YOS IS NOT NULL,
+	 IF 	(HD_WUSE IS NULL, HD_USED, HD_WUSE + HD_USED),
+	 	NULL)
+	WHERE 	EMP_NO = #{adempno}
+	</update>
+	
+	<!-- 잔여휴가일수 갱신 -->
+	<update id="updateHDLEFT">
+	UPDATE 
+			TB_PAY_EMP
+	SET 		HD_LEFT = 
+	CASE
+	WHEN 		EMP_YOS IS NOT NULL 
+			AND HD_USED IS NOT NULL
+	THEN 		EMP_YOS - HD_USED
+	WHEN		HD_USED IS NULL
+	THEN 		EMP_YOS
+	END
+	WHERE 	EMP_NO = #{adempno}
+	</update>
+	
+	<!-- 수정 페이지 정보 조회 emp -->
+	<select id="updatememberlist" resultType="hashmap">
+	SELECT /* EMP_NO=biz.tech.mapif.pm.PGPM0080Mapper.updatememberlist */
+				  EMP_NO					/* 직원번호 */
+				, EMP_NM					/* 이름 */
+				, INCO_DT					/* 입사일자 */
+				, OUTCO_DT					/* 퇴사일자 */
+				, EMP_YOS					/* 연차발생일수 */
+				, HD_USED					/* 사용연차일수 */
+				, HD_LEFT					/* 잔여연차일수*/
+				
+	FROM		TB_PAY_EMP
+	WHERE		EMP_NO = #{adempno}
+	</select>
+	
+	<!--누적일수, 잔여일수 개별 초기화 -->
+	<update id="updateHDtoZero">
+	UPDATE TB_PAY_EMP
+	SET HD_USED = '0'
+		,HD_LEFT = '0'
+	WHERE EMP_NO = #{emp_no}
+	</update>
+</mapper>

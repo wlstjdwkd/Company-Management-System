@@ -1,0 +1,79 @@
+<!--conf
+<sample in_favorites="true">
+              <product version="1.4" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               <sampledescription><![CDATA[Not only rows can be moved in dhtmlxGrid. Columns also. Try changing columns position with this sample.]]></sampledescription></sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Move column</title>
+	
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+	
+</head>
+
+<body>
+	<h1>Move column</h1>
+	<p>You have two ways of moving columns within the grid:</p>
+	<div id="gridbox" style="width:600px;height:270px;background-color:white;"></div>
+
+	<p>Firstly, you are allowed to move column using drag-n-drop functiality.</p>
+	<p>enableColumnMove method enables drag-n-drop operations:</p>
+
+	<p>Otherwise, you can move column with script:</p>	
+	<p>
+		<a href="javascript:void(0)" onClick="mygrid.moveColumn(document.getElementById('sInd').value,document.getElementById('tInd').value)">Move</a> column 
+  <select id="sInd">
+    <option value="0">0
+    <option value="1">1
+    <option value="2">2
+    <option value="3">3
+    <option value="4">4
+    <option value="5">5
+    <option value="6">6
+    <option value="7">7
+  </select> 
+  before column
+  <select id="tInd">
+    <option value="0">0
+    <option value="1">1
+    <option value="2">2
+    <option value="3">3
+    <option value="4">4
+    <option value="5">5
+    <option value="6">6
+    <option value="7">7
+  </select>
+  
+</p>
+<p>In the method above you should specify indexes of old and new columns.</p>
+<script>
+	mygrid = new dhtmlXGridObject('gridbox');
+	mygrid.setImagePath("../../../codebase/imgs/");
+    mygrid.setHeader("Sales,Book Title,Author,Price,In Store,Shipping,Bestseller,Date of Publication");
+	mygrid.setInitWidths("50,150,120,80,80,80,80,200")
+	mygrid.setColAlign("right,left,left,right,center,left,center,center")
+	mygrid.setColTypes("dyn,ed,ed,price,ch,co,ra,ro");
+    mygrid.getCombo(5).put(2,2);
+	mygrid.setColSorting("int,str,str,int,str,str,str,str")
+	mygrid.setColumnColor("white,#d5f1ff,#d5f1ff")
+    mygrid.enableMultiselect(true);
+    mygrid.setColumnMinWidth(50,0);
+	
+	mygrid.enableColumnMove(true);
+	mygrid.attachEvent("onBeforeCMove",function(a,b){
+		return confirm("Allow move column "+a+" to position "+b);
+	});
+	mygrid.init();
+	mygrid.setSkin("dhx_skyblue");
+	mygrid.loadXML("../common/grid_16_rows_columns_manipulations.xml");
+
+  </script>
+</body>
+</html>

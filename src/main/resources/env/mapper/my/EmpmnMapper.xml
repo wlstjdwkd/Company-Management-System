@@ -1,0 +1,1298 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="biz.tech.mapif.my.EmpmnMapper">
+	
+	<!-- 채용기업소개 리스트 카운트 -->
+	<select id="findCmpnyIntrcnCount" resultType="int">
+	SELECT /* ProgramID=biz.tech.mapif.my.EmpmnMapper.findCmpnyIntrcnCount */
+		COUNT(*)
+	FROM TB_EMPMN_ENTRPRS EE, tb_entrprsuser EP, tb_userinfo U
+	WHERE EE.USER_NO = EP.USER_NO
+	AND U.USER_NO = EP.USER_NO
+	<if test="BIZRNO != null and BIZRNO != ''">
+	AND EE.BIZRNO = #{BIZRNO}
+	</if>
+	<include refid="IntrcnSearchCon"/>
+	ORDER BY EE.UPDT_DE DESC
+	</select>
+	
+	<!-- 채용기업소개 리스트 조회 -->
+	<select id="findCmpnyIntrcnList" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.my.EmpmnMapper.findCmpnyIntrcnList */
+		EE.USER_NO														/*사용자번호 	*/
+		,EE.BIZRNO														/*사업자등록번호	*/
+		,EE.ENTRPRS_NM													/*기업명			*/
+		,DATE_FORMAT(EE.REGIST_DE, '%Y-%m-%d') AS REGIST_DE
+		,DATE_FORMAT(EE.UPDT_DE, '%Y-%m-%d') AS UPDT_DE
+		,EP.CHARGER_NM													/*담당자	 이름	*/
+		,U.LOGIN_ID														/*로그인 아이디    */
+		,EE.INDUTY_NM													/*업종명			*/
+		,EE.LOGO_FILE_SN												/*로고이미지순번	*/
+		,EE.ENTRPRS_VW_AT												/*기업소개보이기여부*/
+		,EE.RECOMEND_ENTRPRS_AT											/*추천기업여부 */
+	FROM TB_EMPMN_ENTRPRS EE, tb_entrprsuser EP, tb_userinfo U
+	WHERE EE.USER_NO = EP.USER_NO
+	AND U.USER_NO = EP.USER_NO
+	<if test="BIZRNO != null and BIZRNO != ''">
+	AND EE.BIZRNO = #{BIZRNO}
+	</if>
+	<include refid="IntrcnSearchCon"/>
+	ORDER BY EE.UPDT_DE DESC
+	LIMIT #{limitFrom}, #{limitTo}
+	</select>
+	
+	<!-- 채용기업소개 검색조건 -->
+	<sql id="IntrcnSearchCon">
+	<if test="use_search != null and use_search == &quot;Y&quot;">
+		<if test="search_word != null and search_word != ''" >
+			<choose>			
+				<when test="search_type == 0">AND EP.ENTRPRS_NM LIKE CONCAT('%', #{search_word}, '%')</when>
+				<when test="search_type == 1">AND U.LOGIN_ID = #{search_word}</when>
+				<when test="search_type == 2">AND EP.CHARGER_NM LIKE CONCAT('%', #{search_word}, '%')</when>				
+			</choose>
+		</if>
+	</if>
+	<if test="search_induty != null and search_induty != ''" >
+	AND EE.INDUTY_NM LIKE CONCAT('%', #{search_induty}, '%')
+	</if>
+	<if test="recomend_entrprs_search_at != N">
+	AND EE.RECOMEND_ENTRPRS_AT = 'Y'
+	</if>
+	<if test="search_chartr != null and search_chartr != ''" >
+	AND #{search_chartr} IN 
+		(
+			SELECT CHARTR_CODE
+			FROM TB_EMPMN_CHARTR EC
+			WHERE EE.USER_NO = EC.USER_NO
+			AND	EE.BIZRNO = EC.BIZRNO
+		)
+	</if>
+	</sql>
+	
+	<!-- 채용 추천 기업 로고 리스트 조회 -->
+	<select id="findCmpnyIntrcnRecomendLogoList" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.my.EmpmnMapper.findCmpnyIntrcnRecomendLogoList */
+		EE.USER_NO														/*사용자번호 	*/
+		,EE.BIZRNO														/*사업자등록번호	*/
+		,EE.ENTRPRS_NM													/*기업명			*/
+		,EE.LOGO_FILE_SN												/*로고이미지순번	*/
+	FROM TB_EMPMN_ENTRPRS EE, tb_entrprsuser EP, tb_userinfo U
+	WHERE EE.USER_NO = EP.USER_NO
+	AND U.USER_NO = EP.USER_NO
+	AND EE.RECOMEND_ENTRPRS_AT = 'Y'
+	</select>
+	
+	<!-- 채용기업소개 상세조회 -->
+	<select id="findCmpnyIntrcnInfo" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.my.EmpmnMapper.findCmpnyIntrcnInfo */
+       	EE.USER_NO					/*사용자번호(PK)*/
+		,ENTRPRS_NM				/*기업명        */
+		,RPRSNTV_NM				/*대표자명      */
+		,LOGO_FILE_NM			/*로고파일명    */
+		,LOGO_FILE_SN			/*로고파일순번  */
+		,(	SELECT FL.FILE_URL 
+			FROM OP_FILE FL 
+			WHERE LOGO_FILE_SN = FL.FILE_SEQ
+			ORDER BY ORDER_NO ASC
+		 	LIMIT 0, 1
+		 ) AS LOGO_FILE_PATH	/* 로고파일경로 */
+		,LST_AT					/*상장여부      */
+		,ENTRPRS_STLE			/*기업형태      */
+		,ENTRPRS_CRTFC			/*기업인증      */
+		,HMPG					/*홈페이지      */
+		,TELNO					/*전화번호      */
+		,FXNUM					/*팩스번호      */
+		,CHARGER_EMAIL			/*담당자이메일	*/
+		,HEDOFC_ZIP				/*본사우편번호  */
+		,HEDOFC_ADRES			/*본사주소      */
+		,ENTRPRS_INTRCN			/*기업소개      */
+		<!-- ,FOND_DE				/*설립일자      */
+		,LST_DE					/*상장일자      */ -->
+		,DATE_FORMAT(FOND_DE, '%Y-%m-%d') AS FOND_DE	/*설립일자      */
+		,DATE_FORMAT(LST_DE, '%Y-%m-%d') AS LST_DE		/*상장일자      */
+		,INDUTY_NM				/*업종명        */
+		,MAIN_PRODUCT			/*주요생산품    */
+		,DTL_VW_AT				/*상세정보보이기여부*/
+		,IND_VW_AT				/*지표보이기여부*/
+		,EE.REGIST_DE				/*등록일자      */
+		,EE.UPDT_DE				/*수정일자      */
+		,LAYOUT_TY				/*레이아웃타입*/
+		,RECOMEND_ENTRPRS_AT	/*추천기업여부*/
+		,ENTRPRS_VW_AT			/*기업소개여부*/
+		,(SELECT CODE_NM 
+			FROM tb_cmmncode C 
+			WHERE CODE_GROUP_NO = '28' 
+			AND CODE = EE.LST_AT) AS LST_AT_NM	/*상장여부명*/
+		,(SELECT CODE_NM 
+			FROM tb_cmmncode C 
+			WHERE CODE_GROUP_NO = '29'
+			AND CODE = EE.ENTRPRS_STLE) AS ENTRPRS_STLE_NM	/*기업형태명*/
+		,(SELECT CODE_NM 
+			FROM tb_cmmncode C 
+			WHERE CODE_GROUP_NO = '30' 
+			AND CODE = EE.ENTRPRS_CRTFC) AS ENTRPRS_CRTFC_NM  /*기업인증명*/
+		,EL.IEM_SN_1
+		,EL.IEM_SN_2
+		,EL.IEM_SN_3
+		,EL.IEM_SN_4
+		,EL.IEM_SN_5
+		,EL.IEM_SN_6
+	 FROM TB_EMPMN_ENTRPRS EE LEFT OUTER JOIN (SELECT USER_NO, BIZRNO
+	    , SUM(CASE WHEN EL.IEM_SN = 1 THEN 1 ELSE 0 END) AS IEM_SN_1
+	    , SUM(CASE WHEN EL.IEM_SN = 2 THEN 1 ELSE 0 END) AS IEM_SN_2
+	    , SUM(CASE WHEN EL.IEM_SN = 3 THEN 1 ELSE 0 END) AS IEM_SN_3
+	    , SUM(CASE WHEN EL.IEM_SN = 4 THEN 1 ELSE 0 END) AS IEM_SN_4
+	    , SUM(CASE WHEN EL.IEM_SN = 5 THEN 1 ELSE 0 END) AS IEM_SN_5
+	    , SUM(CASE WHEN EL.IEM_SN = 6 THEN 1 ELSE 0 END) AS IEM_SN_6
+	    FROM TB_EMPMN_LAYOUT EL
+	    WHERE BIZRNO = #{BIZRNO}
+	    GROUP BY USER_NO, BIZRNO) EL
+	 ON EE.BIZRNO = EL.BIZRNO
+	 WHERE EE.USER_NO != '2'
+	 AND EE.USER_NO = #{USER_NO}
+	 AND EE.BIZRNO = #{BIZRNO}
+	</select>
+	
+	<!-- 채용기업소개 상세조회(기업정보 테이블) -->
+	<select id="findIntrcnInfo" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.my.EmpmnMapper.findIntrcnInfo */
+		STDYY
+		, ENTRPRS_NM										/* 기업명	   */
+		, ENTRPRS_STLE										/* 기업형태코드 */
+		, (SELECT CODE_NM
+			FROM tb_cmmncode C
+			WHERE CODE_GROUP_NO = '42'
+			AND CODE = EE.ENTRPRS_STLE) AS ENTRPRS_STLE_NM	/* 기업형태명 */
+		, HEDOFC_ADRES										/* 주소		*/
+		, REPRSNT_TLPHON  				AS TELNO			/* 전화번호	*/
+	FROM TB_ENTPRS_INFO EE
+	WHERE BIZRNO = #{BIZRNO}
+	AND STDYY = (SELECT MAX(STDYY) FROM TB_ENTPRS_INFO)
+	
+	</select>
+	
+	<!-- 채용기업소개 등록 -->
+	<insert id="insertCmpnyIntrcnInfo">
+	INSERT INTO TB_EMPMN_ENTRPRS /* ProgramID=biz.tech.mapif.my.EmpmnMapper.insertCmpnyIntrcnInfo */
+		        (
+		        USER_NO					/*사용자번호(PK)*/
+		        ,BIZRNO					/*사업자등록번호*/
+				,ENTRPRS_NM				/*기업명        */
+				,RPRSNTV_NM				/*대표자명      */
+				<!-- ,LOGO_FILE_NM			/*로고파일명    */
+				,LOGO_FILE_SN			/*로고파일순번  */ -->
+				,LST_AT					/*상장여부      */
+				,ENTRPRS_STLE			/*기업형태      */
+				,ENTRPRS_CRTFC			/*기업인증      */
+				,HMPG					/*홈페이지      */
+				,TELNO					/*전화번호      */
+				,FXNUM					/*팩스번호      */
+				,CHARGER_EMAIL			/*담당자이메일	*/
+				,HEDOFC_ZIP				/*본사우편번호  */
+				,HEDOFC_ADRES			/*본사주소      */
+				,ENTRPRS_INTRCN			/*기업소개      */
+				,FOND_DE				/*설립일자      */
+				,LST_DE					/*상장일자      */
+				,INDUTY_NM				/*업종명        */
+				,MAIN_PRODUCT			/*주요생산품    */
+				,DTL_VW_AT				/*상세정보보이기여부*/
+				,IND_VW_AT				/*지표보이기여부*/
+				,ENTRPRS_VW_AT			/*기업소개보이기여부*/
+				,REGIST_DE				/*등록일자      */
+				,RECOMEND_ENTRPRS_AT	/*추천기업여부*/
+				,LAYOUT_TY				/*레이아웃타입*/
+		        )
+         VALUES
+                (                 
+				 #{USER_NO}
+				,#{BIZRNO}
+				,#{ENTRPRS_NM}
+				,#{RPRSNTV_NM}
+				<!-- ,#{LOGO_FILE_NM}
+				,#{LOGO_FILE_SN} -->
+				,#{LST_AT}
+				,#{ENTRPRS_STLE}
+				,#{ENTRPRS_CRTFC}
+				,#{HMPG}
+				,#{TELNO}
+				,#{FXNUM}
+				,#{CHARGER_EMAIL}
+				,#{HEDOFC_ZIP}
+				,#{HEDOFC_ADRES}
+				,#{ENTRPRS_INTRCN}
+				,#{FOND_DE}
+				,#{LST_DE}
+				,#{INDUTY_NM}
+				,#{MAIN_PRODUCT}
+				,#{DTL_VW_AT}
+				,#{IND_VW_AT}
+				,#{ENTRPRS_VW_AT}
+				,NOW()
+				,#{recomend_entrprs_at}
+				,#{LAYOUT_TY}
+                )
+	ON DUPLICATE KEY UPDATE
+				BIZRNO				= #{BIZRNO}
+				,ENTRPRS_NM			= #{ENTRPRS_NM}		
+				,RPRSNTV_NM			= #{RPRSNTV_NM}		
+				<!-- ,LOGO_FILE_NM		= #{LOGO_FILE_NM}		
+				,LOGO_FILE_SN		= #{LOGO_FILE_SN}	 -->
+				,LST_AT				= #{LST_AT}			
+				,ENTRPRS_STLE		= #{ENTRPRS_STLE}		
+				,ENTRPRS_CRTFC		= #{ENTRPRS_CRTFC}	
+				,HMPG				= #{HMPG}			
+				,TELNO				= #{TELNO}					
+				,FXNUM				= #{FXNUM}
+				,CHARGER_EMAIL		= #{CHARGER_EMAIL}			
+				,HEDOFC_ZIP			= #{HEDOFC_ZIP}			
+				,HEDOFC_ADRES		= #{HEDOFC_ADRES}		
+				,ENTRPRS_INTRCN		= #{ENTRPRS_INTRCN}	
+				,FOND_DE			= #{FOND_DE}	
+				,LST_DE				= #{LST_DE}				
+				,INDUTY_NM			= #{INDUTY_NM}				
+				,MAIN_PRODUCT		= #{MAIN_PRODUCT}
+				,DTL_VW_AT			= #{DTL_VW_AT} 
+				,IND_VW_AT			= #{IND_VW_AT}
+				,ENTRPRS_VW_AT		= #{ENTRPRS_VW_AT}
+				,UPDT_DE			= NOW()
+				,RECOMEND_ENTRPRS_AT= #{recomend_entrprs_at}
+				,LAYOUT_TY			= #{LAYOUT_TY}          
+	</insert>
+	
+	<!-- 대분류 직종 코드 조회 -->
+	<select id="selectJssfcLargeList" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.my.EmpmnMapper.selectJssfcLargeList */
+		CODE_NM								/*코드명		*/
+		,CODE								/*코드		*/
+	FROM TB_EMPMN_JSSFC_CODE
+	WHERE SE = '1'
+	</select>
+	
+	<!-- 채용기업소개 기업특성 조회 -->
+	<select id="selectCmpnyIntrcnChartr" resultType = "Map">
+	SELECT 	/* ProgramID=biz.tech.mapif.my.EmpmnMapper.selectCmpnyIntrcnChartr */
+		BIZRNO							/*사업자등록번호*/
+		, CHARTR_CODE					/*특성코드	*/
+		, CHARTR_NM						/*특성명		*/
+	FROM TB_EMPMN_CHARTR
+	WHERE BIZRNO = #{BIZRNO}
+	</select>
+	
+	<!-- 채용기업소개 기업특성 등록 -->
+	<insert id="insertCmpnyIntrcnChartr">
+	INSERT INTO TB_EMPMN_CHARTR /* ProgramID=biz.tech.mapif.my.EmpmnMapper.insertCmpnyIntrcnChartr */
+			(
+				USER_NO					/*사용자번호 */
+				, BIZRNO				/*사업자등록번호*/
+				, CHARTR_CODE			/*특성코드	*/
+				, CHARTR_NM				/*특성명		*/
+				, REGIST_DE				/*등록일자	*/
+				, UPDT_DE				/*수정일자	*/
+			)
+		VALUES
+			(
+				#{USER_NO}
+				,#{BIZRNO}
+				,#{CHARTR_CODE}
+				,#{CHARTR_NM}
+				,NOW()
+				,NOW()
+			)
+	</insert>
+	
+	<!-- 채용기업소개 기업특성 삭제 -->
+	<delete id="deleteCmpnyIntrcnChartr">
+	DELETE 	/* ProgramID=biz.tech.mapif.my.EmpmnMapper.deleteCmpnyIntrcnChartr */
+	FROM 	TB_EMPMN_CHARTR
+	WHERE   USER_NO = #{USER_NO}
+	AND		BIZRNO = #{BIZRNO}
+	</delete>
+
+	<!-- 채용기업소개 레이아웃 이미지 조회 -->
+	<select id="findCmpnyIntrcnLayoutImage" resultType = "Map">
+	SELECT /* ProgramID=biz.tech.mapif.my.EmpmnMapper.findCmpnyIntrcnLayoutImage */
+		USER_NO			/*		사용자번호				*/
+		, BIZRNO			/* 	사업자등록번호		*/
+		, IEM_SN			/*		항목순번			*/
+		, SN					/*		순번						*/
+		, IMAGE_NM		/*		이미지파일명			*/
+		, IMAGE_SN		/*		이미지파일순번		*/
+		, TEXT
+	FROM 	TB_EMPMN_LAYOUT
+	WHERE USER_NO = #{USER_NO}
+	AND	BIZRNO = #{BIZRNO}
+	AND SN = #{SN}
+	AND IEM_SN = #{IEM_SN}
+	</select>
+	
+	<!-- 채용기업소개 레이아웃 순번 조회 -->
+	<select id="findCmpnyIntrcnLayoutSn" resultType = "int">
+	SELECT /* ProgramID=biz.tech.mapif.my.EmpmnMapper.findCmpnyIntrcnLayoutSn */
+		COUNT(*)		AS COUNT
+	FROM 	TB_EMPMN_LAYOUT
+	WHERE USER_NO = #{USER_NO}
+	AND	BIZRNO = #{BIZRNO}
+	AND SN = #{SN}
+	AND IEM_SN = #{IEM_SN}
+	</select>
+	
+	<!-- 채용기업소개 레이아웃 리스트 조회 -->
+	<select id="findCmpnyIntrcnLayoutList" resultType = "Map">
+	SELECT /* ProgramID=biz.tech.mapif.my.EmpmnMapper.findCmpnyIntrcnLayoutList */
+		USER_NO			/*		사용자번호 		*/
+		, BIZRNO			/*		사업자등록번호	*/
+		, IEM_SN			/*		항목순번			*/
+		, SN					/*		순번					*/
+		, IMAGE_NM		/*		이미지파일명		*/
+		, IMAGE_SN		/* 	이미지파일순번	*/
+		, TEXT				/*		텍스트				*/
+	FROM 	TB_EMPMN_LAYOUT
+	WHERE USER_NO = #{USER_NO}
+	AND	BIZRNO = #{BIZRNO}
+	<if test="imageYn != null and imageYn != ''">
+	AND IMAGE_SN IS NOT NULL
+	</if>
+	ORDER BY IEM_SN ASC, SN ASC 
+	</select>
+	
+	<update id="updateRecomendEntrprsAt">
+	UPDATE  /* ProgramID=biz.tech.mapif.my.UserMapper.updateRecomendEntrprsAt */
+			TB_EMPMN_ENTRPRS
+	SET		RECOMEND_ENTRPRS_AT = #{RECOMEND_ENTRPRS_AT}
+	WHERE BIZRNO = #{BIZRNO}	
+	</update>
+	
+	<!-- 채용기업소개 레이아웃 등록 -->
+	<insert id ="insertCmpnyIntrcnLayout">
+	INSERT INTO TB_EMPMN_LAYOUT /* ProgramID=biz.tech.mapif.my.EmpmnMapper.insertCmpnyIntrcnLayout */
+			(
+				USER_NO						/*		사용자번호			*/
+				, BIZRNO						/*		사업자등록번호 	*/
+				, IEM_SN						/*		항목순번			*/
+				, SN								/*		순번					*/
+				, IMAGE_SN					/*		이미지순번			*/
+				, IMAGE_NM					/* 	이미지명			*/
+				, TEXT							/*		텍스트				*/
+				, REGIST_DE					/*		등록일자			*/
+				, UPDT_DE					/*		수정일자			*/
+			)
+		VALUES
+			(
+				#{USER_NO}
+				,#{BIZRNO}
+				, #{IEM_SN}
+				, #{SN}
+				, #{IMAGE_SN}
+				, #{IMAGE_NM}
+				, #{TEXT}
+				, NOW()
+				, NOW()
+			)
+	</insert>
+	
+	<!-- 채용기업소개 레이아웃 수정 -->
+	<update id ="updateCmpnyIntrcnLayout">
+	UPDATE		/* ProgramID=biz.tech.mapif.my.EmpmnMapper.updateCmpnyIntrcnLayout */
+			TB_EMPMN_LAYOUT
+	SET						
+				TEXT			= #{TEXT}				
+				, UPDT_DE	= NOW()			
+	WHERE USER_NO = #{USER_NO}
+	AND 		BIZRNO = #{BIZRNO}
+	AND		SN		= #{SN}		
+	AND 		IEM_SN		= #{IEM_SN}
+	</update>
+	
+	<!-- 채용기업소개 레이아웃 텍스트 삭제 -->
+	<!-- <delete id="deleteCmpnyIntrcnLayoutText" >
+	DELETE /* ProgramID=biz.tech.mapif.my.EmpmnMapper.deleteCmpnyIntrcnLayoutText */
+	FROM TB_EMPMN_LAYOUT
+	WHERE USER_NO = #{USER_NO}
+	AND	BIZRNO = #{BIZRNO}
+	AND SN <![CDATA[>]]> 10
+	</delete> -->
+	
+	<!-- 채용기업소개 레이아웃 이미지 수정 -->
+	<update id="updateCmpnyIntrcnLayoutImage">
+	UPDATE 	/* ProgramID=biz.tech.mapif.my.UserMapper.updateCmpnyIntrcnLayoutImage */
+			TB_EMPMN_LAYOUT
+	SET		IMAGE_SN = #{IMAGE_SN}
+			, IMAGE_NM = #{IMAGE_NM}
+	WHERE USER_NO = #{USER_NO}
+	AND	BIZRNO = #{BIZRNO}
+	AND IEM_SN = #{IEM_SN}
+	AND SN = #{SN}
+	</update>
+	
+ 	<!-- 채용기업소개 레이아웃 이미지 삭제 -->
+	<delete id="deleteCmpnyIntrcnLayoutImage">
+	DELETE 	/* ProgramID=biz.tech.mapif.my.UserMapper.deleteCmpnyIntrcnLayoutImage */
+	FROM		TB_EMPMN_LAYOUT
+	WHERE USER_NO = #{USER_NO}
+	AND	BIZRNO = #{BIZRNO}
+	AND IEM_SN = #{IEM_SN}
+	AND SN = #{SN}
+	</delete>
+ 	
+	<!-- 채용기업소개 삭제 -->
+	<delete id="deleteCmpnyIntrcnInfo">
+	DELETE 	/* ProgramID=biz.tech.mapif.my.EmpmnMapper.deleteEmpmnPblancInfo */
+	FROM 	TB_EMPMN_ENTRPRS
+	WHERE   USER_NO = #{user_No}
+	AND		BIZRNO = #{bizrNo}
+	</delete>
+	
+	<!-- 채용기업소개 레이아웃 삭제 -->
+	<delete id="deleteCmpnyIntrcnLayout" >
+	DELETE /* ProgramID=biz.tech.mapif.my.EmpmnMapper.deleteCmpnyIntrcnLayout */
+	FROM TB_EMPMN_LAYOUT
+	WHERE USER_NO = #{USER_NO}
+	AND	BIZRNO = #{BIZRNO}
+	AND TEXT IS NOT NULL
+	</delete>
+	
+	<!-- 채용기업소개 수정 -->
+	<!-- <update id="updateCmpnyIntrcnInfo">
+	UPDATE 	/* ProgramID=biz.tech.mapif.cm.UserMapper.updateCmpnyIntrcnInfo */
+			TB_EMPMN_ENTRPRS
+   	SET 	ENTRPRS_NM			= #{ENTRPRS_NM}		
+			,RPRSNTV_NM			= #{RPRSNTV_NM}		
+			,LOGO_FILE_NM		= #{LOGO_FILE_NM}		
+			,LOGO_FILE_SN		= #{LOGO_FILE_SN}		
+			,LST_AT				= #{LST_AT}			
+			,ENTRPRS_STLE		= #{ENTRPRS_STLE}		
+			,ENTRPRS_CRTFC		= #{ENTRPRS_CRTFC}	
+			,HMPG				= #{HMPG}			
+			,TELNO				= #{TELNO}					
+			,FXNUM				= #{FXNUM}
+			,CHARGER_EMAIL		= #{CHARGER_EMAIL}			
+			,HEDOFC_ZIP			= #{HEDOFC_ZIP}			
+			,HEDOFC_ADRES		= #{HEDOFC_ADRES}		
+			,ENTRPRS_INTRCN		= #{ENTRPRS_INTRCN}	
+			,FOND_DE			= #{FOND_DE}	
+			,LST_DE				= #{LST_DE}				
+			,INDUTY_NM			= #{INDUTY_NM}				
+			,MAIN_PRODUCT		= #{MAIN_PRODUCT}		
+			,UPDT_DE			= NOW()
+ 	WHERE 	USER_NO   = #{USER_NO}
+	</update> -->
+	
+	<!-- 사진 첨부 등록 -->
+	<insert id="insertAtchPhoto">
+	INSERT INTO TB_EMPMN_ENTRPRS /* ProgramID=biz.tech.mapif.my.EmpmnMapper.insertAtchPhoto */
+		        (
+		        USER_NO
+		        ,BIZRNO					/*사업자등록번호*/	        
+				,LOGO_FILE_NM			/*로고파일명    */
+				,LOGO_FILE_SN			/*로고파일순번  */
+				,REGIST_DE				/*등록일자      */						
+		        )
+         VALUES
+                (
+				#{USER_NO}
+				,#{BIZRNO}
+				,#{LOGO_FILE_NM}
+				,#{LOGO_FILE_SN}
+				,NOW()				
+                )
+	</insert>
+	
+	<!-- 사진 첨부 수정 -->
+	<update id="updateAtchPhoto">
+	UPDATE 	/* ProgramID=biz.tech.mapif.my.UserMapper.updateAtchPhoto */
+			TB_EMPMN_ENTRPRS			
+   	SET 	BIZRNO				= #{BIZRNO}
+   			,LOGO_FILE_NM		= #{LOGO_FILE_NM}
+   			,LOGO_FILE_SN		= #{LOGO_FILE_SN}			
+			,UPDT_DE			= NOW()
+ 	WHERE 	USER_NO   = #{USER_NO}
+ 	AND 	BIZRNO	  = #{BIZRNO}   	
+	</update>
+	
+	<!-- 채용공고 카운트 -->
+	<select id="findEmpmnPblancInfoCount" resultType="int">
+	SELECT /* ProgramID=biz.tech.mapif.my.EmpmnMapper.findEmpmnPblancInfoCount */
+		COUNT(*)
+	FROM TB_EMPMN_PBLANC A
+	LEFT JOIN ( select user_no, bizrno from
+				TB_EMPMN_ENTRPRS 
+				) EP
+	ON (EP.USER_NO = A.USER_NO
+		AND EP.BIZRNO = A.BIZRNO)
+	LEFT JOIN ( select user_no, bizrno from
+				TB_EMPMN_ENTRPRS 
+				) EPP
+	ON ( EPP.USER_NO != 2
+		AND EPP.BIZRNO = A.BIZRNO )		
+	WHERE 1=1
+	AND A.EMPMN_SJ NOT like '%경비%' 
+	AND A.EMPMN_SJ NOT like '%용역%'
+	<if test="USER_NO != null and USER_NO != ''">
+	AND A.USER_NO = #{USER_NO}
+	</if>
+	<if test="BIZRNO != null and BIZRNO != ''">
+	AND A.BIZRNO = #{BIZRNO}
+	</if>
+	<if test="ISADMIN == null or ISADMIN != &quot;Y&quot;">
+	AND A.RCRIT_END_DE <![CDATA[>=]]> NOW()
+	</if>
+	<if test="tempA != null and tempA != '' ">														/* 필터링 */
+		<foreach item="item" collection="array_filterListA" open = "AND" separator="AND" close="">	/* 채용 제목 필터 */
+			ifnull(A.EMPMN_SJ, '') NOT LIKE CONCAT ('%', trim(#{item}), '%')
+		</foreach>
+	</if>
+	<if test="tempB != null and tempB != '' ">																
+		<foreach item="item" collection="array_filterListB" open = "AND" separator="AND" close="">	/* 직종 필터 */
+			ifnull(A.JSSFC, '') NOT LIKE CONCAT ('%', trim(#{item}), '%')
+		</foreach>
+	</if>
+	<if test="search_jssfc != null and search_jssfc != ''">
+		AND JSSFC_CODE IN 
+			(
+				SELECT CODE
+				FROM  TB_EMPMN_JSSFC_CODE
+				WHERE LCLAS_CD = #{search_jssfc}
+			)
+	</if>
+	<if test="search_area != null and search_area != '' and search_area != 'WA00'">
+		AND (#{search_area} IN
+				(
+					SELECT IEM_VALUE
+					FROM TB_EMPMN_ITM I
+					WHERE I.EMPMN_MANAGE_NO = A.EMPMN_MANAGE_NO
+					AND I.PBLANC_IEM = '22'
+				)
+				OR ( SELECT ATRB3
+					 FROM TB_EMPMN_ITM I
+					 WHERE I.EMPMN_MANAGE_NO = A.EMPMN_MANAGE_NO
+					 AND I.PBLANC_IEM = '22'
+					 AND  I.IEM_VALUE = 'WKN'
+				) LIKE CONCAT ('%', #{search_area_NM}, '%')
+			)
+	</if>
+	<if test="search_career != null and search_career != '' ">
+		AND (
+				#{search_career} IN
+				(
+					SELECT IEM_VALUE
+					FROM TB_EMPMN_ITM I
+					WHERE I.EMPMN_MANAGE_NO = A.EMPMN_MANAGE_NO
+					AND I.PBLANC_IEM = '25'
+				)
+				<if test ="search_career == 'ck1'">
+				OR (
+					SELECT ATRB3
+					FROM TB_EMPMN_ITM I
+					WHERE I.EMPMN_MANAGE_NO = A.EMPMN_MANAGE_NO
+					AND I.PBLANC_IEM = '25'
+			   	) LIKE CONCAT ('%','신입','%')
+			   	OR A.CAREER_DETAIL_RQISIT LIKE CONCAT ('%', '신입', '%')
+			   	</if>
+			   	<if test ="search_career == 'ck2'">
+				OR (
+					SELECT ATRB3
+					FROM TB_EMPMN_ITM I
+					WHERE I.EMPMN_MANAGE_NO = A.EMPMN_MANAGE_NO
+					AND I.PBLANC_IEM = '25'
+			   	) LIKE CONCAT ('%','경력','%')
+			   	OR A.CAREER_DETAIL_RQISIT LIKE CONCAT ('%', '경력', '%')
+			   	</if>
+			   	OR (
+					SELECT ATRB3
+					FROM TB_EMPMN_ITM I
+					WHERE I.EMPMN_MANAGE_NO = A.EMPMN_MANAGE_NO
+					AND I.PBLANC_IEM = '25'
+			   	) LIKE CONCAT ('%','관계','%')
+			   	OR A.CAREER_DETAIL_RQISIT LIKE CONCAT ('%', '관계', '%')
+			)
+	</if>	
+	<include refid="pblancSearchCon"/>
+	</select>
+	
+	<!-- 채용공고 리스트 -->
+	<select id="findEmpmnPblancInfoList" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.my.EmpmnMapper.findEmpmnPblancInfoList */
+		A.EMPMN_MANAGE_NO												/*채용관리번호(PK)*/
+		,A.EMPMN_SJ														/*채용제목*/
+		,DATE_FORMAT(A.RCRIT_BEGIN_DE, '%Y-%m-%d') AS RCRIT_BEGIN_DE	/*모집시작일자*/
+		,DATE_FORMAT(A.RCRIT_END_DE, '%Y-%m-%d') AS RCRIT_END_DE		/*모집종료일자*/
+		,A.EMPMN_CLOS_TO_AT												/*채용마감까지여부*/
+		,A.JSSFC														/*직종*/
+		,A.CAREER_DETAIL_RQISIT											/*경력상세요건*/
+		,A.ECNY_APPLY_DIV												/*입사지원구분*/
+		,A.ECNY_APPLY__WEB_ADRES										/*입사지원웹주소*/
+		,A.PVLTRT_CND                                                   /*우대요건*/
+		,EP.ENTRPRS_NM													/*기업명*/
+		,A.USER_NO AS EP_NO												/*기업사용자번호*/
+		,A.BIZRNO														/*사업자등록번호*/
+		,EPP.USER_NO													/*등록된사용자번호*/
+		,EPP.ENTRPRS_VW_AT												/*등록된기업소개보이기여부*/
+		,EPP.LOGO_FILE_SN												/*등록된 회사 로고 순번*/
+		,(SELECT COUNT(*)
+			FROM TB_COMP_APPLY S1
+			WHERE A.EMPMN_MANAGE_NO = S1.EMPMN_MANAGE_NO
+			AND S1.RCEPT_AT = 'Y')	AS DESIRE_CNT						/*지원자수*/
+		,RCRIT_END_DE <![CDATA[<]]> NOW() AS CLOSED						/*마감유무*/
+		,A.WANTED_AUTH_NO                  /*워크넷 채용공고코드*/
+		,substring_index(A.CAREER_DETAIL_RQISIT, ' ', -1) as CAREER_DETAIL_RQISIT2        /*경력*/
+        ,substring_index(A.CAREER_DETAIL_RQISIT, ' ', 1) as CAREER_DETAIL_RQISIT3         /*학력*/
+	FROM TB_EMPMN_PBLANC A
+	<!-- LEFT JOIN tb_entrprsuser EP -->
+	LEFT JOIN (SELECT USER_NO, BIZRNO, ENTRPRS_NM FROM TB_EMPMN_ENTRPRS) EP
+	ON ( EP.USER_NO = A.USER_NO
+		AND EP.BIZRNO = A.BIZRNO )
+	LEFT JOIN (SELECT USER_NO, BIZRNO, ENTRPRS_VW_AT, LOGO_FILE_SN FROM TB_EMPMN_ENTRPRS) EPP
+	ON ( EPP.USER_NO != 2
+		AND EPP.BIZRNO = A.BIZRNO )
+	WHERE 1=1
+	<if test="USER_NO != null and USER_NO != ''">
+	AND A.USER_NO = #{USER_NO}
+	</if>
+	<if test="BIZRNO != null and BIZRNO != ''">
+	AND A.BIZRNO = #{BIZRNO}
+	</if>
+	<if test="ISADMIN == null or ISADMIN != &quot;Y&quot;">
+	AND A.RCRIT_END_DE <![CDATA[>=]]> NOW()
+	</if>
+	<include refid="pblancSearchCon"/>
+	AND A.EMPMN_SJ NOT like '%경비%' 
+	AND A.EMPMN_SJ NOT like '%용역%'
+	<if test="tempA != null and tempA != '' ">														/* 필터링 */
+		<foreach item="item" collection="array_filterListA" open = "AND" separator="AND" close="">	/* 채용 제목 필터 */
+			ifnull(A.EMPMN_SJ, '') NOT LIKE CONCAT ('%', trim(#{item}), '%')
+		</foreach>
+	</if>
+	<if test="tempB != null and tempB != '' ">																
+		<foreach item="item" collection="array_filterListB" open = "AND" separator="AND" close="">	/* 직종 필터 */
+			ifnull(A.JSSFC, '') NOT LIKE CONCAT ('%', trim(#{item}), '%')
+		</foreach>
+	</if>
+	<if test="search_jssfc != null and search_jssfc != ''">
+		AND JSSFC_CODE IN 
+			(
+				SELECT CODE
+				FROM  TB_EMPMN_JSSFC_CODE
+				WHERE LCLAS_CD = #{search_jssfc}
+			)
+	</if>
+	<if test="search_area != null and search_area != '' and search_area != 'WA00'">
+		AND (
+			#{search_area} IN
+			(
+				SELECT IEM_VALUE
+				FROM TB_EMPMN_ITM I
+				WHERE I.EMPMN_MANAGE_NO = A.EMPMN_MANAGE_NO
+				AND I.PBLANC_IEM = '22'
+			)
+			OR ( SELECT ATRB3
+				 FROM TB_EMPMN_ITM I
+				 WHERE I.EMPMN_MANAGE_NO = A.EMPMN_MANAGE_NO
+				 AND I.PBLANC_IEM = '22'
+				 AND I.IEM_VALUE = 'WKN'
+			) LIKE CONCAT ('%', #{search_area_NM}, '%')
+		)
+	</if>
+	<if test="search_career != null and search_career != '' ">
+		AND (
+				#{search_career} IN
+				(
+					SELECT IEM_VALUE
+					FROM TB_EMPMN_ITM I
+					WHERE I.EMPMN_MANAGE_NO = A.EMPMN_MANAGE_NO
+					AND I.PBLANC_IEM = '25'
+				)
+				<if test ="search_career == 'ck1'">
+				OR (
+					SELECT ATRB3
+					FROM TB_EMPMN_ITM I
+					WHERE I.EMPMN_MANAGE_NO = A.EMPMN_MANAGE_NO
+					AND I.PBLANC_IEM = '25'
+			   	) LIKE CONCAT ('%','신입','%')
+			   	OR A.CAREER_DETAIL_RQISIT LIKE CONCAT ('%', '신입', '%')
+			   	</if>
+			   	<if test ="search_career == 'ck2'">
+				OR (
+					SELECT ATRB3
+					FROM TB_EMPMN_ITM I
+					WHERE I.EMPMN_MANAGE_NO = A.EMPMN_MANAGE_NO
+					AND I.PBLANC_IEM = '25'
+			   	) LIKE CONCAT ('%','경력','%')
+			   	OR A.CAREER_DETAIL_RQISIT LIKE CONCAT ('%', '경력', '%')
+			   	</if>
+			   	OR (
+					SELECT ATRB3
+					FROM TB_EMPMN_ITM I
+					WHERE I.EMPMN_MANAGE_NO = A.EMPMN_MANAGE_NO
+					AND I.PBLANC_IEM = '25'
+			   	) LIKE CONCAT ('%','관계','%')
+			   	OR A.CAREER_DETAIL_RQISIT LIKE CONCAT ('%', '관계', '%')
+			)
+	</if>
+	<if test="stringfilterListC == '1'.toString()  ">
+		ORDER BY A.REGIST_DE DESC
+	</if>
+	<if test="stringfilterListC == '2'.toString()  ">
+		ORDER BY A.RCRIT_END_DE DESC
+	</if>
+	<if test="stringfilterListC == '3'.toString()  ">
+		ORDER BY A.RCRIT_END_DE ASC
+	</if>
+	LIMIT #{limitFrom}, #{limitTo}
+	</select>
+
+	<!-- 채용 공고 필터링(관리자 화면) 카운트 -->
+	<select id = "findFilterEmpmnPblancInfoCnt" resultType = "int">
+	SELECT /* ProgramID=biz.tech.mapif.my.EmpmnMapper.findFilterEmpmnPblancInfoCnt */
+	COUNT(*)
+	FROM TB_EMPMN_PBLANC
+	WHERE 1=1
+	<if test="ad_job_word != '' and ad_job_word != null" >
+		<foreach item="array" collection="temp_job" open = "AND" separator="AND" close="">
+			ifnull(JSSFC,'') NOT LIKE CONCAT ('%', #{array}, '%')
+		</foreach>
+	</if>
+	<if test="ad_hire_word != '' and ad_hire_word !=null">
+		<foreach item="array" collection="temp_hire" open = "AND" separator="AND">
+			ifnull(EMPMN_SJ,'') NOT LIKE CONCAT ('%', #{array}, '%')
+		</foreach>
+	</if>
+	</select>
+	
+	<!-- 채용공고 필터링(관리자 화면) 리스트 -->
+	<select id="findFilterEmpmnPblancInfoList" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.my.EmpmnMapper.findFilterEmpmnPblancInfoList */
+		A.EMPMN_SJ								 AS	empmnSj					/*채용제목*/
+		,DATE_FORMAT(A.RCRIT_END_DE, '%Y-%m-%d') AS rcritEndDe				/*모집종료일자*/	
+		,EP.ENTRPRS_NM							 AS entrprsNm				/*기업명*/
+		,A.JSSFC								 AS jssfc					/*직종*/
+		,A.CAREER_DETAIL_RQISIT					 AS	careerDetailRqisit		/*경력상세요건*/
+		,A.PVLTRT_CND							 AS	pvltrtCnd				/*우대조건*/
+		,A.BIZRNO															/*사업자등록번호*/
+		,A.USER_NO															/*사용자번호	*/
+		,A.EMPMN_MANAGE_NO													/*채용관리번호*/
+		,EP.LOGO_FILE_SN													/*회사로고순번*/
+		,EP.ENTRPRS_VW_AT													/*기업소개보이기여부*/
+		,A.ECNY_APPLY__WEB_ADRES
+		,A.WANTED_AUTH_NO                  /*워크넷 채용공고코드*/
+		,substring_index(A.CAREER_DETAIL_RQISIT, ' ', -1) as CAREER_DETAIL_RQISIT2        /*경력*/
+        ,substring_index(A.CAREER_DETAIL_RQISIT, ' ', 1) as CAREER_DETAIL_RQISIT3         /*학력*/
+	FROM TB_EMPMN_PBLANC A
+	LEFT JOIN TB_EMPMN_ENTRPRS EP
+	ON (EP.USER_NO = A.USER_NO
+		AND EP.BIZRNO = A.BIZRNO)
+	WHERE 1=1
+	<if test="ad_job_word != '' and ad_job_word != null" >
+		<foreach item="array" collection="temp_job" open = "AND" separator="AND" close="">
+			ifnull(A.JSSFC,'') NOT LIKE CONCAT ('%', trim(#{array}), '%')
+		</foreach>
+	</if>
+	<if test="ad_hire_word != '' and ad_hire_word != null">
+		<foreach item="array" collection="temp_hire" open = "AND" separator="AND">
+			ifnull(A.EMPMN_SJ,'') NOT LIKE CONCAT ('%', trim(#{array}), '%')
+		</foreach>
+	</if>
+	<if test="ad_range == 1">
+		ORDER BY A.REGIST_DE DESC					/* 모집 시작 일자 */
+		
+	</if>
+	<if test="ad_range == 2">
+		ORDER BY A.RCRIT_END_DE DESC						/* 모집 종료 일자 */
+	</if>
+	<if test="ad_range == 3">
+													
+	</if>
+	<if test="ad_range == '' and ad_range == null">
+		ORDER BY A.UPDT_DE DESC, A.REGIST_DE DESC, A.RCRIT_END_DE DESC
+	</if>
+	LIMIT #{limitFrom}, #{limitTo}
+	</select>
+	
+	<!-- 채용공고 제목 필터 목록 -->
+	<select id="findFilterItemA" resultType="Map">
+	select /* ProgramID=biz.tech.mapif.my.EmpmnMapper.findFilterItemA */
+	FLTR_SE, ATRB
+	from TB_EMPMN_FILTER where FLTR_SE = 'a'
+	</select>
+	
+	<!-- 채용공고 직종 필터 목록 -->
+	<select id="findFilterItemB" resultType="Map">
+	select /* ProgramID=biz.tech.mapif.my.EmpmnMapper.findFilterItemB */
+	FLTR_SE, ATRB
+	from TB_EMPMN_FILTER where FLTR_SE = 'b'
+	</select>
+	
+	<!-- 채용공고 검색조건 -->
+	<sql id="pblancSearchCon">
+	<if test="use_search != null and use_search == &quot;Y&quot;">
+		<if test="search_word != null and search_word != ''" >
+			<choose>			
+				<when test="search_type == 0">AND A.EMPMN_SJ LIKE CONCAT('%', #{search_word}, '%')</when>
+				<when test="search_type == 1">AND EP.ENTRPRS_NM LIKE CONCAT('%', #{search_word}, '%')</when>
+				<when test="search_type == 2">AND A.JSSFC LIKE CONCAT('%', #{search_word}, '%')</when>
+			</choose>
+		</if>
+
+		<if test="search_work_style != null and search_work_style != ''">
+		AND #{search_work_style} IN
+			(
+				SELECT IEM_VALUE 
+				FROM TB_EMPMN_ITM I 
+				WHERE I.EMPMN_MANAGE_NO = A.EMPMN_MANAGE_NO
+				AND I.PBLANC_IEM = '33'
+			)
+		</if>
+		
+	</if>
+	</sql>	
+	
+	<!-- 채용공고 상세조회 -->
+	<select id="findEmpmnPblancInfo" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.my.EmpmnMapper.findEmpmnPblancInfo */
+       	EMPMN_MANAGE_NO					/*채용관리번호(PK)*/
+		,USER_NO						/*사용자번호(FK)*/
+		,BIZRNO							/*사업자등록번호*/
+		,EMPMN_SJ						/*채용제목*/
+		,DATE_FORMAT(RCRIT_BEGIN_DE, '%Y-%m-%d') AS RCRIT_BEGIN_DE	/*모집시작일자*/
+		,DATE_FORMAT(RCRIT_END_DE, '%Y-%m-%d') AS RCRIT_END_DE		/*모집종료일자*/
+		,EMPMN_CLOS_TO_AT				/*채용마감까지여부*/
+		,CAREER_DETAIL_RQISIT			/*경력상세요건*/
+		,JSSFC							/*직종*/
+		,JSSFC_CODE						/*직종코드*/
+		,PVLTRT_CND						/*우대조건*/
+		,JOB_CN							/*업무내용*/
+		,QUEST1							/*질의1*/
+		,LMTT_LT1						/*제한길이1*/
+		,QUEST2							/*질의2*/
+		,LMTT_LT2						/*제한길이2*/
+		,QUEST3							/*질의3*/
+		,LMTT_LT3						/*제한길이3*/
+		,QUEST4							/*질의4*/
+		,LMTT_LT4						/*제한길이4*/
+		,QUEST5							/*질의5*/
+		,LMTT_LT5						/*제한길이5*/
+		,PHOTO_INPUT_AT					/*사진입력여부*/
+		,DETAIL_ACDMCR_INPUT_AT			/*상세학력입력여부*/
+		,EMPYMN_PVLTRT_MATTER_INPUT_AT	/*취업우대사항입력여부*/
+		,_ELSE_LGTY_INPUT_AT			/*외국어능력입력여부*/
+		,EDC_COMPL_INPUT_AT				/*교육이수입력여부*/
+		,OVSEA_SDYTRN_INPUT_AT			/*해외연수입력여부*/
+		,QUALF_ACQS_INPUT_AT			/*자격취득입력여부*/
+		,WTRC_DTLS_INPUT_AT				/*수상내역입력여부*/
+		,JOBALLP_INPUT_AT				/*자체입사지원서등록여부*/
+		,FILE_NM						/*파일명*/
+		,FILE_SEQ						/*파일순번*/
+		,RCRIT_END_DE <![CDATA[<]]> NOW() AS CLOSED		/*마감유무*/
+		,date_add(RCRIT_END_DE, interval +30 day) <![CDATA[<]]> NOW() AS CLOSED30	/*마감30일 Flag*/
+		,(	SELECT FL.FILE_SIZE
+				FROM OP_FILE FL 
+				WHERE PB.FILE_SEQ = FL.FILE_SEQ
+				ORDER BY ORDER_NO ASC
+			 	LIMIT 0, 1
+			 ) AS FILE_SIZE				/*파일사이즈 */
+		,ECNY_APPLY_DIV					/*입사지원구분*/
+		,ECNY_APPLY__WEB_ADRES			/*입사지원웹주소*/
+		,REGIST_DE						/*등록일자*/
+		,UPDT_DE						/*수정일자*/ 
+		,PB.WANTED_AUTH_NO                  /*워크넷 채용공고코드*/
+		,substring_index(PB.CAREER_DETAIL_RQISIT, ' ', -1) as CAREER_DETAIL_RQISIT2        /*경력*/
+        ,substring_index(PB.CAREER_DETAIL_RQISIT, ' ', 1) as CAREER_DETAIL_RQISIT3         /*학력*/  
+	FROM TB_EMPMN_PBLANC PB
+	WHERE 1=1
+	<if test="USER_NO != null and USER_NO != ''">
+	AND PB.USER_NO = #{USER_NO}
+	</if>
+	AND PB.EMPMN_MANAGE_NO = #{EMPMN_MANAGE_NO}
+	</select>
+	
+	<!-- 채용공고 첨부파일 정보 변경 -->
+	<update id="updateEmpmnPblancFile">
+	UPDATE 	/* ProgramID=biz.tech.mapif.my.EmpmnMapper.updateEmpmnPblancFile */
+			TB_EMPMN_PBLANC
+   	SET 	FILE_NM			= #{FILE_NM}
+   			,FILE_SEQ		= #{FILE_SEQ}			
+			,UPDT_DE		= NOW()
+ 	WHERE 	EMPMN_MANAGE_NO	= #{EMPMN_MANAGE_NO}
+ 	AND		USER_NO	= #{USER_NO}   	
+	</update>
+	
+	<!-- 채용공고 항목관리 조회 -->
+	<select id="findEmpmnItem" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.my.EmpmnMapper.findEmpmnItem */
+		I.PBLANC_IEM					/*공고항목*/
+		,I.IEM_VALUE					/*항목값*/
+		,C.CODE_NM						/*코드명*/
+		,I.ATRB1						/*속성1*/
+		,I.ATRB2						/*속성2*/
+		,I.ATRB3						/*속성3*/
+	FROM TB_EMPMN_ITM I, tb_cmmncode C
+	WHERE I.EMPMN_MANAGE_NO = #{EMPMN_MANAGE_NO}
+	AND I.PBLANC_IEM = C.CODE_GROUP_NO
+	AND I.IEM_VALUE = C.CODE
+	<if test="PBLANC_IEM != null and PBLANC_IEM != ''">
+	AND I.PBLANC_IEM = #{PBLANC_IEM}
+	</if>
+	</select>
+	
+	<!-- 채용공고 항목값 조회 -->
+	<select id="findEmpmnIemValue" resultType="String">
+	SELECT /* ProgramID=biz.tech.mapif.my.EmpmnMapper.findEmpmnIemValue */		
+		IEM_VALUE					/*항목값*/		
+	FROM TB_EMPMN_ITM
+	WHERE EMPMN_MANAGE_NO = #{EMPMN_MANAGE_NO}
+	AND PBLANC_IEM = #{PBLANC_IEM}	
+	</select>
+	
+	<!-- 채용공고 항목명 조회 -->
+	<select id="findEmpmnIemCodeNm" resultType="String">
+	SELECT /* ProgramID=biz.tech.mapif.my.EmpmnMapper.findEmpmnIemCodeNm */		
+		CASE WHEN C.CODE = 'WKN' THEN ATRB3 
+		ELSE C.CODE_NM 
+		END AS CODE_NM                      /*항목명*/		
+	FROM TB_EMPMN_ITM I, tb_cmmncode C
+	WHERE I.EMPMN_MANAGE_NO = #{EMPMN_MANAGE_NO}
+	AND I.PBLANC_IEM = C.CODE_GROUP_NO
+	AND I.IEM_VALUE = C.CODE
+	AND PBLANC_IEM = #{PBLANC_IEM}	
+	</select>	
+	
+	<!-- 채용공고 등록 -->
+	<insert id="insertEmpmnPblancInfo" useGeneratedKeys="true" keyProperty="EMPMN_MANAGE_NO"  keyColumn="EMPMN_MANAGE_NO">
+	INSERT INTO TB_EMPMN_PBLANC /* ProgramID=biz.tech.mapif.my.EmpmnMapper.insertEmpmnPblancInfo */
+		        (		        
+				USER_NO						/*사용자번호(FK)*/
+				,BIZRNO							/*사업자등록번호*/
+				,EMPMN_SJ						/*채용제목*/
+				,RCRIT_BEGIN_DE					/*모집시작일자*/
+				,RCRIT_END_DE					/*모집종료일자*/
+				,CAREER_DETAIL_RQISIT			/*경력상세요건*/
+				,JSSFC							/*직종*/
+				,JSSFC_CODE						/*직종코드*/
+				,PVLTRT_CND						/*우대조건*/
+				,JOB_CN							/*업무내용*/
+				,QUEST1							/*질의1*/
+				,LMTT_LT1						/*제한길이1*/
+				,QUEST2							/*질의2*/
+				,LMTT_LT2						/*제한길이2*/
+				,QUEST3							/*질의3*/
+				,LMTT_LT3						/*제한길이3*/
+				,QUEST4							/*질의4*/
+				,LMTT_LT4						/*제한길이4*/
+				,QUEST5							/*질의5*/
+				,LMTT_LT5						/*제한길이5*/
+				,PHOTO_INPUT_AT					/*사진입력여부*/
+				,DETAIL_ACDMCR_INPUT_AT			/*상세학력입력여부*/
+				,EMPYMN_PVLTRT_MATTER_INPUT_AT	/*취업우대사항입력여부*/
+				,_ELSE_LGTY_INPUT_AT			/*외국어능력입력여부*/
+				,EDC_COMPL_INPUT_AT				/*교육이수입력여부*/
+				,OVSEA_SDYTRN_INPUT_AT			/*해외연수입력여부*/
+				,QUALF_ACQS_INPUT_AT			/*자격취득입력여부*/
+				,WTRC_DTLS_INPUT_AT				/*수상내역입력여부*/
+				,JOBALLP_INPUT_AT				/*자체입사지원서등록여부*/
+				,FILE_NM						/*파일명*/
+				,FILE_SEQ						/*파일순번*/
+				,ECNY_APPLY_DIV					/*입사지원구분*/
+				,ECNY_APPLY__WEB_ADRES			/*입사지원웹주소*/
+				,REGIST_DE						/*등록일자*/ 				
+		        )
+         VALUES
+                (
+				#{USER_NO}
+				,#{BIZRNO}
+				,#{EMPMN_SJ}
+				,#{RCRIT_BEGIN_DE}
+				,#{RCRIT_END_DE}
+				,#{CAREER_DETAIL_RQISIT}
+				,#{JSSFC}
+				,#{JSSFC_CODE}
+				,#{PVLTRT_CND}
+				,#{JOB_CN}
+				,#{QUEST1}
+				,#{LMTT_LT1}
+				,#{QUEST2}
+				,#{LMTT_LT2}
+				,#{QUEST3}
+				,#{LMTT_LT3}
+				,#{QUEST4}
+				,#{LMTT_LT4}
+				,#{QUEST5}
+				,#{LMTT_LT5}
+				,#{PHOTO_INPUT_AT}
+				,#{DETAIL_ACDMCR_INPUT_AT}
+				,#{EMPYMN_PVLTRT_MATTER_INPUT_AT}
+				,#{_ELSE_LGTY_INPUT_AT}
+				,#{EDC_COMPL_INPUT_AT}
+				,#{OVSEA_SDYTRN_INPUT_AT}
+				,#{QUALF_ACQS_INPUT_AT}
+				,#{WTRC_DTLS_INPUT_AT}
+				,#{JOBALLP_INPUT_AT}
+				,#{FILE_NM}
+				,#{FILE_SEQ}
+				,#{ECNY_APPLY_DIV}
+				,#{ECNY_APPLY__WEB_ADRES}
+				,NOW()
+                )
+	</insert>
+	
+	<!-- 채용공고 수정 -->
+	<update id="updateEmpmnPblancInfo">
+	UPDATE 	/* ProgramID=biz.tech.mapif.my.UserMapper.updateEmpmnPblancInfo */
+			TB_EMPMN_PBLANC
+   	SET 	EMPMN_SJ						= 	#{EMPMN_SJ}							/*채용제목*/
+			,RCRIT_BEGIN_DE					= 	#{RCRIT_BEGIN_DE}					/*모집시작일자*/
+			,RCRIT_END_DE					= 	#{RCRIT_END_DE}						/*모집종료일자*/
+			,CAREER_DETAIL_RQISIT			= 	#{CAREER_DETAIL_RQISIT}				/*경력상세요건*/
+			,JSSFC							= 	#{JSSFC}							/*직종*/
+			,JSSFC_CODE						=	#{JSSFC_CODE}						/*직종코드*/
+			,PVLTRT_CND						= 	#{PVLTRT_CND}						/*우대조건*/
+			,JOB_CN							= 	#{JOB_CN}							/*업무내용*/
+			,QUEST1							= 	#{QUEST1}							/*질의1*/
+			,LMTT_LT1						= 	#{LMTT_LT1}							/*제한길이1*/
+			,QUEST2							= 	#{QUEST2}							/*질의2*/
+			,LMTT_LT2						= 	#{LMTT_LT2}							/*제한길이2*/
+			,QUEST3							= 	#{QUEST3}							/*질의3*/
+			,LMTT_LT3						= 	#{LMTT_LT3}							/*제한길이3*/
+			,QUEST4							= 	#{QUEST4}							/*질의4*/
+			,LMTT_LT4						= 	#{LMTT_LT4}							/*제한길이4*/
+			,QUEST5							= 	#{QUEST5}							/*질의5*/
+			,LMTT_LT5						= 	#{LMTT_LT5}							/*제한길이5*/
+			,PHOTO_INPUT_AT					= 	#{PHOTO_INPUT_AT}					/*사진입력여부*/
+			,DETAIL_ACDMCR_INPUT_AT			= 	#{DETAIL_ACDMCR_INPUT_AT}			/*상세학력입력여부*/
+			,EMPYMN_PVLTRT_MATTER_INPUT_AT	= 	#{EMPYMN_PVLTRT_MATTER_INPUT_AT}	/*취업우대사항입력여부*/
+			,_ELSE_LGTY_INPUT_AT			= 	#{_ELSE_LGTY_INPUT_AT}				/*외국어능력입력여부*/
+			,EDC_COMPL_INPUT_AT				= 	#{EDC_COMPL_INPUT_AT}				/*교육이수입력여부*/
+			,OVSEA_SDYTRN_INPUT_AT			= 	#{OVSEA_SDYTRN_INPUT_AT}			/*해외연수입력여부*/
+			,QUALF_ACQS_INPUT_AT			= 	#{QUALF_ACQS_INPUT_AT}				/*자격취득입력여부*/
+			,WTRC_DTLS_INPUT_AT				= 	#{WTRC_DTLS_INPUT_AT}				/*수상내역입력여부*/
+			,JOBALLP_INPUT_AT				= 	#{JOBALLP_INPUT_AT}					/*자체입사지원서등록여부*/
+			,FILE_NM						= 	#{FILE_NM}							/*파일명*/
+			,FILE_SEQ						= 	#{FILE_SEQ}							/*파일순번*/
+			,ECNY_APPLY_DIV					=	#{ECNY_APPLY_DIV}					/*입사지원구분*/
+			,ECNY_APPLY__WEB_ADRES			=	#{ECNY_APPLY__WEB_ADRES}			/*입사지원웹주소*/
+			,UPDT_DE						= 	NOW()								/*수정일자*/
+ 	WHERE 	USER_NO   = #{USER_NO}
+ 	AND  	EMPMN_MANAGE_NO = #{EMPMN_MANAGE_NO}	
+	</update>
+	
+	<!-- 채용공고 항목관리 등록 -->
+	<insert id="insertEmpmnItem">
+	INSERT INTO TB_EMPMN_ITM /* ProgramID=biz.tech.mapif.my.EmpmnMapper.insertEmpmnItem */
+		        (
+		        EMPMN_MANAGE_NO
+		        ,PBLANC_IEM
+		        ,IEM_VALUE
+		        ,ATRB1
+		        ,ATRB2
+		        )
+         VALUES
+                (
+                #{EMPMN_MANAGE_NO}
+		        ,#{PBLANC_IEM}
+		        ,#{IEM_VALUE}
+		        ,#{ATRB1}
+		        ,#{ATRB2}
+                )	        	
+	</insert>
+	
+	<!-- 채용공고 삭제 -->
+	<delete id="deleteEmpmnPblancInfo">
+	DELETE 	/* ProgramID=biz.tech.mapif.my.EmpmnMapper.deleteEmpmnPblancInfo */
+	FROM 	TB_EMPMN_PBLANC
+	WHERE 	USER_NO   = #{USER_NO}
+ 	AND  	EMPMN_MANAGE_NO = #{EMPMN_MANAGE_NO} 	
+	</delete>
+	
+	<!-- 채용공고 항목관리 삭제 -->
+	<delete id="deleteEmpmnItem">
+	DELETE 	/* ProgramID=biz.tech.mapif.my.EmpmnMapper.deleteEmpmnItem */
+	FROM 	TB_EMPMN_ITM
+	WHERE 	EMPMN_MANAGE_NO = #{EMPMN_MANAGE_NO} 	
+	</delete>
+	
+	<!-- 주요지표현황 조회 -->
+	<select id="findEmpmnIndexInfo" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.my.EmpmnMapper.findEmpmnIndexInfo */
+			A.HPE_CD,
+			A.STDYY,
+		   	A.ORDTM_LABRR_CO,
+	       	A.ASSETS_SM DIV 1000 AS ASSETS_SM,
+	       	A.CAPL DIV 1000 AS CAPL,
+	       	A.SELNG_AM DIV 1000 AS SELNG_AM
+	FROM TB_FNNR_DATA A, TB_ENTPRS_INFO B, tb_entrprsuser C
+	WHERE C.USER_NO = #{ENTRPRS_USER_NO}
+	AND B.JURIRNO = C.JURIRNO
+	AND B.BIZRNO = C.BIZRNO
+	AND A.HPE_CD = B.HPE_CD
+	AND A.STDYY = B.STDYY
+	AND A.STDYY <![CDATA[<]]> DATE_FORMAT(NOW(), '%Y')
+	AND A.STDYY <![CDATA[>=]]> (DATE_FORMAT(NOW(), '%Y') - 5)
+	ORDER BY A.STDYY DESC	
+	</select>
+	
+	
+	<!-- 이전글 조회-->
+	<select id="findPreList" resultType="Map">
+	 SELECT 
+	 			 tb.EMPMN_MANAGE_NO			AS 	EMPMN_MANAGE_NO 	/*채용관리번호(PK)*/
+				,tb.USER_NO								AS	USER_NO						/*사용자번호*/
+				,tb.EMPMN_SJ								AS	EMPMN_SJ
+      FROM 
+        	( SELECT 
+							 pbl.EMPMN_MANAGE_NO				/*채용관리번호(PK)*/
+							,pbl.USER_NO									/*사용자번호*/
+							,pbl.EMPMN_SJ								/*채용제목*/
+							, @rownum:=@rownum+1 POS
+				FROM TB_EMPMN_PBLANC pbl, (SELECT @rownum:=0) TMP
+				WHERE 
+			    			STR_TO_DATE(RCRIT_END_DE, '%Y%m%d') >= DATE_FORMAT(now(),'%y%m%d')
+				ORDER BY RCRIT_END_DE DESC
+        ) tb
+      WHERE tb.POS =
+      				( SELECT(sub.POS+1)
+                       FROM ( 
+		                            SELECT 
+	                   							 pbl.EMPMN_MANAGE_NO				/*채용관리번호(PK)*/
+	                   							,pbl.USER_NO									/*사용자번호*/
+	                   							,pbl.EMPMN_SJ								/*채용제목*/
+	                   							, @rownum:=@rownum+1 POS
+		                    		FROM TB_EMPMN_PBLANC pbl, (SELECT @rownum:=0) TMP
+		                    		WHERE 
+		                    		   			STR_TO_DATE(RCRIT_END_DE, '%Y%m%d') >= DATE_FORMAT(now(),'%y%m%d')
+		                    		ORDER BY RCRIT_END_DE DESC
+		                       ) sub
+		               WHERE 
+		               			 sub.EMPMN_MANAGE_NO = #{EMPMN_MANAGE_NO}
+		            )
+      LIMIT 1
+	</select>
+	
+	<!-- 다음글 조회-->
+	<select id="findNextList" resultType="Map">
+	SELECT 
+				 tb.EMPMN_MANAGE_NO		AS 	EMPMN_MANAGE_NO	/*채용관리번호(PK)*/
+				,tb.USER_NO							AS 	USER_NO							/*사용자번호*/
+				,tb.EMPMN_SJ							AS 	EMPMN_SJ
+      FROM 	
+        	( SELECT 
+							 pbl.EMPMN_MANAGE_NO				/*채용관리번호(PK)*/
+							,pbl.USER_NO									/*사용자번호*/
+							,pbl.EMPMN_SJ								/*채용제목*/
+							, @rownum:=@rownum+1 POS
+				FROM TB_EMPMN_PBLANC pbl, (SELECT @rownum:=0) TMP
+				WHERE 
+			    			STR_TO_DATE(RCRIT_END_DE, '%Y%m%d') >= DATE_FORMAT(now(),'%y%m%d')
+				ORDER BY RCRIT_END_DE DESC
+        ) tb
+      WHERE tb.POS =
+      				( SELECT(sub.POS-1)
+                       FROM ( 
+		                            SELECT 
+	                   							 pbl.EMPMN_MANAGE_NO				/*채용관리번호(PK)*/
+	                   							,pbl.USER_NO									/*사용자번호*/
+	                   							,pbl.EMPMN_SJ								/*채용제목*/
+	                   							, @rownum:=@rownum+1 POS
+		                    		FROM TB_EMPMN_PBLANC pbl, (SELECT @rownum:=0) TMP
+		                    		WHERE 
+		                    		   			STR_TO_DATE(RCRIT_END_DE, '%Y%m%d') >= DATE_FORMAT(now(),'%y%m%d')
+		                    		ORDER BY RCRIT_END_DE DESC
+		                       ) sub
+		               WHERE 
+		               			 sub.EMPMN_MANAGE_NO = #{EMPMN_MANAGE_NO}
+		            )
+      LIMIT 1
+	</select>
+	
+	<!-- 채용기업소개 목록 카운트(관리자) -->
+	<select id="findMngEntrprsListCnt" resultType="int">
+	SELECT /* ProgramID=biz.tech.mapif.my.EmpmnMapper.findMngEntrprsListCnt */
+		  COUNT(*)
+	FROM TB_EMPMN_ENTRPRS
+	WHERE USER_NO = #{USER_NO}
+	<if test="ENTRPRS_NM != null and ENTRPRS_NM != ''">
+	AND ENTRPRS_NM LIKE CONCAT('%', #{ENTRPRS_NM}, '%')
+	</if>	  
+	</select>
+	
+	<!-- 채용기업소개 목록 조회(관리자) -->
+	<select id="findMngEntrprsList" resultType="Map">
+	SELECT /* ProgramID=biz.tech.mapif.my.EmpmnMapper.findMngEntrprsList */
+		  USER_NO					/*사용자번호*/
+		  , BIZRNO					/*사업자등록번호*/
+		  , ENTRPRS_NM				/*기업명*/
+	FROM TB_EMPMN_ENTRPRS
+	WHERE USER_NO = #{USER_NO}
+	<if test="ENTRPRS_NM != null and ENTRPRS_NM != ''">
+	AND ENTRPRS_NM LIKE CONCAT('%', #{ENTRPRS_NM}, '%')
+	</if>
+	ORDER BY ENTRPRS_NM
+	LIMIT #{limitFrom}, #{limitTo}
+	</select>	
+	
+	<!-- 법인등록번호에 해당하는 채용기업소개 조회 -->
+	<select id="findDupleEmpmnCmpny" resultType="int">
+	SELECT /* ProgramID=biz.tech.mapif.my.EmpmnMapper.findDupleEmpmnCmpny */
+		COUNT(*) 
+	FROM TB_EMPMN_ENTRPRS 
+	WHERE BIZRNO = #{BIZRNO}
+	</select>	
+	
+	<!-- 채용기업소개 등록(관리자) -->
+	<insert id="insertEmpmnCmpnyMng">
+	INSERT INTO TB_EMPMN_ENTRPRS /* ProgramID=biz.tech.mapif.my.EmpmnMapper.insertEmpmnCmpnyMng */
+			(
+			   USER_NO
+			  ,BIZRNO
+			  ,ENTRPRS_NM
+			  ,DTL_VW_AT
+			  ,ENTRPRS_VW_AT
+			  ,REGIST_DE
+			) 
+		VALUES 
+			(
+			  #{USER_NO}
+			  ,#{BIZRNO}
+			  ,#{ENTRPRS_NM}
+			  ,#{DTL_VW_AT}
+			  ,#{ENTRPRS_VW_AT}
+			  ,NOW()
+			)
+	</insert>
+	
+	<!-- 현재 기업의 채용공고 조회 -->
+	<select id="findEmpmnPblancCurInfoList" resultType = "Map">
+	SELECT /* ProgramID=biz.tech.mapif.my.EmpmnMapper.findEmpmnPblancCurnInfoList */
+		A.EMPMN_MANAGE_NO												/*채용관리번호(PK)*/
+		,A.EMPMN_SJ														/*채용제목*/
+		,DATE_FORMAT(A.RCRIT_BEGIN_DE, '%Y-%m-%d') AS RCRIT_BEGIN_DE	/*모집시작일자*/
+		,DATE_FORMAT(A.RCRIT_END_DE, '%Y-%m-%d') AS RCRIT_END_DE		/*모집종료일자*/
+		,A.EMPMN_CLOS_TO_AT												/*채용마감까지여부*/
+		,A.JSSFC														/*직종*/
+		,A.CAREER_DETAIL_RQISIT											/*경력상세요건*/
+		,A.ECNY_APPLY_DIV												/*입사지원구분*/
+		,A.ECNY_APPLY__WEB_ADRES										/*입사지원웹주소*/
+		,A.PVLTRT_CND                                                   /*우대요건*/
+		,EP.ENTRPRS_NM													/*기업명*/
+		,EP.USER_NO AS EP_NO											/*기업사용자번호*/
+		,EP.BIZRNO														/*사업자등록번호*/
+		,EP.ENTRPRS_VW_AT												/*기업소개보이기여부*/
+		,(SELECT COUNT(*) 
+			FROM TB_COMP_APPLY S1
+			WHERE A.EMPMN_MANAGE_NO = S1.EMPMN_MANAGE_NO
+			AND S1.RCEPT_AT = 'Y')	AS DESIRE_CNT						/*지원자수*/
+		,RCRIT_END_DE <![CDATA[<]]> NOW() AS CLOSED						/*마감유무*/
+		,A.WANTED_AUTH_NO                  /*워크넷 채용공고코드*/
+	FROM TB_EMPMN_PBLANC A
+	<!-- LEFT JOIN tb_entrprsuser EP -->
+	LEFT JOIN (SELECT USER_NO, BIZRNO, ENTRPRS_VW_AT, ENTRPRS_NM FROM TB_EMPMN_ENTRPRS) EP
+	ON (EP.USER_NO = A.USER_NO
+		AND EP.BIZRNO = A.BIZRNO)
+	WHERE   A.USER_NO = #{USER_NO}
+	AND   	A.BIZRNO = #{BIZRNO}
+	<if test="EMPMN_MANAGE_NO != null and EMPMN_MANAGE_NO != ''">
+		AND A.EMPMN_MANAGE_NO != #{EMPMN_MANAGE_NO}
+	</if>
+	<if test="ISADMIN == null or ISADMIN != &quot;Y&quot;">
+	AND A.RCRIT_END_DE <![CDATA[>=]]> NOW()
+	</if>
+	</select>
+	
+</mapper>

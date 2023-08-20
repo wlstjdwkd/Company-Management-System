@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="biz.tech.mapif.am.PGAM0001Mapper">
+
+<!--  -->
+<!-- 정보변경신청 처리현황 메인화면에 표시되는 -->
+<select id = "entprsChanger" resultType = "int" >
+	SELECT 				/* ProgramID=biz.tech.mapif.am.PGAM0001Mapper.entprsChanger */
+							COUNT(*)		AS	cntCondition
+	FROM				TB_CHANGE_ENTPRS_CHARGER
+	WHERE				APPLC_AT = #{applcAt}
+	AND					USE_AT = 'Y'
+</select>
+<!--  -->
+
+<!-- 확인서신청 처리현황 -->
+<select id = "findConfirmSttus" resultType = "int" >
+	SELECT				/* ProgramID=biz.tech.mapif.am.PGAM0001Mapper.findConfirmSttus */
+							COUNT(*)		AS	 cntCondition
+	FROM 				TB_APPLY_MASTER
+	<where>
+	<if test="sttusCode != null and sttusCode != ''">
+		AND STTUS_CODE = #{sttusCode}
+	</if>
+	<if test="reqstSe != null and reqstSe != ''">
+		AND REQST_SE = #{reqstSe}
+	</if>	
+	</where>
+</select>
+
+<!-- 기업시책(RSS) 처리현황-->
+<select id = "findRssSttus" resultType = "int" >
+	SELECT				/* ProgramID=biz.tech.mapif.am.PGAM0001Mapper.findRssSttus */
+							COUNT(*)		AS	 cntCondition
+	FROM 				TB_RSS_COLCT_DATA
+	<where>
+	<if test=" sttus == 'new' ">	7 > TIMESTAMPDIFF(day, CREAT_DE, SYSDATE())	</if>
+	<if test=" sttus == 'finish' "> OPERTN_END_DE >= DATE_FORMAT(NOW(), '%Y%m%d') and NTCE_AT = 'R'	</if>	
+	</where>
+</select>
+
+<!--묻고답하기 처리현황-->
+<select id = "findQaSttus" resultType = "int" >
+	SELECT				/* ProgramID=biz.tech.mapif.am.PGAM0001Mapper.findQaSttus */
+							COUNT(*)		AS	 cntCondition
+	FROM 				OP_BOARD
+	WHERE 				BBS_CD = '1005'
+	AND					EXT_COLUMN1 = #{qaSttusCode}
+</select>
+
+<!--자료요청 처리현황-->
+<select id = "findRequestSttus" resultType = "int" >
+	SELECT				/* ProgramID=biz.tech.mapif.am.PGAM0001Mapper.findRequestSttus */
+							COUNT(*)		AS	 cntCondition
+	FROM 				OP_BOARD
+	WHERE 				BBS_CD = '1006'
+	AND					EXT_COLUMN1 = #{requestSttusCode}
+</select>
+
+<!--위변조 신고내역-->
+<select id = "findDocReportCnt" resultType = "int" >
+	SELECT				/* ProgramID=biz.tech.mapif.am.PGAM0001Mapper.findDocReportCnt */
+							COUNT(*)		AS	 cntCondition
+	FROM 				TB_FRGRY_ALTR_STTEMNT
+	WHERE 				#{innerDay} > TIMESTAMPDIFF(day, CREAT_DE, SYSDATE())
+</select>
+
+<!--회원가입현황-->
+<select id = "findUserInfoCnt" resultType = "int" >
+	SELECT				/* ProgramID=biz.tech.mapif.am.PGAM0001Mapper.findUserInfoCnt */
+							COUNT(*)		AS	 cntCondition
+	FROM 				tb_userinfo
+	WHERE				EMPLYR_TY = #{emplyrTy}
+	AND					#{innerDay} > TIMESTAMPDIFF(day, RGSDE, SYSDATE())
+</select>
+
+<!--회원가입현황(누적)-->
+<select id = "findUserAccrueCnt" resultType = "int" >
+	SELECT				/* ProgramID=biz.tech.mapif.am.PGAM0001Mapper.findUserAccrueCnt */
+							COUNT(*)		AS	 cntCondition
+	FROM 				tb_userinfo
+	WHERE				EMPLYR_TY = #{emplyrTy}
+</select>
+
+<!--방문현황-->
+<select id = "findVisitCnt" resultType = "int" >
+	SELECT				/* ProgramID=biz.tech.mapif.am.PGAM0001Mapper.findVisitCnt */
+							ifnull(sum(REQUST_CO),0) AS	 cntCondition
+	from 					STS_ACCESS_USER
+	<!--검색조건-->
+	<where>
+	<if test=" visit == 'yester' "> de = date_format(now(), '%Y%m%d')-1		</if>
+	<if test=" visit == 'today' "> de >= date_format(now(), '%Y%m01') and de <![CDATA[<=]]> date_format(now(), '%Y%m%d') 	</if>	
+	</where>
+</select>
+
+</mapper>

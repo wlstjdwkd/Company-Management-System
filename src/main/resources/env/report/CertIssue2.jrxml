@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report1" language="groovy" pageWidth="595" pageHeight="842" columnWidth="483" leftMargin="56" rightMargin="56" topMargin="85" bottomMargin="85" uuid="75f1aef8-8ae1-465a-b0b4-e0f0ef511247">
+	<property name="ireport.zoom" value="1.0000000000000007"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="152"/>
+	<property name="ireport.background.image.properties" value="false,true,0.25,0,0,0,0,0,0"/>
+	<field name="corpNm" class="java.lang.String"/>
+	<field name="ceoNm" class="java.lang.String"/>
+	<field name="issueNo" class="java.lang.String"/>
+	<field name="juriNo" class="java.lang.String"/>
+	<field name="corpRegNo" class="java.lang.String"/>
+	<field name="address" class="java.lang.String"/>
+	<field name="expireDe" class="java.lang.String"/>
+	<field name="printDe" class="java.lang.String"/>
+	<field name="docNo" class="java.lang.String"/>
+	<background>
+		<band height="672" splitType="Stretch">
+			<rectangle>
+				<reportElement x="0" y="0" width="483" height="672" forecolor="#999999" uuid="b7bb3b3b-4d39-4f27-9b68-08804b62d1fd"/>
+				<graphicElement>
+					<pen lineWidth="1.75"/>
+				</graphicElement>
+			</rectangle>
+			<image>
+				<reportElement x="78" y="256" width="327" height="161" uuid="916cc20e-151d-4a0d-a4f2-adf4fbb1258f"/>
+				<imageExpression><![CDATA["/egovframework/report/watermark.jpg"]]></imageExpression>
+			</image>
+		</band>
+	</background>
+	<title>
+		<band height="55" splitType="Stretch">
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="9" y="28" width="83" height="20" uuid="133bbb64-4b17-45f8-80d4-558a06ba5f50"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="바탕" size="12" isBold="true" pdfEncoding="Identity-H"/>
+				</textElement>
+				<textFieldExpression><![CDATA["발급번호 :"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="82" y="28" width="218" height="20" uuid="8b83253d-e27b-4a76-9e94-0c6c3e03def2"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="바탕" size="12" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{issueNo}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="9" y="6" width="109" height="20" uuid="fea16597-8d73-4a99-8cbf-d4942d2780b9"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="바탕" size="12" isBold="true" pdfEncoding="Identity-H"/>
+				</textElement>
+				<textFieldExpression><![CDATA["문서확인번호 :"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="109" y="6" width="218" height="20" uuid="c50d41dd-e1f8-4c9e-b9d0-2a496b0960aa"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="바탕" size="12" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{docNo}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="80" splitType="Stretch">
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="132" y="10" width="227" height="46" uuid="8070271d-dcb3-4f04-9f15-e6c6cff6c111"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="바탕" size="25" isBold="true" pdfEncoding="Identity-H"/>
+				</textElement>
+				<textFieldExpression><![CDATA["기업 확인서"]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="265" splitType="Stretch">
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="9" y="10" width="100" height="20" uuid="91a2d0e4-405f-4fa9-a8a0-d11a6be28e6c"/>
+				<textElement>
+					<font fontName="바탕" size="14" isBold="true" pdfEncoding="Identity-H"/>
+				</textElement>
+				<textFieldExpression><![CDATA["업 체 명 : "]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="9" y="37" width="100" height="20" uuid="6b6299a2-542d-4194-a10c-833747c4f1f9"/>
+				<textElement>
+					<font fontName="바탕" size="14" isBold="true" pdfEncoding="Identity-H"/>
+				</textElement>
+				<textFieldExpression><![CDATA["대표자명 : "]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="9" y="63" width="100" height="20" uuid="cc3f8403-7a38-41c6-bb6c-289a40a2ef8d"/>
+				<textElement>
+					<font fontName="바탕" size="14" isBold="true" pdfEncoding="Identity-H"/>
+				</textElement>
+				<textFieldExpression><![CDATA["법인번호 : "]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="9" y="108" width="100" height="20" uuid="89fd626b-ebca-4d41-96d9-bc26bbabedf8"/>
+				<textElement>
+					<font fontName="바탕" size="14" isBold="true" pdfEncoding="Identity-H"/>
+				</textElement>
+				<textFieldExpression><![CDATA["주     소 :"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="9" y="148" width="100" height="20" uuid="382be83c-9faf-4367-8ea1-c9a06f49b414"/>
+				<textElement>
+					<font fontName="바탕" size="14" isBold="true" pdfEncoding="Identity-H"/>
+				</textElement>
+				<textFieldExpression><![CDATA["유효기간 :"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="9" y="85" width="113" height="16" uuid="89a28504-2c87-49dd-a6d5-6c3a16aa8c60"/>
+				<textElement>
+					<font fontName="바탕" size="11" isBold="true" pdfEncoding="Identity-H"/>
+				</textElement>
+				<textFieldExpression><![CDATA["(사업자등록번호 :                                                  )"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="94" y="10" width="350" height="20" uuid="f49e3ed9-20fc-46ef-ae0a-5d8da1794ff5"/>
+				<textElement>
+					<font fontName="바탕" size="14" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{corpNm}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="94" y="37" width="218" height="20" uuid="149307d4-fb82-4968-a34c-b7b692ad4348"/>
+				<textElement>
+					<font fontName="바탕" size="14" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ceoNm}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="94" y="63" width="218" height="20" uuid="9f0bbd10-9e7d-4e9c-bed0-76cac5365102"/>
+				<textElement>
+					<font fontName="바탕" size="14" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{juriNo}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="116" y="85" width="350" height="16" uuid="a9df369e-01ff-491c-be8c-2e2bc39a13c8"/>
+				<textElement>
+					<font fontName="바탕" size="11" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{corpRegNo}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="94" y="108" width="367" height="40" uuid="773a54e2-e671-47f0-8bd3-357e922ddaee"/>
+				<textElement>
+					<font fontName="바탕" size="14" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{address}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="94" y="148" width="303" height="20" uuid="e0f0184f-6deb-481b-9114-775205ca94a0"/>
+				<textElement>
+					<font fontName="바탕" size="14" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{expireDe}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="149" y="181" width="185" height="21" forecolor="#000000" uuid="b2943d3c-2eba-4b1c-b3e5-170ffad5e657"/>
+				<textElement textAlignment="Center">
+					<font fontName="바탕" size="13" isBold="false" isUnderline="false" pdfEncoding="Identity-H"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA["<특례 대상 기업 확인>"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="9" y="202" width="470" height="21" forecolor="#000000" uuid="859e9cd6-b78e-438e-8e46-d84253266b52"/>
+				<textElement textAlignment="Justified">
+					<font fontName="바탕" size="13" isUnderline="false" pdfEncoding="Identity-H"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA["1. 평균매출액 등이 3천억원 미만 : 해당 ☐, 해당없음 ☐"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="9" y="223" width="470" height="32" forecolor="#000000" uuid="3abe2e2e-629a-42e6-98be-87c9fdb06ab3"/>
+				<textElement textAlignment="Justified">
+					<font fontName="바탕" size="13" isUnderline="false" pdfEncoding="Identity-H"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA["2. 중소기업기본법 제2조제3항 본문에 따른 중소기업으로 보는 기간이 종료된 후 3년이 지나지 아니하였을 것 : 해당 ☐, 해당없음 ☐"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="247" y="201" width="24" height="22" forecolor="#000000" uuid="5af94fc3-f89c-444a-a3b7-11745620841d"/>
+				<textElement textAlignment="Justified">
+					<font fontName="바탕" size="13" isUnderline="false" pdfEncoding="Identity-H"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA["v"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="218" y="237" width="24" height="22" forecolor="#000000" uuid="dc305eec-8635-4a21-80ec-6a76b6d45f4d"/>
+				<textElement textAlignment="Justified">
+					<font fontName="바탕" size="13" isUnderline="false" pdfEncoding="Identity-H"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA["v"]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="245" splitType="Stretch">
+			<image>
+				<reportElement isPrintRepeatedValues="false" x="304" y="107" width="65" height="65" uuid="82b59109-05aa-455e-bd16-6edb44456825"/>
+				<imageExpression><![CDATA["/egovframework/report/ji.png"]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="6" y="7" width="470" height="36" uuid="a29cdda5-35bb-4f7b-91f5-bdc04fb46f58"/>
+				<textElement textAlignment="Justified">
+					<font fontName="바탕" size="13" pdfEncoding="Identity-H"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA["  위 업체는 「기업 성장촉진 및 경쟁력 강화에 관한 특별법」제2조제1호 및 동법시행령 제2조제1항에 의한 기업임을 확인합니다."]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="6" y="201" width="470" height="34" uuid="2680d61d-244b-4dd0-8f47-30aaf2aca094"/>
+				<textElement textAlignment="Justified">
+					<font fontName="HY중고딕" size="12" pdfEncoding="Identity-H"/>
+				</textElement>
+				<textFieldExpression><![CDATA["*「독점규제 및 공정거래에 관한 법률」에 의한 상호출자제한기업집단에 속하는 회사 등 관련법령 등에 의해 판정기준을 벗어나는 경우 이 확인서의 효력은 상실함 "]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="122" y="118" width="241" height="38" uuid="efffa9da-440e-4fa5-bd8d-8d19263764a6"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="바탕" size="20" isBold="true" pdfEncoding="Identity-H"/>
+				</textElement>
+				<textFieldExpression><![CDATA["한국기업연합회장"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="178" y="60" width="132" height="20" uuid="43ec5331-1448-46ee-858d-27767a09c376"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="바탕" size="13" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{printDe}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnFooter>
+</jasperReport>

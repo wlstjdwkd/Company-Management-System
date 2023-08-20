@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="biz.tech.mapif.sp.PGSP0030Mapper">
+
+	<!-- 지원사업 목록조회 -->
+	<select id="findSuportList" resultType="map">
+		SELECT	/* ProgramID=biz.tech.mapif.sp.PGSP0030Mapper.findSuportList */
+						 SN									AS 	sn      									/* 순번(PK)  */
+						,RSS_NO								AS 	rssNo										/* RSS 번호 */
+						,IDNTFC_NO						AS 	idntfcNo									/* 식별번호 */
+						,SJ										AS 	sj											/* 제목 */					
+						,URL									AS 	url											/* URL */
+						,MNGT_MIRYFC					AS 	mngtMiryfc								/* 주관부처 */
+						,replace(REALM, <![CDATA['&amp;']]>, <![CDATA['&']]>)								AS 	realm										/* 분야 */
+						,OPERTN_BEGIN_DE				AS 	opertnBginde							/* 시행시작일자 */
+						,OPERTN_END_DE				AS 	opertnEndde							/* 시행종료일자 */
+						,(
+							CASE NTCE_AT	
+								WHEN 	'Y'	 	THEN '공개'			
+								WHEN 	'N' 	THEN '비공개'
+								WHEN 	'R'		THEN '수집'	
+								ELSE	'N/A'
+							END
+						)										AS    ntceAt									/* 개시여부(R,Y,N)*/	
+		FROM					TB_RSS_COLCT_DATA
+		<where>
+			<!-- 검색조건 -->
+			<if test="searchKeyword != '' and searchKeyword != null and searchCondition != null and searchCondition != '' ">
+				<if test="searchCondition == 'realm' ">AND	 REALM LIKE CONCAT('%', #{searchKeyword}, '%')</if>
+				<if test="searchCondition == 'mngtMiryfc' ">AND MNGT_MIRYFC LIKE CONCAT('%', #{searchKeyword}, '%')</if>
+			</if>
+			<if test="searchDateType != '' and searchDateType != null and q_pjt_start_dt != null and q_pjt_start_dt != '' and q_pjt_end_dt != null and q_pjt_end_dt != '' ">
+				<if test="searchDateType == 'condEnd' ">AND	 OPERTN_END_DE BETWEEN #{q_pjt_start_dt} AND #{q_pjt_end_dt} </if>
+				<if test="searchDateType == 'condStart' ">AND	 OPERTN_BEGIN_DE BETWEEN #{q_pjt_start_dt} AND #{q_pjt_end_dt} </if>
+			</if>
+			<if test="ntceAt != null and ntceAt !=''">
+				AND NTCE_AT = #{ntceAt}
+			</if>
+			AND OPERTN_END_DE >= DATE_FORMAT(NOW(), '%Y%m%d')
+			<if test='tabGb != "" and tabGb != null'>
+				<if test='tabGb == "A"'>AND REALM IN ('금융', '경영')</if>
+				<if test='tabGb == "B"'>AND REALM IN ('기술', '인력')</if>
+				<if test='tabGb == "C"'>AND REALM IN ('수출', '내수')</if>
+				<if test='tabGb == "D"'>AND REALM IN ('제도', '동반성장')</if>
+			</if>
+		</where>
+		ORDER 		BY SN DESC
+		LIMIT			${limitFrom} , ${limitTo}
+	</select>
+
+
+	<!-- 지원사업목록갯수 -->
+	<select id="findSuportListCnt" resultType="int">
+		SELECT	/* ProgramID=biz.tech.mapif.sp.PGSP0030Mapper.findSuportListCnt */
+				COUNT(*)
+		FROM	TB_RSS_COLCT_DATA
+		
+		<!-- 검색조건 -->
+		<where>
+			<if test="searchKeyword != '' and searchKeyword != null and searchCondition != null and searchCondition != '' ">
+				<if test="searchCondition == 'realm' ">AND	 REALM LIKE CONCAT('%', #{searchKeyword}, '%')</if>
+				<if test="searchCondition == 'mngtMiryfc' ">AND MNGT_MIRYFC LIKE CONCAT('%', #{searchKeyword}, '%')</if>
+			</if>
+			<if test="searchDateType != '' and searchDateType != null and q_pjt_start_dt != null and q_pjt_start_dt != '' and q_pjt_end_dt != null and q_pjt_end_dt != '' ">
+				<if test="searchDateType == 'condEnd' ">AND	 OPERTN_END_DE BETWEEN #{q_pjt_start_dt} AND #{q_pjt_end_dt} </if>
+				<if test="searchDateType == 'condStart' ">AND	 OPERTN_BEGIN_DE BETWEEN #{q_pjt_start_dt} AND #{q_pjt_end_dt} </if>
+			</if>
+			<if test="ntceAt != null and ntceAt !=''">
+				AND NTCE_AT = #{ntceAt}
+			</if>
+			AND OPERTN_END_DE >= DATE_FORMAT(NOW(), '%Y%m%d')
+			<if test='tabGb != "" and tabGb != null'>
+				<if test='tabGb == "A"'>AND REALM IN ('금융', '경영')</if>
+				<if test='tabGb == "B"'>AND REALM IN ('기술', '인력')</if>
+				<if test='tabGb == "C"'>AND REALM IN ('수출', '내수')</if>
+				<if test='tabGb == "D"'>AND REALM IN ('제도', '동반성장')</if>
+			</if>
+		</where>
+	</select>
+
+	<!-- 지원사업사이트 목록조회 -->
+	<select id="findRss" resultType="map">
+		SELECT	/* ProgramID=biz.tech.mapif.sp.PGSP0030Mapper.findRss */
+						RSS_NO								AS 	rssNo										/* RSS 번호 */
+						,SITE_NM							AS 	siteNm									/* 사이트명 */
+						,URL									AS 	url											/* URL */
+						,FLTER1								AS 	flter1										/* 필터1 */
+						,FLTER2								AS 	flter2										/* 필터2 */
+						,REGIST_DE							AS 	registDe									/* 등록일자 */
+						,UPDT_DE							AS 	updtDe									/* 등록일자 */
+		FROM					TB_RSS_COLCT_MANAGE
+		WHERE 		RSS_NO = #{rssNo}
+	</select>
+
+	<!-- 지원사업사이트 목록조회 -->
+	<select id="findRssList" resultType="map">
+		SELECT	/* ProgramID=biz.tech.mapif.sp.PGSP0030Mapper.findRssListCnt */
+						RSS_NO								AS 	rssNo										/* RSS 번호 */
+						,SITE_NM							AS 	siteNm									/* 사이트명 */
+						,URL									AS 	url											/* URL */
+						,FLTER1								AS 	flter1										/* 필터1 */
+						,FLTER2								AS 	flter2										/* 필터2 */
+						,REGIST_DE							AS 	registDe									/* 등록일자 */
+						,UPDT_DE							AS 	updtDe									/* 등록일자 */
+		FROM					TB_RSS_COLCT_MANAGE
+		<where>
+			<!-- 검색조건 -->
+			<if test="searchKeyword != '' and searchKeyword != null ">
+				AND	 SITE_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+			</if>
+			<if test="q_pjt_reg_dt != null and q_pjt_reg_dt != '' ">
+				AND	 DATE_FORMAT(REGIST_DE,'%Y-%m-%d') = DATE_FORMAT(#{q_pjt_reg_dt},'%Y-%m-%d')
+			</if>
+					
+		</where>
+		ORDER 		BY RSS_NO 
+		LIMIT			${limitFrom} , ${limitTo}
+	</select>
+
+
+	<!-- 지원사업목록갯수 -->
+	<select id="findRssListCnt" resultType="int">
+		SELECT	/* ProgramID=biz.tech.mapif.sp.PGSP0030Mapper.findRssListCnt */
+				COUNT(*)
+		FROM	TB_RSS_COLCT_MANAGE
+		
+		<!-- 검색조건 -->
+		<where>
+			<!-- 검색조건 -->
+			<if test="searchKeyword != '' and searchKeyword != null ">
+				AND	 SITE_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+			</if>
+			<if test="q_pjt_reg_dt != null and q_pjt_reg_dt != '' ">
+				AND	 DATE_FORMAT(REGIST_DE,'%Y-%m-%d') = #{q_pjt_reg_dt}
+			</if>
+		</where>
+	</select>
+
+
+	<insert id="insertRSSsite" parameterType="hashmap" >
+			insert /* ProgramID=biz.tech.mapif.sp.PGSP0030Mapper.insertRSSsite */ into TB_RSS_COLCT_MANAGE (
+			 	RSS_NO,
+			 	SITE_NM,
+			 	URL,
+			  	FLTER1,
+			 	FLTER2,
+			  	REGIST_DE,
+				UPDT_DE
+			) 
+			values
+			(
+				(SELECT ifnull(max(a.RSS_NO),0)+1 FROM TB_RSS_COLCT_MANAGE a),
+				#{siteNm},
+				#{siteUrl},
+				#{flter1},
+				#{flter2},
+				now(),
+				now()
+			);
+	</insert>
+	
+	
+	<update id="updateRSSsite" parameterType="hashmap" >
+			UPDATE /* ProgramID=biz.tech.mapif.sp.PGSP0030Mapper.updateRSSsite */  TB_RSS_COLCT_MANAGE 
+				SET	 	SITE_NM = #{siteNm},
+			 				URL = #{siteUrl},
+			 				FLTER1 = #{flter1, jdbcType=VARCHAR},
+			 				FLTER2 = #{flter2, jdbcType=VARCHAR},
+			 				UPDT_DE = now()
+			WHERE		RSS_NO =  #{rssNo}
+	</update>
+	
+	
+	<update id="updateSuportntceAtYN" >
+			UPDATE /* ProgramID=biz.tech.mapif.sp.PGSP0030Mapper.updateSuportntceAtYN */  
+				TB_RSS_COLCT_DATA 
+			SET	 NTCE_AT = #{ntceayn}
+			WHERE 	SN = #{seq}
+	</update>
+	
+	
+	
+</mapper>

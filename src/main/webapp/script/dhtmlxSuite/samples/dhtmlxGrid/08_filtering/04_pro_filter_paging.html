@@ -1,0 +1,67 @@
+<!--conf
+<sample>
+              <product version="1.5" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               </sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Filtering in Paging mode</title>
+
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+	
+</head>
+
+<body>
+	<h1>Filtering in Paging mode</h1>
+    <p>Grid allows you to implement filtering according to paging mode. In the example below filtering is enabled for page containing 10 records.</p>
+	<table width="600px">
+		<tr>
+			<td id="recinfoArea"></td>
+		</tr>
+		<tr>
+			<td>
+				<div id="gridbox" style="width:100%;height:200px;background-color:white;overflow:hidden"></div>
+			</td>
+		</tr>
+		<tr>
+			<td id="pagingArea"></td>
+		</tr>
+	</table>
+	<br/>
+<fieldset style="width:600px">
+	<legend>Filter</legend>
+	Column 
+	<select id='a10'>
+		<option value='0'>0</option>
+		<option value='1'>1</option>
+		<option value='2'>2</option>
+	</select>
+	Mask
+<input type="text" name="a12" value="" id="a12">
+<input type="button" name="a11" value="Filter" id="a11" onclick='mygrid.filterBy(document.getElementById("a10").value,document.getElementById("a12").value);'>
+</fieldset>
+<br />
+<script>
+		mygrid = new dhtmlXGridObject('gridbox');
+		mygrid.setImagePath("../../../codebase/imgs/");
+		mygrid.setHeader("Sales,Book Title,Author");
+		mygrid.setInitWidths("50,250,240")
+		mygrid.enableAutoWidth(true);
+		mygrid.setColAlign("right,left,left")
+		mygrid.setColTypes("dyn,ed,ed");
+		mygrid.setColSorting("str,str,str")
+		mygrid.enablePaging(true,10,3,"pagingArea",true,"recinfoArea");
+		mygrid.init();
+		mygrid.setSkin("dhx_skyblue")
+		mygrid.loadXML("../common/500.xml");
+</script>
+
+</body>
+</html>

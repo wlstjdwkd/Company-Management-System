@@ -1,0 +1,67 @@
+<!--conf
+<sample in_favorites="false">
+              <product version="1.5" edition="pro"/>
+                     <modifications>
+                            <modified date="070101"/>
+                     </modifications>
+               <sampledescription><![CDATA[Sample demonstrates the possibility to sort items in tree using specific algorithm set by user.]]></sampledescription></sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title> Custom sorting routine</title>
+</head>
+
+<body>
+	<h1>Custom sorting routine - sort by second word</h1>
+    <p>In dhtmlxTree nodes can be sorted in ascendent or descendent order. Select an item in the tree and test this funcitonality using an appropriate action link.</p>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+  
+Custom sorting sorts by Author's first name    
+	<table>
+		<tr>
+			<td>
+				<div id="treeboxbox_tree" style="width:250px; height:218px;background-color:#f5f5f5;border :1px solid Silver;; overflow:auto;"></div>
+			</td>
+			<td rowspan="2" style="padding-left:25" valign="top">
+				<a href="#" onClick="tree.sortTree(tree.getSelectedItemId(),'ASC',1);">Reorder selected branch (ASC)</a><br>
+				<a href="#" onClick="tree.sortTree(tree.getSelectedItemId(),'DES',1);">Reorder selected branch (DES)</a><br>
+			</td>
+		</tr>
+	</table>
+	<br>
+
+	<script>
+
+    function sort_func(a,b){
+        a=(tree.getItemText(a)).split(" ")[1]||"";
+        b=(tree.getItemText(b)).split(" ")[1]||"";
+        return ((a>b)?1:-1);
+    }
+
+			tree=new dhtmlXTreeObject("treeboxbox_tree","100%","100%",0);
+
+
+			tree.setSkin('dhx_skyblue');
+			tree.setImagePath("../../../codebase/imgs/dhxtree_skyblue/");
+			tree.enableSmartXMLParsing(true);
+			tree.enableCheckBoxes(true);
+            tree.enableDragAndDrop(true);
+			tree.enableThreeStateCheckboxes(true);
+			tree.loadXML("../common/tree3_14_selection_sorting_navigation.xml")
+            tree.setCustomSortFunction(sort_func);
+
+
+
+
+
+
+
+	</script>
+<br><br>
+
+</body>
+</html>

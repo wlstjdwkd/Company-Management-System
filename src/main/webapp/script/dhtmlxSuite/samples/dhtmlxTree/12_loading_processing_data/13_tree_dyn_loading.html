@@ -1,0 +1,43 @@
+<!--conf
+<sample in_favorites="true">
+                      <product version="1.5" edition="std"/>
+                               <modifications>
+                                              <modified date="070101"/>
+                               </modifications>
+               <sampledescription><![CDATA[Autoloading (or dynamical loading) is another way for increasing performance for big trees. In its case data is loaded from server side on demand - when user expands level. Using this technique you can implement trees with really huge amount of data.]]></sampledescription></sample>
+ --> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	
+<title>Autoloading from XML</title>
+
+</head>
+
+<body>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../codebase/dhtmlx.css"/>
+	<script src="../../../codebase/dhtmlx.js"></script>
+	
+	<h1>Autoloading from XML</h1>
+	<p>Advanced processing of XML allows this JavaScript tree menu to handle large amount of data. 
+	Dynamical items loading from XML stream enables you to create DHTML trees with unlimited 
+	number of nodes.  You can load data asynchronously in dhtmlxTree as-needed (using AJAX) 
+	that increases overall performance of the tree. It means that the script specified in setXMLAutoLoading() method will be called when you click the tree to expand any of the parent nodes (which child nodes were not loaded). The script will get the id of the node to open, and return the XML with description of the child items.</p>
+	
+	<div id="treeboxbox_tree" style="width:250px; height:218px;background-color:#f5f5f5;border :1px solid Silver;; overflow:auto;"></div>
+	<br>				
+	
+
+	<script>
+			tree=new dhtmlXTreeObject("treeboxbox_tree","100%","100%",0);
+
+			tree.setSkin('dhx_skyblue');
+			tree.setImagePath("../../../codebase/imgs/dhxtree_skyblue/");
+			tree.setXMLAutoLoading("php/xml.php");
+			tree.loadXML("php/xml.php?id=0");
+
+	</script>
+</body>
+</html>
