@@ -9,8 +9,5 @@
         <module name="aframe" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="aframe" target="1.5" />
-    </bytecodeTargetLevel>
   </component>
 </project>
