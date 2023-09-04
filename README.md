@@ -109,6 +109,8 @@
 ## 🧱아키텍처
 
 ## ERD
+- 직원 관리
+![erd.png](images/erd.png)
 
 - 휴가 관리
 ![img.png](images/img.png)
