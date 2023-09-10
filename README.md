@@ -11,7 +11,8 @@
 4. [아키텍처](#아키텍처)
 5. [ERD](#erd)
 6. [인터페이스](#인터페이스)
-7. [팀원 소개 및 역할](#팀원-소개-및-역할)
+7. [수행 범위](#수행 범위)
+8. [팀원 소개 및 역할](#팀원-소개-및-역할)
 
 ## 📌프로젝트 기획 배경
 - 기업에서 사용하는 인사, 급여, 휴가 관리 시스템을 구축하는 업무로서, 직원 등록, 급여 항목 관리, 급여 내역 생성, 급여 변경 내역 관리 등의 업무를 
@@ -137,6 +138,146 @@
 
 - 휴가 신청/저장/삭제
   ![img.png](images/img2.png)
+
+## 수행 범위
+<table border="1">
+    <thead>
+        <tr>
+            <th>메뉴</th>
+            <th>서비스 타입</th>
+            <th>역할</th>
+            <th>프로그램명</th>
+            <th>경로</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- 직원등록조회 -->
+        <tr>
+            <td rowspan="7">직원등록조회</td>
+            <td rowspan="7">조회, 트랜잭션</td>
+            <td rowspan="3">화면단</td>
+            <td>BD_UIPMA0010.jsp</td>
+            <td>/aframe/src/main/webapp/WEB-INF/views/admin/pm</td>
+        </tr>
+        <tr>
+            <td>BD_UIPMA0011.jsp</td>
+            <td>/aframe/src/main/webapp/WEB-INF/views/admin/pm</td>
+        </tr>
+<tr>
+            <td>BD_UIPMA0012.jsp</td>
+            <td>/aframe/src/main/webapp/WEB-INF/views/admin/pm</td>
+        </tr>
+<tr>
+<td>서버단</td>
+            <td>PGPM0010Service.java</td>
+            <td>/aframe/src/main/java/biz/tech/pm</td>
+        </tr>
+<tr>
+<td>쿼리매핑</td>
+            <td>PGPM0010Mapper.java</td>
+            <td>/aframe/src/main/java/biz/tech/mapif/pm</td>
+        </tr>
+<tr>
+<td>SQL</td>
+            <td>PGPM0010Mapper.xml</td>
+            <td>/aframe/src/main/java/resources/env/mapper/pm</td>
+        </tr>
+<tr>
+<td>그리드 설정</td>
+            <td>EMPinfoGrid.js</td>
+            <td>/aframe/src/main/webapp/gridDef/pm</td>
+        </tr>
+        
+        
+        <!-- 급여항목관리 -->
+        <tr>
+            <td rowspan="5">급여항목관리</td>
+            <td rowspan="5">조회, 트랜잭션</td>
+            <td>화면단</td>
+            <td>BD_UIPMA0020.jsp</td>
+            <td>/aframe/src/main/webapp/WEB-INF/views/admin/pm</td>
+        </tr>
+        <!-- ... (줄여서 표시) ... -->
+
+        <!-- 개인별월급여항목 -->
+        <tr>
+            <td rowspan="4">개인별월급여항목</td>
+            <td rowspan="4">조회, 트랜잭션</td>
+            <td>화면단</td>
+            <td>BD_UIPMA0030.jsp</td>
+            <td>/aframe/src/main/webapp/WEB-INF/views/admin/pm</td>
+        </tr>
+        <!-- ... (줄여서 표시) ... -->
+
+        <!-- 급여계산 -->
+        <tr>
+            <td rowspan="4">급여계산</td>
+            <td rowspan="4">조회, 트랜잭션</td>
+            <td>화면단</td>
+            <td>BD_UIPMA0040.jsp</td>
+            <td>/aframe/src/main/webapp/WEB-INF/views/admin/pm</td>
+        </tr>
+        <!-- ... (줄여서 표시) ... -->
+
+        <!-- 월별급여조회 -->
+        <tr>
+            <td rowspan="4">월별급여조회</td>
+            <td rowspan="4">조회, 트랜잭션</td>
+            <td>화면단</td>
+            <td>BD_UIPMA0050.jsp</td>
+            <td>/aframe/src/main/webapp/WEB-INF/views/admin/pm</td>
+        </tr>
+        <!-- ... (줄여서 표시) ... -->
+
+        <!-- 세율관리 -->
+        <tr>
+            <td rowspan="7">세율관리</td>
+            <td rowspan="7">조회, 트랜잭션</td>
+            <td>화면단</td>
+            <td>BD_UIPMA0060.jsp</td>
+            <td>/aframe/src/main/webapp/WEB-INF/views/admin/pm</td>
+        </tr>
+        <!-- ... (줄여서 표시) ... -->
+
+        <!-- 메일전송 -->
+        <tr>
+            <td rowspan="4">메일전송</td>
+            <td rowspan="4">조회</td>
+            <td>화면단</td>
+            <td>BD_UIPMA0070.jsp</td>
+            <td>/aframe/src/main/webapp/WEB-INF/views/admin/pm</td>
+        </tr>
+        <!-- ... (줄여서 표시) ... -->
+
+        <!-- 팝업 -->
+        <tr>
+            <td rowspan="12">팝업</td>
+            <td rowspan="12">조회</td>
+            <td>그리드 꾸미기</td>
+            <td>gridAlign.css</td>
+            <td>/aframe/src/main/webapp/css</td>
+        </tr>
+        <!-- ... (줄여서 표시) ... -->
+
+        <!-- 메일전송 (계정 설정) -->
+        <tr>
+            <td>메일전송</td>
+            <td>메일 계정 설정</td>
+            <td>context-mail.xml</td>
+            <td>/aframe/src/main/resources/env/spring</td>
+        </tr>
+
+        <!-- 메시지창 -->
+        <tr>
+            <td>메시지창</td>
+            <td>메시지창 문구</td>
+            <td>sysMessage.js</td>
+            <td>/aframe/src/main/webapp/script/tech</td>
+        </tr>
+    </tbody>
+</table>
+
+
 
 ## 팀 소개
 * 방진성 : 백엔드(인사 관리, 휴가 관리), 프론트엔드(Axios, RealGrid.js 설계)
