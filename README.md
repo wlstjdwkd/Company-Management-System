@@ -332,7 +332,7 @@
 
 [//]: # (            <td>BD_UIPMA0060.jsp</td>)
 
-[//]: # (            <td>/aframe/src/main/webapp/WEB-INF/views/admin/pm</td>)
+[//]: # (            <td>/aframe/src/main/webapp/WEB-INF/views/admin/pm</td>)    
 
 [//]: # (        </tr>)
 
