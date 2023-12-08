@@ -19,7 +19,7 @@
 
 
 
-## 📌프로젝트 기획 배경 
+## 📌프로젝트 기획 배경
 - 기업에서 사용하는 인사, 급여, 휴가 관리 시스템을 구축하는 업무로서, 직원 등록, 급여 항목 관리, 급여 내역 생성, 급여 변경 내역 관리 등의 업무를 
 테크블루제닉이 보유한 전자정부 프레임워크 플랫폼을 사용하여 구축하는 작업
 
@@ -87,7 +87,7 @@
   <img src="https://img.shields.io/badge/amazons3-569A31?style=for-the-badge&logo=amazons3&logoColor=ffffff"/>
   <img src="https://img.shields.io/badge/amazonec2-FF9900?style=for-the-badge&logo=amazonec2&logoColor=ffffff"/>
   <img src="https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=ffffff"/>
-  <img src="https://img.shields.io/badge/jenkins-D24939?style=for-the-badge&logo=jenkins&logoColor=ffffff"/>
+  <img src ="https://img.shields.io/badge/jenkins-D24939?style=for-the-badge&logo=jenkins&logoColor=ffffff"/>
 
 </tr>
 
@@ -144,271 +144,310 @@
 - 휴가 신청/저장/삭제
   ![img.png](images/img2.png)
 
-[//]: # (## 수행 범위)
-
-[//]: # (<table border="1">)
-
-[//]: # (    <thead>)
-
-[//]: # (        <tr>)
-
-[//]: # (            <th>메뉴</th>)
-
-[//]: # (            <th>서비스 타입</th>)
-
-[//]: # (            <th>역할</th>)
-
-[//]: # (            <th>프로그램명</th>)
-
-[//]: # (            <th>경로</th>)
-
-[//]: # (        </tr>)
-
-[//]: # (    </thead>)
-
-[//]: # (    <tbody>)
-
-[//]: # (        <!-- 직원등록조회 -->)
-
-[//]: # (        <tr>)
-
-[//]: # (            <td rowspan="7">직원등록조회</td>)
-
-[//]: # (            <td rowspan="7">조회, 트랜잭션</td>)
-
-[//]: # (            <td rowspan="3">화면단</td>)
-
-[//]: # (            <td>BD_UIPMA0010.jsp</td>)
-
-[//]: # (            <td>/aframe/src/main/webapp/WEB-INF/views/admin/pm</td>)
-
-[//]: # (        </tr>)
-
-[//]: # (        <tr>)   
-
-[//]: # (            <td>BD_UIPMA0011.jsp</td>)
-
-[//]: # (            <td>/aframe/src/main/webapp/WEB-INF/views/admin/pm</td>)
-
-[//]: # (        </tr>)
-
-[//]: # (<tr>)
-
-[//]: # (            <td>BD_UIPMA0012.jsp</td>)
-
-[//]: # (            <td>/aframe/src/main/webapp/WEB-INF/views/admin/pm</td>)
-
-[//]: # (        </tr>)    
-
-[//]: # (<tr>)
-
-[//]: # (<td>서버단</td>)
-
-[//]: # (            <td>PGPM0010Service.java</td>)
-
-[//]: # (            <td>/aframe/src/main/java/biz/tech/pm</td>)
-
-[//]: # (        </tr>)
-
-[//]: # (<tr>)
-
-[//]: # (<td>쿼리매핑</td>)
-
-[//]: # (            <td>PGPM0010Mapper.java</td>)
-
-[//]: # (            <td>/aframe/src/main/java/biz/tech/mapif/pm</td>)  
-
-[//]: # (        </tr>)
-
-[//]: # (<tr>)
-
-[//]: # (<td>SQL</td>)
-
-[//]: # (            <td>PGPM0010Mapper.xml</td>)
-
-[//]: # (            <td>/aframe/src/main/java/resources/env/mapper/pm</td>)
-
-[//]: # (        </tr>)
-
-[//]: # (<tr>)
-
-[//]: # (<td>그리드 설정</td>)
-
-[//]: # (            <td>EMPinfoGrid.js</td>)
-
-[//]: # (            <td>/aframe/src/main/webapp/gridDef/pm</td>)
-
-[//]: # (        </tr>)
-
-[//]: # (        )
-[//]: # (        )
-[//]: # (        <!-- 급여항목관리 -->)
-
-[//]: # (        <!-- -->)
-
-[//]: # (        <tr>)
-
-[//]: # (            <td rowspan="5">급여항목관리</td>)
-
-[//]: # (            <td rowspan="5">조회, 트랜잭션</td>)
-
-[//]: # (            <td>화면단</td>)
-
-[//]: # (            <td>BD_UIPMA0020.jsp</td>)
-
-[//]: # (            <td>/aframe/src/main/webapp/WEB-INF/views/admin/pm</td>)
-
-[//]: # (        </tr>)
-
-[//]: # (        <!-- ... &#40;줄여서 표시&#41; ... -->)
-
-[//]: # ()
-[//]: # (        <!-- 개인별월급여항목 -->)
-
-[//]: # (        <tr>)
-
-[//]: # (            <td rowspan="4">개인별월급여항목</td>)
-
-[//]: # (            <td rowspan="4">조회, 트랜잭션</td>)
-
-[//]: # (            <td>화면단</td>)
-
-[//]: # (            <td>BD_UIPMA0030.jsp</td>)
-
-[//]: # (            <td>/aframe/src/main/webapp/WEB-INF/views/admin/pm</td>)
-
-[//]: # (        </tr>)
-
-[//]: # (        <!-- ... &#40;줄여서 표시&#41; ... -->)
-
-[//]: # ()
-[//]: # (        <!-- 급여계산 -->)
-
-[//]: # (        <tr>)
-
-[//]: # (            <td rowspan="4">급여계산</td>)
-
-[//]: # (            <td rowspan="4">조회, 트랜잭션</td>)
-
-[//]: # (            <td>화면단</td>)
-
-[//]: # (            <td>BD_UIPMA0040.jsp</td>)
-
-[//]: # (            <td>/aframe/src/main/webapp/WEB-INF/views/admin/pm</td>)
-
-[//]: # (        </tr>)
-
-[//]: # (        <!-- ... &#40;줄여서 표시&#41; ... -->)
-
-[//]: # ()
-[//]: # (        <!-- 월별급여조회 -->)
-
-[//]: # (        <tr>)
-
-[//]: # (            <td rowspan="4">월별급여조회</td>)
-
-[//]: # (            <td rowspan="4">조회, 트랜잭션</td>)
-
-[//]: # (            <td>화면단</td>)
-
-[//]: # (            <td>BD_UIPMA0050.jsp</td>)
-
-[//]: # (            <td>/aframe/src/main/webapp/WEB-INF/views/admin/pm</td>)
-
-[//]: # (        </tr>)
-
-[//]: # (        <!-- ... &#40;줄여서 표시&#41; ... -->)
-
-[//]: # ()
-[//]: # (        <!-- 세율관리 -->)
-
-[//]: # (        <tr>)
-
-[//]: # (            <td rowspan="7">세율관리</td>)
-
-[//]: # (            <td rowspan="7">조회, 트랜잭션</td>)
-
-[//]: # (            <td>화면단</td>)
-
-[//]: # (            <td>BD_UIPMA0060.jsp</td>)
-
-[//]: # (            <td>/aframe/src/main/webapp/WEB-INF/views/admin/pm</td>)    
-
-[//]: # (        </tr>)
-
-[//]: # (        <!-- ... &#40;줄여서 표시&#41; ... -->)
-
-[//]: # ()
-[//]: # (        <!-- 메일전송 -->)
-
-[//]: # (        <tr>)
-
-[//]: # (            <td rowspan="4">메일전송</td>)
-
-[//]: # (            <td rowspan="4">조회</td>)
-
-[//]: # (            <td>화면단</td>)
-
-[//]: # (            <td>BD_UIPMA0070.jsp</td>)
-
-[//]: # (            <td>/aframe/src/main/webapp/WEB-INF/views/admin/pm</td>)
-
-[//]: # (        </tr>)
-
-[//]: # (        <!-- ... &#40;줄여서 표시&#41; ... -->)
-
-[//]: # ()
-[//]: # (        <!-- 팝업 -->)
-
-[//]: # (        <tr>)
-
-[//]: # (            <td rowspan="12">팝업</td>)
-
-[//]: # (            <td rowspan="12">조회</td>)
-
-[//]: # (            <td>그리드 꾸미기</td>)
-
-[//]: # (            <td>gridAlign.css</td>)
-
-[//]: # (            <td>/aframe/src/main/webapp/css</td>)
-
-[//]: # (        </tr>)
-
-[//]: # (        <!-- ... &#40;줄여서 표시&#41; ... -->)
-
-[//]: # ()
-[//]: # (        <!-- 메일전송 &#40;계정 설정&#41; -->)
-
-[//]: # (        <tr>)
-
-[//]: # (            <td>메일전송</td>)
-
-[//]: # (            <td>메일 계정 설정</td>)
-
-[//]: # (            <td>context-mail.xml</td>)
-
-[//]: # (            <td>/aframe/src/main/resources/env/spring</td>)
-
-[//]: # (        </tr>)
-
-[//]: # ()
-[//]: # (        <!-- 메시지창 -->)
-
-[//]: # (        <tr>)
-
-[//]: # (            <td>메시지창</td>)
-
-[//]: # (            <td>메시지창 문구</td>)
-
-[//]: # (            <td>sysMessage.js</td>)
-
-[//]: # (            <td>/aframe/src/main/webapp/script/tech</td>)
-
-[//]: # (        </tr>)
-
-[//]: # (    </tbody>)
-
-[//]: # (</table>)
+## 수행 범위
+<table border="1">
+    <thead>
+        <tr>
+            <th>메뉴</th>
+            <th>서비스 타입</th>
+            <th>역할</th>
+            <th>프로그램명</th>
+            <th>경로</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- 직원등록조회 -->
+        <tr>
+            <td rowspan="7">직원등록조회</td>
+            <td rowspan="7">조회, 트랜잭션</td>
+            <td rowspan="3">화면단</td>
+            <td>BD_UIPMA0010.jsp</td>
+            <td>/aframe/src/main/webapp/WEB-INF/views/admin/pm</td>
+        </tr>
+        <tr>
+            <td>BD_UIPMA0011.jsp</td>
+            <td>/aframe/src/main/webapp/WEB-INF/views/admin/pm</td>
+        </tr>
+        <tr>
+            <td>BD_UIPMA0012.jsp</td>
+            <td>/aframe/src/main/webapp/WEB-INF/views/admin/pm</td>
+        </tr>
+        <tr>
+            <td>서버단</td>
+            <td>PGPM0010Service.java</td>
+            <td>/aframe/src/main/java/biz/tech/pm</td>
+        </tr>
+        <tr>
+            <td>쿼리매핑</td>
+            <td>PGPM0010Mapper.java</td>
+            <td>/aframe/src/main/java/biz/tech/mapif/pm</td>
+        </tr>
+        <tr>
+            <td>SQL</td>
+            <td>PGPM0010Mapper.xml</td>
+            <td>/aframe/src/main/java/resources/env/mapper/pm</td>
+        </tr>
+        <tr>
+            <td>그리드 설정</td>
+            <td>EMPinfoGrid.js</td>
+            <td>/aframe/src/main/webapp/gridDef/pm</td>
+        </tr>
+        <tr>
+            <td rowspan="7">급여항목관리</td>
+            <td rowspan="7">조회, 트랜잭션</td>
+            <td rowspan="3">화면단</td>
+            <td>BD_UIPMA0020.jsp</td>
+            <td>/aframe/src/main/webapp/WEB-INF/views/admin/pm</td>
+        </tr>
+        <tr>
+            <td>BD_UIPMA0021.jsp</td>
+            <td>/aframe/src/main/webapp/WEB-INF/views/admin/pm</td>
+        </tr>
+        <tr>
+            <td>BD_UIPMA0022.jsp</td>
+            <td>/aframe/src/main/webapp/WEB-INF/views/admin/pm</td>
+        </tr>
+        <tr>
+            <td>서버단</td>
+            <td>PGPM0020Service.java</td>
+            <td>/aframe/src/main/java/biz/tech/pm</td>
+        </tr>
+        <tr>
+            <td>쿼리매핑</td>
+            <td>PGPM0020Mapper.java</td>
+            <td>/aframe/src/main/java/biz/tech/mapif/pm</td>
+        </tr>
+        <tr>
+            <td>SQL</td>
+            <td>PGPM0020Mapper.xml</td>
+            <td>/aframe/src/main/resources/env/mapper/pm</td>
+        </tr>
+        <tr>
+            <td>그리드 설정</td>
+            <td>PayItemTreeGrid.js</td>
+            <td>/aframe/src/main/webapp/gridDef/pm</td>
+        </tr>
+        <tr>
+            <td rowspan="5">개인별월급여항목</td>
+            <td rowspan="5">조회, 트랜잭션</td>
+            <td>화면단</td>
+            <td>BD_UIPMA0030.jsp</td>
+            <td>/aframe/src/main/webapp/WEB-INF/views/admin/pm</td>
+        </tr>
+        <tr>
+            <td>서버단</td>
+            <td>PGPM0030Service.java</td>
+            <td>/aframe/src/main/java/biz/tech/pm</td>
+        </tr>
+        <tr>
+            <td>쿼리매핑</td>
+            <td>PGPM0030Mapper.java</td>
+            <td>/aframe/src/main/java/biz/tech/mapif/pm</td>
+        </tr>
+        <tr>
+            <td>SQL</td>
+            <td>PGPM0030Mapper.xml</td>
+            <td>/aframe/src/main/resources/env/mapper/pm</td>
+        </tr>
+        <tr>
+            <td>그리드 설정</td>
+            <td>EmpPayItemGrid.js</td>
+            <td>/aframe/src/main/webapp/gridDef/pm</td>
+        </tr>
+        <tr>
+            <td rowspan="5">급여계산</td>
+            <td rowspan="5">조회, 트랜잭션</td>
+            <td>화면단</td>
+            <td>BD_UIPMA0040.jsp</td>
+            <td>/aframe/src/main/webapp/WEB-INF/views/admin/pm</td>
+        </tr>
+        <tr>
+            <td>서버단</td>
+            <td>PGPM0040Service.java</td>
+            <td>/aframe/src/main/java/biz/tech/pm</td>
+        </tr>
+        <tr>
+            <td>쿼리매핑</td>
+            <td>PGPM0040Mapper.java</td>
+            <td>/aframe/src/main/java/biz/tech/mapif/pm</td>
+        </tr>
+        <tr>
+            <td>SQL</td>
+            <td>PGPM0040Mapper.xml</td>
+            <td>/aframe/src/main/resources/env/mapper/pm</td>
+        </tr>
+        <tr>
+            <td>그리드 설정</td>
+            <td>CalcPayGrid.js</td>
+            <td>/aframe/src/main/webapp/gridDef/pm</td>
+        </tr>
+        <tr>
+            <td rowspan="5">월별급여조회</td>
+            <td rowspan="5">조회, 트랜잭션</td>
+            <td>화면단</td>
+            <td>BD_UIPMA0050.jsp</td>
+            <td>/aframe/src/main/webapp/WEB-INF/views/admin/pm</td>
+        </tr>
+        <tr>
+            <td>서버단</td>
+            <td>PGPM0050Service.java</td>
+            <td>/aframe/src/main/java/biz/tech/pm</td>
+        </tr>
+        <tr>
+            <td>쿼리매핑</td>
+            <td>PGPM0050Mapper.java</td>
+            <td>/aframe/src/main/java/biz/tech/mapif/pm</td>
+        </tr>
+        <tr>
+            <td>SQL</td>
+            <td>PGPM0050Mapper.xml</td>
+            <td>/aframe/src/main/resources/env/mapper/pm</td>
+        </tr>
+        <tr>
+            <td>그리드 설정</td>
+            <td>PayMntGrid.js</td>
+            <td>/aframe/src/main/webapp/gridDef/pm</td>
+        </tr>
+        <tr>
+            <td rowspan="7">세율관리</td>
+            <td rowspan="7">조회, 트랜잭션</td>
+            <td rowspan="3">화면단</td>
+            <td>BD_UIPMA0060.jsp</td>
+            <td>/aframe/src/main/webapp/WEB-INF/views/admin/pm</td>
+        </tr>
+        <tr>
+            <td>BD_UIPMA0061.jsp</td>
+            <td>/aframe/src/main/webapp/WEB-INF/views/admin/pm</td>
+        </tr>
+        <tr>
+            <td>BD_UIPMA0062.jsp</td>
+            <td>/aframe/src/main/webapp/WEB-INF/views/admin/pm</td>
+        </tr>
+        <tr>
+            <td>서버단</td>
+            <td>PGPM0060Service.java</td>
+            <td>/aframe/src/main/java/biz/tech/pm</td>
+        </tr>
+        <tr>
+            <td>쿼리매핑</td>
+            <td>PGPM0060Mapper.java</td>
+            <td>/aframe/src/main/java/biz/tech/mapif/pm</td>
+        </tr>
+        <tr>
+            <td>SQL</td>
+            <td>PGPM0060Mapper.xml</td>
+            <td>/aframe/src/main/resources/env/mapper/pm</td>
+        </tr>
+        <tr>
+            <td>그리드 설정</td>
+            <td>TaxRateGrid.js</td>
+            <td>/aframe/src/main/webapp/gridDef/pm</td>
+        </tr>
+        <tr>
+            <td rowspan="5">메일전송</td>
+            <td rowspan="5">조회</td>
+            <td>화면단</td>
+            <td>BD_UIPMA0070.jsp</td>
+            <td>/aframe/src/main/webapp/WEB-INF/views/admin/pm</td>
+        </tr>
+        <tr>
+            <td>서버단</td>
+            <td>PGPM0070Service.java</td>
+            <td>/aframe/src/main/java/biz/tech/pm</td>
+        </tr>
+        <tr>
+            <td>쿼리매핑</td>
+            <td>PGPM0070Mapper.java</td>
+            <td>/aframe/src/main/java/biz/tech/mapif/pm</td>
+        </tr>
+        <tr>
+            <td>SQL</td>
+            <td>PGPM0070Mapper.xml</td>
+            <td>/aframe/src/main/resources/env/mapper/pm</td>
+        </tr>
+        <tr>
+            <td>그리드 설정</td>
+            <td>SendMailGrid.js</td>
+            <td>/aframe/src/main/webapp/gridDef/pm</td>
+        </tr>
+        <tr>
+            <td rowspan="12">팝업</td>
+            <td rowspan="12">조회</td>
+            <td>그리드 꾸미기</td>
+            <td>gridAlign.css</td>
+            <td>/aframe/src/main/webapp/css</td>
+        </tr>
+        <tr>
+            <td>화면단</td>
+            <td>PD_UIPMA0013.jsp</td>
+            <td>/aframe/src/main/webapp/WEB-INF/views/admin/pm</td>
+        </tr>
+        <tr>
+            <td>그리드 설정</td>
+            <td>WorkTypeGrid.js</td>
+            <td>/aframe/src/main/webapp/gridDef/pm</td>
+        </tr>
+        <tr>
+            <td>화면단</td>
+            <td>PD_UIPMA0014.jsp</td>
+            <td>/aframe/src/main/webapp/WEB-INF/views/admin/pm</td>
+        </tr>
+        <tr>
+            <td>그리드 설정</td>
+            <td>RankGrid.js</td>
+            <td>/aframe/src/main/webapp/gridDef/pm</td>
+        </tr>
+        <tr>
+            <td>화면단</td>
+            <td>PD_UIPMA0015.jsp</td>
+            <td>/aframe/src/main/webapp/WEB-INF/views/admin/pm</td>
+        </tr>
+        <tr>
+            <td>그리드 설정</td>
+            <td>DeptGrid.js</td>
+            <td>/aframe/src/main/webapp/gridDef/pm</td>
+        </tr>
+        <tr>
+            <td>화면단</td>
+            <td>PD_UIPMA0023.jsp</td>
+            <td>/aframe/src/main/webapp/WEB-INF/views/admin/pm</td>
+        </tr>
+        <tr>
+            <td>그리드 설정</td>
+            <td>PayItemListGrid.js</td>
+            <td>/aframe/src/main/webapp/gridDef/pm</td>
+        </tr>
+        <tr>
+            <td>화면단</td>
+            <td>PD_UIPMA0063.jsp</td>
+            <td>/aframe/src/main/webapp/WEB-INF/views/admin/pm</td>
+        </tr>
+        <tr>
+            <td>그리드 설정</td>
+            <td>EmpListGrid.js</td>
+            <td>/aframe/src/main/webapp/gridDef/pm</td>
+        </tr>
+        <tr>
+            <td>화면단</td>
+            <td>PD_UIPMA0032.jsp</td>
+            <td>/aframe/src/main/webapp/WEB-INF/views/admin/pm</td>
+        </tr>
+        <tr>
+            <td>메일전송</td>
+            <td></td>
+            <td>메일 계정 설정</td>
+            <td>context-mail.xml</td>
+            <td>/aframe/src/main/resources/env/spring</td>
+        </tr>
+        <tr>
+            <td>메시지창</td>
+            <td></td>
+            <td>메시지창 문구</td>
+            <td>sysMessage.js</td>
+            <td>/aframe/src/main/webapp/script/tech</td>
+        </tr>
+    </tbody>
+</table>
 
 
 
